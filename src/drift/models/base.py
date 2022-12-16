@@ -12,7 +12,7 @@ class ModelType(Enum):
 class Model(ABC):
 
     name: str
-    type : ModelType
+    type: ModelType
 
     @abstractmethod
     def fit(self, X: np.ndarray, y: np.ndarray) -> None:
