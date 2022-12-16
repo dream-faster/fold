@@ -1,0 +1,83 @@
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling"]
+
+[project]
+authors = [{name = "REPLACE_NAME REPLACE_SURNAME"}]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = []
+description = "REPLACE_PACKAGE_DESCRIPTION"
+dynamic = ["version"]
+keywords = []
+license = "MIT"
+name = "REPLACE_PACKAGE_NAME"
+readme = "README.md"
+requires-python = ">=3.7"
+
+[project.urls]
+Documentation = "https://REPLACE_GITHUB_USERNAME.github.io/REPLACE_PACKAGE_NAME"
+Issues = "https://github.com/REPLACE_GITHUB_USERNAME/REPLACE_PACKAGE_NAME/issues"
+Source = "https://github.com/REPLACE_GITHUB_USERNAME/REPLACE_PACKAGE_NAME"
+
+[tool.hatch.version]
+path = "src/REPLACE_PACKAGE_NAME/__init__.py"
+
+[project.optional-dependencies]
+quality = [
+  "black~=22.6.0",
+  "flake8~=4.0.1",
+  "isort~=5.10.1",
+  "pre-commit~=2.20.0",
+]
+tests = [
+  "pytest~=7.1.2",
+]
+
+[tool.hatch.envs.quality]
+dependencies = [
+  "REPLACE_PACKAGE_NAME[quality]"
+]
+detached = true
+
+[tool.hatch.envs.quality.scripts]
+check = [
+  "flake8 src tests",
+  "black --check --diff --preview src tests",
+  "isort --check-only --diff src tests",
+]
+format = [
+  "isort src tests",
+  "black --preview src tests",
+  "check",
+]
+
+[tool.hatch.envs.test]
+dependencies = ["REPLACE_PACKAGE_NAME[tests]"]
+
+[tool.hatch.envs.test.scripts]
+run = "pytest tests/ --durations 0 -s"
+
+[[tool.hatch.envs.test.matrix]]
+python = ["37", "38", "39", "310"]
+
+[tool.isort]
+profile = "black"
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+  "/.github",
+  "/docs",
+  "/.devcontainer",
+  "/.pre-commit-config.yaml",
+  "/.gitignore",
+  "/tests",
+]
