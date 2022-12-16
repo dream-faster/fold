@@ -41,7 +41,7 @@ path = "src/drift/__init__.py"
 
 [project.optional-dependencies]
 quality = [
-  "black~=22.6.0",
+  "black~=22.1.0",
   "flake8~=4.0.1",
   "isort~=5.10.1",
   "pre-commit~=2.20.0",
