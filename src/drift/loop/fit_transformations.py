@@ -1,8 +1,8 @@
 import pandas as pd
-from all_types import TransformationsOverTime
+from ..all_types import TransformationsOverTime
 from tqdm import tqdm
-from transformations.base import Transformation
-from utils.splitters import Split, Splitter
+from ..transformations.base import Transformation
+from ..utils.splitters import Split, Splitter
 from typing import List
 
 

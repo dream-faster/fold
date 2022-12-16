@@ -1,11 +1,11 @@
 import pandas as pd
-from models.base import Model, ModelType
-from all_types import ModelOverTime, TransformationsOverTime
+from ..models.base import Model, ModelType
+from ..all_types import ModelOverTime, TransformationsOverTime
 from tqdm import tqdm
 from copy import deepcopy
-from utils.splitters import Splitter, Split
+from ..utils.splitters import Splitter, Split
 from typing import Optional
-from utils.pandas import shift_and_duplicate_first_value
+from ..utils.pandas import shift_and_duplicate_first_value
 
 
 def walk_forward_train(

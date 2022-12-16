@@ -1,15 +1,15 @@
 import pandas as pd
-from all_types import (
+from ..all_types import (
     ModelOverTime,
     TransformationsOverTime,
     InSamplePredictions,
     OutSamplePredictions,
 )
 from tqdm import tqdm
-from models.base import Model, ModelType
-from utils.splitters import Splitter, Split
+from ..models.base import Model, ModelType
+from ..utils.splitters import Splitter, Split
 from typing import Optional, Tuple
-from utils.pandas import shift_and_duplicate_first_value
+from ..utils.pandas import shift_and_duplicate_first_value
 import numpy as np
 
 
