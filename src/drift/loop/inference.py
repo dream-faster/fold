@@ -1,16 +1,18 @@
-import pandas as pd
-from ..all_types import (
-    ModelOverTime,
-    TransformationsOverTime,
-    InSamplePredictions,
-    OutSamplePredictions,
-)
-from tqdm import tqdm
-from ..models.base import Model, ModelType
-from ..utils.splitters import Splitter, Split
 from typing import Optional, Tuple
-from ..utils.pandas import shift_and_duplicate_first_value
+
 import numpy as np
+import pandas as pd
+from tqdm import tqdm
+
+from ..all_types import (
+    InSamplePredictions,
+    ModelOverTime,
+    OutSamplePredictions,
+    TransformationsOverTime,
+)
+from ..models.base import Model, ModelType
+from ..utils.pandas import shift_and_duplicate_first_value
+from ..utils.splitters import Split, Splitter
 
 
 def walk_forward_inference(

@@ -1,6 +1,8 @@
-import numpy as np
-from .base import Model, ModelType
 from enum import Enum
+
+import numpy as np
+
+from .base import Model, ModelType
 
 
 class BaselineStrategy(Enum):

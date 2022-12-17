@@ -1,9 +1,11 @@
+from typing import List
+
 import pandas as pd
-from ..all_types import TransformationsOverTime
 from tqdm import tqdm
+
+from ..all_types import TransformationsOverTime
 from ..transformations.base import Transformation
 from ..utils.splitters import Split, Splitter
-from typing import List
 
 
 def fit_transformations(
