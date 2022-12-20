@@ -23,7 +23,3 @@ class Transformation(ABC):
     @abstractmethod
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
         raise NotImplementedError
-
-    @abstractmethod
-    def clone(self) -> Transformation:
-        raise NotImplementedError

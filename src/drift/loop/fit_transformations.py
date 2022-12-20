@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import List
 
 import pandas as pd
@@ -38,14 +39,14 @@ def fit_transformations(
 def __process_transformations_window(
     X: pd.DataFrame,
     y: pd.Series,
-    transformations: list[Transformation],
+    transformations: List[Transformation],
     split: Split,
-) -> tuple[int, list[Transformation]]:
+) -> tuple[int, List[Transformation]]:
 
     X_train = X.iloc[split.train_window_start : split.train_window_end]
     y_train = y.iloc[split.train_window_start : split.train_window_end]
 
-    current_transformations = [t.clone() for t in transformations]
+    current_transformations = [deepcopy(t) for t in transformations]
     for transformation in current_transformations:
         X_train = transformation.fit_transform(X_train, y_train)
 
