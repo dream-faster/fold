@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import List
 
 import pandas as pd
@@ -6,7 +7,7 @@ from tqdm import tqdm
 from ..all_types import TransformationsOverTime
 from ..transformations.base import Transformation
 from ..utils.splitters import Split, Splitter
-from copy import deepcopy
+
 
 def fit_transformations(
     X: pd.DataFrame,
