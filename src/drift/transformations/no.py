@@ -16,6 +16,3 @@ class NoTransformation(Transformation):
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
         return X
-
-    def clone(self) -> NoTransformation:
-        return self
