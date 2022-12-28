@@ -15,13 +15,13 @@ class BaselineStrategy(Enum):
 
 class BaselineModel(Model):
 
-    name = "BaselineModel"
     strategies = BaselineStrategy
     type = ModelType.Univariate
 
     def __init__(self, strategy: BaselineStrategy, window_size: int = 100) -> None:
         self.strategy = strategy
         self.window_size = window_size
+        self.name = f"BaselineModel-{strategy.value}"
 
     def fit(self, X: np.ndarray, y: np.ndarray) -> None:
         pass
