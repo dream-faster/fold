@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 
+
 def generate_sine_wave_data(cycles: int = 2, resolution: int = 1000) -> pd.Series:
 
     length = np.pi * 2 * cycles
