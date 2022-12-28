@@ -17,4 +17,4 @@ def test_baseline_naive_model() -> None:
     model_over_time = walk_forward_train(model, X, y, splitter, None)
 
     _, pred = walk_forward_inference(model_over_time, None, X, y, splitter)
-    assert (y[pred.index].shift(1) == pred).sum() == len(pred) -1
+    assert (y[pred.index].shift(1) == pred).sum() == len(pred) - 1
