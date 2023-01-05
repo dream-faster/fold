@@ -63,7 +63,7 @@ def __inference_from_window(
 
     if transformations_over_time is not None:
         current_transformations = [
-            transformation_over_time.iloc[split.model_index]
+            transformation_over_time.loc[split.model_index]
             for transformation_over_time in transformations_over_time
         ]
         for transformation in current_transformations:
