@@ -19,7 +19,7 @@ def fit_transformations(
     # easy to parallize this with ray
     processed_transformations = [
         __process_transformations_window(X, y, transformations, split)
-        for split in tqdm(splitter.splits())
+        for split in tqdm(splitter.splits(length=len(y)))
     ]
 
     idx, only_transformations = zip(*processed_transformations)
