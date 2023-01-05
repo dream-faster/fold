@@ -34,7 +34,7 @@ def walk_forward_inference(
             model_over_time,
             transformations_over_time,
         )
-        for split in tqdm(splitter.splits())
+        for split in tqdm(splitter.splits(length=len(y)))
     ]
     insample_idx, insample_values, outofsample_idx, outofsample_values = zip(*results)
 

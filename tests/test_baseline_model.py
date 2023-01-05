@@ -8,10 +8,10 @@ from tests.utils import generate_sine_wave_data
 
 def test_baseline_naive_model() -> None:
 
-    X = generate_sine_wave_data()
-    y = X.shift(1)
+    y = generate_sine_wave_data()
+    X = y.shift(1)
 
-    splitter = ExpandingWindowSplitter(start=0, end=len(y), window_size=400, step=400)
+    splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
     model = BaselineModel(strategy=BaselineStrategy.naive)
 
     model_over_time = walk_forward_train(model, X, y, splitter, None)
