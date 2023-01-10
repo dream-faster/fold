@@ -15,10 +15,5 @@ class Ensemble(Model):
         for model in self.models:
             model.fit(X, y)
 
-    def predict_in_sample(self, X: np.ndarray) -> np.ndarray:
-        return np.mean(
-            np.vstack([model.predict_in_sample(X) for model in self.models]), axis=0
-        )
-
     def predict(self, X: np.ndarray) -> np.ndarray:
         return np.mean(np.vstack([model.predict(X) for model in self.models]), axis=0)

@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from enum import Enum
 
 import numpy as np
+import pandas as pd
 
 
 class ModelType(Enum):
@@ -17,13 +18,9 @@ class Model(ABC):
     type: ModelType
 
     @abstractmethod
-    def fit(self, X: np.ndarray, y: np.ndarray) -> None:
+    def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
         raise NotImplementedError
 
     @abstractmethod
-    def predict(self, X: np.ndarray) -> np.ndarray:
-        raise NotImplementedError
-
-    @abstractmethod
-    def predict_in_sample(self, X: np.ndarray) -> np.ndarray:
+    def predict(self, X: pd.DataFrame) -> np.ndarray:
         raise NotImplementedError

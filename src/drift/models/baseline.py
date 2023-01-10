@@ -13,7 +13,7 @@ class BaselineStrategy(Enum):
     sliding_drift = "sliding_drift"
 
 
-class BaselineModel(Model):
+class Baseline(Model):
 
     strategies = BaselineStrategy
     type = ModelType.Univariate
@@ -26,7 +26,7 @@ class BaselineModel(Model):
     def fit(self, X: np.ndarray, y: np.ndarray) -> None:
         pass
 
-    def predict_in_sample(self, X: np.ndarray) -> np.ndarray:
+    def predict(self, X: np.ndarray) -> np.ndarray:
         if self.strategy == BaselineStrategy.sliding_mean:
             return np.array(
                 [
@@ -49,9 +49,6 @@ class BaselineModel(Model):
             return np.array([calculate_drift_predictions(X[: i + 1]) for i in len(X)])
         else:
             raise ValueError(f"Strategy {self.strategy} not implemented")
-
-    def predict(self, X: np.ndarray) -> np.ndarray:
-        return self.predict_in_sample(X)
 
 
 def calculate_drift_predictions(y: np.ndarray) -> np.ndarray:
