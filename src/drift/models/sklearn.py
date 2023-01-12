@@ -1,11 +1,6 @@
-from typing import List
-
-import numpy as np
 import pandas as pd
-from sklearn.base import BaseEstimator
 
 from drift.models.base import Model, ModelType
-from drift.transformations.base import Transformation
 
 
 class SKLearnModel(Model):
@@ -13,11 +8,11 @@ class SKLearnModel(Model):
     name = "SKLearnModel"
     type = ModelType.Multivariate
 
-    def __init__(self, model: BaseEstimator) -> None:
-        self.model = model
+    def __init__(self, model) -> None:
+        self.model = model.set_output(transform="pandas")
 
-    def fit(self, X: np.ndarray, y: np.ndarray) -> None:
+    def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
         self.model.fit(X, y)
 
-    def predict(self, X: np.ndarray) -> np.ndarray:
+    def predict(self, X: pd.DataFrame) -> pd.Series:
         return self.model.predict(X)
