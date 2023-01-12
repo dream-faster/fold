@@ -12,7 +12,7 @@ class SKLearnTransformation(Transformation):
         self.model.fit(X, y)
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
-        return pd.DataFrame(self.model.transform(X), index=X.index, columns=X.columns)
+        return self.model.transform(X)
 
 
 class SKLearnFeatureSelector(FeatureSelector):
