@@ -8,15 +8,9 @@ import pandas as pd
 from ..transformations.base import Transformation
 
 
-class ModelType(Enum):
-    Univariate = 1
-    Multivariate = 2
-
-
 class Model(Transformation):
 
     name: str
-    type: ModelType
 
     @abstractmethod
     def fit(self, X: pd.DataFrame, y: pd.Series) -> None:

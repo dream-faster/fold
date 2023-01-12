@@ -5,7 +5,7 @@ import pandas as pd
 from .base import Transformation
 
 
-class SelectColumn(Transformation):
+class SelectColumns(Transformation):
     def __init__(self, column: Union[List[str], str]) -> None:
         self.column = column
         self.name = f"SelectColumn-{column}"

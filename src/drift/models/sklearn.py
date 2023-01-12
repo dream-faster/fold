@@ -1,12 +1,11 @@
 import pandas as pd
 
-from drift.models.base import Model, ModelType
+from drift.models.base import Model
 
 
 class SKLearnModel(Model):
 
     name = "SKLearnModel"
-    type = ModelType.Multivariate
 
     def __init__(self, model) -> None:
         self.model = model.set_output(transform="pandas")

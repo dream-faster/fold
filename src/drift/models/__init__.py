@@ -1,3 +1,3 @@
-from .base import Model, ModelType
+from .base import Model
 from .baseline import Baseline, BaselineStrategy
 from .sklearn import SKLearnModel
