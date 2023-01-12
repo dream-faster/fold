@@ -6,11 +6,11 @@ from tqdm import tqdm
 
 from ..all_types import TransformationsOverTime
 from ..models.base import Model
+from ..splitters import Split, Splitter
 from ..transformations.base import Transformation
-from ..utils.splitters import Split, Splitter
 
 
-def walk_forward_train(
+def train(
     transformations: List[Union[Transformation, Model]],
     X: pd.DataFrame,
     y: pd.Series,
@@ -25,7 +25,7 @@ def walk_forward_train(
 
     idx, only_transformations = zip(*processed_transformations)
 
-    transformations_over_time = [
+    return [
         pd.Series(
             transformation_over_time,
             index=idx,
@@ -33,8 +33,6 @@ def walk_forward_train(
         )
         for transformation_over_time in zip(*only_transformations)
     ]
-
-    return transformations_over_time
 
 
 def __process_transformations_window(
@@ -49,14 +47,13 @@ def __process_transformations_window(
 
     current_transformations = [deepcopy(t) for t in transformations]
     for transformation in current_transformations:
-        if isinstance(transformation, Transformation):
-            X_train = transformation.fit_transform(X_train, y_train)
-        elif isinstance(transformation, Model):
-            transformation.fit(X_train, y_train)
-            X_train = transformation.predict(X_train)
-        else:
-            raise ValueError(
-                f"{type(transformation)} is not a Drift Model or Transformation."
-            )
+
+        # TODO: here we have the potential to parallelize/distribute training of child transformations
+        child_transformations = transformation.get_child_transformations()
+        if child_transformations is not None:
+            for child_transformation in child_transformations:
+                child_transformation.fit(X_train, y_train)
+
+        X_train = transformation.fit_transform(X_train, y_train)
 
     return split.model_index, current_transformations
