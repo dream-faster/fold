@@ -45,17 +45,18 @@ def __process_transformations_window(
     X_train = X.iloc[split.train_window_start : split.train_window_end]
     y_train = y.iloc[split.train_window_start : split.train_window_end]
 
-    current_transformations = [deepcopy(t) for t in transformations]
-    for transformation in current_transformations:
+    for transformation in transformations:
 
         # TODO: here we have the potential to parallelize/distribute training of child transformations
         child_transformations = transformation.get_child_transformations()
         if child_transformations is not None:
             for child_transformation in child_transformations:
+                child_transformation = deepcopy(child_transformation)
                 child_transformation.fit(X_train, y_train)
         else:
+            transformation = deepcopy(transformation)
             transformation.fit(X_train, y_train)
 
         X_train = transformation.transform(X_train)
 
-    return split.model_index, current_transformations
+    return split.model_index, transformations

@@ -41,12 +41,16 @@ class Baseline(Model):
         elif self.strategy == BaselineStrategy.sliding_drift:
             return np.array(
                 [
-                    calculate_drift_predictions(X.values[max(i - self.window_size, 0) : i + 1])
+                    calculate_drift_predictions(
+                        X.values[max(i - self.window_size, 0) : i + 1]
+                    )
                     for i in range(len(X))
                 ]
             )
         elif self.strategy == BaselineStrategy.expanding_drift:
-            return np.array([calculate_drift_predictions(X.values[: i + 1]) for i in len(X)])
+            return np.array(
+                [calculate_drift_predictions(X.values[: i + 1]) for i in len(X)]
+            )
         else:
             raise ValueError(f"Strategy {self.strategy} not implemented")
 
