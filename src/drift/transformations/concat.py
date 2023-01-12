@@ -7,6 +7,7 @@ from .base import Transformation
 
 class Concat(Transformation):
     def __init__(self, transformations: List[Transformation]) -> None:
+        # TODO: figure out a merge strategy if there are overlapping columns
         self.transformations = transformations
         self.name = "Concat-" + "-".join(
             [transformation.name for transformation in transformations]

@@ -53,7 +53,8 @@ def __process_transformations_window(
         if child_transformations is not None:
             for child_transformation in child_transformations:
                 child_transformation.fit(X_train, y_train)
-
-        X_train = transformation.fit_transform(X_train, y_train)
+        else:
+            transformation.fit(X_train, y_train)
+        X_train = transformation.transform(X_train, y_train)
 
     return split.model_index, current_transformations

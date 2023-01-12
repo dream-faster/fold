@@ -26,3 +26,7 @@ class Transformation(ABC):
 
     def get_child_transformations(self) -> Optional[List[Transformation]]:
         return None
+
+
+class FeatureSelector(Transformation):
+    selected_features: List[str]

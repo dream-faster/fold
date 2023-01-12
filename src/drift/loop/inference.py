@@ -1,6 +1,5 @@
 from typing import Optional, Tuple
 
-import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
@@ -9,9 +8,7 @@ from ..all_types import (
     OutSamplePredictions,
     TransformationsOverTime,
 )
-from ..models.base import Model
 from ..splitters import Split, Splitter
-from ..transformations.base import Transformation
 
 
 def infer(
