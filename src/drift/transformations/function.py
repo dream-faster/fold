@@ -6,7 +6,6 @@ from .base import Transformation
 
 
 class FunctionTransformation(Transformation):
-
     def __init__(self, func: Callable) -> None:
         self.func = func
         self.name = func.__name__
