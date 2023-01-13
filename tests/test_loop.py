@@ -1,9 +1,8 @@
 import pytest
 
-from drift.loop import infer, train
-from drift.models import Baseline, BaselineStrategy
-from drift.splitters import ExpandingWindowSplitter
-from drift.transformations import NoTransformation
+from src.drift.loop import infer, train
+from src.drift.models import Baseline, BaselineStrategy
+from src.drift.splitters import ExpandingWindowSplitter
 from tests.utils import generate_sine_wave_data
 
 
@@ -18,4 +17,4 @@ def test_loop() -> None:
 
     transformations_over_time = train(transformations, X, y, splitter)
     _, pred = infer(transformations_over_time, X, splitter)
-    assert (X[pred.index] == pred).sum() == len(pred) - 1
+    assert (X.squeeze()[pred.index] == pred).all()

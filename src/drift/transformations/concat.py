@@ -10,7 +10,10 @@ class Concat(Transformation):
         # TODO: figure out a merge strategy if there are overlapping columns
         self.transformations = transformations
         self.name = "Concat-" + "-".join(
-            [transformation.name for transformation in transformations]
+            [
+                transformation.name if hasattr(transformation, "name") else ""
+                for transformation in transformations
+            ]
         )
 
     def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None) -> None:

@@ -1,21 +1,25 @@
 from copy import deepcopy
-from typing import List, Union
+from typing import Callable, List, Union
 
 import pandas as pd
+from sklearn.base import BaseEstimator
 from tqdm import tqdm
 
 from ..all_types import TransformationsOverTime
 from ..models.base import Model
 from ..splitters import Split, Splitter
 from ..transformations.base import Transformation
+from .process import process_pipeline
 
 
 def train(
-    transformations: List[Union[Transformation, Model]],
+    transformations: List[Union[Transformation, Model, Callable, BaseEstimator]],
     X: pd.DataFrame,
     y: pd.Series,
     splitter: Splitter,
 ) -> TransformationsOverTime:
+
+    transformations = process_pipeline(transformations)
 
     # easy to parallize this with ray
     processed_transformations = [
@@ -38,7 +42,7 @@ def train(
 def __process_transformations_window(
     X: pd.DataFrame,
     y: pd.Series,
-    transformations: List[Union[Transformation, Model]],
+    transformations: List[Transformation],
     split: Split,
 ) -> tuple[int, List[Union[Transformation, Model]]]:
 

@@ -21,4 +21,8 @@ class Model(Transformation):
         raise NotImplementedError
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
-        return self.predict(X).to_frame()
+        pred = self.predict(X)
+        if isinstance(pred, pd.Series):
+            return pred.to_frame()
+        else:
+            return pred

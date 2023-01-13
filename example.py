@@ -1,7 +1,7 @@
 from src.drift.loop import infer, train
 from src.drift.models import Baseline, BaselineStrategy, Ensemble
 from src.drift.splitters import ExpandingWindowSplitter
-from src.drift.transformations import Concat, NoTransformation
+from src.drift.transformations import Concat, NoTransformation, SelectColumns
 from tests.utils import generate_sine_wave_data
 
 
@@ -12,7 +12,9 @@ def test_baseline_naive_model() -> None:
 
     splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
     pipeline = [
+        lambda x: x + 1,
         Concat([NoTransformation(), NoTransformation()]),
+        SelectColumns("sine"),
         Ensemble(
             [
                 Baseline(strategy=BaselineStrategy.naive),

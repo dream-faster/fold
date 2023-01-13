@@ -7,7 +7,7 @@ from .base import Transformation
 
 class SelectColumns(Transformation):
     def __init__(self, columns: Union[List[str], str]) -> None:
-        self.columns = columns if columns is List else [columns]
+        self.columns = columns if isinstance(columns, List) else [columns]
         self.name = f"SelectColumns-{columns}"
 
     def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None) -> None:
@@ -21,7 +21,7 @@ class TransformColumns(Transformation):
     def __init__(
         self, columns: Union[List[str], str], transformation: Transformation
     ) -> None:
-        self.columns = columns if columns is List else [columns]
+        self.columns = columns if isinstance(columns, List) else [columns]
         self.name = f"TransformColumns-{columns}-{transformation.name}"
         self.transformation = transformation
 
