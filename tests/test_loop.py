@@ -11,7 +11,7 @@ def test_loop() -> None:
 
     # the naive model returns X as prediction, so y.shift(1) should be == pred
     X = generate_sine_wave_data()
-    y = y["sine"].shift(-1)
+    y = X["sine"].shift(-1)
 
     splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
     transformations = [Baseline(strategy=BaselineStrategy.naive)]
