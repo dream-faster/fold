@@ -1,24 +1,28 @@
-from typing import List
+from typing import List, Optional
 
 import numpy as np
+import pandas as pd
 
-from .base import Model, ModelType
+from ..transformations.base import Transformation
+from .base import Model
 
 
 class Ensemble(Model):
-    def __init__(self, models: List[Model], type: ModelType) -> None:
+    def __init__(self, models: List[Transformation]) -> None:
         self.models = models
-        self.type = type
-        self.name = "Ensemble-" + "-".join([model.name for model in models])
-
-    def fit(self, X: np.ndarray, y: np.ndarray) -> None:
-        for model in self.models:
-            model.fit(X, y)
-
-    def predict_in_sample(self, X: np.ndarray) -> np.ndarray:
-        return np.mean(
-            np.vstack([model.predict_in_sample(X) for model in self.models]), axis=0
+        self.name = "Ensemble-" + "-".join(
+            [
+                transformation.name if hasattr(transformation, "name") else ""
+                for transformation in models
+            ]
         )
 
-    def predict(self, X: np.ndarray) -> np.ndarray:
-        return np.mean(np.vstack([model.predict(X) for model in self.models]), axis=0)
+    def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
+        # to be done in the training loop with get_child_transformations()
+        pass
+
+    def predict(self, X: pd.DataFrame) -> pd.DataFrame:
+        return np.mean(np.vstack([model.transform(X) for model in self.models]), axis=0)
+
+    def get_child_transformations(self) -> Optional[List[Transformation]]:
+        return self.models

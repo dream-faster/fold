@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from typing import Optional
 
 import pandas as pd
@@ -9,7 +7,7 @@ from .base import Transformation
 
 class NoTransformation(Transformation):
 
-    name = "NoTransformation"
+    name = "No"
 
     def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None) -> None:
         pass

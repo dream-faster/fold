@@ -1,29 +1,28 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from enum import Enum
 
-import numpy as np
+import pandas as pd
+
+from ..transformations.base import Transformation
 
 
-class ModelType(Enum):
-    Univariate = 1
-    Multivariate = 2
-
-
-class Model(ABC):
+class Model(Transformation):
 
     name: str
-    type: ModelType
 
     @abstractmethod
-    def fit(self, X: np.ndarray, y: np.ndarray) -> None:
+    def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
         raise NotImplementedError
 
     @abstractmethod
-    def predict(self, X: np.ndarray) -> np.ndarray:
+    def predict(self, X: pd.DataFrame) -> pd.Series:
         raise NotImplementedError
 
-    @abstractmethod
-    def predict_in_sample(self, X: np.ndarray) -> np.ndarray:
-        raise NotImplementedError
+    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        pred = self.predict(X)
+        if isinstance(pred, pd.Series):
+            return pred.to_frame()
+        else:
+            return pred

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import List, Optional
 
 import pandas as pd
 
@@ -23,3 +23,10 @@ class Transformation(ABC):
     @abstractmethod
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
         raise NotImplementedError
+
+    def get_child_transformations(self) -> Optional[List[Transformation]]:
+        return None
+
+
+class FeatureSelector(Transformation):
+    selected_features: List[str]

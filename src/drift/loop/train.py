@@ -1,55 +1,66 @@
 from copy import deepcopy
-from typing import Optional
+from typing import Callable, List, Union
 
 import pandas as pd
+from sklearn.base import BaseEstimator
 from tqdm import tqdm
 
-from ..all_types import ModelOverTime, TransformationsOverTime
-from ..models.base import Model, ModelType
-from ..utils.pandas import shift_and_duplicate_first_value
-from ..utils.splitters import Split, Splitter
+from ..all_types import TransformationsOverTime
+from ..models.base import Model
+from ..splitters import Split, Splitter
+from ..transformations.base import Transformation
+from .process import process_pipeline
 
 
-def walk_forward_train(
-    model: Model,
+def train(
+    transformations: List[Union[Transformation, Model, Callable, BaseEstimator]],
     X: pd.DataFrame,
     y: pd.Series,
     splitter: Splitter,
-    transformations_over_time: Optional[TransformationsOverTime],
-) -> ModelOverTime:
+) -> TransformationsOverTime:
 
-    if model.type == ModelType.Univariate:
-        X = shift_and_duplicate_first_value(y, 1)
+    transformations = process_pipeline(transformations)
 
     # easy to parallize this with ray
-    models = [
-        __train_on_window(split, X, y, model, transformations_over_time)
+    processed_transformations = [
+        __process_transformations_window(X, y, transformations, split)
         for split in tqdm(splitter.splits(length=len(y)))
     ]
 
-    idx, values = zip(*models)
-    return pd.Series(values, idx).rename(model.name)
+    idx, only_transformations = zip(*processed_transformations)
+
+    return [
+        pd.Series(
+            transformation_over_time,
+            index=idx,
+            name=transformation_over_time[0].name,
+        )
+        for transformation_over_time in zip(*only_transformations)
+    ]
 
 
-def __train_on_window(
-    split: Split,
+def __process_transformations_window(
     X: pd.DataFrame,
     y: pd.Series,
-    model: Model,
-    transformations_over_time: Optional[TransformationsOverTime],
-) -> tuple[int, Model]:
-    X_train = X.iloc[split.train_window_start : split.train_window_end].to_numpy()
-    y_train = y.iloc[split.train_window_start : split.train_window_end].to_numpy()
+    transformations: List[Transformation],
+    split: Split,
+) -> tuple[int, List[Union[Transformation, Model]]]:
 
-    if transformations_over_time is not None:
-        current_transformations = [
-            transformation_over_time[split.model_index]
-            for transformation_over_time in transformations_over_time
-        ]
+    X_train = X.iloc[split.train_window_start : split.train_window_end]
+    y_train = y.iloc[split.train_window_start : split.train_window_end]
 
-        for transformation in current_transformations:
-            X_train = transformation.transform(X_train)
+    for transformation in transformations:
 
-    current_model = deepcopy(model)
-    current_model.fit(X_train, y_train)
-    return split.model_index, current_model
+        # TODO: here we have the potential to parallelize/distribute training of child transformations
+        child_transformations = transformation.get_child_transformations()
+        if child_transformations is not None:
+            for child_transformation in child_transformations:
+                child_transformation = deepcopy(child_transformation)
+                child_transformation.fit(X_train, y_train)
+        else:
+            transformation = deepcopy(transformation)
+            transformation.fit(X_train, y_train)
+
+        X_train = transformation.transform(X_train)
+
+    return split.model_index, transformations
