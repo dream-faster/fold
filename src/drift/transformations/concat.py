@@ -2,10 +2,10 @@ from typing import List, Optional
 
 import pandas as pd
 
-from .base import Transformation
+from .base import Composite, Transformation
 
 
-class Concat(Transformation):
+class Concat(Transformation, Composite):
     def __init__(self, transformations: List[Transformation]) -> None:
         # TODO: figure out a merge strategy if there are overlapping columns
         self.transformations = transformations
@@ -28,3 +28,6 @@ class Concat(Transformation):
 
     def get_child_transformations(self) -> Optional[List[Transformation]]:
         return self.transformations
+
+    def set_child_transformations(self, transformations: List[Transformation]) -> None:
+        self.transformations = transformations

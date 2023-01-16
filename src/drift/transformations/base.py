@@ -24,9 +24,15 @@ class Transformation(ABC):
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
         raise NotImplementedError
 
-    def get_child_transformations(self) -> Optional[List[Transformation]]:
-        return None
-
 
 class FeatureSelector(Transformation):
     selected_features: List[str]
+
+
+class Composite(ABC):
+    @abstractmethod
+    def get_child_transformations(self) -> Optional[List[Transformation]]:
+        raise NotImplementedError
+
+    def set_child_transformations(self, transformations: List[Transformation]) -> None:
+        raise NotImplementedError
