@@ -26,3 +26,6 @@ class Ensemble(Model):
 
     def get_child_transformations(self) -> Optional[List[Transformation]]:
         return self.models
+
+    def set_child_transformations(self, transformations: List[Transformation]) -> None:
+        self.models = transformations

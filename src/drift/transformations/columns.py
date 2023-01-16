@@ -2,7 +2,7 @@ from typing import List, Optional, Union
 
 import pandas as pd
 
-from .base import Transformation
+from .base import Composite, Transformation
 
 
 class SelectColumns(Transformation):
@@ -17,7 +17,7 @@ class SelectColumns(Transformation):
         return X[self.columns]
 
 
-class TransformColumns(Transformation):
+class TransformColumns(Transformation, Composite):
     def __init__(
         self, columns: Union[List[str], str], transformation: Transformation
     ) -> None:
