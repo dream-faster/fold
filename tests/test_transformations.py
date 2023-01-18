@@ -23,8 +23,6 @@ def test_no_transformation() -> None:
 
 
 def test_nested_transformations() -> None:
-
-    # the naive model returns X as prediction, so y.shift(1) should be == pred
     X = generate_sine_wave_data()
     X["sine_2"] = X["sine"] + 1
     y = X["sine"].shift(-1)
