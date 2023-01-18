@@ -8,12 +8,14 @@ from tqdm import tqdm
 from ..all_types import TransformationsOverTime
 from ..models.base import Model
 from ..splitters import Split, Splitter
-from ..transformations.base import Composite, Transformation
-from .process import process_pipeline
+from ..transformations.base import Composite, Transformation, Transformations
+from .convenience import process_pipeline
 
 
 def train(
-    transformations: List[Union[Transformation, Model, Callable, BaseEstimator]],
+    transformations: List[
+        Union[Transformation, Composite, Model, Callable, BaseEstimator]
+    ],
     X: pd.DataFrame,
     y: pd.Series,
     splitter: Splitter,
@@ -44,35 +46,54 @@ def __process_transformations_window(
     y: pd.Series,
     transformations: List[Transformation],
     split: Split,
-) -> tuple[int, List[Union[Transformation, Model]]]:
+) -> tuple[int, List[Union[Transformation, Composite, Model]]]:
 
     X_train = X.iloc[split.train_window_start : split.train_window_end]
     y_train = y.iloc[split.train_window_start : split.train_window_end]
 
-    transformations = [deepcopy_transformation(t) for t in transformations]
-
-    for transformation in transformations:
-
-        # TODO: here we have the potential to parallelize/distribute training of child transformations
-        if isinstance(transformation, Composite):
-            for child_transformation in transformation.get_child_transformations():
-                child_transformation.fit(X_train, y_train)
-        else:
-            transformation.fit(X_train, y_train)
-
-        X_train = transformation.transform(X_train)
+    transformations = deepcopy_transformations(transformations)
+    X_train = recursively_fit_transform(X_train, y_train, transformations)
 
     return split.model_index, transformations
 
 
-def deepcopy_transformation(transformation: Transformation) -> Transformation:
-    if isinstance(transformation, Composite):
+def deepcopy_transformations(
+    transformation: Union[Transformation, Composite]
+) -> Union[Transformation, Composite]:
+    if isinstance(transformation, List):
+        return [deepcopy_transformations(t) for t in transformation]
+    elif isinstance(transformation, Composite):
         transformation.set_child_transformations(
             [
-                deepcopy_transformation(child_transformation)
-                for child_transformation in transformation.get_child_transformations()
+                deepcopy_transformations(c)
+                for c in transformation.get_child_transformations()
             ]
         )
         return transformation
     else:
         return deepcopy(transformation)
+
+
+# enables recursive execution
+def recursively_fit_transform(
+    X: pd.DataFrame,
+    y: pd.Series,
+    transformations: Transformations,
+) -> pd.DataFrame:
+
+    if isinstance(transformations, List):
+        for transformation in transformations:
+            X = recursively_fit_transform(X, y, transformation)
+        return X
+
+    elif isinstance(transformations, Composite):
+        # TODO: here we have the potential to parallelize/distribute training of child transformations
+        results = [
+            recursively_fit_transform(X, y, child_transformation)
+            for child_transformation in transformations.get_child_transformations()
+        ]
+        return transformations.postprocess_result(results)
+
+    else:
+        transformations.fit(X, y)
+        return transformations.transform(X)

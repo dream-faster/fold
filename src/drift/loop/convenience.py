@@ -14,18 +14,34 @@ from drift.transformations.sklearn import SKLearnFeatureSelector, SKLearnTransfo
 
 from ..models.base import Model
 from ..models.ensemble import Ensemble
-from ..transformations.base import Transformation
+from ..transformations.base import Transformation, Transformations
 from ..transformations.concat import Concat
 from ..transformations.function import FunctionTransformation
 
 
 def process_pipeline(
-    pipeline: List[Union[Transformation, Model, Callable, BaseEstimator]]
-) -> List[Transformation]:
+    pipeline: Union[
+        Transformation,
+        Model,
+        Callable,
+        BaseEstimator,
+        List[Union[Transformation, Model, Callable, BaseEstimator]],
+    ]
+) -> Transformations:
     def replace_transformation_if_not_drift_native(
-        transformation: Union[Transformation, Model, Callable]
-    ) -> Transformation:
-        if isinstance(transformation, RegressorMixin):
+        transformation: Union[
+            Transformation,
+            Model,
+            Callable,
+            BaseEstimator,
+            List[Union[Transformation, Model, Callable, BaseEstimator]],
+        ]
+    ) -> Transformations:
+        if isinstance(transformation, List):
+            return [
+                replace_transformation_if_not_drift_native(t) for t in transformation
+            ]
+        elif isinstance(transformation, RegressorMixin):
             return SKLearnModel(transformation)
         elif isinstance(transformation, ClassifierMixin):
             return SKLearnModel(transformation)
@@ -40,10 +56,13 @@ def process_pipeline(
                 process_pipeline(transformation.get_child_transformations())
             )
         elif isinstance(transformation, Concat):
-            return Concat(process_pipeline(transformation.get_child_transformations()))
+            return Concat(
+                process_pipeline(transformation.get_child_transformations()),
+                if_duplicate_keep=transformation.strategy,
+            )
         elif isinstance(transformation, Transformation):
             return transformation
         else:
             raise ValueError(f"Transformation {transformation} is not supported")
 
-    return [replace_transformation_if_not_drift_native(t) for t in pipeline]
+    return replace_transformation_if_not_drift_native(pipeline)

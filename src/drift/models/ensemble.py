@@ -1,14 +1,12 @@
-from typing import List, Optional
+from typing import List
 
-import numpy as np
 import pandas as pd
 
-from ..transformations.base import Transformation
-from .base import Model
+from ..transformations.base import Composite, Transformations
 
 
-class Ensemble(Model):
-    def __init__(self, models: List[Transformation]) -> None:
+class Ensemble(Composite):
+    def __init__(self, models: Transformations) -> None:
         self.models = models
         self.name = "Ensemble-" + "-".join(
             [
@@ -17,15 +15,11 @@ class Ensemble(Model):
             ]
         )
 
-    def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
-        # to be done in the training loop with get_child_transformations()
-        pass
+    def postprocess_result(self, results: List[pd.DataFrame]) -> pd.DataFrame:
+        return pd.concat(results, axis=1).mean(axis=0).to_frame()
 
-    def predict(self, X: pd.DataFrame) -> pd.DataFrame:
-        return np.mean(np.vstack([model.transform(X) for model in self.models]), axis=0)
-
-    def get_child_transformations(self) -> Optional[List[Transformation]]:
+    def get_child_transformations(self) -> List[Transformations]:
         return self.models
 
-    def set_child_transformations(self, transformations: List[Transformation]) -> None:
+    def set_child_transformations(self, transformations: Transformations) -> None:
         self.models = transformations

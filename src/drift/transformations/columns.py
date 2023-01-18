@@ -2,7 +2,9 @@ from typing import List, Optional, Union
 
 import pandas as pd
 
-from .base import Composite, Transformation
+from .base import Composite, Transformation, Transformations
+from .concat import Concat, ResolutionStrategy
+from .identity import Identity
 
 
 class SelectColumns(Transformation):
@@ -17,17 +19,39 @@ class SelectColumns(Transformation):
         return X[self.columns]
 
 
-class TransformColumns(Transformation, Composite):
-    def __init__(
-        self, columns: Union[List[str], str], transformation: Transformation
-    ) -> None:
+class DropColumns(Transformation):
+    def __init__(self, columns: Union[List[str], str]) -> None:
         self.columns = columns if isinstance(columns, List) else [columns]
-        self.name = f"TransformColumns-{columns}-{transformation.name}"
-        self.transformation = transformation
+        self.name = f"DropColumns-{columns}"
 
     def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None) -> None:
-        self.transformation.fit(X[self.columns], y)
+        pass
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
-        transformed = self.transformation.transform(X[self.columns])
-        return X.assign(**transformed.to_dict(orient="series"))
+        return X.drop(columns=self.columns)
+
+
+class RenameColumns(Transformation):
+    def __init__(self, columns_mapper: dict) -> None:
+        self.columns_mapper = columns_mapper
+        self.name = "RenameColumns"
+
+    def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None) -> None:
+        pass
+
+    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        return X.rename(columns=self.columns_mapper, axis=1)
+
+
+def TransformColumn(
+    columns: Union[List[str], str], transformation: Transformations
+) -> Composite:
+    return Concat(
+        [
+            [SelectColumns(columns)] + transformation
+            if isinstance(transformation, List)
+            else [transformation],
+            Identity(),
+        ],
+        if_duplicate_keep=ResolutionStrategy.left,
+    )
