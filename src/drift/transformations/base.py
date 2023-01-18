@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import List, Optional
+from typing import Callable, List, Optional, Union
 
 import pandas as pd
 
@@ -31,8 +31,19 @@ class FeatureSelector(Transformation):
 
 class Composite(ABC):
     @abstractmethod
-    def get_child_transformations(self) -> Optional[List[Transformation]]:
+    def get_child_transformations(self) -> List[Transformations]:
         raise NotImplementedError
 
-    def set_child_transformations(self, transformations: List[Transformation]) -> None:
+    def set_child_transformations(self, transformations: List[Transformations]) -> None:
         raise NotImplementedError
+
+    def postprocess_result(self, results: List[pd.DataFrame]) -> pd.DataFrame:
+        raise NotImplementedError
+
+
+Transformations = Union[
+    Transformation,
+    Composite,
+    Callable,
+    List[Union[Transformation, Composite, Callable]],
+]

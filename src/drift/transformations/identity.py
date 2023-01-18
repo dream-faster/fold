@@ -5,9 +5,9 @@ import pandas as pd
 from .base import Transformation
 
 
-class NoTransformation(Transformation):
+class Identity(Transformation):
 
-    name = "No"
+    name = "Identity"
 
     def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None) -> None:
         pass
