@@ -25,4 +25,4 @@ class SKLearnFeatureSelector(FeatureSelector):
         self.selected_features = self.model.get_feature_names_out()
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
-        return self.model.transform(X)
+        return X[self.selected_features]

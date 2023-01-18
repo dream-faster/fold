@@ -1,7 +1,11 @@
 import numpy as np
 import pytest
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.feature_selection import SelectKBest, VarianceThreshold
+from sklearn.linear_model import LinearRegression
 
 from drift.loop import infer, train
+from drift.models import Ensemble
 from drift.splitters import ExpandingWindowSplitter
 from drift.transformations import Identity, SelectColumns
 from drift.transformations.columns import TransformColumn
@@ -36,6 +40,26 @@ def test_nested_transformations() -> None:
     transformations_over_time = train(transformations, X, y, splitter)
     _, pred = infer(transformations_over_time, X, splitter)
     assert np.all(np.isclose((X["sine_2"][pred.index]).values, (pred - 2.0).values))
+
+
+def test_nested_transformations_with_feature_selection() -> None:
+    X = generate_sine_wave_data()
+    X["sine_2"] = X["sine"] + 1
+    X["constant"] = 1.0
+    X["constant2"] = 2.0
+    y = X["sine"].shift(-1)
+
+    splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
+    transformations = [
+        VarianceThreshold(),
+        TransformColumn("sine_2", [lambda x: x + 1.0]),
+        SelectKBest(k=1),
+        Ensemble([LinearRegression(), RandomForestRegressor()]),
+    ]
+
+    transformations_over_time = train(transformations, X, y, splitter)
+    _, pred = infer(transformations_over_time, X, splitter)
+    assert np.all(np.isclose((X["sine_2"][pred.index]).values, (pred - 1.0).values))
 
 
 def test_column_select_single_column_transformation() -> None:
