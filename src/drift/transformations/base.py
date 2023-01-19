@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Callable, List, Optional, Union
+from typing import Callable, List, Optional, Self, Union
 
 import pandas as pd
 
@@ -22,6 +22,10 @@ class Transformation(ABC):
 
     @abstractmethod
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        raise NotImplementedError
+
+    @abstractmethod
+    def clone(self) -> Self:
         raise NotImplementedError
 
 

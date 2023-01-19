@@ -3,6 +3,8 @@ from typing import List, Union
 
 import pandas as pd
 
+from drift.utils.list import flatten, has_intersection, keep_only_duplicates
+
 from .base import Composite, Transformations
 
 
@@ -28,16 +30,24 @@ class Concat(Composite):
         )
 
     def postprocess_result(self, results: List[pd.DataFrame]) -> pd.DataFrame:
-        results = pd.concat(results, axis=1)
+        columns = flatten([result.columns.to_list() for result in results])
+        duplicates = keep_only_duplicates(columns)
 
-        if self.strategy == ResolutionStrategy.left:
-            return results.loc[:, ~results.columns.duplicated(keep="first")]
-        elif self.strategy == ResolutionStrategy.right:
-            return results.loc[:, ~results.columns.duplicated(keep="last")]
-        elif self.strategy == ResolutionStrategy.both:
-            return results
+        if len(duplicates) > 0 or self.strategy != ResolutionStrategy.both:
+            duplicate_columns = [
+                result[duplicates]
+                for result in results
+                if has_intersection(result.columns.to_list(), duplicates)
+            ]
+            results = [result.drop(columns=duplicates) for result in results]
+            if self.strategy == ResolutionStrategy.left:
+                return pd.concat(results + [duplicate_columns[1]], axis=1)
+            elif self.strategy == ResolutionStrategy.right:
+                return pd.concat(results + [duplicate_columns[-1]], axis=1)
+            else:
+                raise ValueError(f"ResolutionStrategy is not valid: {self.strategy}")
         else:
-            raise ValueError(f"Unknown strategy {self.strategy}")
+            return pd.concat(results, axis=1)
 
     def get_child_transformations(self) -> Transformations:
         return self.transformations
