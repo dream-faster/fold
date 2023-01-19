@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import List
 
 import pandas as pd
@@ -18,8 +20,5 @@ class Ensemble(Composite):
     def postprocess_result(self, results: List[pd.DataFrame]) -> pd.DataFrame:
         return pd.concat(results, axis=1).mean(axis=0).to_frame()
 
-    def get_child_transformations(self) -> List[Transformations]:
+    def get_child_transformations(self) -> Transformations:
         return self.models
-
-    def set_child_transformations(self, transformations: Transformations) -> None:
-        self.models = transformations

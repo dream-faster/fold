@@ -58,7 +58,7 @@ def process_pipeline(
         elif isinstance(transformation, Concat):
             return Concat(
                 process_pipeline(transformation.get_child_transformations()),
-                if_duplicate_keep=transformation.strategy,
+                if_duplicate_keep=transformation.if_duplicate_keep,
             )
         elif isinstance(transformation, Transformation):
             return transformation

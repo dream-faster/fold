@@ -21,7 +21,7 @@ class Concat(Composite):
         if_duplicate_keep: Union[ResolutionStrategy, str] = ResolutionStrategy.both,
     ) -> None:
         self.transformations = transformations
-        self.strategy = if_duplicate_keep
+        self.if_duplicate_keep = if_duplicate_keep
         self.name = "Concat-" + "-".join(
             [
                 transformation.name if hasattr(transformation, "name") else ""
@@ -33,24 +33,23 @@ class Concat(Composite):
         columns = flatten([result.columns.to_list() for result in results])
         duplicates = keep_only_duplicates(columns)
 
-        if len(duplicates) > 0 or self.strategy != ResolutionStrategy.both:
+        if len(duplicates) > 0 or self.if_duplicate_keep != ResolutionStrategy.both:
             duplicate_columns = [
                 result[duplicates]
                 for result in results
                 if has_intersection(result.columns.to_list(), duplicates)
             ]
             results = [result.drop(columns=duplicates) for result in results]
-            if self.strategy == ResolutionStrategy.left:
+            if self.if_duplicate_keep == ResolutionStrategy.left:
                 return pd.concat(results + [duplicate_columns[1]], axis=1)
-            elif self.strategy == ResolutionStrategy.right:
+            elif self.if_duplicate_keep == ResolutionStrategy.right:
                 return pd.concat(results + [duplicate_columns[-1]], axis=1)
             else:
-                raise ValueError(f"ResolutionStrategy is not valid: {self.strategy}")
+                raise ValueError(
+                    f"ResolutionStrategy is not valid: {self.if_duplicate_keep}"
+                )
         else:
             return pd.concat(results, axis=1)
 
     def get_child_transformations(self) -> Transformations:
         return self.transformations
-
-    def set_child_transformations(self, transformations: Transformations) -> None:
-        self.transformations = transformations
