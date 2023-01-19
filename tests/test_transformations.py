@@ -52,15 +52,15 @@ def test_nested_transformations_with_feature_selection() -> None:
     splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
     transformations = [
         VarianceThreshold(),
-        TransformColumn("sine_2", [lambda x: x + 1.0]),
+        TransformColumn("sine_2", [lambda x: x**2.0]),
         SelectKBest(score_func=f_regression, k=1),
-        RenameColumns({"sine_2": "pred"}),
+        RenameColumns({"sine": "pred"}),
         SelectColumns("pred"),
     ]
 
     transformations_over_time = train(transformations, X, y, splitter)
     _, pred = infer(transformations_over_time, X, splitter)
-    assert np.all(np.isclose((X["sine_2"][pred.index]).values, (pred - 1.0).values))
+    assert np.all(np.isclose((X["sine"][pred.index]).values, (pred).values))
     assert pred.name == "pred"
 
 
