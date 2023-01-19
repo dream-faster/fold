@@ -7,8 +7,10 @@ from tqdm import tqdm
 
 from ..all_types import TransformationsOverTime
 from ..models.base import Model
+from ..models.ensemble import Ensemble
 from ..splitters import Split, Splitter
 from ..transformations.base import Composite, Transformation, Transformations
+from ..transformations.concat import Concat
 from .convenience import process_pipeline
 
 
@@ -58,18 +60,27 @@ def __process_transformations_window(
 
 
 def deepcopy_transformations(
-    transformation: Union[Transformation, Composite]
-) -> Union[Transformation, Composite]:
+    transformation: Union[
+        Transformation, Composite, List[Union[Transformation, Composite]]
+    ]
+) -> Union[Transformation, Composite, List[Union[Transformation, Composite]]]:
     if isinstance(transformation, List):
         return [deepcopy_transformations(t) for t in transformation]
-    elif isinstance(transformation, Composite):
-        transformation.set_child_transformations(
+    elif isinstance(transformation, Concat):
+        return Concat(
+            [
+                deepcopy_transformations(c)
+                for c in transformation.get_child_transformations()
+            ],
+            if_duplicate_keep=transformation.if_duplicate_keep,
+        )
+    elif isinstance(transformation, Ensemble):
+        return Ensemble(
             [
                 deepcopy_transformations(c)
                 for c in transformation.get_child_transformations()
             ]
         )
-        return transformation
     else:
         return deepcopy(transformation)
 

@@ -31,10 +31,7 @@ class FeatureSelector(Transformation):
 
 class Composite(ABC):
     @abstractmethod
-    def get_child_transformations(self) -> List[Transformations]:
-        raise NotImplementedError
-
-    def set_child_transformations(self, transformations: List[Transformations]) -> None:
+    def get_child_transformations(self) -> Transformations:
         raise NotImplementedError
 
     def postprocess_result(self, results: List[pd.DataFrame]) -> pd.DataFrame:

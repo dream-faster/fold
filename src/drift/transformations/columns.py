@@ -2,6 +2,7 @@ from typing import List, Optional, Union
 
 import pandas as pd
 
+from ..utils.list import wrap_into_list_if_needed
 from .base import Composite, Transformation, Transformations
 from .concat import Concat, ResolutionStrategy
 from .identity import Identity
@@ -9,7 +10,7 @@ from .identity import Identity
 
 class SelectColumns(Transformation):
     def __init__(self, columns: Union[List[str], str]) -> None:
-        self.columns = columns if isinstance(columns, List) else [columns]
+        self.columns = wrap_into_list_if_needed(columns)
         self.name = f"SelectColumns-{columns}"
 
     def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None) -> None:
@@ -21,7 +22,7 @@ class SelectColumns(Transformation):
 
 class DropColumns(Transformation):
     def __init__(self, columns: Union[List[str], str]) -> None:
-        self.columns = columns if isinstance(columns, List) else [columns]
+        self.columns = wrap_into_list_if_needed(columns)
         self.name = f"DropColumns-{columns}"
 
     def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None) -> None:
@@ -40,7 +41,7 @@ class RenameColumns(Transformation):
         pass
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
-        return X.rename(columns=self.columns_mapper, axis=1)
+        return X.rename(columns=self.columns_mapper)
 
 
 def TransformColumn(
@@ -48,9 +49,7 @@ def TransformColumn(
 ) -> Composite:
     return Concat(
         [
-            [SelectColumns(columns)] + transformation
-            if isinstance(transformation, List)
-            else [transformation],
+            [SelectColumns(columns)] + wrap_into_list_if_needed(transformation),
             Identity(),
         ],
         if_duplicate_keep=ResolutionStrategy.left,
