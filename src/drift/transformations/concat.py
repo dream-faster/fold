@@ -41,7 +41,7 @@ class Concat(Composite):
             ]
             results = [result.drop(columns=duplicates) for result in results]
             if self.if_duplicate_keep == ResolutionStrategy.left:
-                return pd.concat(results + [duplicate_columns[1]], axis=1)
+                return pd.concat(results + [duplicate_columns[0]], axis=1)
             elif self.if_duplicate_keep == ResolutionStrategy.right:
                 return pd.concat(results + [duplicate_columns[-1]], axis=1)
             else:

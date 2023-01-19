@@ -41,7 +41,7 @@ class RenameColumns(Transformation):
         pass
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
-        return X.rename(columns=self.columns_mapper, axis=1)
+        return X.rename(columns=self.columns_mapper)
 
 
 def TransformColumn(
