@@ -18,7 +18,7 @@ class Ensemble(Composite):
         )
 
     def postprocess_result(self, results: List[pd.DataFrame]) -> pd.DataFrame:
-        return pd.concat(results, axis=1).mean(axis=0).to_frame()
+        return pd.concat(results, axis=1).mean(axis=1).to_frame()
 
     def get_child_transformations(self) -> Transformations:
         return self.models
