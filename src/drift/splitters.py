@@ -68,3 +68,23 @@ class ExpandingWindowSplitter(Splitter):
             )
             for index in range(self.start + self.window_size, end, self.step)
         ]
+
+
+class SingleWindowSplitter(Splitter):
+    def __init__(
+        self,
+        proportion: float,
+    ) -> None:
+        self.proportion = proportion
+
+    def splits(self, length: int) -> List[Split]:
+        index = int(length * self.proportion)
+        return [
+            Split(
+                model_index=0,
+                train_window_start=0,
+                train_window_end=index - 1,
+                test_window_start=index,
+                test_window_end=length,
+            ),
+        ]
