@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import List, Union
 
 import numpy as np
 import pandas as pd
@@ -27,40 +28,32 @@ class Baseline(Model):
         pass
 
     def predict(self, X: pd.DataFrame) -> pd.Series:
-        def wrap_into_series(x: np.ndarray) -> pd.Series:
+        def wrap_into_series(x: Union[np.ndarray, List]) -> pd.Series:
             return pd.Series(x, index=X.index)
 
         if self.strategy == BaselineStrategy.sliding_mean:
             return wrap_into_series(
-                np.array(
-                    [
-                        np.mean(X.values[max(i - self.window_size, 0) : i + 1])
-                        for i in range(len(X))
-                    ]
-                )
+                [
+                    np.mean(X.values[max(i - self.window_size, 0) : i + 1])
+                    for i in range(len(X))
+                ]
             )
         elif self.strategy == BaselineStrategy.expanding_mean:
-            return wrap_into_series(
-                np.array([np.mean(X.values[: i + 1]) for i in range(len(X))])
-            )
+            return wrap_into_series([np.mean(X.values[: i + 1]) for i in range(len(X))])
         elif self.strategy == BaselineStrategy.naive:
-            return X[X.columns[0]]
+            return X
         elif self.strategy == BaselineStrategy.sliding_drift:
             return wrap_into_series(
-                np.array(
-                    [
-                        calculate_drift_predictions(
-                            X.values[max(i - self.window_size, 0) : i + 1]
-                        )
-                        for i in range(len(X))
-                    ]
-                )
+                [
+                    calculate_drift_predictions(
+                        X.values[max(i - self.window_size, 0) : i + 1]
+                    )
+                    for i in range(len(X))
+                ]
             )
         elif self.strategy == BaselineStrategy.expanding_drift:
             return wrap_into_series(
-                np.array(
-                    [calculate_drift_predictions(X.values[: i + 1]) for i in len(X)]
-                )
+                [calculate_drift_predictions(X.values[: i + 1]) for i in len(X)]
             )
         else:
             raise ValueError(f"Strategy {self.strategy} not implemented")
