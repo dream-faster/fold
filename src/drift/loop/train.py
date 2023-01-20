@@ -5,6 +5,8 @@ import pandas as pd
 from sklearn.base import BaseEstimator
 from tqdm import tqdm
 
+from drift.transformations.target import TransformTarget
+
 from ..all_types import TransformationsOverTime
 from ..models.base import Model
 from ..models.ensemble import Ensemble
@@ -81,6 +83,11 @@ def deepcopy_transformations(
                 for c in transformation.get_child_transformations()
             ]
         )
+    elif isinstance(transformation, TransformTarget):
+        return TransformTarget(
+            deepcopy_transformations(transformation.X_transformations),
+            deepcopy_transformations(transformation.y_transformation),
+        )
     else:
         return deepcopy(transformation)
 
@@ -100,7 +107,11 @@ def recursively_fit_transform(
     elif isinstance(transformations, Composite):
         # TODO: here we have the potential to parallelize/distribute training of child transformations
         results = [
-            recursively_fit_transform(X, y, child_transformation)
+            recursively_fit_transform(
+                transformations.preprocess_X(X),
+                transformations.preprocess_y(y),
+                child_transformation,
+            )
             for child_transformation in transformations.get_child_transformations()
         ]
         return transformations.postprocess_result(results)

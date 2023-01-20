@@ -5,7 +5,7 @@ from typing import List, TypeVar, Union
 T = TypeVar("T")
 
 
-def wrap_into_list_if_needed(input: Union[T, List[T]]) -> List[T]:
+def wrap_in_list(input: Union[T, List[T]]) -> List[T]:
     return input if isinstance(input, List) else [input]
 
 

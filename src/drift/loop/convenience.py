@@ -16,6 +16,7 @@ from ..models.ensemble import Ensemble
 from ..transformations.base import Transformation, Transformations
 from ..transformations.concat import Concat
 from ..transformations.function import FunctionTransformation
+from ..transformations.target import TransformTarget
 
 
 def process_pipeline(
@@ -58,6 +59,11 @@ def process_pipeline(
             return Concat(
                 process_pipeline(transformation.get_child_transformations()),
                 if_duplicate_keep=transformation.if_duplicate_keep,
+            )
+        elif isinstance(transformation, TransformTarget):
+            return TransformTarget(
+                process_pipeline(transformation.X_transformations),
+                process_pipeline(transformation.y_transformation),
             )
         elif isinstance(transformation, Transformation):
             return transformation
