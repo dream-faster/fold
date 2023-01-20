@@ -100,7 +100,11 @@ def recursively_fit_transform(
     elif isinstance(transformations, Composite):
         # TODO: here we have the potential to parallelize/distribute training of child transformations
         results = [
-            recursively_fit_transform(X, y, child_transformation)
+            recursively_fit_transform(
+                transformations.preprocess_X(X),
+                transformations.preprocess_y(y),
+                child_transformation,
+            )
             for child_transformation in transformations.get_child_transformations()
         ]
         return transformations.postprocess_result(results)

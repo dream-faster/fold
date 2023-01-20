@@ -4,7 +4,9 @@ from sklearn.feature_selection import SelectKBest, VarianceThreshold, f_regressi
 from drift.loop import infer, train
 from drift.splitters import ExpandingWindowSplitter
 from drift.transformations import Identity, SelectColumns
+from drift.transformations.base import Transformation
 from drift.transformations.columns import RenameColumns, TransformColumn
+from drift.transformations.target import TransformTarget
 from tests.utils import generate_sine_wave_data
 
 
@@ -83,6 +85,31 @@ def test_function_transformation() -> None:
 
     splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
     transformations = [lambda x: x - 1.0]
+
+    transformations_over_time = train(transformations, X.copy(), y, splitter)
+    _, pred = infer(transformations_over_time, X.copy(), splitter)
+    assert np.all(np.isclose((X.squeeze()[pred.index]).values, (pred + 1.0).values))
+
+
+class TestTransformTarget(Transformation):
+
+    name = "test_transform_target"
+
+    def transform(self, X):
+        return X + 1.0
+
+    def inverse_transform(self, X):
+        return X - 1.0
+
+
+def test_target_transformation() -> None:
+
+    X = generate_sine_wave_data()
+    y = X.shift(-1)
+
+    splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
+
+    transformations = [TransformTarget(lambda x: x + 1, TestTransformTarget())]
 
     transformations_over_time = train(transformations, X.copy(), y, splitter)
     _, pred = infer(transformations_over_time, X.copy(), splitter)

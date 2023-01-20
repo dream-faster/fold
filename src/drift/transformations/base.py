@@ -14,15 +14,18 @@ class Transformation(ABC):
     def fit(self, X: pd.DataFrame, y: Optional[pd.Series]) -> None:
         raise NotImplementedError
 
+    @abstractmethod
+    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        raise NotImplementedError
+
+    def inverse_transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        raise NotImplementedError
+
     def fit_transform(
         self, X: pd.DataFrame, y: Optional[pd.Series] = None
     ) -> pd.DataFrame:
         self.fit(X, y)
         return self.transform(X)
-
-    @abstractmethod
-    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
-        raise NotImplementedError
 
 
 class FeatureSelector(Transformation):
@@ -33,6 +36,12 @@ class Composite(ABC):
     @abstractmethod
     def get_child_transformations(self) -> Transformations:
         raise NotImplementedError
+
+    def preprocess_X(self, X: pd.DataFrame) -> pd.DataFrame:
+        return X
+
+    def preprocess_y(self, y: pd.Series) -> pd.Series:
+        return y
 
     def postprocess_result(self, results: List[pd.DataFrame]) -> pd.DataFrame:
         raise NotImplementedError

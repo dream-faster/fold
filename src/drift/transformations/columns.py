@@ -2,7 +2,7 @@ from typing import List, Optional, Union
 
 import pandas as pd
 
-from ..utils.list import wrap_into_list_if_needed
+from ..utils.list import wrap_in_list
 from .base import Composite, Transformation, Transformations
 from .concat import Concat, ResolutionStrategy
 from .identity import Identity
@@ -10,7 +10,7 @@ from .identity import Identity
 
 class SelectColumns(Transformation):
     def __init__(self, columns: Union[List[str], str]) -> None:
-        self.columns = wrap_into_list_if_needed(columns)
+        self.columns = wrap_in_list(columns)
         self.name = f"SelectColumns-{columns}"
 
     def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None) -> None:
@@ -22,7 +22,7 @@ class SelectColumns(Transformation):
 
 class DropColumns(Transformation):
     def __init__(self, columns: Union[List[str], str]) -> None:
-        self.columns = wrap_into_list_if_needed(columns)
+        self.columns = wrap_in_list(columns)
         self.name = f"DropColumns-{columns}"
 
     def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None) -> None:
@@ -49,7 +49,7 @@ def TransformColumn(
 ) -> Composite:
     return Concat(
         [
-            [SelectColumns(columns)] + wrap_into_list_if_needed(transformation),
+            [SelectColumns(columns)] + wrap_in_list(transformation),
             Identity(),
         ],
         if_duplicate_keep=ResolutionStrategy.left,
