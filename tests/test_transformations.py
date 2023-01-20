@@ -86,14 +86,17 @@ def test_function_transformation() -> None:
     splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
     transformations = [lambda x: x - 1.0]
 
-    transformations_over_time = train(transformations, X.copy(), y, splitter)
-    _, pred = infer(transformations_over_time, X.copy(), splitter)
+    transformations_over_time = train(transformations, X, y, splitter)
+    _, pred = infer(transformations_over_time, X, splitter)
     assert np.all(np.isclose((X.squeeze()[pred.index]).values, (pred + 1.0).values))
 
 
 class TestTransformTarget(Transformation):
 
     name = "test_transform_target"
+
+    def fit(self, X, y):
+        pass
 
     def transform(self, X):
         return X + 1.0
@@ -102,15 +105,29 @@ class TestTransformTarget(Transformation):
         return X - 1.0
 
 
+class TestIfAllYValuesBelow1(Transformation):
+
+    name = "TestIfAllYValuesBelow1"
+
+    def fit(self, X, y):
+        assert np.all(X <= 1.0)
+        return X
+
+    def transform(self, X):
+        return X
+
+
 def test_target_transformation() -> None:
 
     X = generate_sine_wave_data()
     y = X.shift(-1)
 
     splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
+    transformations = [
+        TransformTarget(lambda x: x + 1, TestTransformTarget()),
+        TestIfAllYValuesBelow1(),
+    ]
 
-    transformations = [TransformTarget(lambda x: x + 1, TestTransformTarget())]
-
-    transformations_over_time = train(transformations, X.copy(), y, splitter)
-    _, pred = infer(transformations_over_time, X.copy(), splitter)
-    assert np.all(np.isclose((X.squeeze()[pred.index]).values, (pred + 1.0).values))
+    transformations_over_time = train(transformations, X, y, splitter)
+    _, pred = infer(transformations_over_time, X, splitter)
+    assert np.all(np.isclose((X.squeeze()[pred.index]).values, pred.values))

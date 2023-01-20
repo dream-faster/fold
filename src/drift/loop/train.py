@@ -5,6 +5,8 @@ import pandas as pd
 from sklearn.base import BaseEstimator
 from tqdm import tqdm
 
+from drift.transformations.target import TransformTarget
+
 from ..all_types import TransformationsOverTime
 from ..models.base import Model
 from ..models.ensemble import Ensemble
@@ -80,6 +82,11 @@ def deepcopy_transformations(
                 deepcopy_transformations(c)
                 for c in transformation.get_child_transformations()
             ]
+        )
+    elif isinstance(transformation, TransformTarget):
+        return TransformTarget(
+            deepcopy_transformations(transformation.X_transformations),
+            deepcopy_transformations(transformation.y_transformation),
         )
     else:
         return deepcopy(transformation)
