@@ -4,3 +4,4 @@ from .concat import Concat
 from .function import FunctionTransformation
 from .identity import Identity
 from .sklearn import SKLearnFeatureSelector, SKLearnTransformation
+from .univariate import ToUnivariate

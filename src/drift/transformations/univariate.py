@@ -5,7 +5,7 @@ import pandas as pd
 from .base import Transformation
 
 
-class UnivariateWrapper(Transformation):
+class ToUnivariate(Transformation):
     def __init__(self, lag_column: str) -> None:
         self.lag_column = lag_column
         self.name = f"UnivariateWrapper-{lag_column}"
