@@ -1,5 +1,3 @@
-import pytest
-
 from src.drift.loop import infer, train
 from src.drift.models import Baseline, BaselineStrategy
 from src.drift.splitters import ExpandingWindowSplitter

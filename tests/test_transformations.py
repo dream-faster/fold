@@ -1,11 +1,7 @@
 import numpy as np
-import pytest
-from sklearn.ensemble import RandomForestRegressor
 from sklearn.feature_selection import SelectKBest, VarianceThreshold, f_regression
-from sklearn.linear_model import LinearRegression
 
 from drift.loop import infer, train
-from drift.models import Ensemble
 from drift.splitters import ExpandingWindowSplitter
 from drift.transformations import Identity, SelectColumns
 from drift.transformations.columns import RenameColumns, TransformColumn

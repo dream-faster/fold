@@ -1,4 +1,3 @@
-import numpy as np
 import pytest
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.feature_selection import SelectKBest, VarianceThreshold
@@ -18,17 +17,17 @@ def test_baseline_naive_model() -> None:
     X = y.shift(1)
 
     splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
-    pipeline = [
-        lambda x: x + 1,
-        Concat([Identity(), Identity()]),
-        SelectColumns("sine"),
-        Ensemble(
-            [
-                Baseline(strategy=BaselineStrategy.naive),
-                Baseline(strategy=BaselineStrategy.naive),
-            ]
-        ),
-    ]
+    # pipeline = [
+    #     lambda x: x + 1,
+    #     Concat([Identity(), Identity()]),
+    #     SelectColumns("sine"),
+    #     Ensemble(
+    #         [
+    #             Baseline(strategy=BaselineStrategy.naive),
+    #             Baseline(strategy=BaselineStrategy.naive),
+    #         ]
+    #     ),
+    # ]
 
     # transformations_over_time = train(pipeline, X, y, splitter)
     # _, pred = infer(transformations_over_time, X, splitter)
