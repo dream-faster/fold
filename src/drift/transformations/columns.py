@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import List, Optional, Union
 
 import pandas as pd
@@ -54,3 +55,26 @@ def TransformColumn(
         ],
         if_duplicate_keep=ResolutionStrategy.left,
     )
+
+
+class PerColumnTransform(Composite):
+    def __init__(self, transformations: Transformations) -> None:
+        self.transformations = transformations
+        self.name = "PerColumnTransform-" + "-".join(
+            [
+                transformation.name if hasattr(transformation, "name") else ""
+                for transformation in transformations
+            ]
+        )
+
+    def before_fit(self, X: pd.DataFrame) -> None:
+        self.transformations = [deepcopy(self.transformations) for _ in X.columns]
+
+    def preprocess_X(self, X: pd.DataFrame, index: int) -> pd.DataFrame:
+        return X.iloc[:, index]
+
+    def postprocess_result(self, results: List[pd.DataFrame]) -> pd.DataFrame:
+        return pd.concat(results, axis=1)
+
+    def get_child_transformations(self) -> Transformations:
+        return self.transformations

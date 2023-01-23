@@ -66,8 +66,12 @@ def recursively_transform(
     elif isinstance(transformations, Composite):
         # TODO: here we have the potential to parallelize/distribute training of child transformations
         results = [
-            recursively_transform(transformations.preprocess_X(X), child_transformation)
-            for child_transformation in transformations.get_child_transformations()
+            recursively_transform(
+                transformations.preprocess_X(X, index), child_transformation
+            )
+            for index, child_transformation in enumerate(
+                transformations.get_child_transformations()
+            )
         ]
         return transformations.postprocess_result(results)
 
