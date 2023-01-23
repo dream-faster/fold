@@ -12,8 +12,9 @@ from drift.models.sklearn import SKLearnModel
 from drift.transformations.sklearn import SKLearnFeatureSelector, SKLearnTransformation
 
 from ..models.base import Model
-from ..models.ensemble import Ensemble
+from ..models.ensemble import Ensemble, PerColumnEnsemble
 from ..transformations.base import Transformation, Transformations
+from ..transformations.columns import PerColumnTransform
 from ..transformations.concat import Concat
 from ..transformations.function import FunctionTransformation
 from ..transformations.target import TransformTarget
@@ -59,6 +60,14 @@ def process_pipeline(
             return Concat(
                 process_pipeline(transformation.get_child_transformations()),
                 if_duplicate_keep=transformation.if_duplicate_keep,
+            )
+        elif isinstance(transformation, PerColumnEnsemble):
+            return PerColumnEnsemble(
+                process_pipeline(transformation.get_child_transformations()),
+            )
+        elif isinstance(transformation, PerColumnTransform):
+            return PerColumnTransform(
+                process_pipeline(transformation.get_child_transformations()),
             )
         elif isinstance(transformation, TransformTarget):
             return TransformTarget(

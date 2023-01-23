@@ -1,5 +1,5 @@
 from .base import Transformation
-from .columns import SelectColumns, TransformColumn
+from .columns import PerColumnTransform, SelectColumns, TransformColumn
 from .concat import Concat
 from .function import FunctionTransformation
 from .identity import Identity

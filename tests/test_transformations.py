@@ -5,7 +5,11 @@ from drift.loop import infer, train
 from drift.splitters import ExpandingWindowSplitter
 from drift.transformations import Identity, SelectColumns
 from drift.transformations.base import Transformation
-from drift.transformations.columns import RenameColumns, TransformColumn
+from drift.transformations.columns import (
+    PerColumnTransform,
+    RenameColumns,
+    TransformColumn,
+)
 from drift.transformations.target import TransformTarget
 from tests.utils import generate_sine_wave_data
 
@@ -131,3 +135,22 @@ def test_target_transformation() -> None:
     transformations_over_time = train(transformations, X, y, splitter)
     _, pred = infer(transformations_over_time, X, splitter)
     assert np.all(np.isclose((X.squeeze()[pred.index]).values, pred.values))
+
+
+def test_per_column_transform() -> None:
+
+    X = generate_sine_wave_data()
+    X["sine_2"] = X["sine"] + 1.0
+    X["sine_3"] = X["sine"] + 2.0
+    X["sine_4"] = X["sine"] + 3.0
+    y = X.shift(-1)
+
+    splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
+    transformations = [
+        PerColumnTransform([lambda x: x + 1.0]),
+        lambda x: x.sum(axis=1),
+    ]
+
+    transformations_over_time = train(transformations, X, y, splitter)
+    _, pred = infer(transformations_over_time, X, splitter)
+    assert np.all(np.isclose((X.loc[pred.index].sum(axis=1) + 4.0).values, pred.values))

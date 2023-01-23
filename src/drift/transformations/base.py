@@ -37,12 +37,16 @@ class Composite(ABC):
     def get_child_transformations(self) -> Transformations:
         raise NotImplementedError
 
-    def preprocess_X(self, X: pd.DataFrame) -> pd.DataFrame:
+    def before_fit(self, X: pd.DataFrame) -> None:
+        pass
+
+    def preprocess_X(self, X: pd.DataFrame, index: int) -> pd.DataFrame:
         return X
 
     def preprocess_y(self, y: pd.Series) -> pd.Series:
         return y
 
+    @abstractmethod
     def postprocess_result(self, results: List[pd.DataFrame]) -> pd.DataFrame:
         raise NotImplementedError
 

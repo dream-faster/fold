@@ -5,11 +5,12 @@ import pandas as pd
 from sklearn.base import BaseEstimator
 from tqdm import tqdm
 
+from drift.transformations.columns import PerColumnTransform
 from drift.transformations.target import TransformTarget
 
 from ..all_types import TransformationsOverTime
 from ..models.base import Model
-from ..models.ensemble import Ensemble
+from ..models.ensemble import Ensemble, PerColumnEnsemble
 from ..splitters import Split, Splitter
 from ..transformations.base import Composite, Transformation, Transformations
 from ..transformations.concat import Concat
@@ -88,6 +89,20 @@ def deepcopy_transformations(
             deepcopy_transformations(transformation.X_transformations),
             deepcopy_transformations(transformation.y_transformation),
         )
+    elif isinstance(transformation, PerColumnEnsemble):
+        return PerColumnEnsemble(
+            [
+                deepcopy_transformations(c)
+                for c in transformation.get_child_transformations()
+            ]
+        )
+    elif isinstance(transformation, PerColumnTransform):
+        return PerColumnTransform(
+            [
+                deepcopy_transformations(c)
+                for c in transformation.get_child_transformations()
+            ]
+        )
     else:
         return deepcopy(transformation)
 
@@ -106,13 +121,16 @@ def recursively_fit_transform(
 
     elif isinstance(transformations, Composite):
         # TODO: here we have the potential to parallelize/distribute training of child transformations
+        transformations.before_fit(X)
         results = [
             recursively_fit_transform(
-                transformations.preprocess_X(X),
+                transformations.preprocess_X(X, index),
                 transformations.preprocess_y(y),
                 child_transformation,
             )
-            for child_transformation in transformations.get_child_transformations()
+            for index, child_transformation in enumerate(
+                transformations.get_child_transformations()
+            )
         ]
         return transformations.postprocess_result(results)
 
