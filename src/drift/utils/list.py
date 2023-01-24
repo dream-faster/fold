@@ -19,3 +19,7 @@ def keep_only_duplicates(input: List) -> List:
 
 def has_intersection(lhs: List, rhs: List) -> bool:
     return len(set(lhs).intersection(rhs)) > 0
+
+
+def shift(input: List, n: int) -> List:
+    return input[n:] + input[:n]
