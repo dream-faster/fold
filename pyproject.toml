@@ -90,3 +90,9 @@ exclude = [
   "/.gitignore",
   "/tests",
 ]
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "src"
+]
+testpaths = ["tests"]
