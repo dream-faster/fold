@@ -1,6 +1,6 @@
-from src.drift.loop import infer, train
-from src.drift.models import Baseline, BaselineStrategy
-from src.drift.splitters import ExpandingWindowSplitter
+from drift.loop import infer, train
+from drift.models import Baseline, BaselineStrategy
+from drift.splitters import ExpandingWindowSplitter
 from tests.utils import generate_sine_wave_data
 
 
