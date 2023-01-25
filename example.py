@@ -8,8 +8,7 @@ from drift.models import Baseline, BaselineStrategy, Ensemble
 from drift.splitters import ExpandingWindowSplitter
 from drift.transformations import Concat, Identity, SelectColumns
 from drift.transformations.columns import TransformColumn
-
-from .utils import generate_sine_wave_data
+from drift.utils.tests import generate_sine_wave_data
 
 
 def test_baseline_naive_model() -> None:

@@ -3,8 +3,7 @@ from typing import List, Union
 
 import pandas as pd
 
-from drift.utils.list import flatten, has_intersection, keep_only_duplicates
-
+from ..utils.list import flatten, has_intersection, keep_only_duplicates
 from .base import Composite, Transformations
 
 
