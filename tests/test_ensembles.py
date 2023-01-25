@@ -8,7 +8,7 @@ from drift.transformations import Identity, SelectColumns
 from drift.transformations.base import Transformation
 from drift.transformations.columns import RenameColumns, TransformColumn
 from drift.transformations.target import TransformTarget
-from tests.utils import generate_sine_wave_data
+from drift.utils.tests import generate_sine_wave_data
 
 
 def test_ensemble() -> None:

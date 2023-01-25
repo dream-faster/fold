@@ -11,7 +11,7 @@ from drift.transformations.columns import (
     TransformColumn,
 )
 from drift.transformations.target import TransformTarget
-from tests.utils import generate_sine_wave_data
+from drift.utils.tests import generate_sine_wave_data
 
 
 def test_no_transformation() -> None:
