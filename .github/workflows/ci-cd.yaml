@@ -1,5 +1,6 @@
 name: ci-cd
 
+
 on:
   workflow_dispatch:
   push:
@@ -11,6 +12,7 @@ jobs:
 
   run-tests:
     runs-on: ubuntu-latest
+    environment: CI
 
     steps:
       - name: checkout
