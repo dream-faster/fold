@@ -29,12 +29,9 @@ jobs:
           pip install ".[tests]"
 
       - name: run-tests
-        run: pytest . -s -cov --durations 0
-      - name: Upload coverage reports to Codecov
-        run: |
-          curl -Os https://uploader.codecov.io/latest/linux/codecov
-          chmod +x codecov
-          ./codecov -t ${CODECOV_TOKEN}
+        run: pytest . -s --cov --durations 0
+
+      - uses: codecov/codecov-action@v3
 
   publish-package:
     needs: run-tests
