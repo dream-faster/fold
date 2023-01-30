@@ -8,6 +8,7 @@ class SKLearnTransformation(Transformation):
         if hasattr(transformation, "set_output"):
             transformation = transformation.set_output(transform="pandas")
         self.transformation = transformation
+        self.name = transformation.__class__.__name__
 
     def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
         self.transformation.fit(X, y)
