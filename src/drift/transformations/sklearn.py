@@ -16,19 +16,13 @@ class SKLearnTransformation(Transformation):
         if hasattr(self.transformation, "set_output"):
             return self.transformation.transform(X)
         else:
-            return pd.DataFrame(
-                self.transformation.transform(X),
-                columns=self.transformation.get_feature_names_out(),
-            )
+            return pd.DataFrame(self.transformation.transform(X), columns=X.columns)
 
     def inverse_transform(self, X: pd.DataFrame) -> pd.DataFrame:
         if hasattr(self.transformation, "set_output"):
             return self.transformation.inverse_transform(X)
         else:
-            return pd.DataFrame(
-                self.transformation.transform(X),
-                columns=self.transformation.get_feature_names_out(),
-            )
+            return pd.DataFrame(self.transformation.transform(X), columns=X.columns)
 
 
 class SKLearnFeatureSelector(FeatureSelector):
