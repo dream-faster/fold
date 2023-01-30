@@ -40,7 +40,12 @@ class SKLearnFeatureSelector(FeatureSelector):
 
     def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
         self.transformation.fit(X, y)
-        self.selected_features = self.transformation.get_feature_names_out()
+        if hasattr(self.transformation, "get_feature_names_out"):
+            self.selected_features = self.transformation.get_feature_names_out()
+        else:
+            self.selected_features = X.columns[
+                self.transformation.get_support()
+            ].to_list()
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
         return X[self.selected_features]
