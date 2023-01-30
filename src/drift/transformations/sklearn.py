@@ -13,7 +13,7 @@ class SKLearnTransformation(Transformation):
         self.transformation.fit(X, y)
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
-        if hasattr(transformation, "set_output"):
+        if hasattr(self.transformation, "set_output"):
             return self.transformation.transform(X)
         else:
             return pd.DataFrame(
