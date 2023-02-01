@@ -21,7 +21,9 @@ class TransformTarget(Composite):
         )
 
     def preprocess_y(self, y: pd.Series) -> pd.Series:
-        return self.y_transformation.fit_transform(X=y.to_frame(), y=None)
+        if isinstance(y, pd.Series):
+            y = y.to_frame()
+        return self.y_transformation.fit_transform(X=y, y=None)
 
     def postprocess_result(self, results: List[pd.DataFrame]) -> pd.DataFrame:
         return self.y_transformation.inverse_transform(results[0])
