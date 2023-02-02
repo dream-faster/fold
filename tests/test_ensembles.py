@@ -1,5 +1,4 @@
 import numpy as np
-from sklearn.feature_selection import SelectKBest, VarianceThreshold, f_regression
 
 from drift.loop import infer, train
 from drift.models.ensemble import Ensemble, PerColumnEnsemble
