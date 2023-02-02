@@ -37,18 +37,26 @@ class Composite(ABC):
     def get_child_transformations(self) -> Transformations:
         raise NotImplementedError
 
+    @abstractmethod
+    def postprocess_result(
+        self, results: List[pd.DataFrame], for_inference: bool
+    ) -> pd.DataFrame:
+        raise NotImplementedError
+
+    @abstractmethod
+    def clone(self, clone_child_transformations: Callable) -> Composite:
+        raise NotImplementedError
+
     def before_fit(self, X: pd.DataFrame) -> None:
         pass
 
-    def preprocess_X(self, X: pd.DataFrame, index: int) -> pd.DataFrame:
+    def preprocess_X(
+        self, X: pd.DataFrame, index: int, for_inference: bool
+    ) -> pd.DataFrame:
         return X
 
     def preprocess_y(self, y: pd.Series) -> pd.Series:
         return y
-
-    @abstractmethod
-    def postprocess_result(self, results: List[pd.DataFrame]) -> pd.DataFrame:
-        raise NotImplementedError
 
 
 Transformations = Union[

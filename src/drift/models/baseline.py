@@ -36,7 +36,7 @@ class Baseline(Model):
         self.fitted_X = X
 
     def predict(self, X: pd.DataFrame) -> pd.Series:
-        extended_X = pd.concat([self.fitted_X, X], axis=0)
+        # extended_X = pd.concat([self.fitted_X, X], axis=0)
 
         def wrap_into_series(x: np.ndarray) -> pd.Series:
             return pd.Series(x, index=X.index)

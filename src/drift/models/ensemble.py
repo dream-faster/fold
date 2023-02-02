@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import List
+from typing import Callable, List
 
 import pandas as pd
 
@@ -22,6 +22,11 @@ class Ensemble(Composite):
     def get_child_transformations(self) -> Transformations:
         return self.models
 
+    def clone(self, clone_child_transformations: Callable) -> Composite:
+        return Ensemble(
+            models=clone_child_transformations(self.models),
+        )
+
 
 class PerColumnEnsemble(Composite):
     def __init__(self, models: Transformations) -> None:
@@ -36,7 +41,9 @@ class PerColumnEnsemble(Composite):
     def before_fit(self, X: pd.DataFrame) -> None:
         self.models = [deepcopy(self.models) for _ in X.columns]
 
-    def preprocess_X(self, X: pd.DataFrame, index: int) -> pd.DataFrame:
+    def preprocess_X(
+        self, X: pd.DataFrame, index: int, for_inference: bool
+    ) -> pd.DataFrame:
         return X.iloc[:, index].to_frame()
 
     def postprocess_result(self, results: List[pd.DataFrame]) -> pd.DataFrame:
@@ -44,3 +51,8 @@ class PerColumnEnsemble(Composite):
 
     def get_child_transformations(self) -> Transformations:
         return self.models
+
+    def clone(self, clone_child_transformations: Callable) -> Composite:
+        return PerColumnEnsemble(
+            models=clone_child_transformations(self.models),
+        )

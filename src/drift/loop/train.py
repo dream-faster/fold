@@ -5,15 +5,10 @@ import pandas as pd
 from sklearn.base import BaseEstimator
 from tqdm import tqdm
 
-from drift.transformations.columns import PerColumnTransform
-from drift.transformations.target import TransformTarget
-
 from ..all_types import TransformationsOverTime
 from ..models.base import Model
-from ..models.ensemble import Ensemble, PerColumnEnsemble
 from ..splitters import Split, Splitter
 from ..transformations.base import Composite, Transformation, Transformations
-from ..transformations.concat import Concat
 from .convenience import process_pipeline
 
 
@@ -69,40 +64,8 @@ def deepcopy_transformations(
 ) -> Union[Transformation, Composite, List[Union[Transformation, Composite]]]:
     if isinstance(transformation, List):
         return [deepcopy_transformations(t) for t in transformation]
-    elif isinstance(transformation, Concat):
-        return Concat(
-            [
-                deepcopy_transformations(c)
-                for c in transformation.get_child_transformations()
-            ],
-            if_duplicate_keep=transformation.if_duplicate_keep,
-        )
-    elif isinstance(transformation, Ensemble):
-        return Ensemble(
-            [
-                deepcopy_transformations(c)
-                for c in transformation.get_child_transformations()
-            ]
-        )
-    elif isinstance(transformation, TransformTarget):
-        return TransformTarget(
-            deepcopy_transformations(transformation.X_transformations),
-            deepcopy_transformations(transformation.y_transformation),
-        )
-    elif isinstance(transformation, PerColumnEnsemble):
-        return PerColumnEnsemble(
-            [
-                deepcopy_transformations(c)
-                for c in transformation.get_child_transformations()
-            ]
-        )
-    elif isinstance(transformation, PerColumnTransform):
-        return PerColumnTransform(
-            [
-                deepcopy_transformations(c)
-                for c in transformation.get_child_transformations()
-            ]
-        )
+    elif isinstance(transformation, Composite):
+        return transformation.clone(deepcopy_transformations)
     else:
         return deepcopy(transformation)
 
@@ -124,7 +87,7 @@ def recursively_fit_transform(
         transformations.before_fit(X)
         results = [
             recursively_fit_transform(
-                transformations.preprocess_X(X, index),
+                transformations.preprocess_X(X, index, for_inference=False),
                 transformations.preprocess_y(y),
                 child_transformation,
             )

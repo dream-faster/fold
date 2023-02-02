@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import List, Optional, Union
+from typing import Callable, List, Optional, Union
 
 import pandas as pd
 
@@ -70,7 +70,9 @@ class PerColumnTransform(Composite):
     def before_fit(self, X: pd.DataFrame) -> None:
         self.transformations = [deepcopy(self.transformations) for _ in X.columns]
 
-    def preprocess_X(self, X: pd.DataFrame, index: int) -> pd.DataFrame:
+    def preprocess_X(
+        self, X: pd.DataFrame, index: int, for_inference: bool
+    ) -> pd.DataFrame:
         return X.iloc[:, index].to_frame()
 
     def postprocess_result(self, results: List[pd.DataFrame]) -> pd.DataFrame:
@@ -78,3 +80,8 @@ class PerColumnTransform(Composite):
 
     def get_child_transformations(self) -> Transformations:
         return self.transformations
+
+    def clone(self, clone_child_transformations: Callable) -> Composite:
+        return PerColumnTransform(
+            transformations=clone_child_transformations(self.transformations),
+        )
