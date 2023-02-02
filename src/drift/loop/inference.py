@@ -67,7 +67,7 @@ def recursively_transform(
         # TODO: here we have the potential to parallelize/distribute training of child transformations
         results = [
             recursively_transform(
-                transformations.preprocess_X(X, index), child_transformation
+                transformations.preprocess_X(X, index, for_inference=True), child_transformation
             )
             for index, child_transformation in enumerate(
                 transformations.get_child_transformations()

@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Union
+from typing import Callable, List, Union
 
 import pandas as pd
 
@@ -52,3 +52,9 @@ class Concat(Composite):
 
     def get_child_transformations(self) -> Transformations:
         return self.transformations
+
+    def clone(self, clone_child_transformations: Callable) -> Composite:
+        return Concat(
+            transformations=clone_child_transformations(self.transformations),
+            if_duplicate_keep=self.if_duplicate_keep,
+        )
