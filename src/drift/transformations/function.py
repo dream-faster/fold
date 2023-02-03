@@ -15,3 +15,6 @@ class FunctionTransformation(Transformation):
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
         return self.func(X)
+
+    def inverse_transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        return X
