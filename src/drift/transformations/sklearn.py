@@ -20,7 +20,9 @@ class SKLearnTransformation(Transformation):
             return pd.DataFrame(self.transformation.transform(X), columns=X.columns)
 
     def inverse_transform(self, X: pd.DataFrame) -> pd.DataFrame:
-        return pd.DataFrame(self.transformation.inverse_transform(X), columns=X.columns, index=X.index)
+        return pd.DataFrame(
+            self.transformation.inverse_transform(X), columns=X.columns, index=X.index
+        )
 
 
 class SKLearnFeatureSelector(FeatureSelector):
