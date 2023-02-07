@@ -1,4 +1,4 @@
-from drift.loop import infer, train
+from drift.loop import backtest, train
 from drift.models import Baseline, BaselineStrategy
 from drift.splitters import ExpandingWindowSplitter
 from drift.utils.tests import generate_sine_wave_data
@@ -14,5 +14,5 @@ def test_loop() -> None:
     transformations = [Baseline(strategy=BaselineStrategy.naive)]
 
     transformations_over_time = train(transformations, X, y, splitter)
-    _, pred = infer(transformations_over_time, X, splitter)
+    _, pred = backtest(transformations_over_time, X, y, splitter)
     assert (X.squeeze()[pred.index] == pred).all()

@@ -6,6 +6,9 @@ from .base import Transformation
 
 
 class ToUnivariate(Transformation):
+
+    properties = Transformation.Properties(requires_past_X=True)
+
     def __init__(self, lag_column: str) -> None:
         self.lag_column = lag_column
         self.name = f"UnivariateWrapper-{lag_column}"

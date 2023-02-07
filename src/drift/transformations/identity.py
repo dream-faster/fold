@@ -7,6 +7,8 @@ from .base import Transformation
 
 class Identity(Transformation):
 
+    properties = Transformation.Properties(requires_past_X=False)
+
     name = "Identity"
 
     def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None) -> None:

@@ -1,6 +1,6 @@
 import numpy as np
 
-from drift.loop import infer, train
+from drift.loop import backtest, train
 from drift.models.ensemble import Ensemble, PerColumnEnsemble
 from drift.splitters import ExpandingWindowSplitter
 from drift.utils.tests import generate_sine_wave_data
@@ -25,7 +25,7 @@ def test_ensemble() -> None:
     ]
 
     transformations_over_time = train(transformations, X, y, splitter)
-    _, pred = infer(transformations_over_time, X, splitter)
+    _, pred = backtest(transformations_over_time, X, y, splitter)
     assert np.all(np.isclose((X.squeeze()[pred.index]).values, (pred + 2.0).values))
 
 
@@ -43,5 +43,5 @@ def test_per_column_transform() -> None:
     ]
 
     transformations_over_time = train(transformations, X, y, splitter)
-    _, pred = infer(transformations_over_time, X, splitter)
+    _, pred = backtest(transformations_over_time, X, y, splitter)
     assert np.all(np.isclose((X["sine"][pred.index] + 2.5).values, pred.values))
