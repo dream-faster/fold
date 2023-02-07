@@ -3,7 +3,6 @@ from typing import Callable, List, Union
 
 import pandas as pd
 from sklearn.base import BaseEstimator
-from tqdm import tqdm
 
 from ..all_types import TransformationsOverTime
 from ..models.base import Model
