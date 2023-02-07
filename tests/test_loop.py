@@ -1,5 +1,5 @@
 from drift.loop import backtest, train
-from drift.models import Baseline, BaselineStrategy
+from drift.models import Baseline
 from drift.splitters import ExpandingWindowSplitter
 from drift.utils.tests import generate_sine_wave_data
 
@@ -11,7 +11,7 @@ def test_loop() -> None:
     y = X["sine"].shift(-1)
 
     splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
-    transformations = [Baseline(strategy=BaselineStrategy.naive)]
+    transformations = [Baseline(strategy=Baseline.Strategy.naive)]
 
     transformations_over_time = train(transformations, X, y, splitter)
     _, pred = backtest(transformations_over_time, X, y, splitter)
