@@ -1,29 +1,30 @@
+from __future__ import annotations
+
 from enum import Enum
 from typing import Optional
 
 import numpy as np
 import pandas as pd
 
+from ..transformations.base import Transformation
 from .base import Model
 
 
-class BaselineStrategy(Enum):
-    sliding_mean = "sliding_mean"
-    expanding_mean = "expanding_mean"
-    seasonal_mean = "seasonal_mean"
-    naive = "naive"
-    seasonal_naive = "seasonal_naive"
-    expanding_drift = "drift"
-    sliding_drift = "sliding_drift"
-
-
 class Baseline(Model):
+    class Strategy(Enum):
+        sliding_mean = "sliding_mean"
+        expanding_mean = "expanding_mean"
+        seasonal_mean = "seasonal_mean"
+        naive = "naive"
+        seasonal_naive = "seasonal_naive"
+        expanding_drift = "drift"
+        sliding_drift = "sliding_drift"
 
-    strategies = BaselineStrategy
+    properties = Transformation.Properties(requires_past_X=False)
 
     def __init__(
         self,
-        strategy: BaselineStrategy,
+        strategy: Strategy,
         window_size: int = 100,
         seasonal_length: Optional[int] = None,
     ) -> None:
@@ -36,23 +37,21 @@ class Baseline(Model):
         self.fitted_X = X
 
     def predict(self, X: pd.DataFrame) -> pd.Series:
-        # extended_X = pd.concat([self.fitted_X, X], axis=0)
-
         def wrap_into_series(x: np.ndarray) -> pd.Series:
             return pd.Series(x, index=X.index)
 
-        if self.strategy == BaselineStrategy.sliding_mean:
+        if self.strategy == Baseline.Strategy.sliding_mean:
             return wrap_into_series(
                 [
                     np.mean(X.values[max(i - self.window_size, 0) : i + 1])
                     for i in range(len(X))
                 ]
             )
-        elif self.strategy == BaselineStrategy.expanding_mean:
+        elif self.strategy == Baseline.Strategy.expanding_mean:
             return wrap_into_series([np.mean(X.values[: i + 1]) for i in range(len(X))])
-        elif self.strategy == BaselineStrategy.naive:
+        elif self.strategy == Baseline.Strategy.naive:
             return X
-        elif self.strategy == BaselineStrategy.sliding_drift:
+        elif self.strategy == Baseline.Strategy.sliding_drift:
             return wrap_into_series(
                 [
                     calculate_drift_predictions(
@@ -61,11 +60,11 @@ class Baseline(Model):
                     for i in range(len(X))
                 ]
             )
-        elif self.strategy == BaselineStrategy.expanding_drift:
+        elif self.strategy == Baseline.Strategy.expanding_drift:
             return wrap_into_series(
                 [calculate_drift_predictions(X.values[: i + 1]) for i in len(X)]
             )
-        elif self.strategy == BaselineStrategy.seasonal_naive:
+        elif self.strategy == Baseline.Strategy.seasonal_naive:
             if self.seasonal_length is None:
                 raise ValueError(
                     "Seasonal length must be specified for seasonal naive strategy"
@@ -78,7 +77,7 @@ class Baseline(Model):
                 : self.seasonal_length
             ]
             return wrap_into_series(seasonally_shifted)
-        elif self.strategy == BaselineStrategy.seasonal_mean:
+        elif self.strategy == Baseline.Strategy.seasonal_mean:
             if self.seasonal_length is None:
                 raise ValueError(
                     "Seasonal length must be specified for seasonal naive strategy"

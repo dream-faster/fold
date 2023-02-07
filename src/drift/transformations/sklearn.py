@@ -4,6 +4,9 @@ from .base import FeatureSelector, Transformation
 
 
 class SKLearnTransformation(Transformation):
+
+    properties = Transformation.Properties(requires_past_X=False)
+
     def __init__(self, transformation) -> None:
         if hasattr(transformation, "set_output"):
             transformation = transformation.set_output(transform="pandas")
@@ -26,6 +29,9 @@ class SKLearnTransformation(Transformation):
 
 
 class SKLearnFeatureSelector(FeatureSelector):
+
+    properties = Transformation.Properties(requires_past_X=False)
+
     def __init__(self, transformation) -> None:
         if hasattr(transformation, "set_output"):
             transformation = transformation.set_output(transform="pandas")

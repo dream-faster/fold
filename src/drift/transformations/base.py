@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from typing import Callable, List, Optional, Union
 
 import pandas as pd
@@ -11,7 +12,7 @@ class Transformation(ABC):
     name: str
 
     @abstractmethod
-    def fit(self, X: pd.DataFrame, y: Optional[pd.Series]) -> None:
+    def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None) -> None:
         raise NotImplementedError
 
     @abstractmethod
@@ -21,11 +22,9 @@ class Transformation(ABC):
     def inverse_transform(self, X: pd.DataFrame) -> pd.DataFrame:
         raise NotImplementedError
 
-    def fit_transform(
-        self, X: pd.DataFrame, y: Optional[pd.Series] = None
-    ) -> pd.DataFrame:
-        self.fit(X, y)
-        return self.transform(X)
+    @dataclass
+    class Properties:
+        requires_past_X: bool  # ignored for now, assumed always True
 
 
 class FeatureSelector(Transformation):

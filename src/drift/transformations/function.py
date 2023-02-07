@@ -6,6 +6,9 @@ from .base import Transformation
 
 
 class FunctionTransformation(Transformation):
+
+    properties = Transformation.Properties(requires_past_X=False)
+
     def __init__(self, func: Callable) -> None:
         self.func = func
         self.name = func.__name__

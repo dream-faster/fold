@@ -10,6 +10,9 @@ from .identity import Identity
 
 
 class SelectColumns(Transformation):
+
+    properties = Transformation.Properties(requires_past_X=False)
+
     def __init__(self, columns: Union[List[str], str]) -> None:
         self.columns = wrap_in_list(columns)
         self.name = f"SelectColumns-{columns}"
@@ -22,6 +25,9 @@ class SelectColumns(Transformation):
 
 
 class DropColumns(Transformation):
+
+    properties = Transformation.Properties(requires_past_X=False)
+
     def __init__(self, columns: Union[List[str], str]) -> None:
         self.columns = wrap_in_list(columns)
         self.name = f"DropColumns-{columns}"
@@ -34,6 +40,8 @@ class DropColumns(Transformation):
 
 
 class RenameColumns(Transformation):
+    properties = Transformation.Properties(requires_past_X=False)
+
     def __init__(self, columns_mapper: dict) -> None:
         self.columns_mapper = columns_mapper
         self.name = "RenameColumns"

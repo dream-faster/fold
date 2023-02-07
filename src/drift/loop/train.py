@@ -3,12 +3,12 @@ from typing import Callable, List, Union
 
 import pandas as pd
 from sklearn.base import BaseEstimator
-from tqdm import tqdm
 
 from ..all_types import TransformationsOverTime
 from ..models.base import Model
 from ..splitters import Split, Splitter
 from ..transformations.base import Composite, Transformation, Transformations
+from .backend.sequential import process_transformations
 from .convenience import process_pipeline
 
 
@@ -23,13 +23,12 @@ def train(
 
     transformations = process_pipeline(transformations)
 
-    # easy to parallize this with ray
-    processed_transformations = [
-        __process_transformations_window(X, y, transformations, split)
-        for split in tqdm(splitter.splits(length=len(y)))
-    ]
+    splits = splitter.splits(length=len(y))
+    processed = process_transformations(
+        process_transformations_window, transformations, X, y, splits
+    )
 
-    idx, only_transformations = zip(*processed_transformations)
+    idx, only_transformations = zip(*processed)
 
     return [
         pd.Series(
@@ -41,7 +40,7 @@ def train(
     ]
 
 
-def __process_transformations_window(
+def process_transformations_window(
     X: pd.DataFrame,
     y: pd.Series,
     transformations: List[Transformation],
@@ -70,7 +69,6 @@ def deepcopy_transformations(
         return deepcopy(transformation)
 
 
-# enables recursive execution
 def recursively_fit_transform(
     X: pd.DataFrame,
     y: pd.Series,
