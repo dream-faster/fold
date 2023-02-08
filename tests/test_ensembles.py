@@ -41,7 +41,10 @@ def test_per_column_transform() -> None:
     splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
     transformations = [
         PerColumnEnsemble(
-            lambda x: (x + 1.0).squeeze().rename(f"predictions_{randint(1, 1000)}").to_frame()
+            lambda x: (x + 1.0)
+            .squeeze()
+            .rename(f"predictions_{randint(1, 1000)}")
+            .to_frame()
         ),
     ]
 

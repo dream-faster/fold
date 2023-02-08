@@ -1,10 +1,10 @@
 from .base import Transformation
 from .columns import (
+    OnlyPredictions,
+    OnlyProbabilities,
     PerColumnTransform,
     SelectColumns,
     TransformColumn,
-    OnlyPredictions,
-    OnlyProbabilities,
 )
 from .concat import Concat
 from .function import FunctionTransformation
