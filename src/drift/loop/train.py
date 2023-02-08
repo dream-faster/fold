@@ -4,12 +4,14 @@ from typing import Callable, List, Union
 import pandas as pd
 from sklearn.base import BaseEstimator
 
+from drift.utils.list import wrap_in_list
+
 from ..all_types import TransformationsOverTime
 from ..models.base import Model
 from ..splitters import Split, Splitter
 from ..transformations.base import Composite, Transformation, Transformations
 from .backend.sequential import process_transformations
-from .convenience import process_pipeline
+from .convenience import replace_transformation_if_not_drift_native
 
 
 def train(
@@ -21,7 +23,10 @@ def train(
     splitter: Splitter,
 ) -> TransformationsOverTime:
 
-    transformations = process_pipeline(transformations)
+    transformations = wrap_in_list(transformations)
+    transformations: Transformations = replace_transformation_if_not_drift_native(
+        transformations
+    )
 
     splits = splitter.splits(length=len(y))
     processed = process_transformations(

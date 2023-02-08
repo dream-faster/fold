@@ -1,5 +1,11 @@
 from .base import Transformation
-from .columns import PerColumnTransform, SelectColumns, TransformColumn
+from .columns import (
+    OnlyPredictions,
+    OnlyProbabilities,
+    PerColumnTransform,
+    SelectColumns,
+    TransformColumn,
+)
 from .concat import Concat
 from .function import FunctionTransformation
 from .identity import Identity

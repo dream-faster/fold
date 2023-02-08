@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Optional
+from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -20,18 +20,28 @@ class Baseline(Model):
         expanding_drift = "drift"
         sliding_drift = "sliding_drift"
 
+        @staticmethod
+        def from_str(value: Union[str, Baseline.Strategy]) -> Baseline.Strategy:
+            if isinstance(value, Baseline.Strategy):
+                return value
+            for strategy in Baseline.Strategy:
+                if strategy.value == value:
+                    return strategy
+            else:
+                raise ValueError(f"Unknown Strategy: {value}")
+
     properties = Transformation.Properties(requires_past_X=False)
 
     def __init__(
         self,
-        strategy: Strategy,
+        strategy: Union[Baseline.Strategy, str],
         window_size: int = 100,
         seasonal_length: Optional[int] = None,
     ) -> None:
-        self.strategy = strategy
+        self.strategy = Baseline.Strategy.from_str(strategy)
         self.window_size = window_size
         self.seasonal_length = seasonal_length
-        self.name = f"BaselineModel-{strategy.value}"
+        self.name = f"BaselineModel-{self.strategy.value}"
 
     def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
         self.fitted_X = X

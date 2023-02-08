@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import enum
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Callable, List, Optional, Union
@@ -24,7 +25,12 @@ class Transformation(ABC):
 
     @dataclass
     class Properties:
+        class ModelType(enum.Enum):
+            regressor = "regressor"
+            classifier = "classifier"
+
         requires_past_X: bool  # ignored for now, assumed always True
+        model_type: Optional[ModelType] = None
 
 
 class FeatureSelector(Transformation):
