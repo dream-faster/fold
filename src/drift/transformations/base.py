@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Callable, List, Optional, Union
 
 import pandas as pd
+from typing_extensions import Literal
 
 
 class Transformation(ABC):
@@ -25,6 +26,7 @@ class Transformation(ABC):
     @dataclass
     class Properties:
         requires_past_X: bool  # ignored for now, assumed always True
+        model_type: Optional[Literal["regressor", "classifier"]] = None
 
 
 class FeatureSelector(Transformation):

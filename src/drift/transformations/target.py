@@ -10,13 +10,12 @@ class TransformTarget(Composite):
     def __init__(
         self, X_transformations: Transformations, y_transformation: Transformation
     ) -> None:
-        self.X_transformations = [X_transformations]
+        self.X_transformations = wrap_in_list(X_transformations)
         self.y_transformation = y_transformation
         self.name = "TransformTarget-" + "-".join(
             [
                 transformation.name if hasattr(transformation, "name") else ""
-                for transformation in wrap_in_list(X_transformations)
-                + [y_transformation]
+                for transformation in self.X_transformations + [y_transformation]
             ]
         )
 

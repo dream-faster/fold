@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from enum import Enum
 from typing import Callable, List, Union
 
@@ -12,6 +14,16 @@ class ResolutionStrategy(Enum):
     right = "right"
     both = "both"
 
+    @staticmethod
+    def from_str(value: Union[str, ResolutionStrategy]) -> ResolutionStrategy:
+        if isinstance(value, ResolutionStrategy):
+            return value
+        for strategy in ResolutionStrategy:
+            if strategy.value == value:
+                return strategy
+        else:
+            raise ValueError(f"Unknown ResolutionStrategy: {value}")
+
 
 class Concat(Composite):
     def __init__(
@@ -20,7 +32,7 @@ class Concat(Composite):
         if_duplicate_keep: Union[ResolutionStrategy, str] = ResolutionStrategy.both,
     ) -> None:
         self.transformations = transformations
-        self.if_duplicate_keep = if_duplicate_keep
+        self.if_duplicate_keep = ResolutionStrategy.from_str(if_duplicate_keep)
         self.name = "Concat-" + "-".join(
             [
                 transformation.name if hasattr(transformation, "name") else ""

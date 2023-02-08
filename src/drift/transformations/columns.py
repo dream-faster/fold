@@ -67,7 +67,7 @@ def TransformColumn(
 
 class PerColumnTransform(Composite):
     def __init__(self, transformations: Transformations) -> None:
-        self.transformations = transformations
+        self.transformations = wrap_in_list(transformations)
         self.name = "PerColumnTransform-" + "-".join(
             [
                 transformation.name if hasattr(transformation, "name") else ""
@@ -92,4 +92,34 @@ class PerColumnTransform(Composite):
     def clone(self, clone_child_transformations: Callable) -> Composite:
         return PerColumnTransform(
             transformations=clone_child_transformations(self.transformations),
+        )
+
+
+class OnlyPredictions(Transformation):
+    properties = Transformation.Properties(requires_past_X=False)
+
+    def __init__(self) -> None:
+        self.name = "OnlyPredictions"
+
+    def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None) -> None:
+        pass
+
+    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        return X.drop(
+            columns=[col for col in X.columns if not col.startswith("predictions_")]
+        )
+
+
+class OnlyProbabilities(Transformation):
+    properties = Transformation.Properties(requires_past_X=False)
+
+    def __init__(self) -> None:
+        self.name = "OnlyProbabilities"
+
+    def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None) -> None:
+        pass
+
+    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        return X.drop(
+            columns=[col for col in X.columns if not col.startswith("probabilities_")]
         )

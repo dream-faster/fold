@@ -18,7 +18,7 @@ def test_no_transformation() -> None:
 
     # the naive model returns X as prediction, so y.shift(1) should be == pred
     X = generate_sine_wave_data()
-    y = X["sine"].shift(-1)
+    y = X["sine"].shift(-1).squeeze()
 
     splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
     transformations = [Identity()]
@@ -31,7 +31,7 @@ def test_no_transformation() -> None:
 def test_nested_transformations() -> None:
     X = generate_sine_wave_data()
     X["sine_2"] = X["sine"]
-    y = X["sine"].shift(-1)
+    y = X["sine"].shift(-1).squeeze()
 
     splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
     transformations = [
@@ -49,7 +49,7 @@ def test_nested_transformations_with_feature_selection() -> None:
     X["sine_2"] = X["sine"] + 1
     X["constant"] = 1.0
     X["constant2"] = 2.0
-    y = X["sine"].shift(-1)
+    y = X["sine"].shift(-1).squeeze()
 
     splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
     transformations = [
@@ -71,7 +71,7 @@ def test_column_select_single_column_transformation() -> None:
     # the naive model returns X as prediction, so y.shift(1) should be == pred
     X = generate_sine_wave_data()
     X["sine_2"] = X["sine"] + 1
-    y = X["sine"].shift(-1)
+    y = X["sine"].shift(-1).squeeze()
 
     splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
     transformations = [SelectColumns(columns=["sine_2"])]
@@ -85,7 +85,7 @@ def test_function_transformation() -> None:
 
     # the naive model returns X as prediction, so y.shift(1) should be == pred
     X = generate_sine_wave_data()
-    y = X.shift(-1)
+    y = X.shift(-1).squeeze()
 
     splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
     transformations = [lambda x: x - 1.0]
@@ -124,7 +124,7 @@ class TestIfAllYValuesBelow1(Transformation):
 def test_target_transformation() -> None:
 
     X = generate_sine_wave_data()
-    y = X.shift(-1)
+    y = X.shift(-1).squeeze()
 
     splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
     transformations = [
@@ -143,7 +143,7 @@ def test_per_column_transform() -> None:
     X["sine_2"] = X["sine"] + 1.0
     X["sine_3"] = X["sine"] + 2.0
     X["sine_4"] = X["sine"] + 3.0
-    y = X.shift(-1)
+    y = X.shift(-1).squeeze()
 
     splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
     transformations = [
