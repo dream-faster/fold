@@ -12,7 +12,7 @@ def generate_sine_wave_data(cycles: int = 2, resolution: int = 1000) -> pd.DataF
     ).to_frame()
 
 
-def generate_all_zeros(length: int) -> pd.DataFrame:
+def generate_all_zeros(length: int = 1000) -> pd.DataFrame:
     return pd.Series(
         [0] * length,
         index=pd.date_range(end="2022", periods=length, freq="m"),

@@ -123,9 +123,7 @@ def get_groupped_columns_classification(
         (
             pd.concat(
                 [
-                    df[
-                        [col for col in df.columns if col.endswith(selected_class)]
-                    ].squeeze()
+                    df[[col for col in df.columns if col.endswith(selected_class)]].squeeze()
                     for df in results
                 ],
                 axis=1,
