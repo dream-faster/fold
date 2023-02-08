@@ -94,15 +94,11 @@ def test_ensemble_classification() -> None:
     transformations_over_time = train(transformations, X, y, splitter)
     _, pred = backtest(transformations_over_time, X, y, splitter)
     assert (
-        pred[
-            "probabilities_Ensemble-DummyClassifier-DummyClassifier-DummyClassifier_1"
-        ]
+        pred["probabilities_Ensemble-DummyClassifier-DummyClassifier-DummyClassifier_1"]
         == 0.5
     ).all()
     assert (
-        pred[
-            "probabilities_Ensemble-DummyClassifier-DummyClassifier-DummyClassifier_0"
-        ]
+        pred["probabilities_Ensemble-DummyClassifier-DummyClassifier-DummyClassifier_0"]
         == 0.5
     ).all()
 
