@@ -7,7 +7,7 @@ from drift.transformations.base import Transformation
 class SKLearnClassifier(Model):
 
     properties = Transformation.Properties(
-        requires_past_X=False, model_type="classifier"
+        requires_past_X=False, model_type=Transformation.Properties.ModelType.classifier
     )
 
     def __init__(self, model) -> None:
@@ -36,7 +36,7 @@ class SKLearnClassifier(Model):
 class SKLearnRegressor(Model):
 
     properties = Transformation.Properties(
-        requires_past_X=False, model_type="regressor"
+        requires_past_X=False, model_type=Transformation.Properties.ModelType.regressor
     )
 
     def __init__(self, model) -> None:
