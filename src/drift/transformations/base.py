@@ -39,12 +39,22 @@ class FeatureSelector(Transformation):
 
 class Composite(ABC):
     @abstractmethod
-    def get_child_transformations(self) -> Transformations:
+    def get_child_transformations_primary(self) -> TransformationsAlwaysList:
         raise NotImplementedError
 
+    def get_child_transformations_secondary(
+        self,
+    ) -> Optional[TransformationsAlwaysList]:
+        return None
+
     @abstractmethod
-    def postprocess_result(
-        self, results: List[pd.DataFrame], for_inference: bool
+    def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
+        raise NotImplementedError
+
+    def postprocess_result_secondary(
+        self,
+        primary_results: List[pd.DataFrame],
+        secondary_results: List[pd.DataFrame],
     ) -> pd.DataFrame:
         raise NotImplementedError
 
@@ -55,12 +65,20 @@ class Composite(ABC):
     def before_fit(self, X: pd.DataFrame) -> None:
         pass
 
-    def preprocess_X(
-        self, X: pd.DataFrame, index: int, for_inference: bool
+    def preprocess_X_primary(self, X: pd.DataFrame, index: int) -> pd.DataFrame:
+        return X
+
+    def preprocess_X_secondary(
+        self, X: pd.DataFrame, results_primary: List[pd.DataFrame], index: int
     ) -> pd.DataFrame:
         return X
 
-    def preprocess_y(self, y: pd.Series) -> pd.Series:
+    def preprocess_y_primary(self, y: pd.Series) -> pd.Series:
+        return y
+
+    def preprocess_y_secondary(
+        self, y: pd.Series, results_primary: List[pd.DataFrame]
+    ) -> pd.Series:
         return y
 
 
@@ -70,3 +88,5 @@ Transformations = Union[
     Callable,
     List[Union[Transformation, Composite, Callable]],
 ]
+
+TransformationsAlwaysList = List[Union[Transformation, Composite, Callable]]
