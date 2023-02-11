@@ -4,6 +4,7 @@ from typing import Callable, List, Union
 import pandas as pd
 from sklearn.base import BaseEstimator
 
+from drift.utils.checks import is_prediction
 from drift.utils.list import wrap_in_list
 
 from ..all_types import TransformationsOverTime
@@ -98,6 +99,16 @@ def recursively_fit_transform(
                 transformations.get_child_transformations_primary()
             )
         ]
+
+        if transformations.properties.primary_only_single_pipeline:
+            assert len(results_primary) == 1, ValueError(
+                f"Expected single output from primary transformations, got {len(results_primary)} instead."
+            )
+        if transformations.properties.primary_requires_predictions:
+            assert is_prediction(results_primary[0]), ValueError(
+                "Expected predictions from primary transformations, but got something else."
+            )
+
         secondary_transformations = (
             transformations.get_child_transformations_secondary()
         )
@@ -112,6 +123,16 @@ def recursively_fit_transform(
                 )
                 for index, child_transformation in enumerate(secondary_transformations)
             ]
+
+            if transformations.properties.secondary_only_single_pipeline:
+                assert len(results_secondary) == 1, ValueError(
+                    f"Expected single output from secondary transformations, got {len(results_secondary)} instead."
+                )
+            if transformations.properties.secondary_requires_predictions:
+                assert is_prediction(results_secondary[0]), ValueError(
+                    "Expected predictions from secondary transformations, but got something else."
+                )
+
             return transformations.postprocess_result_secondary(
                 results_primary, results_secondary
             )

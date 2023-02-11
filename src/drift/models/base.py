@@ -6,9 +6,6 @@ from ..transformations.base import Transformation
 
 
 class Model(Transformation):
-
-    name: str
-
     @abstractmethod
     def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
         raise NotImplementedError

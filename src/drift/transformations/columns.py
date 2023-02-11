@@ -66,6 +66,9 @@ def TransformColumn(
 
 
 class PerColumnTransform(Composite):
+
+    properties = Composite.Properties()
+
     def __init__(self, transformations: Transformations) -> None:
         self.transformations = wrap_in_list(transformations)
         self.name = "PerColumnTransform-" + "-".join(

@@ -26,6 +26,9 @@ class ResolutionStrategy(Enum):
 
 
 class Concat(Composite):
+
+    properties = Composite.Properties()
+
     def __init__(
         self,
         transformations: Transformations,

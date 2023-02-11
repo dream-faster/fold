@@ -8,6 +8,9 @@ from ..utils.list import unique, wrap_in_list
 
 
 class Ensemble(Composite):
+
+    properties = Composite.Properties()
+
     def __init__(self, models: Transformations) -> None:
         self.models = models
         self.name = "Ensemble-" + "-".join(
@@ -30,6 +33,9 @@ class Ensemble(Composite):
 
 
 class PerColumnEnsemble(Composite):
+
+    properties = Composite.Properties()
+
     def __init__(self, models: Transformations) -> None:
         self.models = wrap_in_list(models)
         self.name = "PerColumnEnsemble-" + "-".join(

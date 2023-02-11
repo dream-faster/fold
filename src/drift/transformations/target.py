@@ -12,15 +12,20 @@ from ..utils.list import wrap_in_list
 
 
 class TransformTarget(Composite):
+
+    properties = Composite.Properties(
+        secondary_only_single_pipeline=True,
+    )
+
     def __init__(
-        self, X_transformations: Transformations, y_transformations: Transformations
+        self, X_transformations: Transformations, y_transformation: Transformation
     ) -> None:
         self.X_transformations = wrap_in_list(X_transformations)
-        self.y_transformations = wrap_in_list(y_transformations)
+        self.y_transformation = y_transformation
         self.name = "TransformTarget-" + "-".join(
             [
                 transformation.name if hasattr(transformation, "name") else ""
-                for transformation in self.X_transformations + self.y_transformations
+                for transformation in self.X_transformations + [y_transformation]
             ]
         )
 
@@ -37,8 +42,8 @@ class TransformTarget(Composite):
     def get_child_transformations_primary(self) -> TransformationsAlwaysList:
         return self.X_transformations
 
-    def get_child_transformations_secondary(self) -> TransformationsAlwaysList:
-        return self.y_transformation
+    # def get_child_transformations_secondary(self) -> TransformationsAlwaysList:
+    #     return [self.y_transformation]
 
     def clone(self, clone_child_transformations: Callable) -> Composite:
         return TransformTarget(
