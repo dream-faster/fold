@@ -21,10 +21,12 @@ class BaselineRegressor(Model):
         sliding_drift = "sliding_drift"
 
         @staticmethod
-        def from_str(value: Union[str, Baseline.Strategy]) -> Baseline.Strategy:
-            if isinstance(value, Baseline.Strategy):
+        def from_str(
+            value: Union[str, BaselineRegressor.Strategy]
+        ) -> BaselineRegressor.Strategy:
+            if isinstance(value, BaselineRegressor.Strategy):
                 return value
-            for strategy in Baseline.Strategy:
+            for strategy in BaselineRegressor.Strategy:
                 if strategy.value == value:
                     return strategy
             else:
@@ -34,7 +36,7 @@ class BaselineRegressor(Model):
 
     def __init__(
         self,
-        strategy: Union[Baseline.Strategy, str],
+        strategy: Union[BaselineRegressor.Strategy, str],
         window_size: int = 100,
         seasonal_length: Optional[int] = None,
     ) -> None:
@@ -50,18 +52,18 @@ class BaselineRegressor(Model):
         def wrap_into_series(x: np.ndarray) -> pd.Series:
             return pd.Series(x, index=X.index)
 
-        if self.strategy == Baseline.Strategy.sliding_mean:
+        if self.strategy == BaselineRegressor.Strategy.sliding_mean:
             return wrap_into_series(
                 [
                     np.mean(X.values[max(i - self.window_size, 0) : i + 1])
                     for i in range(len(X))
                 ]
             )
-        elif self.strategy == Baseline.Strategy.expanding_mean:
+        elif self.strategy == BaselineRegressor.Strategy.expanding_mean:
             return wrap_into_series([np.mean(X.values[: i + 1]) for i in range(len(X))])
-        elif self.strategy == Baseline.Strategy.naive:
+        elif self.strategy == BaselineRegressor.Strategy.naive:
             return X
-        elif self.strategy == Baseline.Strategy.sliding_drift:
+        elif self.strategy == BaselineRegressor.Strategy.sliding_drift:
             return wrap_into_series(
                 [
                     calculate_drift_predictions(
@@ -70,11 +72,11 @@ class BaselineRegressor(Model):
                     for i in range(len(X))
                 ]
             )
-        elif self.strategy == Baseline.Strategy.expanding_drift:
+        elif self.strategy == BaselineRegressor.Strategy.expanding_drift:
             return wrap_into_series(
                 [calculate_drift_predictions(X.values[: i + 1]) for i in len(X)]
             )
-        elif self.strategy == Baseline.Strategy.seasonal_naive:
+        elif self.strategy == BaselineRegressor.Strategy.seasonal_naive:
             if self.seasonal_length is None:
                 raise ValueError(
                     "Seasonal length must be specified for seasonal naive strategy"
@@ -87,7 +89,7 @@ class BaselineRegressor(Model):
                 : self.seasonal_length
             ]
             return wrap_into_series(seasonally_shifted)
-        elif self.strategy == Baseline.Strategy.seasonal_mean:
+        elif self.strategy == BaselineRegressor.Strategy.seasonal_mean:
             if self.seasonal_length is None:
                 raise ValueError(
                     "Seasonal length must be specified for seasonal naive strategy"
