@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from copy import deepcopy
 from typing import Callable, List
 
@@ -26,7 +28,7 @@ class Ensemble(Composite):
     def get_child_transformations_primary(self) -> TransformationsAlwaysList:
         return self.models
 
-    def clone(self, clone_child_transformations: Callable) -> Composite:
+    def clone(self, clone_child_transformations: Callable) -> Ensemble:
         return Ensemble(
             models=clone_child_transformations(self.models),
         )
@@ -37,7 +39,7 @@ class PerColumnEnsemble(Composite):
     properties = Composite.Properties()
 
     def __init__(self, models: Transformations) -> None:
-        self.models = wrap_in_list(models)
+        self.models: TransformationsAlwaysList = wrap_in_list(models)
         self.name = "PerColumnEnsemble-" + "-".join(
             [
                 transformation.name if hasattr(transformation, "name") else ""
@@ -57,7 +59,7 @@ class PerColumnEnsemble(Composite):
     def get_child_transformations_primary(self) -> TransformationsAlwaysList:
         return self.models
 
-    def clone(self, clone_child_transformations: Callable) -> Composite:
+    def clone(self, clone_child_transformations: Callable) -> PerColumnEnsemble:
         return PerColumnEnsemble(
             models=clone_child_transformations(self.models),
         )

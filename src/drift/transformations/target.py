@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Callable, List
 
 import pandas as pd
@@ -45,7 +47,7 @@ class TransformTarget(Composite):
     # def get_child_transformations_secondary(self) -> TransformationsAlwaysList:
     #     return [self.y_transformation]
 
-    def clone(self, clone_child_transformations: Callable) -> Composite:
+    def clone(self, clone_child_transformations: Callable) -> TransformTarget:
         return TransformTarget(
             X_transformations=clone_child_transformations(self.X_transformations),
             y_transformation=clone_child_transformations(self.y_transformation),

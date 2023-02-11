@@ -1,3 +1,5 @@
+from typing import Union
+
 import pandas as pd
 
 from drift.models.base import Model
@@ -17,7 +19,7 @@ class SKLearnClassifier(Model):
     def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
         self.model.fit(X, y)
 
-    def predict(self, X: pd.DataFrame) -> pd.DataFrame:
+    def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         probabilities = pd.DataFrame(
             data=self.model.predict_proba(X),
             index=X.index,
@@ -46,7 +48,7 @@ class SKLearnRegressor(Model):
     def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
         self.model.fit(X, y)
 
-    def predict(self, X: pd.DataFrame) -> pd.DataFrame:
+    def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         return pd.Series(
             data=self.model.predict(X).squeeze(),
             index=X.index,

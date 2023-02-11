@@ -68,7 +68,7 @@ class Concat(Composite):
     def get_child_transformations_primary(self) -> TransformationsAlwaysList:
         return self.transformations
 
-    def clone(self, clone_child_transformations: Callable) -> Composite:
+    def clone(self, clone_child_transformations: Callable) -> Concat:
         return Concat(
             transformations=clone_child_transformations(self.transformations),
             if_duplicate_keep=self.if_duplicate_keep,

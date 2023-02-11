@@ -4,8 +4,9 @@ import numpy as np
 import pandas as pd
 
 from drift.loop import backtest, train
+from drift.models.base import Model
 from drift.models.dummy import DummyClassifier
-from drift.models.ensemble import Ensemble, PerColumnEnsemble
+from drift.models.metalabeling import MetaLabeling
 from drift.splitters import ExpandingWindowSplitter
 from drift.utils.tests import generate_all_zeros, generate_sine_wave_data
 
@@ -69,29 +70,3 @@ def test_ensemble_classification() -> None:
         pred["probabilities_Ensemble-DummyClassifier-DummyClassifier-DummyClassifier_0"]
         == 0.5
     ).all()
-
-
-def test_per_column_transform_predictions() -> None:
-
-    X = generate_sine_wave_data()
-    X["sine_2"] = X["sine"] + 1.0
-    X["sine_3"] = X["sine"] + 2.0
-    X["sine_4"] = X["sine"] + 3.0
-    y = X.shift(-1).squeeze()
-
-    splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
-    transformations = [
-        PerColumnEnsemble(
-            lambda x: (x + 1.0)
-            .squeeze()
-            .rename(f"predictions_{randint(1, 1000)}")
-            .to_frame()
-        ),
-    ]
-
-    transformations_over_time = train(transformations, X, y, splitter)
-    _, pred = backtest(transformations_over_time, X, y, splitter)
-    expected = X.mean(axis=1) + 1.0
-    assert np.all(
-        np.isclose(expected[pred.index].squeeze().values, pred.squeeze().values)
-    )

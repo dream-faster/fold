@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from copy import deepcopy
 from typing import Callable, List, Optional, Union
 
@@ -90,7 +92,7 @@ class PerColumnTransform(Composite):
     def get_child_transformations_primary(self) -> TransformationsAlwaysList:
         return self.transformations
 
-    def clone(self, clone_child_transformations: Callable) -> Composite:
+    def clone(self, clone_child_transformations: Callable) -> PerColumnTransform:
         return PerColumnTransform(
             transformations=clone_child_transformations(self.transformations),
         )

@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from typing import Union
 
 import pandas as pd
 
@@ -11,7 +12,7 @@ class Model(Transformation):
         raise NotImplementedError
 
     @abstractmethod
-    def predict(self, X: pd.DataFrame) -> pd.Series:
+    def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         raise NotImplementedError
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:

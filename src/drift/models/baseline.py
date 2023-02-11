@@ -10,7 +10,7 @@ from ..transformations.base import Transformation
 from .base import Model
 
 
-class Baseline(Model):
+class BaselineRegressor(Model):
     class Strategy(Enum):
         sliding_mean = "sliding_mean"
         expanding_mean = "expanding_mean"
@@ -38,7 +38,7 @@ class Baseline(Model):
         window_size: int = 100,
         seasonal_length: Optional[int] = None,
     ) -> None:
-        self.strategy = Baseline.Strategy.from_str(strategy)
+        self.strategy = BaselineRegressor.Strategy.from_str(strategy)
         self.window_size = window_size
         self.seasonal_length = seasonal_length
         self.name = f"BaselineModel-{self.strategy.value}"
@@ -46,7 +46,7 @@ class Baseline(Model):
     def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
         self.fitted_X = X
 
-    def predict(self, X: pd.DataFrame) -> pd.Series:
+    def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         def wrap_into_series(x: np.ndarray) -> pd.Series:
             return pd.Series(x, index=X.index)
 
