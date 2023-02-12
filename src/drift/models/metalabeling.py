@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable, List, Union
+from typing import Callable, List, Optional, Union
 
 import pandas as pd
 
@@ -75,24 +75,41 @@ class MetaLabeling(Composite):
     ) -> pd.DataFrame:
 
         primary_predictions = get_prediction_column(primary_results[0])
-        meta_probabilities = secondary_results[0]
-        meta_probabilities = meta_probabilities[
+        meta_probabilities = secondary_results[0][
+            [
+                col
+                for col in secondary_results[0].columns
+                if col.startswith("probabilities_")
+            ]
+        ]
+        meta_probabilities_positive_class = meta_probabilities[
             [
                 col
                 for col in meta_probabilities.columns
-                if col.startswith("probabilities_")
-                and col.split("_")[-1] == str(self.positive_class)
+                if col.split("_")[-1] == str(self.positive_class)
             ]
         ]
-        if len(meta_probabilities.columns) != 1:
+        if len(meta_probabilities_positive_class.columns) != 1:
             raise ValueError(
                 f"Meta pipeline needs to be concluded with probabilities of the positive class: {str(self.positive_class)}"
             )
-        meta_probabilities = meta_probabilities.squeeze()
-        return primary_predictions * meta_probabilities
+        result = (
+            primary_predictions * meta_probabilities_positive_class.squeeze()
+        ).rename(f"predictions_{self.name}")
+        dc = {
+            col: f"probabilities_{self.name}_" + col.split("_")[-1]
+            for col in meta_probabilities.columns
+        }
+        meta_probabilities = meta_probabilities.rename(columns=dc)
+        return pd.concat([result, meta_probabilities], axis=1)
 
     def get_child_transformations_primary(self) -> TransformationsAlwaysList:
-        return self.models
+        return self.primary
+
+    def get_child_transformations_secondary(
+        self,
+    ) -> Optional[TransformationsAlwaysList]:
+        return self.meta
 
     def clone(self, clone_child_transformations: Callable) -> MetaLabeling:
         return MetaLabeling(

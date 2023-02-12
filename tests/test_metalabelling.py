@@ -1,14 +1,8 @@
-from random import randint
-
-import numpy as np
-import pandas as pd
-
 from drift.loop import backtest, train
-from drift.models.base import Model
 from drift.models.dummy import DummyClassifier
 from drift.models.metalabeling import MetaLabeling
 from drift.splitters import ExpandingWindowSplitter
-from drift.utils.tests import generate_all_zeros, generate_sine_wave_data
+from drift.utils.tests import generate_all_zeros
 
 
 def test_metalabeling() -> None:
@@ -20,26 +14,21 @@ def test_metalabeling() -> None:
     transformations = [
         MetaLabeling(
             primary=DummyClassifier(
-                    predicted_value=1,
-                    all_classes=[1, 0],
-                    predicted_probabilities=[1.0, 0.0],
-                ),
+                predicted_value=1,
+                all_classes=[1, 0],
+                predicted_probabilities=[1.0, 0.0],
+            ),
             meta=DummyClassifier(
-                    predicted_value=0.5,
-                    all_classes=[1, 0],
-                    predicted_probabilities=[0.5, 0.5],
-                ),
-            positive_class=1
+                predicted_value=0.5,
+                all_classes=[1, 0],
+                predicted_probabilities=[0.5, 0.5],
+            ),
+            positive_class=1,
         )
     ]
 
     transformations_over_time = train(transformations, X, y, splitter)
     _, pred = backtest(transformations_over_time, X, y, splitter)
     assert (
-        pred["probabilities_Ensemble-DummyClassifier-DummyClassifier-DummyClassifier_1"]
-        == 0.5
-    ).all()
-    assert (
-        pred["probabilities_Ensemble-DummyClassifier-DummyClassifier-DummyClassifier_0"]
-        == 0.5
+        pred["predictions_MetaLabeling-DummyClassifier-DummyClassifier"] == 0.5
     ).all()

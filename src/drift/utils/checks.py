@@ -7,7 +7,7 @@ def is_prediction(input: pd.DataFrame) -> bool:
     else:
         is_predictions_col_present = input.columns[0].startswith("predictions_")
         return is_predictions_col_present and all(
-            [col.startswith("probabilities_") for col in input.columns]
+            [col.startswith("probabilities_") for col in input.columns[1:]]
         )
 
 
