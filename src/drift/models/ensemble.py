@@ -1,13 +1,18 @@
+from __future__ import annotations
+
 from copy import deepcopy
 from typing import Callable, List
 
 import pandas as pd
 
-from ..transformations.base import Composite, Transformations
+from ..transformations.base import Composite, Transformations, TransformationsAlwaysList
 from ..utils.list import unique, wrap_in_list
 
 
 class Ensemble(Composite):
+
+    properties = Composite.Properties()
+
     def __init__(self, models: Transformations) -> None:
         self.models = models
         self.name = "Ensemble-" + "-".join(
@@ -17,30 +22,24 @@ class Ensemble(Composite):
             ]
         )
 
-    def postprocess_result(self, results: List[pd.DataFrame]) -> pd.DataFrame:
-        results_have_probabilities = all(
-            [
-                any([True for col in df.columns if col.startswith("probabilities_")])
-                for df in results
-            ]
-        )
-        if results_have_probabilities:
-            return get_groupped_columns_classification(results, self.name)
-        else:
-            return get_groupped_columns_regression(results, self.name)
+    def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
+        return postprocecess_results(results, self.name)
 
-    def get_child_transformations(self) -> Transformations:
+    def get_child_transformations_primary(self) -> TransformationsAlwaysList:
         return self.models
 
-    def clone(self, clone_child_transformations: Callable) -> Composite:
+    def clone(self, clone_child_transformations: Callable) -> Ensemble:
         return Ensemble(
             models=clone_child_transformations(self.models),
         )
 
 
 class PerColumnEnsemble(Composite):
+
+    properties = Composite.Properties()
+
     def __init__(self, models: Transformations) -> None:
-        self.models = wrap_in_list(models)
+        self.models: TransformationsAlwaysList = wrap_in_list(models)
         self.name = "PerColumnEnsemble-" + "-".join(
             [
                 transformation.name if hasattr(transformation, "name") else ""
@@ -51,30 +50,35 @@ class PerColumnEnsemble(Composite):
     def before_fit(self, X: pd.DataFrame) -> None:
         self.models = [deepcopy(self.models) for _ in X.columns]
 
-    def preprocess_X(
-        self, X: pd.DataFrame, index: int, for_inference: bool
-    ) -> pd.DataFrame:
+    def preprocess_X_primary(self, X: pd.DataFrame, index: int) -> pd.DataFrame:
         return X.iloc[:, index].to_frame()
 
-    def postprocess_result(self, results: List[pd.DataFrame]) -> pd.DataFrame:
-        results_have_probabilities = all(
-            [
-                any([True for col in df.columns if col.startswith("probabilities_")])
-                for df in results
-            ]
-        )
-        if results_have_probabilities:
-            return get_groupped_columns_classification(results, self.name)
-        else:
-            return get_groupped_columns_regression(results, self.name)
+    def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
+        return postprocecess_results(results, self.name)
 
-    def get_child_transformations(self) -> Transformations:
+    def get_child_transformations_primary(self) -> TransformationsAlwaysList:
         return self.models
 
-    def clone(self, clone_child_transformations: Callable) -> Composite:
+    def clone(self, clone_child_transformations: Callable) -> PerColumnEnsemble:
         return PerColumnEnsemble(
             models=clone_child_transformations(self.models),
         )
+
+
+def postprocecess_results(
+    results: List[pd.DataFrame],
+    name: str,
+) -> pd.DataFrame:
+    results_have_probabilities = all(
+        [
+            any([True for col in df.columns if col.startswith("probabilities_")])
+            for df in results
+        ]
+    )
+    if results_have_probabilities:
+        return get_groupped_columns_classification(results, name)
+    else:
+        return get_groupped_columns_regression(results, name)
 
 
 def get_groupped_columns_regression(

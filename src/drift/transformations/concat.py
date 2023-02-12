@@ -6,7 +6,7 @@ from typing import Callable, List, Union
 import pandas as pd
 
 from ..utils.list import flatten, has_intersection, keep_only_duplicates
-from .base import Composite, Transformations
+from .base import Composite, Transformations, TransformationsAlwaysList
 
 
 class ResolutionStrategy(Enum):
@@ -26,6 +26,9 @@ class ResolutionStrategy(Enum):
 
 
 class Concat(Composite):
+
+    properties = Composite.Properties()
+
     def __init__(
         self,
         transformations: Transformations,
@@ -40,7 +43,7 @@ class Concat(Composite):
             ]
         )
 
-    def postprocess_result(self, results: List[pd.DataFrame]) -> pd.DataFrame:
+    def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
         columns = flatten([result.columns.to_list() for result in results])
         duplicates = keep_only_duplicates(columns)
 
@@ -62,10 +65,10 @@ class Concat(Composite):
         else:
             return pd.concat(results, axis=1)
 
-    def get_child_transformations(self) -> Transformations:
+    def get_child_transformations_primary(self) -> TransformationsAlwaysList:
         return self.transformations
 
-    def clone(self, clone_child_transformations: Callable) -> Composite:
+    def clone(self, clone_child_transformations: Callable) -> Concat:
         return Concat(
             transformations=clone_child_transformations(self.transformations),
             if_duplicate_keep=self.if_duplicate_keep,

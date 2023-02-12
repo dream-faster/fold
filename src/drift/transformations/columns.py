@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 from copy import deepcopy
 from typing import Callable, List, Optional, Union
 
 import pandas as pd
 
 from ..utils.list import wrap_in_list
-from .base import Composite, Transformation, Transformations
+from .base import Composite, Transformation, Transformations, TransformationsAlwaysList
 from .concat import Concat, ResolutionStrategy
 from .identity import Identity
 
@@ -66,6 +68,9 @@ def TransformColumn(
 
 
 class PerColumnTransform(Composite):
+
+    properties = Composite.Properties()
+
     def __init__(self, transformations: Transformations) -> None:
         self.transformations = wrap_in_list(transformations)
         self.name = "PerColumnTransform-" + "-".join(
@@ -78,18 +83,16 @@ class PerColumnTransform(Composite):
     def before_fit(self, X: pd.DataFrame) -> None:
         self.transformations = [deepcopy(self.transformations) for _ in X.columns]
 
-    def preprocess_X(
-        self, X: pd.DataFrame, index: int, for_inference: bool
-    ) -> pd.DataFrame:
+    def preprocess_X_primary(self, X: pd.DataFrame, index: int) -> pd.DataFrame:
         return X.iloc[:, index].to_frame()
 
-    def postprocess_result(self, results: List[pd.DataFrame]) -> pd.DataFrame:
+    def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
         return pd.concat(results, axis=1)
 
-    def get_child_transformations(self) -> Transformations:
+    def get_child_transformations_primary(self) -> TransformationsAlwaysList:
         return self.transformations
 
-    def clone(self, clone_child_transformations: Callable) -> Composite:
+    def clone(self, clone_child_transformations: Callable) -> PerColumnTransform:
         return PerColumnTransform(
             transformations=clone_child_transformations(self.transformations),
         )

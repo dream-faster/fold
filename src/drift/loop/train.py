@@ -4,6 +4,7 @@ from typing import Callable, List, Union
 import pandas as pd
 from sklearn.base import BaseEstimator
 
+from drift.utils.checks import is_prediction
 from drift.utils.list import wrap_in_list
 
 from ..all_types import TransformationsOverTime
@@ -88,17 +89,53 @@ def recursively_fit_transform(
     elif isinstance(transformations, Composite):
         # TODO: here we have the potential to parallelize/distribute training of child transformations
         transformations.before_fit(X)
-        results = [
+        results_primary = [
             recursively_fit_transform(
-                transformations.preprocess_X(X, index, for_inference=False),
-                transformations.preprocess_y(y),
+                transformations.preprocess_X_primary(X, index),
+                transformations.preprocess_y_primary(y),
                 child_transformation,
             )
             for index, child_transformation in enumerate(
-                transformations.get_child_transformations()
+                transformations.get_child_transformations_primary()
             )
         ]
-        return transformations.postprocess_result(results)
+
+        if transformations.properties.primary_only_single_pipeline:
+            assert len(results_primary) == 1, ValueError(
+                f"Expected single output from primary transformations, got {len(results_primary)} instead."
+            )
+        if transformations.properties.primary_requires_predictions:
+            assert is_prediction(results_primary[0]), ValueError(
+                "Expected predictions from primary transformations, but got something else."
+            )
+
+        secondary_transformations = (
+            transformations.get_child_transformations_secondary()
+        )
+        if secondary_transformations is None:
+            return transformations.postprocess_result_primary(results_primary)
+        else:
+            results_secondary = [
+                recursively_fit_transform(
+                    transformations.preprocess_X_secondary(X, results_primary, index),
+                    transformations.preprocess_y_secondary(y, results_primary),
+                    child_transformation,
+                )
+                for index, child_transformation in enumerate(secondary_transformations)
+            ]
+
+            if transformations.properties.secondary_only_single_pipeline:
+                assert len(results_secondary) == 1, ValueError(
+                    f"Expected single output from secondary transformations, got {len(results_secondary)} instead."
+                )
+            if transformations.properties.secondary_requires_predictions:
+                assert is_prediction(results_secondary[0]), ValueError(
+                    "Expected predictions from secondary transformations, but got something else."
+                )
+
+            return transformations.postprocess_result_secondary(
+                results_primary, results_secondary
+            )
 
     else:
         transformations.fit(X, y)

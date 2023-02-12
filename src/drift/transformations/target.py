@@ -1,12 +1,24 @@
+from __future__ import annotations
+
 from typing import Callable, List
 
 import pandas as pd
 
-from ..transformations.base import Composite, Transformation, Transformations
+from ..transformations.base import (
+    Composite,
+    Transformation,
+    Transformations,
+    TransformationsAlwaysList,
+)
 from ..utils.list import wrap_in_list
 
 
 class TransformTarget(Composite):
+
+    properties = Composite.Properties(
+        secondary_only_single_pipeline=True,
+    )
+
     def __init__(
         self, X_transformations: Transformations, y_transformation: Transformation
     ) -> None:
@@ -19,20 +31,23 @@ class TransformTarget(Composite):
             ]
         )
 
-    def preprocess_y(self, y: pd.Series) -> pd.Series:
+    def preprocess_y_primary(self, y: pd.Series) -> pd.Series:
         y_frame = y
         if isinstance(y, pd.Series):
             y_frame = y_frame.to_frame()
         self.y_transformation.fit(X=y_frame, y=None)
         return self.y_transformation.transform(X=y_frame).squeeze()
 
-    def postprocess_result(self, results: List[pd.DataFrame]) -> pd.DataFrame:
+    def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
         return self.y_transformation.inverse_transform(results[0])
 
-    def get_child_transformations(self) -> Transformations:
+    def get_child_transformations_primary(self) -> TransformationsAlwaysList:
         return self.X_transformations
 
-    def clone(self, clone_child_transformations: Callable) -> Composite:
+    # def get_child_transformations_secondary(self) -> TransformationsAlwaysList:
+    #     return [self.y_transformation]
+
+    def clone(self, clone_child_transformations: Callable) -> TransformTarget:
         return TransformTarget(
             X_transformations=clone_child_transformations(self.X_transformations),
             y_transformation=clone_child_transformations(self.y_transformation),

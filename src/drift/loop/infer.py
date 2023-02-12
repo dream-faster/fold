@@ -42,16 +42,31 @@ def recursively_transform(
 
     elif isinstance(transformations, Composite):
         # TODO: here we have the potential to parallelize/distribute training of child transformations
-        results = [
+        results_primary = [
             recursively_transform(
-                transformations.preprocess_X(X, index, for_inference=True),
+                transformations.preprocess_X_primary(X, index),
                 child_transformation,
             )
             for index, child_transformation in enumerate(
-                transformations.get_child_transformations()
+                transformations.get_child_transformations_primary()
             )
         ]
-        return transformations.postprocess_result(results)
+        secondary_transformations = (
+            transformations.get_child_transformations_secondary()
+        )
+        if secondary_transformations is None:
+            return transformations.postprocess_result_primary(results_primary)
+        else:
+            results_secondary = [
+                recursively_transform(
+                    transformations.preprocess_X_secondary(X, results_primary, index),
+                    child_transformation,
+                )
+                for index, child_transformation in enumerate(secondary_transformations)
+            ]
+            return transformations.postprocess_result_secondary(
+                results_primary, results_secondary
+            )
 
     else:
         return transformations.transform(X)
