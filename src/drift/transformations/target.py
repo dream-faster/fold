@@ -44,9 +44,6 @@ class TransformTarget(Composite):
     def get_child_transformations_primary(self) -> TransformationsAlwaysList:
         return self.X_transformations
 
-    # def get_child_transformations_secondary(self) -> TransformationsAlwaysList:
-    #     return [self.y_transformation]
-
     def clone(self, clone_child_transformations: Callable) -> TransformTarget:
         return TransformTarget(
             X_transformations=clone_child_transformations(self.X_transformations),

@@ -21,11 +21,13 @@ class SlidingWindowSplitter(Splitter):
         self,
         train_window_size: int,
         step: int,
+        embargo: int = 0,
         start: int = 0,
         end: Optional[int] = None,
     ) -> None:
         self.window_size = train_window_size
         self.step = step
+        self.embargo = embargo
         self.start = start
         self.end = end
 
@@ -35,7 +37,7 @@ class SlidingWindowSplitter(Splitter):
             Split(
                 model_index=index,
                 train_window_start=index - self.window_size,
-                train_window_end=index - 1,
+                train_window_end=index - 1 - self.embargo,
                 test_window_start=index,
                 test_window_end=min(end, index + self.step),
             )
@@ -48,11 +50,13 @@ class ExpandingWindowSplitter(Splitter):
         self,
         train_window_size: int,
         step: int,
+        embargo: int = 0,
         start: int = 0,
         end: Optional[int] = None,
     ) -> None:
         self.window_size = train_window_size
         self.step = step
+        self.embargo = embargo
         self.start = start
         self.end = end
 
@@ -62,7 +66,7 @@ class ExpandingWindowSplitter(Splitter):
             Split(
                 model_index=index,
                 train_window_start=self.start,
-                train_window_end=index - 1,
+                train_window_end=index - 1 - self.embargo,
                 test_window_start=index,
                 test_window_end=min(end, index + self.step),
             )
@@ -74,8 +78,10 @@ class SingleWindowSplitter(Splitter):
     def __init__(
         self,
         proportion: float,
+        embargo: int = 0,
     ) -> None:
         self.proportion = proportion
+        self.embargo = embargo
 
     def splits(self, length: int) -> List[Split]:
         index = int(length * self.proportion)
@@ -83,7 +89,7 @@ class SingleWindowSplitter(Splitter):
             Split(
                 model_index=0,
                 train_window_start=0,
-                train_window_end=index - 1,
+                train_window_end=index - 1 - self.embargo,
                 test_window_start=index,
                 test_window_end=length,
             ),
