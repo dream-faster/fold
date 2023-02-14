@@ -1,18 +1,38 @@
+from __future__ import annotations
+
 from copy import deepcopy
+from enum import Enum
 from typing import Callable, List, Union
 
 import pandas as pd
 from sklearn.base import BaseEstimator
 
-from drift.utils.checks import is_prediction
-from drift.utils.list import wrap_in_list
-
 from ..all_types import TransformationsOverTime
 from ..models.base import Model
 from ..splitters import Split, Splitter
 from ..transformations.base import Composite, Transformation, Transformations
-from .backend.sequential import process_transformations
+from ..utils.checks import is_prediction
+from ..utils.list import wrap_in_list
+from .backend.ray import process_transformations as process_transformations_ray
+from .backend.sequential import (
+    process_transformations as process_transformations_sequential,
+)
 from .convenience import replace_transformation_if_not_drift_native
+
+
+class Backend(Enum):
+    no = "no"
+    ray = "ray"
+
+    @staticmethod
+    def from_str(value: Union[str, Backend]) -> Backend:
+        if isinstance(value, Backend):
+            return value
+        for strategy in Backend:
+            if strategy.value == value:
+                return strategy
+        else:
+            raise ValueError(f"Unknown Backend: {value}")
 
 
 def train(
@@ -22,6 +42,7 @@ def train(
     X: pd.DataFrame,
     y: pd.Series,
     splitter: Splitter,
+    backend: Backend = Backend.no,
 ) -> TransformationsOverTime:
 
     transformations = wrap_in_list(transformations)
@@ -30,9 +51,14 @@ def train(
     )
 
     splits = splitter.splits(length=len(y))
-    processed = process_transformations(
-        process_transformations_window, transformations, X, y, splits
-    )
+    if backend == Backend.no:
+        processed = process_transformations_sequential(
+            process_transformations_window, transformations, X, y, splits
+        )
+    elif backend == Backend.ray:
+        processed = process_transformations_ray(
+            process_transformations_window, transformations, X, y, splits
+        )
 
     idx, only_transformations = zip(*processed)
 
