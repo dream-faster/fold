@@ -19,7 +19,7 @@ def all_have_probabilities(results: List[pd.DataFrame]) -> bool:
     or if their values are all NaN, indicating an empty DataFrame
     being passed around, as SkipNA filtered out all data.
     """
-    output = all(
+    return all(
         [
             any([True for col in df.columns if col.startswith("probabilities_")])
             or len(df.columns) == 0
@@ -27,8 +27,6 @@ def all_have_probabilities(results: List[pd.DataFrame]) -> bool:
             for df in results
         ]
     )
-    assert output == True
-    return output
 
 
 def get_prediction_column(input: pd.DataFrame) -> pd.Series:
