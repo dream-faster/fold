@@ -138,5 +138,7 @@ def recursively_fit_transform(
             )
 
     else:
+        if len(X) == 0:
+            return pd.DataFrame()
         transformations.fit(X, y)
         return transformations.transform(X)

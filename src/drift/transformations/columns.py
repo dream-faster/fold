@@ -126,3 +126,43 @@ class OnlyProbabilities(Transformation):
         return X.drop(
             columns=[col for col in X.columns if not col.startswith("probabilities_")]
         )
+
+
+class SkipNA(Composite):
+
+    """
+    Skips rows with NaN values in the input data.
+    Adds back the rows with NaN values after the transformations are applied.
+    Enables transformations to be applied to data with missing values, without imputation.
+    """
+
+    properties = Composite.Properties()
+
+    def __init__(self, transformations: Transformations) -> None:
+        self.transformations = wrap_in_list(transformations)
+        self.name = "SkipNA-" + "-".join(
+            [
+                transformation.name if hasattr(transformation, "name") else ""
+                for transformation in self.transformations
+            ]
+        )
+
+    def preprocess_X_primary(self, X: pd.DataFrame, index: int) -> pd.DataFrame:
+        self.original_index = X.index.copy()
+        self.isna = X.isna().any(axis=1)
+        return X[~self.isna]
+
+    def preprocess_y_primary(self, y: pd.Series) -> pd.Series:
+        return y[~self.isna]
+
+    def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
+        results = [result.reindex(self.original_index) for result in results]
+        return pd.concat(results, axis=1)
+
+    def get_child_transformations_primary(self) -> TransformationsAlwaysList:
+        return self.transformations
+
+    def clone(self, clone_child_transformations: Callable) -> SkipNA:
+        return SkipNA(
+            transformations=clone_child_transformations(self.transformations),
+        )

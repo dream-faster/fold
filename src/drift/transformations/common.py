@@ -13,7 +13,10 @@ def get_flat_list_of_transformations(
         elif isinstance(transformations, Composite):
             return [
                 get_all_transformations(child_t)
-                for child_t in transformations.get_child_transformations()
+                for child_t in transformations.get_child_transformations_primary()
+            ] + [
+                get_all_transformations(child_t)
+                for child_t in transformations.get_child_transformations_secondary()
             ]
         else:
             return transformations

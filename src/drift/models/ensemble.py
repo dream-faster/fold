@@ -6,6 +6,7 @@ from typing import Callable, List
 import pandas as pd
 
 from ..transformations.base import Composite, Transformations, TransformationsAlwaysList
+from ..utils.checks import all_have_probabilities
 from ..utils.list import unique, wrap_in_list
 
 
@@ -69,13 +70,7 @@ def postprocecess_results(
     results: List[pd.DataFrame],
     name: str,
 ) -> pd.DataFrame:
-    results_have_probabilities = all(
-        [
-            any([True for col in df.columns if col.startswith("probabilities_")])
-            for df in results
-        ]
-    )
-    if results_have_probabilities:
+    if all_have_probabilities(results):
         return get_groupped_columns_classification(results, name)
     else:
         return get_groupped_columns_regression(results, name)
@@ -96,7 +91,7 @@ def get_groupped_columns_regression(
             axis=1,
         )
         .mean(axis=1)
-        .rename(f"predictions_Ensemble_{name}")
+        .rename(f"predictions_{name}")
         .to_frame()
     )
 
