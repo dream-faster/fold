@@ -54,6 +54,7 @@ def recursively_transform(
         secondary_transformations = (
             transformations.get_child_transformations_secondary()
         )
+
         if secondary_transformations is None:
             return transformations.postprocess_result_primary(results_primary)
         else:
@@ -69,4 +70,6 @@ def recursively_transform(
             )
 
     else:
+        if len(X) == 0:
+            return pd.DataFrame()
         return transformations.transform(X)
