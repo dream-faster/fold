@@ -1,7 +1,6 @@
 from typing import Callable, List
 
 import pandas as pd
-import ray
 
 from ...splitters import Split
 from ...transformations.base import Transformations
@@ -14,6 +13,8 @@ def process_transformations(
     y: pd.Series,
     splits: List[Split],
 ):
+    import ray
+
     func = ray.remote(func)
     X = ray.put(X)
     y = ray.put(y)
