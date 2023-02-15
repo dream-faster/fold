@@ -22,6 +22,7 @@ dependencies = [
   "pandas",
   "tqdm",
   "scikit-learn",
+  "iteration_utilities",
 ]
 description = "Timeseries modelling on a rolling/expanding window basis."
 dynamic = ["version"]

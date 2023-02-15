@@ -4,10 +4,11 @@ from copy import deepcopy
 from typing import Callable, List
 
 import pandas as pd
+from iteration_utilities import unique_everseen
 
 from ..transformations.base import Composite, Transformations, TransformationsAlwaysList
 from ..utils.checks import all_have_probabilities
-from ..utils.list import unique, wrap_in_list
+from ..utils.list import wrap_in_list
 
 
 class Ensemble(Composite):
@@ -102,7 +103,7 @@ def get_groupped_columns_classification(
 ) -> pd.DataFrame:
     columns = results[0].columns.to_list()
     probabilities_columns = [col for col in columns if col.startswith("probabilities_")]
-    classes = unique([line.split("_")[-1] for line in probabilities_columns])
+    classes = unique_everseen([line.split("_")[-1] for line in probabilities_columns])
 
     predictions = (
         pd.concat(

@@ -19,7 +19,3 @@ def keep_only_duplicates(input: List) -> List:
 
 def has_intersection(lhs: List, rhs: List) -> bool:
     return len(set(lhs).intersection(rhs)) > 0
-
-
-def unique(input: List) -> List:
-    return list(set(input))
