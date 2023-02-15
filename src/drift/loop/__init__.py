@@ -1,2 +1,2 @@
 from .backtest import backtest
-from .train import train
+from .train import Backend, train
