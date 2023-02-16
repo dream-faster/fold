@@ -52,9 +52,7 @@ def recursively_transform(
                 composite.get_child_transformations_primary()
             )
         ]
-        secondary_transformations = (
-            composite.get_child_transformations_secondary()
-        )
+        secondary_transformations = composite.get_child_transformations_secondary()
 
         if secondary_transformations is None:
             return composite.postprocess_result_primary(results_primary)
