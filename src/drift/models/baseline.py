@@ -32,7 +32,7 @@ class BaselineRegressor(Model):
             else:
                 raise ValueError(f"Unknown Strategy: {value}")
 
-    properties = Transformation.Properties(requires_past_X=False)
+    properties = Transformation.Properties(requires_past_X=True)
 
     def __init__(
         self,

@@ -75,9 +75,9 @@ def train(
 def process_transformations_window(
     X: pd.DataFrame,
     y: pd.Series,
-    transformations: List[Transformation],
+    transformations: List[Union[Transformation, Composite]],
     split: Split,
-) -> tuple[int, List[Union[Transformation, Composite, Model]]]:
+) -> tuple[int, List[Union[Transformation, Composite]]]:
 
     X_train = X.iloc[split.train_window_start : split.train_window_end]
     y_train = y.iloc[split.train_window_start : split.train_window_end]
@@ -113,53 +113,52 @@ def recursively_fit_transform(
         return X
 
     elif isinstance(transformations, Composite):
+        composite: Composite = transformations
         # TODO: here we have the potential to parallelize/distribute training of child transformations
-        transformations.before_fit(X)
+        composite.before_fit(X)
         results_primary = [
             recursively_fit_transform(
-                transformations.preprocess_X_primary(X, index),
-                transformations.preprocess_y_primary(y),
+                composite.preprocess_X_primary(X, index),
+                composite.preprocess_y_primary(y),
                 child_transformation,
             )
             for index, child_transformation in enumerate(
-                transformations.get_child_transformations_primary()
+                composite.get_child_transformations_primary()
             )
         ]
 
-        if transformations.properties.primary_only_single_pipeline:
+        if composite.properties.primary_only_single_pipeline:
             assert len(results_primary) == 1, ValueError(
                 f"Expected single output from primary transformations, got {len(results_primary)} instead."
             )
-        if transformations.properties.primary_requires_predictions:
+        if composite.properties.primary_requires_predictions:
             assert is_prediction(results_primary[0]), ValueError(
                 "Expected predictions from primary transformations, but got something else."
             )
 
-        secondary_transformations = (
-            transformations.get_child_transformations_secondary()
-        )
+        secondary_transformations = composite.get_child_transformations_secondary()
         if secondary_transformations is None:
-            return transformations.postprocess_result_primary(results_primary)
+            return composite.postprocess_result_primary(results_primary)
         else:
             results_secondary = [
                 recursively_fit_transform(
-                    transformations.preprocess_X_secondary(X, results_primary, index),
-                    transformations.preprocess_y_secondary(y, results_primary),
+                    composite.preprocess_X_secondary(X, results_primary, index),
+                    composite.preprocess_y_secondary(y, results_primary),
                     child_transformation,
                 )
                 for index, child_transformation in enumerate(secondary_transformations)
             ]
 
-            if transformations.properties.secondary_only_single_pipeline:
+            if composite.properties.secondary_only_single_pipeline:
                 assert len(results_secondary) == 1, ValueError(
                     f"Expected single output from secondary transformations, got {len(results_secondary)} instead."
                 )
-            if transformations.properties.secondary_requires_predictions:
+            if composite.properties.secondary_requires_predictions:
                 assert is_prediction(results_secondary[0]), ValueError(
                     "Expected predictions from secondary transformations, but got something else."
                 )
 
-            return transformations.postprocess_result_secondary(
+            return composite.postprocess_result_secondary(
                 results_primary, results_secondary
             )
 
