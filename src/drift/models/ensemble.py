@@ -25,7 +25,7 @@ class Ensemble(Composite):
         )
 
     def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
-        return postprocecess_results(results, self.name)
+        return postprocess_results(results, self.name)
 
     def get_child_transformations_primary(self) -> TransformationsAlwaysList:
         return self.models
@@ -56,7 +56,7 @@ class PerColumnEnsemble(Composite):
         return X.iloc[:, index].to_frame()
 
     def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
-        return postprocecess_results(results, self.name)
+        return postprocess_results(results, self.name)
 
     def get_child_transformations_primary(self) -> TransformationsAlwaysList:
         return self.models
@@ -67,7 +67,7 @@ class PerColumnEnsemble(Composite):
         )
 
 
-def postprocecess_results(
+def postprocess_results(
     results: List[pd.DataFrame],
     name: str,
 ) -> pd.DataFrame:
