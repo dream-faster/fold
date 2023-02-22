@@ -17,7 +17,7 @@ def test_sequential() -> None:
     X.rename(columns={ X.columns[0]: "ds", X.columns[1]:'y' }, inplace = True)
 
     splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
-    horizon = 1
+    horizon = 2
     transformations = [
         SequentialTransformation(NBEATS(input_size=2 * horizon, h=horizon, max_epochs=50)),
         OnlyPredictions(),

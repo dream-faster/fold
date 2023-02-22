@@ -19,14 +19,11 @@ class SequentialTransformation(Transformation):
         self.name = self.transformation.__class__.__name__
 
     def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
-        Y_df = X.copy(deep=True)
-        Y_df['unique_id'] = 1.
-        # Y_df['y'] = X[X.columns[0]]
+        X_df = X.copy(deep=True)
+        X_df['unique_id'] = 1.
+        X_df = X_df[['unique_id', 'ds', 'y']]
         
-        # Y_df = Y_df.rename(columns={'timestamp': 'ds'})
-        Y_df = Y_df[['unique_id', 'ds', 'y']]
-        
-        self.transformation.fit(Y_df)
+        self.transformation.fit(X_df)
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
         return pd.DataFrame(self.transformation.predict().reset_index(), columns=X.columns)
