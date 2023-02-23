@@ -83,7 +83,9 @@ class PerColumnTransform(Composite):
     def before_fit(self, X: pd.DataFrame) -> None:
         self.transformations = [deepcopy(self.transformations) for _ in X.columns]
 
-    def preprocess_X_primary(self, X: pd.DataFrame, index: int) -> pd.DataFrame:
+    def preprocess_X_primary(
+        self, X: pd.DataFrame, index: int, y: Optional[pd.Series]
+    ) -> pd.DataFrame:
         return X.iloc[:, index].to_frame()
 
     def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
@@ -147,7 +149,9 @@ class SkipNA(Composite):
             ]
         )
 
-    def preprocess_X_primary(self, X: pd.DataFrame, index: int) -> pd.DataFrame:
+    def preprocess_X_primary(
+        self, X: pd.DataFrame, index: int, y: Optional[pd.Series]
+    ) -> pd.DataFrame:
         self.original_index = X.index.copy()
         self.isna = X.isna().any(axis=1)
         return X[~self.isna]

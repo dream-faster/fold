@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Callable, List
+from typing import Callable, List, Optional
 
 import pandas as pd
 from iteration_utilities import unique_everseen
@@ -52,7 +52,9 @@ class PerColumnEnsemble(Composite):
     def before_fit(self, X: pd.DataFrame) -> None:
         self.models = [deepcopy(self.models) for _ in X.columns]
 
-    def preprocess_X_primary(self, X: pd.DataFrame, index: int) -> pd.DataFrame:
+    def preprocess_X_primary(
+        self, X: pd.DataFrame, index: int, y: Optional[pd.Series]
+    ) -> pd.DataFrame:
         return X.iloc[:, index].to_frame()
 
     def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:

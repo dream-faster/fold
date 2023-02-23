@@ -118,7 +118,7 @@ def recursively_fit_transform(
         composite.before_fit(X)
         results_primary = [
             recursively_fit_transform(
-                composite.preprocess_X_primary(X, index),
+                composite.preprocess_X_primary(X, index, y),
                 composite.preprocess_y_primary(y),
                 child_transformation,
             )
