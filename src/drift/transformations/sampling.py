@@ -4,7 +4,6 @@ from typing import Optional
 
 import pandas as pd
 
-from ..models.base import Model
 from .base import Transformation
 
 
@@ -15,11 +14,11 @@ class Sampling(Transformation):
     def __init__(
         self,
         sampler,
-        model: Model,
+        model: Transformation,
     ) -> None:
         self.model = model
         self.sampler = sampler
-        self.name = f"Sampling-{sampler.__class__.__name__}"
+        self.name = f"Sampling-{sampler.__class__.__name__}-{model.name}"
 
     def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None) -> None:
         X, y = self.sampler.fit_resample(X, y)

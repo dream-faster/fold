@@ -76,7 +76,7 @@ class PerColumnTransform(Composite):
         self.name = "PerColumnTransform-" + "-".join(
             [
                 transformation.name if hasattr(transformation, "name") else ""
-                for transformation in transformations
+                for transformation in self.transformations
             ]
         )
 
