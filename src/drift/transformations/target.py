@@ -31,7 +31,9 @@ class TransformTarget(Composite):
     ) -> pd.DataFrame:
         # TransformTarget's primary transformation transforms `y`, not `X`.
         if y is None:
-            return pd.DataFrame() # at inference time, `y` will be None, and we don't need to use primary transformations at all, so we return a dummy DataFrame.
+            return (
+                pd.DataFrame()
+            )  # at inference time, `y` will be None, and we don't need to use primary transformations at all, so we return a dummy DataFrame.
         else:
             return y.to_frame()
 
