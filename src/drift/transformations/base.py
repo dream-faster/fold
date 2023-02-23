@@ -40,10 +40,14 @@ class FeatureSelector(Transformation):
 class Composite(ABC):
     @dataclass
     class Properties:
-        primary_requires_predictions: bool = False
-        primary_only_single_pipeline: bool = False
-        secondary_requires_predictions: bool = False
-        secondary_only_single_pipeline: bool = False
+        primary_requires_predictions: bool = (
+            False  # Primary transformations need output from a model
+        )
+        primary_only_single_pipeline: bool = False  # Primary transformations should contain only a single pipeline, not multiple.
+        secondary_requires_predictions: bool = (
+            False  # Secondary transformations need output from a model
+        )
+        secondary_only_single_pipeline: bool = False  # Secondary transformations should contain only a single pipeline, not multiple.
 
     properties: Properties
 
@@ -74,7 +78,9 @@ class Composite(ABC):
     def before_fit(self, X: pd.DataFrame) -> None:
         pass
 
-    def preprocess_X_primary(self, X: pd.DataFrame, index: int) -> pd.DataFrame:
+    def preprocess_X_primary(
+        self, X: pd.DataFrame, index: int, y: Optional[pd.Series]
+    ) -> pd.DataFrame:
         return X
 
     def preprocess_X_secondary(

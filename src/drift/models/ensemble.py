@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Callable, List
+from typing import Callable, List, Optional
 
 import pandas as pd
-from iteration_utilities import unique_everseen
 
 from ..transformations.base import Composite, Transformations, TransformationsAlwaysList
+from ..transformations.common import get_concatenated_names
 from ..utils.checks import all_have_probabilities
-from ..utils.list import wrap_in_list
+from ..utils.list import unique, wrap_in_list
 
 
 class Ensemble(Composite):
@@ -17,12 +17,7 @@ class Ensemble(Composite):
 
     def __init__(self, models: Transformations) -> None:
         self.models = models
-        self.name = "Ensemble-" + "-".join(
-            [
-                transformation.name if hasattr(transformation, "name") else ""
-                for transformation in models
-            ]
-        )
+        self.name = "Ensemble-" + get_concatenated_names(models)
 
     def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
         return postprocecess_results(results, self.name)
@@ -42,17 +37,14 @@ class PerColumnEnsemble(Composite):
 
     def __init__(self, models: Transformations) -> None:
         self.models: TransformationsAlwaysList = wrap_in_list(models)
-        self.name = "PerColumnEnsemble-" + "-".join(
-            [
-                transformation.name if hasattr(transformation, "name") else ""
-                for transformation in self.models
-            ]
-        )
+        self.name = "PerColumnEnsemble-" + get_concatenated_names(self.models)
 
     def before_fit(self, X: pd.DataFrame) -> None:
         self.models = [deepcopy(self.models) for _ in X.columns]
 
-    def preprocess_X_primary(self, X: pd.DataFrame, index: int) -> pd.DataFrame:
+    def preprocess_X_primary(
+        self, X: pd.DataFrame, index: int, y: Optional[pd.Series]
+    ) -> pd.DataFrame:
         return X.iloc[:, index].to_frame()
 
     def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
@@ -103,7 +95,7 @@ def get_groupped_columns_classification(
 ) -> pd.DataFrame:
     columns = results[0].columns.to_list()
     probabilities_columns = [col for col in columns if col.startswith("probabilities_")]
-    classes = unique_everseen([line.split("_")[-1] for line in probabilities_columns])
+    classes = unique([line.split("_")[-1] for line in probabilities_columns])
 
     predictions = (
         pd.concat(

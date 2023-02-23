@@ -1,7 +1,7 @@
 from typing import List
 
 from ..transformations.base import Composite, Transformations
-from ..utils.list import flatten
+from ..utils.list import flatten, wrap_in_list
 
 
 def get_flat_list_of_transformations(
@@ -21,4 +21,13 @@ def get_flat_list_of_transformations(
         else:
             return transformations
 
-    return flatten(get_all_transformations(transformations))
+    return flatten(wrap_in_list(get_all_transformations(transformations)))
+
+
+def get_concatenated_names(transformations: Transformations) -> str:
+    return "-".join(
+        [
+            transformation.name if hasattr(transformation, "name") else ""
+            for transformation in get_flat_list_of_transformations(transformations)
+        ]
+    )

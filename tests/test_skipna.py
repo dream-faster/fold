@@ -15,7 +15,7 @@ def test_skipna() -> None:
 
     splitter = ExpandingWindowSplitter(train_window_size=50, step=400)
     transformations = [
-        SkipNA(lambda x: x),
+        SkipNA([lambda x: x, lambda x: x]),
     ]
 
     transformations_over_time = train(transformations, X, y, splitter)

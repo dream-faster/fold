@@ -45,7 +45,7 @@ def recursively_transform(
         # TODO: here we have the potential to parallelize/distribute training of child transformations
         results_primary = [
             recursively_transform(
-                composite.preprocess_X_primary(X, index),
+                composite.preprocess_X_primary(X, index, y=None),
                 child_transformation,
             )
             for index, child_transformation in enumerate(

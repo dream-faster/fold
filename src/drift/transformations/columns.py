@@ -5,6 +5,8 @@ from typing import Callable, List, Optional, Union
 
 import pandas as pd
 
+from drift.transformations.common import get_concatenated_names
+
 from ..utils.list import wrap_in_list
 from .base import Composite, Transformation, Transformations, TransformationsAlwaysList
 from .concat import Concat, ResolutionStrategy
@@ -73,17 +75,14 @@ class PerColumnTransform(Composite):
 
     def __init__(self, transformations: Transformations) -> None:
         self.transformations = wrap_in_list(transformations)
-        self.name = "PerColumnTransform-" + "-".join(
-            [
-                transformation.name if hasattr(transformation, "name") else ""
-                for transformation in self.transformations
-            ]
-        )
+        self.name = "PerColumnTransform-" + get_concatenated_names(self.transformations)
 
     def before_fit(self, X: pd.DataFrame) -> None:
         self.transformations = [deepcopy(self.transformations) for _ in X.columns]
 
-    def preprocess_X_primary(self, X: pd.DataFrame, index: int) -> pd.DataFrame:
+    def preprocess_X_primary(
+        self, X: pd.DataFrame, index: int, y: Optional[pd.Series]
+    ) -> pd.DataFrame:
         return X.iloc[:, index].to_frame()
 
     def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
@@ -139,7 +138,7 @@ class SkipNA(Composite):
     properties = Composite.Properties()
 
     def __init__(self, transformations: Transformations) -> None:
-        self.transformations = wrap_in_list(transformations)
+        self.transformations = [transformations]
         self.name = "SkipNA-" + "-".join(
             [
                 transformation.name if hasattr(transformation, "name") else ""
@@ -147,7 +146,9 @@ class SkipNA(Composite):
             ]
         )
 
-    def preprocess_X_primary(self, X: pd.DataFrame, index: int) -> pd.DataFrame:
+    def preprocess_X_primary(
+        self, X: pd.DataFrame, index: int, y: Optional[pd.Series]
+    ) -> pd.DataFrame:
         self.original_index = X.index.copy()
         self.isna = X.isna().any(axis=1)
         return X[~self.isna]

@@ -11,7 +11,11 @@ from drift.transformations.columns import (
     TransformColumn,
 )
 from drift.transformations.target import TransformTarget
-from drift.utils.tests import generate_sine_wave_data
+from drift.utils.tests import (
+    generate_all_zeros,
+    generate_sine_wave_data,
+    generate_zeros_and_ones_skewed,
+)
 
 
 def test_no_transformation() -> None:
@@ -103,10 +107,10 @@ class TestTransformTarget(Transformation):
         pass
 
     def transform(self, X):
-        return X + 1.0
+        return X + 2.0
 
     def inverse_transform(self, X):
-        return X - 1.0
+        return X - 2.0
 
 
 class TestIfAllYValuesBelow1(Transformation):
@@ -114,7 +118,19 @@ class TestIfAllYValuesBelow1(Transformation):
     name = "TestIfAllYValuesBelow1"
 
     def fit(self, X, y):
-        assert np.all(X <= 1.0)
+        assert np.all(y <= 1.0)
+        return X
+
+    def transform(self, X):
+        return X
+
+
+class TestIfAllYValuesAbove1(Transformation):
+
+    name = "TestIfAllYValuesAbove1"
+
+    def fit(self, X, y):
+        assert np.all(y >= 1.0)
         return X
 
     def transform(self, X):
@@ -123,18 +139,22 @@ class TestIfAllYValuesBelow1(Transformation):
 
 def test_target_transformation() -> None:
 
-    X = generate_sine_wave_data()
+    X = generate_zeros_and_ones_skewed(length=1000, weights=[0.5, 0.5])
+    # y = generate_all_zeros(length=1000).squeeze()
     y = X.shift(-1).squeeze()
 
     splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
+
     transformations = [
-        TransformTarget(lambda x: x + 1, TestTransformTarget()),
+        TransformTarget(
+            [lambda x: x + 1, TestIfAllYValuesAbove1()], TestTransformTarget()
+        ),
         TestIfAllYValuesBelow1(),
     ]
 
     transformations_over_time = train(transformations, X, y, splitter)
     _, pred = backtest(transformations_over_time, X, y, splitter)
-    assert np.all(np.isclose((X.squeeze()[pred.index]).values, pred.values))
+    assert ((X.squeeze()[pred.index] + 1) == pred).all()
 
 
 def test_per_column_transform() -> None:
@@ -147,7 +167,7 @@ def test_per_column_transform() -> None:
 
     splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
     transformations = [
-        PerColumnTransform([lambda x: x + 1.0]),
+        PerColumnTransform([lambda x: x, lambda x: x + 1.0]),
         lambda x: x.sum(axis=1),
     ]
 
