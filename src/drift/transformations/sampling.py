@@ -4,7 +4,6 @@ from typing import Optional
 
 import pandas as pd
 
-from ..models.base import Model
 from .base import Transformation
 
 
@@ -15,7 +14,7 @@ class Sampling(Transformation):
     def __init__(
         self,
         sampler,
-        model: Model,
+        model: Transformation,
     ) -> None:
         self.model = model
         self.sampler = sampler
