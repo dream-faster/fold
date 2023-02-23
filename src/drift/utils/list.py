@@ -1,6 +1,9 @@
 import collections
 import itertools
+from collections.abc import Iterable
 from typing import List, TypeVar, Union
+
+from iteration_utilities import unique_everseen
 
 T = TypeVar("T")
 
@@ -10,7 +13,11 @@ def wrap_in_list(input: Union[T, List[T]]) -> List[T]:
 
 
 def flatten(input: List[List]) -> List:
-    return list(itertools.chain.from_iterable(input))
+    for x in input:
+        if isinstance(x, Iterable) and not isinstance(x, (str, bytes)):
+            yield from flatten(x)
+        else:
+            yield x
 
 
 def keep_only_duplicates(input: List) -> List:
@@ -19,3 +26,7 @@ def keep_only_duplicates(input: List) -> List:
 
 def has_intersection(lhs: List, rhs: List) -> bool:
     return len(set(lhs).intersection(rhs)) > 0
+
+
+def unique(input: List) -> List:
+    return unique_everseen(input)

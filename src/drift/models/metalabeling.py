@@ -4,6 +4,7 @@ from typing import Callable, List, Optional, Union
 
 import pandas as pd
 
+from drift.transformations.common import get_concatenated_names
 from drift.utils.checks import get_prediction_column
 
 from ..transformations.base import Composite, Transformations, TransformationsAlwaysList
@@ -40,16 +41,11 @@ class MetaLabeling(Composite):
         positive_class: Union[int, float],
         primary_output_included: bool = False,
     ) -> None:
-        self.primary = wrap_in_list(primary)
-        self.meta = wrap_in_list(meta)
+        self.primary = [primary]
+        self.meta = [meta]
         self.positive_class = positive_class
         self.primary_output_included = primary_output_included
-        self.name = "MetaLabeling-" + "-".join(
-            [
-                transformation.name if hasattr(transformation, "name") else ""
-                for transformation in self.primary + self.meta
-            ]
-        )
+        self.name = "MetaLabeling-" + get_concatenated_names(self.primary + self.meta)
 
     def preprocess_X_secondary(
         self, X: pd.DataFrame, results_primary: List[pd.DataFrame], index: int

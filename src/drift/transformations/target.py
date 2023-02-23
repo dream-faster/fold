@@ -4,6 +4,8 @@ from typing import Callable, List, Optional
 
 import pandas as pd
 
+from drift.transformations.common import get_concatenated_names
+
 from ..transformations.base import Composite, Transformations, TransformationsAlwaysList
 
 
@@ -19,11 +21,8 @@ class TransformTarget(Composite):
     ) -> None:
         self.X_transformations = [X_transformations]
         self.y_transformation = y_transformation
-        self.name = "TransformTarget-" + "-".join(
-            [
-                transformation.name if hasattr(transformation, "name") else ""
-                for transformation in self.X_transformations + [self.y_transformation]
-            ]
+        self.name = "TransformTarget-" + get_concatenated_names(
+            self.X_transformations + [self.y_transformation]
         )
 
     def preprocess_X_primary(
