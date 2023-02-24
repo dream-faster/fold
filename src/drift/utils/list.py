@@ -14,7 +14,7 @@ def wrap_in_list(input: Union[T, List[T]]) -> List[T]:
 
 def flatten(input: List[List]) -> List:
     for x in input:
-        if isinstance(x, Iterable) and not isinstance(x, (str, bytes)):
+        if isinstance(x, list):
             yield from flatten(x)
         else:
             yield x
