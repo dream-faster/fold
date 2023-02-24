@@ -11,9 +11,11 @@ def get_flat_list_of_transformations(
         if isinstance(transformations, List):
             return [get_all_transformations(t) for t in transformations]
         elif isinstance(transformations, Composite):
-            secondary_transformations = [] if (
-                transformations.get_child_transformations_secondary()
-            ) is None else transformations.get_child_transformations_secondary()
+            secondary_transformations = (
+                []
+                if (transformations.get_child_transformations_secondary()) is None
+                else transformations.get_child_transformations_secondary()
+            )
             return [
                 get_all_transformations(child_t)
                 for child_t in transformations.get_child_transformations_primary()
