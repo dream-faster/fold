@@ -1,4 +1,4 @@
-from typing import Callable, List
+from typing import Callable, List, Optional
 
 import pandas as pd
 
@@ -11,6 +11,7 @@ def process_transformations(
     transformations: Transformations,
     X: pd.DataFrame,
     y: pd.Series,
+    sample_weights: Optional[pd.Series],
     splits: List[Split],
 ):
     import ray
@@ -18,4 +19,6 @@ def process_transformations(
     func = ray.remote(func)
     X = ray.put(X)
     y = ray.put(y)
-    return ray.get([func.remote(X, y, transformations, split) for split in splits])
+    return ray.get(
+        [func.remote(X, y, sample_weights, transformations, split) for split in splits]
+    )

@@ -22,7 +22,12 @@ class Transformation(ABC):
     name: str
 
     @abstractmethod
-    def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None) -> None:
+    def fit(
+        self,
+        X: pd.DataFrame,
+        y: Optional[pd.Series] = None,
+        sample_weights: Optional[pd.Series] = None,
+    ) -> None:
         raise NotImplementedError
 
     @abstractmethod

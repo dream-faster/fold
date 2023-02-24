@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional, Union
 
 import pandas as pd
 
@@ -16,7 +16,9 @@ class DummyClassifier(Model):
         self.all_classes = all_classes
         self.predicted_probabilities = predicted_probabilities
 
-    def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
+    def fit(
+        self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
+    ) -> None:
         pass
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
@@ -47,7 +49,9 @@ class DummyRegressor(Model):
     def __init__(self, predicted_value: float) -> None:
         self.predicted_value = predicted_value
 
-    def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
+    def fit(
+        self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
+    ) -> None:
         pass
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:

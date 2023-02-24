@@ -13,7 +13,7 @@ class ToUnivariate(Transformation):
         self.lag_column = lag_column
         self.name = f"UnivariateWrapper-{lag_column}"
 
-    def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None) -> None:
+    def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None, sample_weights: Optional[pd.Series] = None) -> None:
         pass
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:

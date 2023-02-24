@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional, Union
 
 import pandas as pd
 from imblearn.under_sampling import RandomUnderSampler
@@ -17,7 +17,12 @@ class TestRegressor(Model):
     properties = Transformation.Properties(requires_past_X=True)
     name = "TestRegressor"
 
-    def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
+    def fit(
+        self,
+        X: pd.DataFrame,
+        y: Optional[pd.Series] = None,
+        sample_weights: Optional[pd.Series] = None,
+    ) -> None:
         assert y[y == 1].sum() >= len(y) * 0.45
         assert len(y) < 90000
 

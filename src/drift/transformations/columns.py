@@ -21,7 +21,12 @@ class SelectColumns(Transformation):
         self.columns = wrap_in_list(columns)
         self.name = f"SelectColumns-{columns}"
 
-    def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None) -> None:
+    def fit(
+        self,
+        X: pd.DataFrame,
+        y: Optional[pd.Series] = None,
+        sample_weights: Optional[pd.Series] = None,
+    ) -> None:
         pass
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
@@ -36,7 +41,12 @@ class DropColumns(Transformation):
         self.columns = wrap_in_list(columns)
         self.name = f"DropColumns-{columns}"
 
-    def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None) -> None:
+    def fit(
+        self,
+        X: pd.DataFrame,
+        y: Optional[pd.Series] = None,
+        sample_weights: Optional[pd.Series] = None,
+    ) -> None:
         pass
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
@@ -50,7 +60,12 @@ class RenameColumns(Transformation):
         self.columns_mapper = columns_mapper
         self.name = "RenameColumns"
 
-    def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None) -> None:
+    def fit(
+        self,
+        X: pd.DataFrame,
+        y: Optional[pd.Series] = None,
+        sample_weights: Optional[pd.Series] = None,
+    ) -> None:
         pass
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
@@ -103,7 +118,12 @@ class OnlyPredictions(Transformation):
     def __init__(self) -> None:
         self.name = "OnlyPredictions"
 
-    def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None) -> None:
+    def fit(
+        self,
+        X: pd.DataFrame,
+        y: Optional[pd.Series] = None,
+        sample_weights: Optional[pd.Series] = None,
+    ) -> None:
         pass
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
@@ -118,7 +138,12 @@ class OnlyProbabilities(Transformation):
     def __init__(self) -> None:
         self.name = "OnlyProbabilities"
 
-    def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None) -> None:
+    def fit(
+        self,
+        X: pd.DataFrame,
+        y: Optional[pd.Series] = None,
+        sample_weights: Optional[pd.Series] = None,
+    ) -> None:
         pass
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:

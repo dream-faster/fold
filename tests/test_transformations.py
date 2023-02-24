@@ -103,7 +103,7 @@ class TestTransformTarget(Transformation):
 
     name = "test_transform_target"
 
-    def fit(self, X, y):
+    def fit(self, X, y, sample_weights):
         pass
 
     def transform(self, X):
@@ -117,7 +117,7 @@ class TestIfAllYValuesBelow1(Transformation):
 
     name = "TestIfAllYValuesBelow1"
 
-    def fit(self, X, y):
+    def fit(self, X, y, sample_weights):
         assert np.all(y <= 1.0)
         return X
 
@@ -129,7 +129,7 @@ class TestIfAllYValuesAbove1(Transformation):
 
     name = "TestIfAllYValuesAbove1"
 
-    def fit(self, X, y):
+    def fit(self, X, y, sample_weights):
         assert np.all(y >= 1.0)
         return X
 

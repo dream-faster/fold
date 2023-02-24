@@ -14,7 +14,12 @@ class TestIdentity(Transformation):
         self.fit_func = fit_func
         self.transform_func = transform_func
 
-    def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None) -> None:
+    def fit(
+        self,
+        X: pd.DataFrame,
+        y: Optional[pd.Series] = None,
+        sample_weights: Optional[pd.Series] = None,
+    ) -> None:
         self.fit_func(X, y)
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:

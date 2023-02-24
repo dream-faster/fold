@@ -13,7 +13,12 @@ class FunctionTransformation(Transformation):
         self.func = func
         self.name = func.__name__
 
-    def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None) -> None:
+    def fit(
+        self,
+        X: pd.DataFrame,
+        y: Optional[pd.Series] = None,
+        sample_weights: Optional[pd.Series] = None,
+    ) -> None:
         pass
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:

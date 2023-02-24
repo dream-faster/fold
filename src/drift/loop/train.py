@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from enum import Enum
-from typing import Callable, List, Union
+from typing import Callable, List, Optional, Union
 
 import pandas as pd
 from sklearn.base import BaseEstimator
@@ -42,6 +42,7 @@ def train(
     X: pd.DataFrame,
     y: pd.Series,
     splitter: Splitter,
+    sample_weights: Optional[pd.Series] = None,
     backend: Backend = Backend.no,
 ) -> TransformationsOverTime:
 
@@ -51,15 +52,17 @@ def train(
     )
 
     splits = splitter.splits(length=len(y))
-    if backend == Backend.no:
-        processed = process_transformations_sequential(
-            process_transformations_window, transformations, X, y, splits
-        )
-    elif backend == Backend.ray:
-        processed = process_transformations_ray(
-            process_transformations_window, transformations, X, y, splits
-        )
-
+    process_function = process_transformations_sequential
+    if backend == Backend.ray:
+        process_function = process_transformations_ray
+    processed = process_function(
+        process_transformations_window,
+        transformations,
+        X,
+        y,
+        sample_weights,
+        splits,
+    )
     idx, only_transformations = zip(*processed)
 
     return [
@@ -75,6 +78,7 @@ def train(
 def process_transformations_window(
     X: pd.DataFrame,
     y: pd.Series,
+    sample_weights: Optional[pd.Series],
     transformations: List[Union[Transformation, Composite]],
     split: Split,
 ) -> tuple[int, List[Union[Transformation, Composite]]]:
@@ -82,8 +86,16 @@ def process_transformations_window(
     X_train = X.iloc[split.train_window_start : split.train_window_end]
     y_train = y.iloc[split.train_window_start : split.train_window_end]
 
+    sample_weights_train = (
+        sample_weights.iloc[split.train_window_start : split.train_window_end]
+        if sample_weights is not None
+        else None
+    )
+
     transformations = deepcopy_transformations(transformations)
-    X_train = recursively_fit_transform(X_train, y_train, transformations)
+    X_train = recursively_fit_transform(
+        X_train, y_train, sample_weights_train, transformations
+    )
 
     return split.model_index, transformations
 
@@ -104,12 +116,13 @@ def deepcopy_transformations(
 def recursively_fit_transform(
     X: pd.DataFrame,
     y: pd.Series,
+    sample_weights: Optional[pd.Series],
     transformations: Transformations,
 ) -> pd.DataFrame:
 
     if isinstance(transformations, List):
         for transformation in transformations:
-            X = recursively_fit_transform(X, y, transformation)
+            X = recursively_fit_transform(X, y, sample_weights, transformation)
         return X
 
     elif isinstance(transformations, Composite):
@@ -120,6 +133,7 @@ def recursively_fit_transform(
             recursively_fit_transform(
                 composite.preprocess_X_primary(X, index, y),
                 composite.preprocess_y_primary(y),
+                sample_weights,
                 child_transformation,
             )
             for index, child_transformation in enumerate(
@@ -144,6 +158,7 @@ def recursively_fit_transform(
                 recursively_fit_transform(
                     composite.preprocess_X_secondary(X, results_primary, index),
                     composite.preprocess_y_secondary(y, results_primary),
+                    sample_weights,
                     child_transformation,
                 )
                 for index, child_transformation in enumerate(secondary_transformations)
@@ -165,5 +180,5 @@ def recursively_fit_transform(
     else:
         if len(X) == 0:
             return pd.DataFrame()
-        transformations.fit(X, y)
+        transformations.fit(X, y, sample_weights)
         return transformations.transform(X)

@@ -20,7 +20,12 @@ class Sampling(Transformation):
         self.sampler = sampler
         self.name = f"Sampling-{sampler.__class__.__name__}-{model.name}"
 
-    def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None) -> None:
+    def fit(
+        self,
+        X: pd.DataFrame,
+        y: Optional[pd.Series] = None,
+        sample_weights: Optional[pd.Series] = None,
+    ) -> None:
         X, y = self.sampler.fit_resample(X, y)
         self.model.fit(X, y)
 
