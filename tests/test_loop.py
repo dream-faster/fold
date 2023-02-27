@@ -1,7 +1,8 @@
 from drift.loop import backtest, train
 from drift.models import BaselineRegressor
 from drift.splitters import ExpandingWindowSplitter
-from drift.utils.tests import generate_sine_wave_data
+from drift.transformations.test import Test
+from drift.utils.tests import generate_all_zeros, generate_sine_wave_data
 
 
 def test_loop() -> None:
@@ -16,3 +17,23 @@ def test_loop() -> None:
     transformations_over_time = train(transformations, X, y, splitter)
     _, pred = backtest(transformations_over_time, X, y, splitter)
     assert (X.squeeze()[pred.index] == pred).all()
+
+
+def test_sameple_weights() -> None:
+    def assert_sample_weights_exist(X, y, sample_weight):
+        assert sample_weight is not None
+        assert sample_weight[0] == 0
+
+    test_sample_weights_exist = Test(
+        fit_func=assert_sample_weights_exist, transform_func=lambda X: X
+    )
+
+    X = generate_all_zeros(1000)
+    y = X.squeeze()
+    sameple_weights = generate_all_zeros(1000).squeeze()
+
+    splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
+    transformations = [
+        test_sample_weights_exist,
+    ]
+    _ = train(transformations, X, y, splitter, sample_weights=sameple_weights)
