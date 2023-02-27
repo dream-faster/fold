@@ -1,3 +1,5 @@
+from typing import Optional
+
 import pandas as pd
 
 from .base import FeatureSelector, Transformation
@@ -13,7 +15,12 @@ class SKLearnTransformation(Transformation):
         self.transformation = transformation
         self.name = transformation.__class__.__name__
 
-    def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
+    def fit(
+        self,
+        X: pd.DataFrame,
+        y: Optional[pd.Series] = None,
+        sample_weights: Optional[pd.Series] = None,
+    ) -> None:
         self.transformation.fit(X, y)
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
@@ -38,7 +45,12 @@ class SKLearnFeatureSelector(FeatureSelector):
         self.transformation = transformation
         self.name = transformation.__class__.__name__
 
-    def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
+    def fit(
+        self,
+        X: pd.DataFrame,
+        y: Optional[pd.Series] = None,
+        sample_weights: Optional[pd.Series] = None,
+    ) -> None:
         self.transformation.fit(X, y)
         if hasattr(self.transformation, "get_feature_names_out"):
             self.selected_features = self.transformation.get_feature_names_out()

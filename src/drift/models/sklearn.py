@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional, Union
 
 import pandas as pd
 
@@ -16,8 +16,10 @@ class SKLearnClassifier(Model):
         self.model = model
         self.name = model.__class__.__name__
 
-    def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
-        self.model.fit(X, y)
+    def fit(
+        self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
+    ) -> None:
+        self.model.fit(X, y, sample_weights)
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         probabilities = pd.DataFrame(
@@ -45,8 +47,10 @@ class SKLearnRegressor(Model):
         self.model = model
         self.name = model.__class__.__name__
 
-    def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
-        self.model.fit(X, y)
+    def fit(
+        self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
+    ) -> None:
+        self.model.fit(X, y, sample_weights)
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         return pd.Series(

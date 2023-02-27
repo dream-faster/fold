@@ -45,7 +45,9 @@ class BaselineRegressor(Model):
         self.seasonal_length = seasonal_length
         self.name = f"BaselineModel-{self.strategy.value}"
 
-    def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
+    def fit(
+        self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
+    ) -> None:
         self.fitted_X = X
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:

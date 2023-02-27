@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Union
+from typing import Optional, Union
 
 import pandas as pd
 
@@ -8,7 +8,9 @@ from ..transformations.base import Transformation
 
 class Model(Transformation):
     @abstractmethod
-    def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
+    def fit(
+        self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
+    ) -> None:
         raise NotImplementedError
 
     @abstractmethod

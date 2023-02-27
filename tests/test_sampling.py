@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional, Union
 
 import pandas as pd
 from imblearn.under_sampling import RandomUnderSampler
@@ -9,20 +9,16 @@ from drift.models.dummy import DummyClassifier
 from drift.splitters import ExpandingWindowSplitter
 from drift.transformations.base import Transformation
 from drift.transformations.sampling import Sampling
+from drift.transformations.test import Test
 from drift.utils.tests import generate_zeros_and_ones_skewed
 
 
-class TestRegressor(Model):
+def assert_on_fit(X, y):
+    assert y[y == 1].sum() >= len(y) * 0.45
+    assert len(y) < 90000
 
-    properties = Transformation.Properties(requires_past_X=True)
-    name = "TestRegressor"
 
-    def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
-        assert y[y == 1].sum() >= len(y) * 0.45
-        assert len(y) < 90000
-
-    def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
-        return X
+test_regressor = Test(fit_func=assert_on_fit, transform_func=lambda X: X)
 
 
 def test_sampling() -> None:
@@ -32,7 +28,7 @@ def test_sampling() -> None:
 
     splitter = ExpandingWindowSplitter(train_window_size=90000, step=90000)
     transformations = [
-        Sampling(RandomUnderSampler(), TestRegressor()),
+        Sampling(RandomUnderSampler(), test_regressor),
     ]
 
     _ = train(transformations, X, y, splitter)

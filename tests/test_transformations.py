@@ -4,18 +4,14 @@ from sklearn.feature_selection import SelectKBest, VarianceThreshold, f_regressi
 from drift.loop import backtest, train
 from drift.splitters import ExpandingWindowSplitter
 from drift.transformations import Identity, SelectColumns
-from drift.transformations.base import Transformation
 from drift.transformations.columns import (
     PerColumnTransform,
     RenameColumns,
     TransformColumn,
 )
 from drift.transformations.target import TransformTarget
-from drift.utils.tests import (
-    generate_all_zeros,
-    generate_sine_wave_data,
-    generate_zeros_and_ones_skewed,
-)
+from drift.transformations.test import Test
+from drift.utils.tests import generate_sine_wave_data, generate_zeros_and_ones_skewed
 
 
 def test_no_transformation() -> None:
@@ -99,57 +95,37 @@ def test_function_transformation() -> None:
     assert np.all(np.isclose((X.squeeze()[pred.index]).values, (pred + 1.0).values))
 
 
-class TestTransformTarget(Transformation):
-
-    name = "test_transform_target"
-
-    def fit(self, X, y):
-        pass
-
-    def transform(self, X):
-        return X + 2.0
-
-    def inverse_transform(self, X):
-        return X - 2.0
+test_transform_plus_2 = Test(lambda x: x, lambda x: x + 2.0, lambda x: x - 2.0)
 
 
-class TestIfAllYValuesBelow1(Transformation):
-
-    name = "TestIfAllYValuesBelow1"
-
-    def fit(self, X, y):
-        assert np.all(y <= 1.0)
-        return X
-
-    def transform(self, X):
-        return X
+def all_y_values_above_1(X, y):
+    assert np.all(y >= 1.0)
 
 
-class TestIfAllYValuesAbove1(Transformation):
+def all_y_values_below_1(X, y):
+    assert np.all(y <= 1.0)
 
-    name = "TestIfAllYValuesAbove1"
 
-    def fit(self, X, y):
-        assert np.all(y >= 1.0)
-        return X
-
-    def transform(self, X):
-        return X
+test_all_y_values_below_1 = Test(
+    fit_func=all_y_values_below_1, transform_func=lambda X: X
+)
+test_all_y_values_above_1 = Test(
+    fit_func=all_y_values_above_1, transform_func=lambda X: X
+)
 
 
 def test_target_transformation() -> None:
 
     X = generate_zeros_and_ones_skewed(length=1000, weights=[0.5, 0.5])
-    # y = generate_all_zeros(length=1000).squeeze()
     y = X.shift(-1).squeeze()
 
     splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
 
     transformations = [
         TransformTarget(
-            [lambda x: x + 1, TestIfAllYValuesAbove1()], TestTransformTarget()
+            [lambda x: x + 1, test_all_y_values_above_1], test_transform_plus_2
         ),
-        TestIfAllYValuesBelow1(),
+        test_all_y_values_below_1,
     ]
 
     transformations_over_time = train(transformations, X, y, splitter)
