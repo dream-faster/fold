@@ -16,10 +16,11 @@ def test_sequential() -> None:
     X.rename({"index":"ds"})
     X.rename(columns={ X.columns[0]: "ds", X.columns[1]:'y' }, inplace = True)
 
-    splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
+    step = 400
+    splitter = ExpandingWindowSplitter(train_window_size=400, step=step)
     horizon = 2
     transformations = [
-        NeuralForecastWrapper(NBEATS(input_size=2 * horizon, h=horizon, max_epochs=50)),
+        NeuralForecastWrapper(NBEATS(input_size=step, h=horizon, max_epochs=50)),
         OnlyPredictions(),
     ]
     transformations_over_time = train(transformations, X, y, splitter)

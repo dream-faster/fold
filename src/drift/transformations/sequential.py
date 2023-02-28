@@ -26,4 +26,4 @@ class NeuralForecastWrapper(Transformation):
         self.transformation.fit(X_df)
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
-        return pd.DataFrame(self.transformation.predict().reset_index(), columns=X.columns)
+        return pd.DataFrame(self.transformation.predict(), columns=X.columns)
