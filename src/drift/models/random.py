@@ -37,4 +37,4 @@ class RandomClassifier(Model):
             for associated_class in self.all_classes
         ]
 
-        return pd.concat([predictions] + probabilities, axis=1)
+        return pd.concat([predictions] + probabilities, axis="columns")

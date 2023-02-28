@@ -38,7 +38,7 @@ class DummyClassifier(Model):
             )
         ]
 
-        return pd.concat([predictions] + probabilities, axis=1)
+        return pd.concat([predictions] + probabilities, axis="columns")
 
 
 class DummyRegressor(Model):

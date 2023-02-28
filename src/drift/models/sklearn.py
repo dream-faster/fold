@@ -19,7 +19,10 @@ class SKLearnClassifier(Model):
     def fit(
         self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
     ) -> None:
-        self.model.fit(X, y, sample_weights)
+        if hasattr(self.model, "partial_fit"):
+            self.model.partial_fit(X, y, sample_weights)
+        else:
+            self.model.fit(X, y, sample_weights)
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         probabilities = pd.DataFrame(
@@ -34,7 +37,7 @@ class SKLearnClassifier(Model):
             index=X.index,
             name=f"predictions_{self.name}",
         )
-        return pd.concat([predictions, probabilities], axis=1)
+        return pd.concat([predictions, probabilities], axis="columns")
 
 
 class SKLearnRegressor(Model):
@@ -50,7 +53,10 @@ class SKLearnRegressor(Model):
     def fit(
         self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
     ) -> None:
-        self.model.fit(X, y, sample_weights)
+        if hasattr(self.model, "partial_fit"):
+            self.model.partial_fit(X, y, sample_weights)
+        else:
+            self.model.fit(X, y, sample_weights)
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         return pd.Series(

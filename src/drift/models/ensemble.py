@@ -81,9 +81,9 @@ def get_groupped_columns_regression(
                 ].squeeze()
                 for df in results
             ],
-            axis=1,
+            axis="columns",
         )
-        .mean(axis=1)
+        .mean(axis="columns")
         .rename(f"predictions_{name}")
         .to_frame()
     )
@@ -105,9 +105,9 @@ def get_groupped_columns_classification(
                 ].squeeze()
                 for df in results
             ],
-            axis=1,
+            axis="columns",
         )
-        .mean(axis=1)
+        .mean(axis="columns")
         .rename(f"predictions_{name}")
     )
 
@@ -125,11 +125,11 @@ def get_groupped_columns_classification(
                     ].squeeze()
                     for df in results
                 ],
-                axis=1,
+                axis="columns",
             )
-            .mean(axis=1)
+            .mean(axis="columns")
             .rename(f"probabilities_{name}_{selected_class}")
         )
         for selected_class in classes
     ]
-    return pd.concat([predictions] + probabilities, axis=1)
+    return pd.concat([predictions] + probabilities, axis="columns")

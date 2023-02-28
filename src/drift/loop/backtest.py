@@ -1,4 +1,5 @@
-from typing import Tuple
+from enum import Enum
+from typing import Tuple, Union
 
 import pandas as pd
 from tqdm import tqdm
@@ -9,7 +10,7 @@ from ..all_types import (
     TransformationsOverTime,
 )
 from ..splitters import Split, Splitter
-from .infer import recursively_transform
+from .common import recursively_transform
 
 
 def backtest(
@@ -32,8 +33,8 @@ def backtest(
     ]
     insample_values, outofsample_values = zip(*results)
 
-    insample_predictions = pd.concat(insample_values).squeeze()
-    outofsample_predictions = pd.concat(outofsample_values).squeeze()
+    insample_predictions = pd.concat(insample_values, axis="index").squeeze()
+    outofsample_predictions = pd.concat(outofsample_values, axis="index").squeeze()
     return insample_predictions, outofsample_predictions
 
 

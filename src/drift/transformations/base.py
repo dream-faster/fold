@@ -16,6 +16,7 @@ class Transformation(ABC):
             classifier = "classifier"
 
         requires_past_X: bool  # ignored for now, assumed always True
+        requires_continuous_updates: bool = False
         model_type: Optional[ModelType] = None
 
     properties: Properties
@@ -35,6 +36,17 @@ class Transformation(ABC):
         raise NotImplementedError
 
     def inverse_transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        raise NotImplementedError
+
+
+class UpdateableTransformation(Transformation):
+    @abstractmethod
+    def update(
+        self,
+        X: pd.DataFrame,
+        y: Optional[pd.Series] = None,
+        sample_weights: Optional[pd.Series] = None,
+    ) -> None:
         raise NotImplementedError
 
 

@@ -101,7 +101,7 @@ class PerColumnTransform(Composite):
         return X.iloc[:, index].to_frame()
 
     def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
-        return pd.concat(results, axis=1)
+        return pd.concat(results, axis="columns")
 
     def get_child_transformations_primary(self) -> TransformationsAlwaysList:
         return self.transformations
@@ -183,7 +183,7 @@ class SkipNA(Composite):
 
     def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
         results = [result.reindex(self.original_index) for result in results]
-        return pd.concat(results, axis=1)
+        return pd.concat(results, axis="columns")
 
     def get_child_transformations_primary(self) -> TransformationsAlwaysList:
         return self.transformations

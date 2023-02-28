@@ -3,7 +3,8 @@ from typing import List
 import pandas as pd
 
 from ..all_types import TransformationsOverTime
-from ..transformations.base import Composite, Transformations
+from ..transformations.base import Composite, Transformation, Transformations
+from .common import recursively_transform
 
 DeployableTransformations = Transformations
 
@@ -12,63 +13,26 @@ def to_deployable_transformations(
     transformations_over_time: TransformationsOverTime,
 ) -> DeployableTransformations:
     return [
-        transformation_over_time.loc[0]
+        transformation_over_time.loc[-1]
         for transformation_over_time in transformations_over_time
     ]
 
 
-# def infer(
-#     transformations_over_time: DeployableTransformations,
-#     X: pd.DataFrame,
-# ) -> OutSamplePredictions:
-
-#     X_test = X.iloc[split.test_window_start : split.test_window_end]
-#     X_test = recursively_transform(X_test, current_transformations)
-#     outofsample_values = zip(*results)
-
-#     outofsample_predictions = pd.concat(outofsample_values).squeeze()
-#     return outofsample_predictions
-
-
-def recursively_transform(
+def infer(
+    transformations_over_time: DeployableTransformations,
+    past_X: pd.DataFrame,
     X: pd.DataFrame,
-    transformations: Transformations,
-) -> pd.DataFrame:
+) -> OutSamplePredictions:
 
-    if isinstance(transformations, List):
-        for transformation in transformations:
-            X = recursively_transform(X, transformation)
-        return X
+    X_test = pd.concat([past_X, X], axis="index")
+    X_test = recursively_transform(X_test, current_transformations)
+    outofsample_values = zip(*results)
 
-    elif isinstance(transformations, Composite):
-        composite: Composite = transformations
-        # TODO: here we have the potential to parallelize/distribute training of child transformations
-        results_primary = [
-            recursively_transform(
-                composite.preprocess_X_primary(X, index, y=None),
-                child_transformation,
-            )
-            for index, child_transformation in enumerate(
-                composite.get_child_transformations_primary()
-            )
-        ]
-        secondary_transformations = composite.get_child_transformations_secondary()
+    outofsample_predictions = pd.concat(outofsample_values, axis="index").squeeze()
+    return outofsample_predictions
 
-        if secondary_transformations is None:
-            return composite.postprocess_result_primary(results_primary)
-        else:
-            results_secondary = [
-                recursively_transform(
-                    composite.preprocess_X_secondary(X, results_primary, index),
-                    child_transformation,
-                )
-                for index, child_transformation in enumerate(secondary_transformations)
-            ]
-            return composite.postprocess_result_secondary(
-                results_primary, results_secondary
-            )
 
-    else:
-        if len(X) == 0:
-            return pd.DataFrame()
-        return transformations.transform(X)
+def update(
+    transformations_over_time: DeployableTransformations, X: pd.DataFrame, y: pd.Series
+):
+    return recursively_transform(X, transformations_over_time)
