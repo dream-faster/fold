@@ -1,11 +1,12 @@
 from drift.loop import backtest, train
+from drift.loop.types import Backend, TrainMethod
 from drift.models import BaselineRegressor
 from drift.splitters import ExpandingWindowSplitter
 from drift.transformations.test import Test
 from drift.utils.tests import generate_all_zeros, generate_sine_wave_data
 
 
-def test_loop() -> None:
+def run_loop(train_method: TrainMethod, backend: Backend) -> None:
 
     # the naive model returns X as prediction, so y.shift(1) should be == pred
     X = generate_sine_wave_data()
@@ -16,7 +17,12 @@ def test_loop() -> None:
 
     transformations_over_time = train(transformations, X, y, splitter)
     _, pred = backtest(transformations_over_time, X, y, splitter)
-    assert (X.squeeze()[pred.index] == pred).all()
+    assert (X.squeeze()[pred.index] == pred.squeeze()).all()
+
+
+def test_loop():
+    run_loop(TrainMethod.sequential, Backend.no)
+    run_loop(TrainMethod.parallel, Backend.no)
 
 
 def test_sameple_weights() -> None:

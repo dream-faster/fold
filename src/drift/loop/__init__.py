@@ -1,2 +1,4 @@
 from .backtest import backtest
-from .train import Backend, train
+from .infer import infer, update
+from .train import train
+from .types import Backend, TrainMethod

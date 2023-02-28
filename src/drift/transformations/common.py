@@ -1,12 +1,12 @@
 from typing import List
 
-from ..transformations.base import Composite, Transformations
+from ..transformations.base import Composite, Transformation, Transformations
 from ..utils.list import flatten, wrap_in_list
 
 
 def get_flat_list_of_transformations(
     transformations: Transformations,
-) -> List[Transformations]:
+) -> List[Transformation]:
     def get_all_transformations(transformations: Transformations) -> Transformations:
         if isinstance(transformations, List):
             return [get_all_transformations(t) for t in transformations]

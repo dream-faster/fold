@@ -120,5 +120,6 @@ Transformations = Union[
     Callable,
     List[Union[Transformation, Composite, Callable]],
 ]
+DeployableTransformations = Transformations
 
 TransformationsAlwaysList = List[Union[Transformation, Composite, Callable]]

@@ -28,7 +28,9 @@ def test_ensemble_regression() -> None:
 
     transformations_over_time = train(transformations, X, y, splitter)
     _, pred = backtest(transformations_over_time, X, y, splitter)
-    assert np.all(np.isclose((X.squeeze()[pred.index]).values, (pred + 2.0).values))
+    assert np.all(
+        np.isclose((X.squeeze()[pred.index]).values, (pred.squeeze() + 2.0).values)
+    )
 
 
 def test_ensemble_classification() -> None:

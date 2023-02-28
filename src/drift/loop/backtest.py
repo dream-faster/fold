@@ -6,11 +6,12 @@ from tqdm import tqdm
 
 from ..all_types import (
     InSamplePredictions,
-    OutSamplePredictions,
+    OutOfSamplePredictions,
     TransformationsOverTime,
 )
 from ..splitters import Split, Splitter
-from .common import recursively_transform
+from ..transformations.common import get_flat_list_of_transformations
+from .common import deepcopy_transformations, recursively_transform
 
 
 def backtest(
@@ -18,29 +19,33 @@ def backtest(
     X: pd.DataFrame,
     y: pd.Series,
     splitter: Splitter,
-) -> Tuple[InSamplePredictions, OutSamplePredictions]:
+) -> Tuple[InSamplePredictions, OutOfSamplePredictions]:
     """
     Backtest a list of transformations over time.
+    Run backtest on a set of TransformationsOverTime and given data.
+    Does not mutate or change the transformations in any way, aka you can backtest multiple times.
     """
 
     results = [
-        __inference_from_window(
+        __backtest_on_window(
             split,
             X,
+            y,
             transformations_over_time,
         )
         for split in tqdm(splitter.splits(length=len(X)))
     ]
     insample_values, outofsample_values = zip(*results)
 
-    insample_predictions = pd.concat(insample_values, axis="index").squeeze()
-    outofsample_predictions = pd.concat(outofsample_values, axis="index").squeeze()
+    insample_predictions = pd.concat(insample_values, axis="index")
+    outofsample_predictions = pd.concat(outofsample_values, axis="index")
     return insample_predictions, outofsample_predictions
 
 
-def __inference_from_window(
+def __backtest_on_window(
     split: Split,
     X: pd.DataFrame,
+    y: pd.Series,
     transformations_over_time: TransformationsOverTime,
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     current_transformations = [
@@ -52,7 +57,18 @@ def __inference_from_window(
     X_train = recursively_transform(X_train, current_transformations)
 
     X_test = X.iloc[split.train_window_start : split.test_window_end]
-    X_test = recursively_transform(X_test, current_transformations)
+    if any(
+        [
+            t.properties.requires_continuous_updates
+            for t in get_flat_list_of_transformations(current_transformations)
+        ]
+    ):
+        result = [recursively_transform() for row in X_test.iterrows()]
+
+    else:
+        X_test = recursively_transform(
+            X_test, deepcopy_transformations(current_transformations)
+        )
 
     test_window_size = split.test_window_end - split.test_window_start
     X_test = X_test.iloc[-test_window_size:]
