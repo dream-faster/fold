@@ -3,7 +3,7 @@ from drift.splitters import ExpandingWindowSplitter
 from drift.transformations.columns import OnlyPredictions
 from drift.utils.tests import generate_all_zeros
 
-from drift.transformations.sequential import SequentialTransformation
+from drift.transformations.sequential import NeuralForecastWrapper
 import pandas as pd
 
 def test_sequential() -> None:
@@ -19,7 +19,7 @@ def test_sequential() -> None:
     splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
     horizon = 2
     transformations = [
-        SequentialTransformation(NBEATS(input_size=2 * horizon, h=horizon, max_epochs=50)),
+        NeuralForecastWrapper(NBEATS(input_size=2 * horizon, h=horizon, max_epochs=50)),
         OnlyPredictions(),
     ]
     transformations_over_time = train(transformations, X, y, splitter)

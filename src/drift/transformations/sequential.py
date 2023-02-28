@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from neuralforecast.common._base_windows import BaseWindows
 
 
-class SequentialTransformation(Transformation):
+class NeuralForecastWrapper(Transformation):
 
     properties = Transformation.Properties(requires_past_X=True)
 
