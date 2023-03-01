@@ -119,24 +119,3 @@ def deepcopy_transformations(
         return transformation.clone(deepcopy_transformations)
     else:
         return deepcopy(transformation)
-
-
-# def deepcopy_transformations_over_time(
-#     transformations_over_time: TransformationsOverTime,
-# ) -> TransformationsOverTime:
-#     return [
-#         series.apply(lambda x: deepcopy_transformations(x))
-#         for series in transformations_over_time
-#     ]
-
-
-def get_first_transformations(
-    transformations_over_time: TransformationsOverTime,
-) -> Transformations:
-    return [series.iloc[0] for series in transformations_over_time]
-
-
-def get_last_transformations(
-    transformations_over_time: TransformationsOverTime,
-) -> Transformations:
-    return [series.iloc[-1] for series in transformations_over_time]
