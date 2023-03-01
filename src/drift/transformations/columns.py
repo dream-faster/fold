@@ -88,12 +88,17 @@ class PerColumnTransform(Composite):
 
     properties = Composite.Properties()
 
-    def __init__(self, transformations: Transformations) -> None:
+    def __init__(
+        self, transformations: Transformations, transformations_already_cloned=False
+    ) -> None:
         self.transformations = wrap_in_list(transformations)
         self.name = "PerColumnTransform-" + get_concatenated_names(self.transformations)
+        self.transformations_already_cloned = transformations_already_cloned
 
     def before_fit(self, X: pd.DataFrame) -> None:
-        self.transformations = [deepcopy(self.transformations) for _ in X.columns]
+        if not self.transformations_already_cloned:
+            self.transformations = [deepcopy(self.transformations) for _ in X.columns]
+            self.transformations_already_cloned = True
 
     def preprocess_X_primary(
         self, X: pd.DataFrame, index: int, y: Optional[pd.Series]
@@ -109,6 +114,7 @@ class PerColumnTransform(Composite):
     def clone(self, clone_child_transformations: Callable) -> PerColumnTransform:
         return PerColumnTransform(
             transformations=clone_child_transformations(self.transformations),
+            transformations_already_cloned=self.transformations_already_cloned,
         )
 
 

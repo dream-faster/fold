@@ -59,7 +59,8 @@ class PerColumnEnsemble(Composite):
 
     def clone(self, clone_child_transformations: Callable) -> PerColumnEnsemble:
         return PerColumnEnsemble(
-            models=clone_child_transformations(self.models), models_already_cloned=self.models_already_cloned
+            models=clone_child_transformations(self.models),
+            models_already_cloned=self.models_already_cloned,
         )
 
 
