@@ -1,5 +1,4 @@
 site_name: Drift
-site_dir: "docs"
 theme:
   name: material
   
