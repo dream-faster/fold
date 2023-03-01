@@ -17,7 +17,7 @@ def backtest(
     X: pd.DataFrame,
     y: pd.Series,
     splitter: Splitter,
-) -> tuple[InSamplePredictions, OutSamplePredictions]:
+) -> Tuple[InSamplePredictions, OutSamplePredictions]:
 
     results = [
         __inference_from_window(
