@@ -81,7 +81,7 @@ def process_transformations_window(
     sample_weights: Optional[pd.Series],
     transformations: List[Union[Transformation, Composite]],
     split: Split,
-) -> tuple[int, List[Union[Transformation, Composite]]]:
+) -> Tuple[int, List[Union[Transformation, Composite]]]:
 
     X_train = X.iloc[split.train_window_start : split.train_window_end]
     y_train = y.iloc[split.train_window_start : split.train_window_end]
