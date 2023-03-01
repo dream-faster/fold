@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from enum import Enum
-from typing import Callable, List, Optional, Union
+from typing import Callable, List, Optional, Tuple, Union
 
 import pandas as pd
 from sklearn.base import BaseEstimator
