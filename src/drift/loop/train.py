@@ -20,7 +20,7 @@ from .backend.sequential import (
 from .common import (
     deepcopy_transformations,
     get_first_transformations,
-    recursively_fit_transform,
+    recursively_transform,
 )
 from .convenience import replace_transformation_if_not_drift_native
 from .types import Backend, TrainMethod
@@ -140,8 +140,8 @@ def process_transformations_window(
     )
 
     transformations = deepcopy_transformations(transformations)
-    X_train = recursively_fit_transform(
-        X_train, y_train, sample_weights_train, transformations
+    X_train = recursively_transform(
+        X_train, y_train, sample_weights_train, transformations, fit=True
     )
 
     return split.model_index, transformations

@@ -54,21 +54,14 @@ def __backtest_on_window(
     ]
 
     X_train = X.iloc[split.train_window_start : split.train_window_end]
-    X_train = recursively_transform(X_train, current_transformations)
+    X_train = recursively_transform(
+        X_train, None, None, current_transformations, fit=False
+    )
 
     X_test = X.iloc[split.train_window_start : split.test_window_end]
-    if any(
-        [
-            t.properties.requires_continuous_updates
-            for t in get_flat_list_of_transformations(current_transformations)
-        ]
-    ):
-        result = [recursively_transform() for row in X_test.iterrows()]
-
-    else:
-        X_test = recursively_transform(
-            X_test, deepcopy_transformations(current_transformations)
-        )
+    X_test = recursively_transform(
+        X_test, None, None, deepcopy_transformations(current_transformations), fit=False
+    )
 
     test_window_size = split.test_window_end - split.test_window_start
     X_test = X_test.iloc[-test_window_size:]

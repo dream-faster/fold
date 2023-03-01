@@ -4,11 +4,7 @@ import pandas as pd
 
 from ..all_types import OutOfSamplePredictions
 from ..transformations.base import DeployableTransformations, Transformations
-from .common import (
-    deepcopy_transformations,
-    recursively_fit_transform,
-    recursively_transform,
-)
+from .common import deepcopy_transformations, recursively_transform
 
 
 def infer(
@@ -23,7 +19,7 @@ def infer(
     """
 
     X_test = pd.concat([past_X, X], axis="index")
-    results = recursively_transform(X_test, transformations)
+    results = recursively_transform(X_test, None, None, transformations, fit=False)
     return results
 
 
@@ -40,5 +36,5 @@ def update(
     """
     transformations = deepcopy_transformations(transformations)
     X = pd.concat([past_X, X], axis="index")
-    _ = recursively_fit_transform(X, y, sample_weights, transformations)
+    _ = recursively_transform(X, y, sample_weights, transformations, fit=True)
     return transformations

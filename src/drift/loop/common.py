@@ -6,16 +6,18 @@ from typing import List, Optional, Union
 import pandas as pd
 
 from drift.all_types import TransformationsOverTime
+from drift.transformations.common import get_flat_list_of_transformations
 
 from ..transformations.base import Composite, Transformation, Transformations
 from ..utils.checks import is_prediction
 
 
-def recursively_fit_transform(
+def recursively_transform(
     X: pd.DataFrame,
-    y: pd.Series,
+    y: Optional[pd.Series],
     sample_weights: Optional[pd.Series],
     transformations: Transformations,
+    fit: bool = False,
 ) -> pd.DataFrame:
 
     if isinstance(transformations, List):
@@ -78,59 +80,16 @@ def recursively_fit_transform(
     elif isinstance(transformations, Transformation):
         if len(X) == 0:
             return pd.DataFrame()
-        transformations.fit(X, y, sample_weights)
+        if fit:
+            transformations.fit(X, y, sample_weights)
         return transformations.transform(X)
-
-    else:
-        raise ValueError(
-            f"{transformations} is not a Drift Transformation, but of type {type(transformations)}"
-        )
-
-
-def recursively_transform(
-    X: pd.DataFrame,
-    transformations: Transformations,
-) -> pd.DataFrame:
-
-    if isinstance(transformations, List):
-        for transformation in transformations:
-            X = recursively_transform(X, transformation)
-        return X
-
-    elif isinstance(transformations, Composite):
-        composite: Composite = transformations
-        # TODO: here we have the potential to parallelize/distribute training of child transformations
-        results_primary = [
-            recursively_transform(
-                composite.preprocess_X_primary(X, index, y=None),
-                child_transformation,
-            )
-            for index, child_transformation in enumerate(
-                composite.get_child_transformations_primary()
-            )
-        ]
-        secondary_transformations = composite.get_child_transformations_secondary()
-
-        if secondary_transformations is None:
-            return composite.postprocess_result_primary(results_primary)
-        else:
-            results_secondary = [
-                recursively_transform(
-                    composite.preprocess_X_secondary(X, results_primary, index),
-                    child_transformation,
-                )
-                for index, child_transformation in enumerate(secondary_transformations)
-            ]
-            return composite.postprocess_result_secondary(
-                results_primary, results_secondary
-            )
-
-    elif isinstance(transformations, Transformation):
-        if len(X) == 0:
-            return pd.DataFrame()
-        else:
-            return transformations.transform(X)
-
+        # if any(
+        #     [
+        #         t.properties.requires_continuous_updates
+        #         for t in get_flat_list_of_transformations(transformations)
+        #     ]
+        # ):
+        #     result = [ for row in X_test.iterrows()]
     else:
         raise ValueError(
             f"{transformations} is not a Drift Transformation, but of type {type(transformations)}"
