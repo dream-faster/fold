@@ -1,3 +1,19 @@
 site_name: Drift
 theme:
   name: material
+  
+plugins:
+  - search
+  - table-reader
+  - plotly
+
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: plotly
+          class: mkdocs-plotly
+          format: !!python/name:mkdocs_plotly_plugin.fences.fence_plotly
+
+extra_javascript:
+  - https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js
+  - javascripts/tablesort.js
