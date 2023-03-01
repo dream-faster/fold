@@ -1,15 +1,2 @@
 # Drift
 
-{{ read_csv('results.csv') }}
-
-``` plotly
-{
-    "data": [
-        {
-            "x": ["giraffes", "orangutans", "monkeys"],
-            "y": [20, 14, 23],
-            "type": "bar"
-        }
-    ]
-}
-```

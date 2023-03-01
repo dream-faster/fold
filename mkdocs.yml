@@ -1,6 +1,11 @@
 site_name: Drift
+site_dir: "docs"
 theme:
   name: material
   
 plugins:
   - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
