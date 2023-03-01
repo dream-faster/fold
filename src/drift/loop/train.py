@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from enum import Enum
-from typing import Callable, List, Optional, Union
+from typing import Callable, List, Optional, Tuple, Union
 
 import pandas as pd
 from sklearn.base import BaseEstimator
@@ -84,7 +84,7 @@ def process_transformations_window(
     sample_weights: Optional[pd.Series],
     transformations: List[Union[Transformation, Composite]],
     split: Split,
-) -> tuple[int, List[Union[Transformation, Composite]]]:
+) -> Tuple[int, List[Union[Transformation, Composite]]]:
 
     X_train = X.iloc[split.train_window_start : split.train_window_end]
     y_train = y.iloc[split.train_window_start : split.train_window_end]
