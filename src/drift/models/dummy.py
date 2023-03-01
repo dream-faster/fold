@@ -8,7 +8,7 @@ from .base import Model
 
 class DummyClassifier(Model):
 
-    properties = Transformation.Properties(requires_past_X=False)
+    properties = Transformation.Properties()
     name = "DummyClassifier"
 
     def __init__(self, predicted_value, all_classes, predicted_probabilities) -> None:
@@ -43,7 +43,7 @@ class DummyClassifier(Model):
 
 class DummyRegressor(Model):
 
-    properties = Transformation.Properties(requires_past_X=False)
+    properties = Transformation.Properties()
     name = "DummyRegressor"
 
     def __init__(self, predicted_value: float) -> None:

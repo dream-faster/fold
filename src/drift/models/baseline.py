@@ -32,7 +32,7 @@ class BaselineRegressor(Model):
             else:
                 raise ValueError(f"Unknown Strategy: {value}")
 
-    properties = Transformation.Properties(requires_past_X=True)
+    properties = Transformation.Properties()
 
     def __init__(
         self,
@@ -110,9 +110,7 @@ class BaselineRegressor(Model):
 
 class BaselineNaiveContinuous(Model):
 
-    properties = Transformation.Properties(
-        requires_past_X=False, requires_continuous_updates=True
-    )
+    properties = Transformation.Properties(requires_continuous_updates=True)
     past_y = None
 
     def __init__(

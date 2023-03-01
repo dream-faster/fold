@@ -7,7 +7,7 @@ from .base import FeatureSelector, Transformation
 
 class SKLearnTransformation(Transformation):
 
-    properties = Transformation.Properties(requires_past_X=False)
+    properties = Transformation.Properties()
 
     def __init__(self, transformation) -> None:
         if hasattr(transformation, "set_output"):
@@ -37,7 +37,7 @@ class SKLearnTransformation(Transformation):
 
 class SKLearnFeatureSelector(FeatureSelector):
 
-    properties = Transformation.Properties(requires_past_X=False)
+    properties = Transformation.Properties()
 
     def __init__(self, transformation) -> None:
         if hasattr(transformation, "set_output"):

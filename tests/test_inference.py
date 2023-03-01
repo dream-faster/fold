@@ -1,6 +1,5 @@
 from drift.loop import infer, train_for_deployment, update
-from drift.models import BaselineRegressor
-from drift.splitters import ExpandingWindowSplitter
+from drift.models.baseline import BaselineNaiveContinuous
 from drift.utils.tests import generate_sine_wave_data
 
 
@@ -13,7 +12,7 @@ def test_deployment() -> None:
     y_train = data["sine"][:900].shift(-1)
     y_test = data["sine"][901:].shift(-1)
 
-    transformations = [BaselineRegressor(strategy=BaselineRegressor.Strategy.naive)]
+    transformations = [BaselineNaiveContinuous()]
     deployable_transformations = train_for_deployment(transformations, X_train, y_train)
 
     # for row_X, row_y in zip(X_test, y_test):

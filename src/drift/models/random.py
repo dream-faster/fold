@@ -10,7 +10,7 @@ from .base import Model
 
 class RandomClassifier(Model):
 
-    properties = Transformation.Properties(requires_past_X=False)
+    properties = Transformation.Properties()
     name = "RandomClassifier"
 
     def __init__(self, all_classes: List[int], probability_mean: float = 0.5) -> None:

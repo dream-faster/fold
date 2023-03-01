@@ -13,3 +13,4 @@ from .sampling import Sampling
 from .sklearn import SKLearnFeatureSelector, SKLearnTransformation
 from .target import TransformTarget
 from .univariate import ToUnivariate
+from .update import DontUpdate, InjectPastDataAtInference

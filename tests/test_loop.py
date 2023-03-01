@@ -5,6 +5,7 @@ from drift.models.baseline import BaselineNaiveContinuous
 from drift.splitters import ExpandingWindowSplitter
 from drift.transformations.base import Transformations
 from drift.transformations.test import Test
+from drift.transformations.update import InjectPastDataAtInference
 from drift.utils.tests import generate_all_zeros, generate_sine_wave_data
 
 
@@ -28,12 +29,16 @@ def test_loop():
     run_loop(
         TrainMethod.sequential,
         Backend.no,
-        BaselineRegressor(strategy=BaselineRegressor.Strategy.naive),
+        InjectPastDataAtInference(
+            BaselineRegressor(strategy=BaselineRegressor.Strategy.naive)
+        ),
     )
     run_loop(
         TrainMethod.parallel,
         Backend.no,
-        BaselineRegressor(strategy=BaselineRegressor.Strategy.naive),
+        InjectPastDataAtInference(
+            BaselineRegressor(strategy=BaselineRegressor.Strategy.naive)
+        ),
     )
 
 

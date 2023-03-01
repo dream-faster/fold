@@ -9,7 +9,7 @@ from .base import Transformation
 
 class Sampling(Transformation):
 
-    properties = Transformation.Properties(requires_past_X=False)
+    properties = Transformation.Properties()
 
     def __init__(
         self,

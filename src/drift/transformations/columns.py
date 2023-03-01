@@ -15,7 +15,7 @@ from .identity import Identity
 
 class SelectColumns(Transformation):
 
-    properties = Transformation.Properties(requires_past_X=False)
+    properties = Transformation.Properties()
 
     def __init__(self, columns: Union[List[str], str]) -> None:
         self.columns = wrap_in_list(columns)
@@ -35,7 +35,7 @@ class SelectColumns(Transformation):
 
 class DropColumns(Transformation):
 
-    properties = Transformation.Properties(requires_past_X=False)
+    properties = Transformation.Properties()
 
     def __init__(self, columns: Union[List[str], str]) -> None:
         self.columns = wrap_in_list(columns)
@@ -54,7 +54,7 @@ class DropColumns(Transformation):
 
 
 class RenameColumns(Transformation):
-    properties = Transformation.Properties(requires_past_X=False)
+    properties = Transformation.Properties()
 
     def __init__(self, columns_mapper: dict) -> None:
         self.columns_mapper = columns_mapper
@@ -119,7 +119,7 @@ class PerColumnTransform(Composite):
 
 
 class OnlyPredictions(Transformation):
-    properties = Transformation.Properties(requires_past_X=False)
+    properties = Transformation.Properties()
 
     def __init__(self) -> None:
         self.name = "OnlyPredictions"
@@ -139,7 +139,7 @@ class OnlyPredictions(Transformation):
 
 
 class OnlyProbabilities(Transformation):
-    properties = Transformation.Properties(requires_past_X=False)
+    properties = Transformation.Properties()
 
     def __init__(self) -> None:
         self.name = "OnlyProbabilities"

@@ -7,7 +7,7 @@ from .base import Transformation
 
 class Breakpoint(Transformation):
 
-    properties = Transformation.Properties(requires_past_X=True)
+    properties = Transformation.Properties()
 
     def __init__(
         self, stop_at_fit: bool = True, stop_at_transform: bool = True

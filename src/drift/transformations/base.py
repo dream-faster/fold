@@ -15,7 +15,6 @@ class Transformation(ABC):
             regressor = "regressor"
             classifier = "classifier"
 
-        requires_past_X: bool  # ignored for now, assumed always True
         requires_continuous_updates: bool = False
         model_type: Optional[ModelType] = None
 

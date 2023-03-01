@@ -93,7 +93,8 @@ def recursively_transform(
                 # Important: here, we do inference first, then we fit the transformation.
                 # This is because we want to use the predictions _before_ the transformation has seen the data.
                 result = transformations.transform(X_row)
-                transformations.fit(X_row, y_row, sample_weights_row)
+                if y_row is not None:
+                    transformations.fit(X_row, y_row, sample_weights_row)
                 return result[0]
 
             results = pd.DataFrame(
