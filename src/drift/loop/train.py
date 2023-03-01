@@ -1,4 +1,4 @@
-from typing import Callable, List, Optional, Union
+from typing import Callable, List, Optional, Tuple, Union
 
 import pandas as pd
 from sklearn.base import BaseEstimator
@@ -37,8 +37,22 @@ def train(
     train_method: TrainMethod = TrainMethod.parallel,
     backend: Backend = Backend.no,
 ) -> TransformationsOverTime:
-    """
-    Train a list of transformations over time.
+    """Train a list of transformations over time.
+
+    Args:
+        transformations (List[ Union[Transformation, Composite, Model, Callable, BaseEstimator] ]): _description_
+        X (pd.DataFrame): _description_
+        y (pd.Series): _description_
+        splitter (Splitter): _description_
+        sample_weights (Optional[pd.Series], optional): _description_. Defaults to None.
+        train_method (TrainMethod, optional): _description_. Defaults to TrainMethod.parallel.
+        backend (Backend, optional): _description_. Defaults to Backend.no.
+
+    Raises:
+        ValueError: _description_
+
+    Returns:
+        TransformationsOverTime: _description_
     """
 
     transformations = wrap_in_list(transformations)

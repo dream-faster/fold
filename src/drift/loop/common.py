@@ -22,7 +22,7 @@ def recursively_transform(
 
     if isinstance(transformations, List):
         for transformation in transformations:
-            X = recursively_fit_transform(X, y, sample_weights, transformation)
+            X = recursively_transform(X, y, sample_weights, transformation, fit)
         return X
 
     elif isinstance(transformations, Composite):
@@ -30,11 +30,12 @@ def recursively_transform(
         # TODO: here we have the potential to parallelize/distribute training of child transformations
         composite.before_fit(X)
         results_primary = [
-            recursively_fit_transform(
+            recursively_transform(
                 composite.preprocess_X_primary(X, index, y),
-                composite.preprocess_y_primary(y),
+                composite.preprocess_y_primary(y) if y is not None else None,
                 sample_weights,
                 child_transformation,
+                fit,
             )
             for index, child_transformation in enumerate(
                 composite.get_child_transformations_primary()
@@ -55,11 +56,14 @@ def recursively_transform(
             return composite.postprocess_result_primary(results_primary)
         else:
             results_secondary = [
-                recursively_fit_transform(
+                recursively_transform(
                     composite.preprocess_X_secondary(X, results_primary, index),
-                    composite.preprocess_y_secondary(y, results_primary),
+                    composite.preprocess_y_secondary(y, results_primary)
+                    if y is not None
+                    else None,
                     sample_weights,
                     child_transformation,
+                    fit,
                 )
                 for index, child_transformation in enumerate(secondary_transformations)
             ]

@@ -39,17 +39,6 @@ class Transformation(ABC):
         raise NotImplementedError
 
 
-class UpdateableTransformation(Transformation):
-    @abstractmethod
-    def update(
-        self,
-        X: pd.DataFrame,
-        y: Optional[pd.Series] = None,
-        sample_weights: Optional[pd.Series] = None,
-    ) -> None:
-        raise NotImplementedError
-
-
 class FeatureSelector(Transformation):
     selected_features: List[str]
 

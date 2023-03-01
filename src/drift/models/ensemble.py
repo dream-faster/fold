@@ -34,13 +34,17 @@ class Ensemble(Composite):
 class PerColumnEnsemble(Composite):
 
     properties = Composite.Properties()
+    models_already_cloned = False
 
-    def __init__(self, models: Transformations) -> None:
+    def __init__(self, models: Transformations, models_already_cloned=False) -> None:
         self.models: TransformationsAlwaysList = wrap_in_list(models)
         self.name = "PerColumnEnsemble-" + get_concatenated_names(self.models)
+        self.models_already_cloned = models_already_cloned
 
     def before_fit(self, X: pd.DataFrame) -> None:
-        self.models = [deepcopy(self.models) for _ in X.columns]
+        if not self.models_already_cloned:
+            self.models = [deepcopy(self.models) for _ in X.columns]
+            self.models_already_cloned = True
 
     def preprocess_X_primary(
         self, X: pd.DataFrame, index: int, y: Optional[pd.Series]
@@ -55,7 +59,7 @@ class PerColumnEnsemble(Composite):
 
     def clone(self, clone_child_transformations: Callable) -> PerColumnEnsemble:
         return PerColumnEnsemble(
-            models=clone_child_transformations(self.models),
+            models=clone_child_transformations(self.models), models_already_cloned=self.models_already_cloned
         )
 
 
