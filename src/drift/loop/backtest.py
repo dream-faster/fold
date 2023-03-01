@@ -63,7 +63,13 @@ def __backtest_on_window(
         else None
     )
     X_train = recursively_transform(
-        X_train, y_train, sample_weights_train, current_transformations, fit=False
+        X_train,
+        y_train,
+        sample_weights_train,
+        deepcopy_transformations(
+            current_transformations
+        ),  # we deepcopy here to avoid mutating the continuously updated transformations
+        fit=False,
     )
 
     X_test = X.iloc[split.test_window_start : split.test_window_end]
@@ -77,7 +83,9 @@ def __backtest_on_window(
         X_test,
         y_test,
         sample_weights_test,
-        deepcopy_transformations(current_transformations),
+        deepcopy_transformations(
+            current_transformations
+        ),  # we deepcopy here to avoid mutating the continuously updated transformations
         fit=False,
     )
 

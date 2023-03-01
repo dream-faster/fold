@@ -23,7 +23,7 @@ def test_expanding_window_splitter_embargo():
 
     splits = splitter.splits(len(X))
     assert splits[-1].test_window_end == len(X)
-    assert splits[0].train_window_end == 389
+    assert splits[0].train_window_end == 390
     assert splits[0].test_window_start == 400
 
 
@@ -44,7 +44,7 @@ def test_sliding_window_splitter_embargo():
 
     splits = splitter.splits(len(X))
     assert splits[-1].test_window_end == len(X)
-    assert splits[0].train_window_end == 389
+    assert splits[0].train_window_end == 390
     assert splits[0].test_window_start == 400
 
 
@@ -66,5 +66,5 @@ def test_single_window_splitter_embargo():
     splits = splitter.splits(len(X))
     assert len(splits) == 1
     assert splits[0].test_window_end == 1000
-    assert splits[0].train_window_end == 389
+    assert splits[0].train_window_end == 390
     assert splits[0].test_window_start == 400

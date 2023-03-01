@@ -25,7 +25,7 @@ def run_loop(
     assert (X.squeeze()[pred.index] == pred.squeeze()).all()
 
 
-def test_loop():
+def test_loop_sequential():
     run_loop(
         TrainMethod.sequential,
         Backend.no,
@@ -33,6 +33,9 @@ def test_loop():
             BaselineRegressor(strategy=BaselineRegressor.Strategy.naive)
         ),
     )
+
+
+def test_loop_parallel():
     run_loop(
         TrainMethod.parallel,
         Backend.no,
