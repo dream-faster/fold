@@ -17,7 +17,7 @@ class BaselineRegressor(Model):
         seasonal_mean = "seasonal_mean"
         naive = "naive"
         seasonal_naive = "seasonal_naive"
-        expanding_drift = "drift"
+        expanding_drift = "expanding_drift"
         sliding_drift = "sliding_drift"
 
         @staticmethod
@@ -106,6 +106,29 @@ class BaselineRegressor(Model):
             )
         else:
             raise ValueError(f"Strategy {self.strategy} not implemented")
+
+
+class BaselineNaiveContinuous(Model):
+
+    properties = Transformation.Properties(
+        requires_past_X=False, requires_continuous_updates=True
+    )
+    past_y = None
+
+    def __init__(
+        self,
+    ) -> None:
+        self.name = "BaselineNaiveContinuous"
+
+    def fit(
+        self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
+    ) -> None:
+        self.past_y = y[-1]
+
+    def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
+        if self.past_y is None:
+            return pd.Series(np.zeros(len(X)), index=X.index)
+        return pd.Series(self.past_y, index=X.index)
 
 
 def calculate_drift_predictions(y: np.ndarray) -> np.ndarray:

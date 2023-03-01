@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Tuple, Union
+from typing import Optional, Tuple, Union
 
 import pandas as pd
 from tqdm import tqdm
@@ -10,7 +10,6 @@ from ..all_types import (
     TransformationsOverTime,
 )
 from ..splitters import Split, Splitter
-from ..transformations.common import get_flat_list_of_transformations
 from .common import deepcopy_transformations, recursively_transform
 
 
@@ -19,6 +18,7 @@ def backtest(
     X: pd.DataFrame,
     y: pd.Series,
     splitter: Splitter,
+    sample_weights: Optional[pd.Series] = None,
 ) -> Tuple[InSamplePredictions, OutOfSamplePredictions]:
     """
     Backtest a list of transformations over time.
@@ -32,6 +32,7 @@ def backtest(
             X,
             y,
             transformations_over_time,
+            sample_weights,
         )
         for split in tqdm(splitter.splits(length=len(X)))
     ]
@@ -47,6 +48,7 @@ def __backtest_on_window(
     X: pd.DataFrame,
     y: pd.Series,
     transformations_over_time: TransformationsOverTime,
+    sample_weights: Optional[pd.Series] = None,
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     current_transformations = [
         transformation_over_time.loc[split.model_index]
@@ -54,13 +56,29 @@ def __backtest_on_window(
     ]
 
     X_train = X.iloc[split.train_window_start : split.train_window_end]
+    y_train = y.iloc[split.train_window_start : split.train_window_end]
+    sample_weights_train = (
+        sample_weights.iloc[split.train_window_start : split.train_window_end]
+        if sample_weights is not None
+        else None
+    )
     X_train = recursively_transform(
-        X_train, None, None, current_transformations, fit=False
+        X_train, y_train, sample_weights_train, current_transformations, fit=False
     )
 
     X_test = X.iloc[split.train_window_start : split.test_window_end]
+    y_test = y.iloc[split.train_window_start : split.test_window_end]
+    sample_weights_test = (
+        sample_weights.iloc[split.train_window_start : split.test_window_end]
+        if sample_weights is not None
+        else None
+    )
     X_test = recursively_transform(
-        X_test, None, None, deepcopy_transformations(current_transformations), fit=False
+        X_test,
+        y_test,
+        sample_weights_test,
+        deepcopy_transformations(current_transformations),
+        fit=False,
     )
 
     test_window_size = split.test_window_end - split.test_window_start

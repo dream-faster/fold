@@ -1,19 +1,25 @@
-from drift.loop import backtest, train
+from drift.loop import infer, train_for_deployment, update
 from drift.models import BaselineRegressor
 from drift.splitters import ExpandingWindowSplitter
-from drift.transformations.test import Test
-from drift.utils.tests import generate_all_zeros, generate_sine_wave_data
+from drift.utils.tests import generate_sine_wave_data
 
 
-def test_loop() -> None:
+def test_deployment() -> None:
 
     # the naive model returns X as prediction, so y.shift(1) should be == pred
-    X = generate_sine_wave_data()
-    y = X["sine"].shift(-1)
+    data = generate_sine_wave_data()
+    X_train = data[:900]
+    X_test = data[901:]
+    y_train = data["sine"][:900].shift(-1)
+    y_test = data["sine"][901:].shift(-1)
 
-    splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
     transformations = [BaselineRegressor(strategy=BaselineRegressor.Strategy.naive)]
+    deployable_transformations = train_for_deployment(transformations, X_train, y_train)
 
-    transformations_over_time = train(transformations, X, y, splitter)
-    _, pred = backtest(transformations_over_time, X, y, splitter)
-    assert (X.squeeze()[pred.index] == pred.squeeze()).all()
+    # for row_X, row_y in zip(X_test, y_test):
+
+    #     X =
+    #     pred = infer(deployable_transformations, row_X)
+    #     deployable_transformations = update(deployable_transformations, X_train, y_train)
+
+    # assert (X.squeeze()[pred.index] == pred.squeeze()).all()

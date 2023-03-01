@@ -1,20 +1,22 @@
 from drift.loop import backtest, train
 from drift.loop.types import Backend, TrainMethod
 from drift.models import BaselineRegressor
+from drift.models.baseline import BaselineNaiveContinuous
 from drift.splitters import ExpandingWindowSplitter
+from drift.transformations.base import Transformations
 from drift.transformations.test import Test
 from drift.utils.tests import generate_all_zeros, generate_sine_wave_data
 
 
-def run_loop(train_method: TrainMethod, backend: Backend) -> None:
+def run_loop(
+    train_method: TrainMethod, backend: Backend, transformations: Transformations
+) -> None:
 
     # the naive model returns X as prediction, so y.shift(1) should be == pred
     X = generate_sine_wave_data()
     y = X["sine"].shift(-1)
 
     splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
-    transformations = [BaselineRegressor(strategy=BaselineRegressor.Strategy.naive)]
-
     transformations_over_time = train(
         transformations, X, y, splitter, train_method=train_method, backend=backend
     )
@@ -23,8 +25,24 @@ def run_loop(train_method: TrainMethod, backend: Backend) -> None:
 
 
 def test_loop():
-    run_loop(TrainMethod.sequential, Backend.no)
-    run_loop(TrainMethod.parallel, Backend.no)
+    run_loop(
+        TrainMethod.sequential,
+        Backend.no,
+        BaselineRegressor(strategy=BaselineRegressor.Strategy.naive),
+    )
+    run_loop(
+        TrainMethod.parallel,
+        Backend.no,
+        BaselineRegressor(strategy=BaselineRegressor.Strategy.naive),
+    )
+
+
+def test_loop_with_continuous_transformation():
+    run_loop(
+        TrainMethod.parallel,
+        Backend.no,
+        BaselineNaiveContinuous(),
+    )
 
 
 def test_sameple_weights() -> None:
