@@ -85,11 +85,16 @@ def recursively_transform(
             return pd.DataFrame()
 
         if transformations.properties.requires_continuous_updates:
-
+            # If the transformation requires continuous updates, we need to run the inference
+            # & fit loop on each row, sequentially (one-by-one).
+            # This is so the transformation can update its parameters after each sample.
             def transform_fit_row(row):
+                # Important: here, we do inference first, then we fit the transformation.
+                # This is because we want to use the predictions _before_ the transformation has seen the data.
+                result = transformations.transform(row)
                 if fit:
                     transformations.fit(row, y, sample_weights)
-                return transformations.transform(row)
+                return result
 
             return X.apply(transform_fit_row, axis="index")
 
