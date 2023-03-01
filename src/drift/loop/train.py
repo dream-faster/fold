@@ -45,6 +45,9 @@ def train(
     sample_weights: Optional[pd.Series] = None,
     backend: Backend = Backend.no,
 ) -> TransformationsOverTime:
+    """
+    Train a list of transformations over time.
+    """
 
     transformations = wrap_in_list(transformations)
     transformations: Transformations = replace_transformation_if_not_drift_native(

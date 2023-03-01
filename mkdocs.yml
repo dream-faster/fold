@@ -1,0 +1,17 @@
+site_name: Drift
+theme:
+  name: material
+  
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            show_source: false
+            separate_signature: true
+            show_submodules: true
+            show_signature_annotations: true
+          import:
+          - https://docs.python-requests.org/en/master/objects.inv

@@ -2,7 +2,6 @@ name: ci-cd
 
 
 on:
-  workflow_dispatch:
   push:
   release:
     types:
