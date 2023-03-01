@@ -18,9 +18,9 @@ def backtest(
     y: pd.Series,
     splitter: Splitter,
 ) -> tuple[InSamplePredictions, OutSamplePredictions]:
-    '''
+    """
     Backtest a list of transformations over time.
-    '''
+    """
 
     results = [
         __inference_from_window(
