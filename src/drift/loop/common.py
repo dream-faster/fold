@@ -6,7 +6,6 @@ from typing import List, Optional, Union
 import pandas as pd
 
 from drift.all_types import TransformationsOverTime
-from drift.transformations.common import get_flat_list_of_transformations
 
 from ..transformations.base import Composite, Transformation, Transformations
 from ..utils.checks import is_prediction
@@ -84,16 +83,20 @@ def recursively_transform(
     elif isinstance(transformations, Transformation):
         if len(X) == 0:
             return pd.DataFrame()
-        if fit:
-            transformations.fit(X, y, sample_weights)
-        return transformations.transform(X)
-        # if any(
-        #     [
-        #         t.properties.requires_continuous_updates
-        #         for t in get_flat_list_of_transformations(transformations)
-        #     ]
-        # ):
-        #     result = [ for row in X_test.iterrows()]
+
+        if transformations.properties.requires_continuous_updates:
+
+            def transform_fit_row(row):
+                if fit:
+                    transformations.fit(row, y, sample_weights)
+                return transformations.transform(row)
+
+            return X.apply(transform_fit_row, axis="index")
+
+        else:
+            if fit:
+                transformations.fit(X, y, sample_weights)
+            return transformations.transform(X)
     else:
         raise ValueError(
             f"{transformations} is not a Drift Transformation, but of type {type(transformations)}"
