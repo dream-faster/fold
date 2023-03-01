@@ -66,8 +66,8 @@ def __backtest_on_window(
         X_train, y_train, sample_weights_train, current_transformations, fit=False
     )
 
-    X_test = X.iloc[split.train_window_start : split.test_window_end]
-    y_test = y.iloc[split.train_window_start : split.test_window_end]
+    X_test = X.iloc[split.test_window_start : split.test_window_end]
+    y_test = y.iloc[split.test_window_start : split.test_window_end]
     sample_weights_test = (
         sample_weights.iloc[split.train_window_start : split.test_window_end]
         if sample_weights is not None
@@ -80,8 +80,5 @@ def __backtest_on_window(
         deepcopy_transformations(current_transformations),
         fit=False,
     )
-
-    test_window_size = split.test_window_end - split.test_window_start
-    X_test = X_test.iloc[-test_window_size:]
 
     return X_train, X_test
