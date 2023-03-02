@@ -11,6 +11,7 @@ class SKLearnClassifier(Model):
     properties = Transformation.Properties(
         model_type=Transformation.Properties.ModelType.classifier
     )
+    fitted = False
 
     def __init__(self, model) -> None:
         self.model = model
@@ -21,8 +22,11 @@ class SKLearnClassifier(Model):
     ) -> None:
         if hasattr(self.model, "partial_fit"):
             self.model.partial_fit(X, y, sample_weights)
-        else:
-            self.model.fit(X, y, sample_weights)
+            return
+        if self.fitted:
+            return
+        self.model.fit(X, y, sample_weights)
+        self.fitted = True
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         probabilities = pd.DataFrame(
@@ -45,6 +49,7 @@ class SKLearnRegressor(Model):
     properties = Transformation.Properties(
         model_type=Transformation.Properties.ModelType.regressor
     )
+    fitted = False
 
     def __init__(self, model) -> None:
         self.model = model
@@ -55,8 +60,11 @@ class SKLearnRegressor(Model):
     ) -> None:
         if hasattr(self.model, "partial_fit"):
             self.model.partial_fit(X, y, sample_weights)
-        else:
-            self.model.fit(X, y, sample_weights)
+            return
+        if self.fitted:
+            return
+        self.model.fit(X, y, sample_weights)
+        self.fitted = True
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         return pd.Series(
