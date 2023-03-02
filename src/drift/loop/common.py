@@ -89,17 +89,27 @@ def recursively_transform(
             # If the transformation requires continuous updates, we need to run the inference
             # & fit loop on each row, sequentially (one-by-one).
             # This is so the transformation can update its parameters after each sample.
-            def transform_fit_row(X_row, y_row, sample_weights_row):
-                # Important: here, we do inference first, then we fit the transformation.
-                # This is because we want to use the predictions _before_ the transformation has seen the data.
+
+            # Important: depending on whether we're training or not:
+            # - we call fit() _before_ transform(), at training time. The output are in-sample predictions.
+            # - we call fit() after transform(), at backtesting/inference time. The output are then out-of-sample predictions.
+            def transform_row_train(X_row, y_row, sample_weights_row):
+                transformations.fit(X_row, y_row, sample_weights_row)
+                result = transformations.transform(X_row)
+                return result[0]
+
+            def transform_row_inference_backtest(X_row, y_row, sample_weights_row):
                 result = transformations.transform(X_row)
                 if y_row is not None:
                     transformations.fit(X_row, y_row, sample_weights_row)
                 return result[0]
 
+            transform_row_function = (
+                transform_row_train if fit else transform_row_inference_backtest
+            )
             results = pd.DataFrame(
                 [
-                    transform_fit_row(
+                    transform_row_function(
                         X.loc[index],
                         y_df.loc[index] if y is not None else None,
                         sample_weights.loc[index]
