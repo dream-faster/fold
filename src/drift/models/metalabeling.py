@@ -51,7 +51,7 @@ class MetaLabeling(Composite):
         self, X: pd.DataFrame, results_primary: List[pd.DataFrame], index: int
     ) -> pd.DataFrame:
         if self.primary_output_included:
-            return pd.concat([X] + results_primary, axis=1)
+            return pd.concat([X] + results_primary, axis="columns")
         else:
             return X
 
@@ -97,7 +97,7 @@ class MetaLabeling(Composite):
             for col in meta_probabilities.columns
         }
         meta_probabilities = meta_probabilities.rename(columns=dc)
-        return pd.concat([result, meta_probabilities], axis=1)
+        return pd.concat([result, meta_probabilities], axis="columns")
 
     def get_child_transformations_primary(self) -> TransformationsAlwaysList:
         return self.primary

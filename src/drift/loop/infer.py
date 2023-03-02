@@ -1,74 +1,36 @@
-from typing import List
+from typing import Optional
 
 import pandas as pd
 
-from ..all_types import TransformationsOverTime
-from ..transformations.base import Composite, Transformations
-
-DeployableTransformations = Transformations
-
-
-def to_deployable_transformations(
-    transformations_over_time: TransformationsOverTime,
-) -> DeployableTransformations:
-    return [
-        transformation_over_time.loc[0]
-        for transformation_over_time in transformations_over_time
-    ]
+from ..all_types import OutOfSamplePredictions
+from ..transformations.base import DeployableTransformations, Transformations
+from .common import deepcopy_transformations, recursively_transform
 
 
-# def infer(
-#     transformations_over_time: DeployableTransformations,
-#     X: pd.DataFrame,
-# ) -> OutSamplePredictions:
-
-#     X_test = X.iloc[split.test_window_start : split.test_window_end]
-#     X_test = recursively_transform(X_test, current_transformations)
-#     outofsample_values = zip(*results)
-
-#     outofsample_predictions = pd.concat(outofsample_values).squeeze()
-#     return outofsample_predictions
-
-
-def recursively_transform(
+def infer(
+    transformations: DeployableTransformations,
     X: pd.DataFrame,
-    transformations: Transformations,
-) -> pd.DataFrame:
+) -> OutOfSamplePredictions:
+    """
+    Run inference on a set of Transformations and given data.
+    Does not mutate or change the transformations in any way.
+    A follow-up call to `update` is required to update the transformations, when the ground truth is available.
+    """
 
-    if isinstance(transformations, List):
-        for transformation in transformations:
-            X = recursively_transform(X, transformation)
-        return X
+    results = recursively_transform(X, None, None, transformations, fit=False)
+    return results
 
-    elif isinstance(transformations, Composite):
-        composite: Composite = transformations
-        # TODO: here we have the potential to parallelize/distribute training of child transformations
-        results_primary = [
-            recursively_transform(
-                composite.preprocess_X_primary(X, index, y=None),
-                child_transformation,
-            )
-            for index, child_transformation in enumerate(
-                composite.get_child_transformations_primary()
-            )
-        ]
-        secondary_transformations = composite.get_child_transformations_secondary()
 
-        if secondary_transformations is None:
-            return composite.postprocess_result_primary(results_primary)
-        else:
-            results_secondary = [
-                recursively_transform(
-                    composite.preprocess_X_secondary(X, results_primary, index),
-                    child_transformation,
-                )
-                for index, child_transformation in enumerate(secondary_transformations)
-            ]
-            return composite.postprocess_result_secondary(
-                results_primary, results_secondary
-            )
-
-    else:
-        if len(X) == 0:
-            return pd.DataFrame()
-        return transformations.transform(X)
+def update(
+    transformations: DeployableTransformations,
+    X: pd.DataFrame,
+    y: pd.Series,
+    sample_weights: Optional[pd.Series] = None,
+) -> DeployableTransformations:
+    """
+    Update a set of Transformations with new data.
+    Returns a new set of Transformations, does not mutate the original.
+    """
+    transformations = deepcopy_transformations(transformations)
+    _ = recursively_transform(X, y, sample_weights, transformations, fit=True)
+    return transformations

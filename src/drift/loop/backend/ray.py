@@ -6,7 +6,7 @@ from ...splitters import Split
 from ...transformations.base import Transformations
 
 
-def process_transformations(
+def train_transformations(
     func: Callable,
     transformations: Transformations,
     X: pd.DataFrame,

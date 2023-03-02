@@ -15,7 +15,7 @@ from .identity import Identity
 
 class SelectColumns(Transformation):
 
-    properties = Transformation.Properties(requires_past_X=False)
+    properties = Transformation.Properties()
 
     def __init__(self, columns: Union[List[str], str]) -> None:
         self.columns = wrap_in_list(columns)
@@ -35,7 +35,7 @@ class SelectColumns(Transformation):
 
 class DropColumns(Transformation):
 
-    properties = Transformation.Properties(requires_past_X=False)
+    properties = Transformation.Properties()
 
     def __init__(self, columns: Union[List[str], str]) -> None:
         self.columns = wrap_in_list(columns)
@@ -54,7 +54,7 @@ class DropColumns(Transformation):
 
 
 class RenameColumns(Transformation):
-    properties = Transformation.Properties(requires_past_X=False)
+    properties = Transformation.Properties()
 
     def __init__(self, columns_mapper: dict) -> None:
         self.columns_mapper = columns_mapper
@@ -88,12 +88,17 @@ class PerColumnTransform(Composite):
 
     properties = Composite.Properties()
 
-    def __init__(self, transformations: Transformations) -> None:
+    def __init__(
+        self, transformations: Transformations, transformations_already_cloned=False
+    ) -> None:
         self.transformations = wrap_in_list(transformations)
         self.name = "PerColumnTransform-" + get_concatenated_names(self.transformations)
+        self.transformations_already_cloned = transformations_already_cloned
 
     def before_fit(self, X: pd.DataFrame) -> None:
-        self.transformations = [deepcopy(self.transformations) for _ in X.columns]
+        if not self.transformations_already_cloned:
+            self.transformations = [deepcopy(self.transformations) for _ in X.columns]
+            self.transformations_already_cloned = True
 
     def preprocess_X_primary(
         self, X: pd.DataFrame, index: int, y: Optional[pd.Series]
@@ -101,7 +106,7 @@ class PerColumnTransform(Composite):
         return X.iloc[:, index].to_frame()
 
     def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
-        return pd.concat(results, axis=1)
+        return pd.concat(results, axis="columns")
 
     def get_child_transformations_primary(self) -> TransformationsAlwaysList:
         return self.transformations
@@ -109,11 +114,12 @@ class PerColumnTransform(Composite):
     def clone(self, clone_child_transformations: Callable) -> PerColumnTransform:
         return PerColumnTransform(
             transformations=clone_child_transformations(self.transformations),
+            transformations_already_cloned=self.transformations_already_cloned,
         )
 
 
 class OnlyPredictions(Transformation):
-    properties = Transformation.Properties(requires_past_X=False)
+    properties = Transformation.Properties()
 
     def __init__(self) -> None:
         self.name = "OnlyPredictions"
@@ -133,7 +139,7 @@ class OnlyPredictions(Transformation):
 
 
 class OnlyProbabilities(Transformation):
-    properties = Transformation.Properties(requires_past_X=False)
+    properties = Transformation.Properties()
 
     def __init__(self) -> None:
         self.name = "OnlyProbabilities"
@@ -183,7 +189,7 @@ class SkipNA(Composite):
 
     def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
         results = [result.reindex(self.original_index) for result in results]
-        return pd.concat(results, axis=1)
+        return pd.concat(results, axis="columns")
 
     def get_child_transformations_primary(self) -> TransformationsAlwaysList:
         return self.transformations

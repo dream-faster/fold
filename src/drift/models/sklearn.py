@@ -9,7 +9,7 @@ from drift.transformations.base import Transformation
 class SKLearnClassifier(Model):
 
     properties = Transformation.Properties(
-        requires_past_X=False, model_type=Transformation.Properties.ModelType.classifier
+        model_type=Transformation.Properties.ModelType.classifier
     )
 
     def __init__(self, model) -> None:
@@ -19,7 +19,10 @@ class SKLearnClassifier(Model):
     def fit(
         self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
     ) -> None:
-        self.model.fit(X, y, sample_weights)
+        if hasattr(self.model, "partial_fit"):
+            self.model.partial_fit(X, y, sample_weights)
+        else:
+            self.model.fit(X, y, sample_weights)
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         probabilities = pd.DataFrame(
@@ -34,13 +37,13 @@ class SKLearnClassifier(Model):
             index=X.index,
             name=f"predictions_{self.name}",
         )
-        return pd.concat([predictions, probabilities], axis=1)
+        return pd.concat([predictions, probabilities], axis="columns")
 
 
 class SKLearnRegressor(Model):
 
     properties = Transformation.Properties(
-        requires_past_X=False, model_type=Transformation.Properties.ModelType.regressor
+        model_type=Transformation.Properties.ModelType.regressor
     )
 
     def __init__(self, model) -> None:
@@ -50,7 +53,10 @@ class SKLearnRegressor(Model):
     def fit(
         self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
     ) -> None:
-        self.model.fit(X, y, sample_weights)
+        if hasattr(self.model, "partial_fit"):
+            self.model.partial_fit(X, y, sample_weights)
+        else:
+            self.model.fit(X, y, sample_weights)
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         return pd.Series(

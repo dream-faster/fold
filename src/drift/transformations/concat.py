@@ -55,15 +55,15 @@ class Concat(Composite):
             ]
             results = [result.drop(columns=duplicates) for result in results]
             if self.if_duplicate_keep == ResolutionStrategy.left:
-                return pd.concat(results + [duplicate_columns[0]], axis=1)
+                return pd.concat(results + [duplicate_columns[0]], axis="columns")
             elif self.if_duplicate_keep == ResolutionStrategy.right:
-                return pd.concat(results + [duplicate_columns[-1]], axis=1)
+                return pd.concat(results + [duplicate_columns[-1]], axis="columns")
             else:
                 raise ValueError(
                     f"ResolutionStrategy is not valid: {self.if_duplicate_keep}"
                 )
         else:
-            return pd.concat(results, axis=1)
+            return pd.concat(results, axis="columns")
 
     def get_child_transformations_primary(self) -> TransformationsAlwaysList:
         return self.transformations

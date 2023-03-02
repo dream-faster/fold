@@ -8,7 +8,8 @@ from .base import Transformation
 
 class Test(Transformation):
 
-    properties = Transformation.Properties(requires_past_X=True)
+    properties = Transformation.Properties()
+    __test__ = False
 
     def __init__(
         self,

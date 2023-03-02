@@ -37,7 +37,7 @@ class SlidingWindowSplitter(Splitter):
             Split(
                 model_index=index,
                 train_window_start=index - self.window_size,
-                train_window_end=index - 1 - self.embargo,
+                train_window_end=index - self.embargo,
                 test_window_start=index,
                 test_window_end=min(end, index + self.step),
             )
@@ -66,7 +66,7 @@ class ExpandingWindowSplitter(Splitter):
             Split(
                 model_index=index,
                 train_window_start=self.start,
-                train_window_end=index - 1 - self.embargo,
+                train_window_end=index - self.embargo,
                 test_window_start=index,
                 test_window_end=min(end, index + self.step),
             )
@@ -89,7 +89,7 @@ class SingleWindowSplitter(Splitter):
             Split(
                 model_index=0,
                 train_window_start=0,
-                train_window_end=index - 1 - self.embargo,
+                train_window_end=index - self.embargo,
                 test_window_start=index,
                 test_window_end=length,
             ),

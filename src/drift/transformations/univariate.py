@@ -7,7 +7,7 @@ from .base import Transformation
 
 class ToUnivariate(Transformation):
 
-    properties = Transformation.Properties(requires_past_X=True)
+    properties = Transformation.Properties()
 
     def __init__(self, lag_column: str) -> None:
         self.lag_column = lag_column
