@@ -127,7 +127,7 @@ def train_for_deployment(
         transformations
     )
     _, transformations = process_transformations_window(
-        X, y, sample_weights, transformations, Split(0, 0, -1, 0, 0)
+        X, y, sample_weights, transformations, Split(0, 0, None, 0, None)
     )
     return transformations
 

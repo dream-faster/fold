@@ -9,7 +9,6 @@ from .common import deepcopy_transformations, recursively_transform
 
 def infer(
     transformations: DeployableTransformations,
-    past_X: pd.DataFrame,
     X: pd.DataFrame,
 ) -> OutOfSamplePredictions:
     """
@@ -18,15 +17,13 @@ def infer(
     A follow-up call to `update` is required to update the transformations, when the ground truth is available.
     """
 
-    X_test = pd.concat([past_X, X], axis="index")
-    results = recursively_transform(X_test, None, None, transformations, fit=False)
+    results = recursively_transform(X, None, None, transformations, fit=False)
     return results
 
 
 def update(
     transformations: DeployableTransformations,
     X: pd.DataFrame,
-    past_X: pd.DataFrame,
     y: pd.Series,
     sample_weights: Optional[pd.Series] = None,
 ) -> DeployableTransformations:
@@ -35,6 +32,5 @@ def update(
     Returns a new set of Transformations, does not mutate the original.
     """
     transformations = deepcopy_transformations(transformations)
-    X = pd.concat([past_X, X], axis="index")
     _ = recursively_transform(X, y, sample_weights, transformations, fit=True)
     return transformations
