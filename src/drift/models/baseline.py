@@ -110,6 +110,7 @@ class BaselineRegressor(Model):
 
 class BaselineNaiveContinuous(Model):
 
+    name = "BaselineNaiveContinuous"
     properties = Transformation.Properties(requires_continuous_updates=True)
     past_y = None
 

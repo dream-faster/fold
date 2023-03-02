@@ -1,3 +1,5 @@
+import numpy as np
+
 from drift.loop import infer, train_for_deployment, update
 from drift.models.baseline import BaselineNaiveContinuous
 from drift.utils.tests import generate_sine_wave_data
@@ -20,10 +22,13 @@ def test_deployment() -> None:
         X_test.iloc[0:1],
     )
     assert first_prediction.squeeze() == y_train.iloc[-1]
-    # for row_X, row_y in zip(X_test, y_test):
 
-    #     X =
-    #     pred = infer(deployable_transformations, row_X)
-    #     deployable_transformations = update(deployable_transformations, X_train, y_train)
+    preds = []
+    for index in X_test.index:
 
-    # assert (X.squeeze()[pred.index] == pred.squeeze()).all()
+        X = X_test.loc[index:index]
+        y = y_test.loc[index:index]
+        preds.append(infer(deployable_transformations, X).squeeze())
+        deployable_transformations = update(deployable_transformations, X, y)
+
+    assert (y_test.shift(1).values[1:] == np.array(preds)[1:]).all()

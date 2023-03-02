@@ -41,9 +41,9 @@ def test_nested_transformations() -> None:
 
     transformations_over_time = train(transformations, X, y, splitter)
     _, pred = backtest(transformations_over_time, X, y, splitter)
-    assert np.all(
+    assert (
         np.isclose((X["sine_2"][pred.index]).values, (pred.squeeze() - 3.0).values)
-    )
+    ).all()
 
 
 def test_nested_transformations_with_feature_selection() -> None:
@@ -64,7 +64,7 @@ def test_nested_transformations_with_feature_selection() -> None:
 
     transformations_over_time = train(transformations, X, y, splitter)
     _, pred = backtest(transformations_over_time, X, y, splitter)
-    assert np.all(np.isclose((X["sine"][pred.index]), pred.squeeze()))
+    assert (np.isclose((X["sine"][pred.index]), pred.squeeze())).all()
     assert pred.squeeze().name == "pred"
 
 
@@ -94,7 +94,7 @@ def test_function_transformation() -> None:
 
     transformations_over_time = train(transformations, X, y, splitter)
     _, pred = backtest(transformations_over_time, X, y, splitter)
-    assert np.all(np.isclose((X.squeeze()[pred.index]), (pred.squeeze() + 1.0)))
+    assert (np.isclose((X.squeeze()[pred.index]), (pred.squeeze() + 1.0))).all()
 
 
 test_transform_plus_2 = Test(lambda x: x, lambda x: x + 2.0, lambda x: x - 2.0)
@@ -151,4 +151,4 @@ def test_per_column_transform() -> None:
 
     transformations_over_time = train(transformations, X, y, splitter)
     _, pred = backtest(transformations_over_time, X, y, splitter)
-    assert np.all(np.isclose((X.loc[pred.index].sum(axis=1) + 4.0), pred.squeeze()))
+    assert (np.isclose((X.loc[pred.index].sum(axis=1) + 4.0), pred.squeeze())).all()
