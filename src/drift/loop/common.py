@@ -130,9 +130,7 @@ def recursively_transform(
         )
 
 
-def deepcopy_transformations(
-    transformation: Transformations
-) -> Transformations:
+def deepcopy_transformations(transformation: Transformations) -> Transformations:
     if isinstance(transformation, List):
         return [deepcopy_transformations(t) for t in transformation]
     elif isinstance(transformation, Composite):
