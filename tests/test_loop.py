@@ -1,7 +1,6 @@
 from drift.loop import backtest, train
 from drift.loop.types import Backend, TrainMethod
-from drift.models import BaselineRegressor
-from drift.models.baseline import BaselineNaiveContinuous
+from drift.models.baseline import BaselineNaive, BaselineRegressorDeprecated
 from drift.splitters import ExpandingWindowSplitter
 from drift.transformations.base import Transformations
 from drift.transformations.test import Test
@@ -30,7 +29,9 @@ def test_loop_sequential():
         TrainMethod.sequential,
         Backend.no,
         InjectPastDataAtInference(
-            BaselineRegressor(strategy=BaselineRegressor.Strategy.naive)
+            BaselineRegressorDeprecated(
+                strategy=BaselineRegressorDeprecated.Strategy.naive
+            )
         ),
     )
 
@@ -40,7 +41,9 @@ def test_loop_parallel():
         TrainMethod.parallel,
         Backend.no,
         InjectPastDataAtInference(
-            BaselineRegressor(strategy=BaselineRegressor.Strategy.naive)
+            BaselineRegressorDeprecated(
+                strategy=BaselineRegressorDeprecated.Strategy.naive
+            )
         ),
     )
 
@@ -49,7 +52,7 @@ def test_loop_with_continuous_transformation():
     run_loop(
         TrainMethod.parallel,
         Backend.no,
-        BaselineNaiveContinuous(),
+        BaselineNaive(),
     )
 
 

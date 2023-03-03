@@ -1,6 +1,14 @@
 # What are the design decisions that make `Drift` different?
 
-1. There's no explicit "Pipeline" class. This allows us to hand back the job of fitting a collection of models to `train()`
+1. There's no explicit "Pipeline" class. This allows us to hand back the job of fitting a collection of models to `train()`. This enables parallelization and reduces duplicate code. See section on Composites.
+
+
+2. We allow both tabular and sequence models, in the same pipeline.
+   If a Model has `requires_continuous_updates` property set to `True`, the main loop creates an inner "inference & fit" loop, so the Model can update its parameters on each timestamp.
+
+
+
+
 
 
 ### Why is “Composite” necessary?

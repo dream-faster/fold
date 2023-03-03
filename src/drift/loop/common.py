@@ -94,21 +94,21 @@ def recursively_transform(
             def transform_row_train(X_row, y_row, sample_weights_row):
                 transformations.fit(X_row, y_row, sample_weights_row)
                 result = transformations.transform(X_row)
-                return result[0]
+                return result
 
             def transform_row_inference_backtest(X_row, y_row, sample_weights_row):
                 result = transformations.transform(X_row)
                 if y_row is not None:
                     transformations.fit(X_row, y_row, sample_weights_row)
-                return result[0]
+                return result
 
             transform_row_function = (
                 transform_row_train if fit else transform_row_inference_backtest
             )
-            results = pd.DataFrame(
+            return pd.concat(
                 [
                     transform_row_function(
-                        X.loc[index],
+                        X.loc[index:index],
                         y_df.loc[index] if y is not None else None,
                         sample_weights.loc[index]
                         if sample_weights is not None
@@ -116,9 +116,8 @@ def recursively_transform(
                     )
                     for index in X.index
                 ],
-                index=X.index,
+                axis="index",
             )
-            return results
 
         else:
             if fit:
