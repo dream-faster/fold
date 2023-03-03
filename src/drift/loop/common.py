@@ -5,8 +5,6 @@ from typing import List, Optional, Union
 
 import pandas as pd
 
-from drift.all_types import TransformationsOverTime
-
 from ..transformations.base import Composite, Transformation, Transformations
 from ..utils.checks import is_prediction
 
@@ -132,11 +130,7 @@ def recursively_transform(
         )
 
 
-def deepcopy_transformations(
-    transformation: Union[
-        Transformation, Composite, List[Union[Transformation, Composite]]
-    ]
-) -> Union[Transformation, Composite, List[Union[Transformation, Composite]]]:
+def deepcopy_transformations(transformation: Transformations) -> Transformations:
     if isinstance(transformation, List):
         return [deepcopy_transformations(t) for t in transformation]
     elif isinstance(transformation, Composite):

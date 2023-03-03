@@ -114,13 +114,14 @@ Outputs:
 
 ## Features
 
-- Integration with feature extraction libraries (coming soon)
-- Feature selection on an expanding/rolling window basis (a great source of lookahead bias)
+- Supports both Regression and Classification tasks
+- Feature selection on an expanding/rolling window basis (otherwise a great source of lookahead bias)
 - Use any scikit-learn model/pipeline natively
-- Target Labeling / Filtering (coming soon)
-- Mini-batch or even online learning
+- Use any univariate or sequence models (wrappers provided in [drift-models](https://github.com/dream-faster/drift-models))
+- Use any Deep Learning Time Series models (wrappers provided in [drift-models](https://github.com/dream-faster/drift-models))
+- Mini-batch or Online learning
 - Super easy syntax
-- Probabilistic foreacasts (coming soon)
+- Probabilistic foreacasts (soon for Regression as well)
 - Hyperparemeter optimization / Model selection (coming soon)
 
 

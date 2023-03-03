@@ -1,3 +1,8 @@
+# What are the design decisions that make `Drift` different?
+
+1. There's no explicit "Pipeline" class. This allows us to hand back the job of fitting a collection of models to `train()`
+
+
 ### Why is “Composite” necessary?
 
 We want to keep the “business” of fitting models to the `train` loop.

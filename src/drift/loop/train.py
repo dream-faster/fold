@@ -7,6 +7,7 @@ from ..all_types import TransformationsOverTime
 from ..models.base import Model
 from ..splitters import Split, Splitter
 from ..transformations.base import (
+    BlocksOrWrappable,
     Composite,
     DeployableTransformations,
     Transformation,
@@ -23,9 +24,7 @@ from .types import Backend, TrainMethod
 
 
 def train(
-    transformations: List[
-        Union[Transformation, Composite, Model, Callable, BaseEstimator]
-    ],
+    transformations: BlocksOrWrappable,
     X: pd.DataFrame,
     y: pd.Series,
     splitter: Splitter,
@@ -52,9 +51,7 @@ def train(
     """
 
     transformations = wrap_in_list(transformations)
-    transformations: Transformations = replace_transformation_if_not_drift_native(
-        transformations
-    )
+    transformations = replace_transformation_if_not_drift_native(transformations)
 
     splits = splitter.splits(length=len(y))
     if len(splits) == 0:
