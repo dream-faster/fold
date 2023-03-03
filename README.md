@@ -3,7 +3,7 @@
 
 
 <p align="center">
-  <a href="https://img.shields.io/github/actions/workflow/status/dream-faster/drift/docs.yml"><img alt="Docs" src="https://img.shields.io/github/actions/workflow/status/dream-faster/drift/docs.yml?logo=readthedocs"></a>
+  <a href="https://dream-faster.github.io/drift/"><img alt="Docs" src="https://img.shields.io/github/actions/workflow/status/dream-faster/drift/docs.yaml?logo=readthedocs"></a>
   <a href="https://codecov.io/gh/dream-faster/drift" ><img src="https://codecov.io/gh/dream-faster/drift/branch/main/graph/badge.svg?token=Z7I2XSF188"/></a>
   <a href="https://github.com/dream-faster/drift/actions/workflows/ci-cd.yaml"><img alt="Tests" src="https://github.com/dream-faster/drift/actions/workflows/ci-cd.yaml/badge.svg"/></a>
   <a href="https://discord.gg/EKJQgfuBpE"><img alt="Discord Community" src="https://img.shields.io/badge/Discord-%235865F2.svg?logo=discord&logoColor=white"></a>
