@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import Callable, List, Optional, Union
 
 import pandas as pd
+from sklearn.base import BaseEstimator
 
 
 class Transformation(ABC):
@@ -105,9 +106,11 @@ class Composite(ABC):
 Transformations = Union[
     Transformation,
     Composite,
-    Callable,
-    List[Union[Transformation, Composite, Callable]],
+    List[Union[Transformation, Composite]],
 ]
 DeployableTransformations = Transformations
 
-TransformationsAlwaysList = List[Union[Transformation, Composite, Callable]]
+TransformationsAlwaysList = List[Union[Transformation, Composite]]
+
+BlockOrWrappable = Union[Transformation, Composite, Callable, BaseEstimator]
+BlocksOrWrappable = Union[BlockOrWrappable, List[BlockOrWrappable]]

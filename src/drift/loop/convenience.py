@@ -1,4 +1,4 @@
-from typing import Callable, List, Union
+from typing import Callable, List
 
 from sklearn.base import (
     BaseEstimator,
@@ -11,19 +11,17 @@ from sklearn.feature_selection import SelectorMixin
 from drift.models.sklearn import SKLearnClassifier, SKLearnRegressor
 from drift.transformations.sklearn import SKLearnFeatureSelector, SKLearnTransformation
 
-from ..models.base import Model
-from ..transformations.base import Composite, Transformation, Transformations
+from ..transformations.base import (
+    BlocksOrWrappable,
+    Composite,
+    Transformation,
+    Transformations,
+)
 from ..transformations.function import FunctionTransformation
 
 
 def replace_transformation_if_not_drift_native(
-    transformation: Union[
-        Transformation,
-        Model,
-        Callable,
-        BaseEstimator,
-        List[Union[Transformation, Model, Callable, BaseEstimator]],
-    ]
+    transformation: BlocksOrWrappable,
 ) -> Transformations:
     if isinstance(transformation, List):
         return [replace_transformation_if_not_drift_native(t) for t in transformation]

@@ -7,7 +7,12 @@ import pandas as pd
 from drift.transformations.common import get_concatenated_names
 from drift.utils.checks import get_prediction_column
 
-from ..transformations.base import Composite, Transformations, TransformationsAlwaysList
+from ..transformations.base import (
+    BlocksOrWrappable,
+    Composite,
+    Transformations,
+    TransformationsAlwaysList,
+)
 from ..utils.list import wrap_in_list
 
 
@@ -36,8 +41,8 @@ class MetaLabeling(Composite):
 
     def __init__(
         self,
-        primary: Transformations,
-        meta: Transformations,
+        primary: BlocksOrWrappable,
+        meta: BlocksOrWrappable,
         positive_class: Union[int, float],
         primary_output_included: bool = False,
     ) -> None:
