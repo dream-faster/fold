@@ -52,6 +52,12 @@ tests = [
   "pytest-cov>=4.0",
   "imbalanced-learn",
 ]
+docs = [
+  "mkdocs-material",
+  "mkdocstrings-python",
+  "mkdocs-include-markdown-plugin",
+  "mkdocs-autorefs"
+]
 
 [tool.hatch.envs.quality]
 dependencies = [

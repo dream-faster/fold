@@ -1,9 +1,20 @@
 site_name: Drift
+repo_url: https://github.com/dream-faster/drift
+repo_name: GitHub
+site_author: Dream Faster
+copyright: Dream Faster 2023
 theme:
   name: material
-  
+
+nav:
+    - 'index.md'
+    - 'design.md'
+    - 'reference.md'
+
 plugins:
   - search
+  - include-markdown
+  - autorefs
   - mkdocstrings:
       handlers:
         python:
