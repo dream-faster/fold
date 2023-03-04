@@ -1,7 +1,7 @@
 import numpy as np
 
 from drift.loop import infer, train_for_deployment, update
-from drift.models.baseline import BaselineNaiveContinuous
+from drift.models.baseline import BaselineNaive
 from drift.utils.tests import generate_sine_wave_data
 
 
@@ -14,7 +14,7 @@ def test_deployment() -> None:
     y_train = data["sine"][:900]
     y_test = data["sine"][900:]
 
-    transformations = [BaselineNaiveContinuous()]
+    transformations = [BaselineNaive()]
     deployable_transformations = train_for_deployment(transformations, X_train, y_train)
 
     first_prediction = infer(
