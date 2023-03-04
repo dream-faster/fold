@@ -3,9 +3,8 @@ from __future__ import annotations
 from typing import Callable, List, Optional, Union
 
 import pandas as pd
-
-from drift.transformations.common import get_concatenated_names
-from drift.utils.checks import get_prediction_column
+from fold.transformations.common import get_concatenated_names
+from fold.utils.checks import get_prediction_column
 
 from ..transformations.base import (
     BlocksOrWrappable,

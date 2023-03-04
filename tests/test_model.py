@@ -1,8 +1,8 @@
-from drift.loop import backtest, train
-from drift.models.random import RandomClassifier
-from drift.splitters import ExpandingWindowSplitter
-from drift.transformations.columns import OnlyPredictions
-from drift.utils.tests import generate_all_zeros
+from fold.loop import backtest, train
+from fold.models.random import RandomClassifier
+from fold.splitters import ExpandingWindowSplitter
+from fold.transformations.columns import OnlyPredictions
+from fold.utils.tests import generate_all_zeros
 
 
 def test_random_classifier() -> None:

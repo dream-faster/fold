@@ -125,7 +125,7 @@ def recursively_transform(
             return transformations.transform(X)
     else:
         raise ValueError(
-            f"{transformations} is not a Drift Transformation, but of type {type(transformations)}"
+            f"{transformations} is not a Fold Transformation, but of type {type(transformations)}"
         )
 
 

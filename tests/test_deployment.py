@@ -1,8 +1,7 @@
 import numpy as np
-
-from drift.loop import infer, train_for_deployment, update
-from drift.models.baseline import BaselineNaive
-from drift.utils.tests import generate_sine_wave_data
+from fold.loop import infer, train_for_deployment, update
+from fold.models.baseline import BaselineNaive
+from fold.utils.tests import generate_sine_wave_data
 
 
 def test_deployment() -> None:

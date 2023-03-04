@@ -2,12 +2,11 @@ from random import randint
 
 import numpy as np
 import pandas as pd
-
-from drift.loop import backtest, train
-from drift.models.dummy import DummyClassifier
-from drift.models.ensemble import Ensemble, PerColumnEnsemble
-from drift.splitters import ExpandingWindowSplitter
-from drift.utils.tests import generate_all_zeros, generate_sine_wave_data
+from fold.loop import backtest, train
+from fold.models.dummy import DummyClassifier
+from fold.models.ensemble import Ensemble, PerColumnEnsemble
+from fold.splitters import ExpandingWindowSplitter
+from fold.utils.tests import generate_all_zeros, generate_sine_wave_data
 
 
 def test_ensemble_regression() -> None:

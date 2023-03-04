@@ -1,8 +1,8 @@
-from drift.loop import backtest, train
-from drift.models.baseline import BaselineNaiveSeasonal
-from drift.splitters import ExpandingWindowSplitter
-from drift.transformations.columns import OnlyPredictions
-from drift.utils.tests import generate_sine_wave_data
+from fold.loop import backtest, train
+from fold.models.baseline import BaselineNaiveSeasonal
+from fold.splitters import ExpandingWindowSplitter
+from fold.transformations.columns import OnlyPredictions
+from fold.utils.tests import generate_sine_wave_data
 
 
 def test_baseline_naive_seasonal() -> None:

@@ -19,7 +19,7 @@ from .backend.sequential import (
     train_transformations as _train_transformations_sequential,
 )
 from .common import deepcopy_transformations, recursively_transform
-from .convenience import replace_transformation_if_not_drift_native
+from .convenience import replace_transformation_if_not_fold_native
 from .types import Backend, TrainMethod
 
 
@@ -51,7 +51,7 @@ def train(
     """
 
     transformations = wrap_in_list(transformations)
-    transformations = replace_transformation_if_not_drift_native(transformations)
+    transformations = replace_transformation_if_not_fold_native(transformations)
 
     splits = splitter.splits(length=len(y))
     if len(splits) == 0:
@@ -120,7 +120,7 @@ def train_for_deployment(
 ) -> DeployableTransformations:
 
     transformations = wrap_in_list(transformations)
-    transformations: Transformations = replace_transformation_if_not_drift_native(
+    transformations: Transformations = replace_transformation_if_not_fold_native(
         transformations
     )
     _, transformations = process_transformations_window(

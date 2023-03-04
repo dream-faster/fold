@@ -1,17 +1,16 @@
 import numpy as np
-from sklearn.feature_selection import SelectKBest, VarianceThreshold, f_regression
-
-from drift.loop import backtest, train
-from drift.splitters import ExpandingWindowSplitter
-from drift.transformations import Identity, SelectColumns
-from drift.transformations.columns import (
+from fold.loop import backtest, train
+from fold.splitters import ExpandingWindowSplitter
+from fold.transformations import Identity, SelectColumns
+from fold.transformations.columns import (
     PerColumnTransform,
     RenameColumns,
     TransformColumn,
 )
-from drift.transformations.target import TransformTarget
-from drift.transformations.test import Test
-from drift.utils.tests import generate_sine_wave_data, generate_zeros_and_ones_skewed
+from fold.transformations.target import TransformTarget
+from fold.transformations.test import Test
+from fold.utils.tests import generate_sine_wave_data, generate_zeros_and_ones_skewed
+from sklearn.feature_selection import SelectKBest, VarianceThreshold, f_regression
 
 
 def test_no_transformation() -> None:

@@ -1,9 +1,8 @@
 from typing import Optional, Union
 
 import pandas as pd
-
-from drift.models.base import Model
-from drift.transformations.base import Transformation
+from fold.models.base import Model
+from fold.transformations.base import Transformation
 
 
 class SKLearnClassifier(Model):

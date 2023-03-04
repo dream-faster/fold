@@ -1,5 +1,7 @@
 from typing import Callable, List
 
+from fold.models.sklearn import SKLearnClassifier, SKLearnRegressor
+from fold.transformations.sklearn import SKLearnFeatureSelector, SKLearnTransformation
 from sklearn.base import (
     BaseEstimator,
     ClassifierMixin,
@@ -7,9 +9,6 @@ from sklearn.base import (
     TransformerMixin,
 )
 from sklearn.feature_selection import SelectorMixin
-
-from drift.models.sklearn import SKLearnClassifier, SKLearnRegressor
-from drift.transformations.sklearn import SKLearnFeatureSelector, SKLearnTransformation
 
 from ..transformations.base import (
     BlocksOrWrappable,
@@ -20,11 +19,11 @@ from ..transformations.base import (
 from ..transformations.function import FunctionTransformation
 
 
-def replace_transformation_if_not_drift_native(
+def replace_transformation_if_not_fold_native(
     transformation: BlocksOrWrappable,
 ) -> Transformations:
     if isinstance(transformation, List):
-        return [replace_transformation_if_not_drift_native(t) for t in transformation]
+        return [replace_transformation_if_not_fold_native(t) for t in transformation]
     elif isinstance(transformation, RegressorMixin):
         return SKLearnRegressor(transformation)
     elif isinstance(transformation, ClassifierMixin):
@@ -36,7 +35,7 @@ def replace_transformation_if_not_drift_native(
     elif isinstance(transformation, TransformerMixin):
         return SKLearnTransformation(transformation)
     elif isinstance(transformation, Composite):
-        return transformation.clone(replace_transformation_if_not_drift_native)
+        return transformation.clone(replace_transformation_if_not_fold_native)
     elif isinstance(transformation, Transformation):
         return transformation
     else:
