@@ -4,7 +4,7 @@ from typing import Callable, List, Optional
 
 import pandas as pd
 
-from drift.transformations.common import get_concatenated_names
+from fold.transformations.common import get_concatenated_names
 
 from ..transformations.base import Composite, Transformations, TransformationsAlwaysList
 

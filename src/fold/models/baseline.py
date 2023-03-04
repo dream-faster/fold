@@ -17,8 +17,8 @@ class BaselineRegressorDeprecated(Model):
         seasonal_mean = "seasonal_mean"
         naive = "naive"
         seasonal_naive = "seasonal_naive"
-        expanding_drift = "expanding_drift"
-        sliding_drift = "sliding_drift"
+        expanding_fold = "expanding_fold"
+        sliding_fold = "sliding_fold"
 
         @staticmethod
         def from_str(
@@ -65,18 +65,18 @@ class BaselineRegressorDeprecated(Model):
             return wrap_into_series([np.mean(X.values[: i + 1]) for i in range(len(X))])
         elif self.strategy == BaselineRegressorDeprecated.Strategy.naive:
             return X
-        elif self.strategy == BaselineRegressorDeprecated.Strategy.sliding_drift:
+        elif self.strategy == BaselineRegressorDeprecated.Strategy.sliding_fold:
             return wrap_into_series(
                 [
-                    calculate_drift_predictions(
+                    calculate_fold_predictions(
                         X.values[max(i - self.window_size, 0) : i + 1]
                     )
                     for i in range(len(X))
                 ]
             )
-        elif self.strategy == BaselineRegressorDeprecated.Strategy.expanding_drift:
+        elif self.strategy == BaselineRegressorDeprecated.Strategy.expanding_fold:
             return wrap_into_series(
-                [calculate_drift_predictions(X.values[: i + 1]) for i in len(X)]
+                [calculate_fold_predictions(X.values[: i + 1]) for i in len(X)]
             )
         elif self.strategy == BaselineRegressorDeprecated.Strategy.seasonal_naive:
             if self.seasonal_length is None:
@@ -178,5 +178,5 @@ class BaselineNaiveSeasonal(Model):
 #         return pd.Series([self.rolling_mean], index=X.index)
 
 
-def calculate_drift_predictions(y: np.ndarray) -> np.ndarray:
+def calculate_fold_predictions(y: np.ndarray) -> np.ndarray:
     return y[-1] + np.mean(np.diff(y))

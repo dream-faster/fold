@@ -1,9 +1,9 @@
-from drift.splitters import (
+from fold.splitters import (
     ExpandingWindowSplitter,
     SingleWindowSplitter,
     SlidingWindowSplitter,
 )
-from drift.utils.tests import generate_sine_wave_data
+from fold.utils.tests import generate_sine_wave_data
 
 
 def test_expanding_window_splitter():

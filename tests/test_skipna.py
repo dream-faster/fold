@@ -1,10 +1,10 @@
 import pandas as pd
 
-from drift.loop import backtest, train
-from drift.models.dummy import DummyClassifier
-from drift.splitters import ExpandingWindowSplitter
-from drift.transformations.columns import SkipNA
-from drift.utils.tests import generate_all_zeros
+from fold.loop import backtest, train
+from fold.models.dummy import DummyClassifier
+from fold.splitters import ExpandingWindowSplitter
+from fold.transformations.columns import SkipNA
+from fold.utils.tests import generate_all_zeros
 
 
 def test_skipna() -> None:

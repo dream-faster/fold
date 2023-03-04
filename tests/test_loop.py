@@ -1,11 +1,11 @@
-from drift.loop import backtest, train
-from drift.loop.types import Backend, TrainMethod
-from drift.models.baseline import BaselineNaive, BaselineRegressorDeprecated
-from drift.splitters import ExpandingWindowSplitter
-from drift.transformations.base import Transformations
-from drift.transformations.test import Test
-from drift.transformations.update import InjectPastDataAtInference
-from drift.utils.tests import generate_all_zeros, generate_sine_wave_data
+from fold.loop import backtest, train
+from fold.loop.types import Backend, TrainMethod
+from fold.models.baseline import BaselineNaive, BaselineRegressorDeprecated
+from fold.splitters import ExpandingWindowSplitter
+from fold.transformations.base import Transformations
+from fold.transformations.test import Test
+from fold.transformations.update import InjectPastDataAtInference
+from fold.utils.tests import generate_all_zeros, generate_sine_wave_data
 
 
 def run_loop(

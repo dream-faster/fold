@@ -1,9 +1,9 @@
-from drift.loop import backtest, train
-from drift.models.dummy import DummyClassifier
-from drift.models.metalabeling import MetaLabeling
-from drift.splitters import ExpandingWindowSplitter
-from drift.transformations.columns import OnlyPredictions
-from drift.utils.tests import generate_all_zeros
+from fold.loop import backtest, train
+from fold.models.dummy import DummyClassifier
+from fold.models.metalabeling import MetaLabeling
+from fold.splitters import ExpandingWindowSplitter
+from fold.transformations.columns import OnlyPredictions
+from fold.utils.tests import generate_all_zeros
 
 
 def test_metalabeling() -> None:

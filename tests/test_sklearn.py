@@ -1,9 +1,9 @@
 from sklearn.dummy import DummyClassifier, DummyRegressor
 
-from drift.loop import backtest, train
-from drift.splitters import ExpandingWindowSplitter
-from drift.transformations.columns import OnlyPredictions
-from drift.utils.tests import generate_all_zeros
+from fold.loop import backtest, train
+from fold.splitters import ExpandingWindowSplitter
+from fold.transformations.columns import OnlyPredictions
+from fold.utils.tests import generate_all_zeros
 
 
 def test_sklearn_classifier() -> None:

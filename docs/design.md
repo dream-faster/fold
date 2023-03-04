@@ -1,4 +1,4 @@
-# What are the design decisions that make `Drift` different?
+# What are the design decisions that make `Fold` different?
 
 1. There's no explicit "Pipeline" class. This allows us to hand back the job of fitting a collection of models to `train()`. This enables parallelization and reduces duplicate code. See section on Composites.
 
