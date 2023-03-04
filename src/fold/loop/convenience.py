@@ -1,7 +1,5 @@
 from typing import Callable, List
 
-from fold.models.sklearn import SKLearnClassifier, SKLearnRegressor
-from fold.transformations.sklearn import SKLearnFeatureSelector, SKLearnTransformation
 from sklearn.base import (
     BaseEstimator,
     ClassifierMixin,
@@ -9,6 +7,9 @@ from sklearn.base import (
     TransformerMixin,
 )
 from sklearn.feature_selection import SelectorMixin
+
+from fold.models.sklearn import SKLearnClassifier, SKLearnRegressor
+from fold.transformations.sklearn import SKLearnFeatureSelector, SKLearnTransformation
 
 from ..transformations.base import (
     BlocksOrWrappable,

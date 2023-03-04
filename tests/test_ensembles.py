@@ -2,6 +2,7 @@ from random import randint
 
 import numpy as np
 import pandas as pd
+
 from fold.loop import backtest, train
 from fold.models.dummy import DummyClassifier
 from fold.models.ensemble import Ensemble, PerColumnEnsemble

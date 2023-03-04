@@ -1,6 +1,7 @@
 from typing import Optional, Union
 
 import pandas as pd
+
 from fold.models.base import Model
 from fold.transformations.base import Transformation
 

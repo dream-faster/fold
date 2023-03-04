@@ -1,4 +1,5 @@
 import pandas as pd
+
 from fold.loop import backtest, train
 from fold.models.dummy import DummyClassifier
 from fold.splitters import ExpandingWindowSplitter

@@ -1,8 +1,9 @@
+from sklearn.dummy import DummyClassifier, DummyRegressor
+
 from fold.loop import backtest, train
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.columns import OnlyPredictions
 from fold.utils.tests import generate_all_zeros
-from sklearn.dummy import DummyClassifier, DummyRegressor
 
 
 def test_sklearn_classifier() -> None:

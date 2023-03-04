@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Callable, List, Optional
 
 import pandas as pd
+
 from fold.transformations.common import get_concatenated_names
 
 from ..transformations.base import Composite, Transformations, TransformationsAlwaysList

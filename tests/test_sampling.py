@@ -1,6 +1,8 @@
 from typing import Optional, Union
 
 import pandas as pd
+from imblearn.under_sampling import RandomUnderSampler
+
 from fold.loop import backtest, train
 from fold.models.base import Model
 from fold.models.dummy import DummyClassifier
@@ -9,7 +11,6 @@ from fold.transformations.base import Transformation
 from fold.transformations.sampling import Sampling
 from fold.transformations.test import Test
 from fold.utils.tests import generate_zeros_and_ones_skewed
-from imblearn.under_sampling import RandomUnderSampler
 
 
 def assert_on_fit(X, y):

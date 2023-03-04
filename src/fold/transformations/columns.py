@@ -4,6 +4,7 @@ from copy import deepcopy
 from typing import Callable, List, Optional, Union
 
 import pandas as pd
+
 from fold.transformations.common import get_concatenated_names
 
 from ..utils.list import wrap_in_list
