@@ -19,7 +19,7 @@ from ..utils.list import unique, wrap_in_list
 class Ensemble(Composite):
     properties = Composite.Properties()
 
-    def __init__(self, models: Transformations) -> None:
+    def __init__(self, models: TransformationsAlwaysList) -> None:
         self.models = models
         self.name = "Ensemble-" + get_concatenated_names(models)
 
