@@ -72,3 +72,27 @@ class SKLearnRegressor(Model):
             index=X.index,
             name=f"predictions_{self.name}",
         ).to_frame()
+
+
+class SKLearnPipeline(Model):
+
+    properties = Transformation.Properties()
+
+    def __init__(self, pipeline) -> None:
+        self.pipeline = pipeline
+        self.name = pipeline.__class__.__name__
+
+    def fit(
+        self,
+        X: pd.DataFrame,
+        y: Optional[pd.Series] = None,
+        sample_weights: Optional[pd.Series] = None,
+    ) -> None:
+        self.pipeline.fit(X, y)
+
+    def predict(self, X: pd.DataFrame) -> pd.DataFrame:
+        return pd.Series(
+            data=self.pipeline.predict(X).squeeze(),
+            index=X.index,
+            name=f"predictions_{self.name}",
+        ).to_frame()

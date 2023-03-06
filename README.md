@@ -65,7 +65,7 @@ Why? It [works really well for time series](https://linkinghub.elsevier.com/retr
 **→ Fold supports easy composite model creation**
 
 - Too many dependencies and an either you use-all-or-none-of-it approach<br/>
-**→ Fold has very few hard dependencies (only pandas, numpy, tqdm and scikit-learn). It supports scikit-learn Pipelines by default (coming soon). It's main aim is to be as simple and few lines as possible.**
+**→ Fold has very few hard dependencies (only pandas, numpy, tqdm and scikit-learn). It supports scikit-learn Pipelines by default. It's main aim is to be as simple and few lines as possible.**
 
 - Works well with industry standard libraries as well as with Myalo's other open source toolkits (eg.: [Krisi evaluation](https://github.com/dream-faster/krisi) or [Fold Models]([h](https://github.com/dream-faster/fold-models))<br/>
 **→ Don't need to choose between `sktime`, `darts` or `statsforecast` models. We will or already support them all (coming soon)**
@@ -74,7 +74,7 @@ Why? It [works really well for time series](https://linkinghub.elsevier.com/retr
 **→ Fold was built with distributed computing in mind. Your pipeline is automatically parallelized wherever it can be (coming soon)**
 
 - Easy to deploy.<br/>
-**→ Don't stop at training models. (coming soon)**
+**→ Don't stop at training models.**
 
 
 <br/>
