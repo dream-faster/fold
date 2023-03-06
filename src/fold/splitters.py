@@ -16,7 +16,7 @@ class Splitter:
         raise NotImplementedError
 
 
-def validate_window_size(window_size: Union[int, float], length: int) -> int:
+def translate_float_if_needed(window_size: Union[int, float], length: int) -> int:
     if window_size > 1 and type(window_size) is int:
         return window_size
     elif window_size < 1 and type(window_size) is float:
@@ -44,16 +44,17 @@ class SlidingWindowSplitter(Splitter):
 
     def splits(self, length: int) -> List[Split]:
         end = self.end if self.end is not None else length
-        window_size = validate_window_size(self.window_size, length)
+        window_size = translate_float_if_needed(self.window_size, length)
+        step = translate_float_if_needed(self.step, length)
         return [
             Split(
                 model_index=index,
                 train_window_start=index - window_size,
                 train_window_end=index - self.embargo,
                 test_window_start=index,
-                test_window_end=min(end, index + self.step),
+                test_window_end=min(end, index + step),
             )
-            for index in range(self.start + window_size, end, self.step)
+            for index in range(self.start + window_size, end, step)
         ]
 
 
@@ -61,7 +62,7 @@ class ExpandingWindowSplitter(Splitter):
     def __init__(
         self,
         train_window_size: Union[int, float],
-        step: int,
+        step: Union[int, float],
         embargo: int = 0,
         start: int = 0,
         end: Optional[int] = None,
@@ -74,7 +75,8 @@ class ExpandingWindowSplitter(Splitter):
 
     def splits(self, length: int) -> List[Split]:
         end = self.end if self.end is not None else length
-        window_size = validate_window_size(self.window_size, length)
+        window_size = translate_float_if_needed(self.window_size, length)
+        step = translate_float_if_needed(self.step, length)
 
         return [
             Split(
@@ -82,9 +84,9 @@ class ExpandingWindowSplitter(Splitter):
                 train_window_start=self.start,
                 train_window_end=index - self.embargo,
                 test_window_start=index,
-                test_window_end=min(end, index + self.step),
+                test_window_end=min(end, index + step),
             )
-            for index in range(self.start + window_size, end, self.step)
+            for index in range(self.start + window_size, end, step)
         ]
 
 
@@ -98,7 +100,7 @@ class SingleWindowSplitter(Splitter):
         self.embargo = embargo
 
     def splits(self, length: int) -> List[Split]:
-        window_size = validate_window_size(self.window_size, length)
+        window_size = translate_float_if_needed(self.window_size, length)
 
         return [
             Split(
