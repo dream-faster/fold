@@ -20,3 +20,5 @@
 ::: fold.transformations.test
 ::: fold.transformations.univariate
 ::: fold.transformations.update
+
+::: fold.splitters
