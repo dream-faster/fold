@@ -29,7 +29,6 @@ dependencies = [
   "iteration_utilities",
 ]
 description = "Timeseries modelling on a rolling/expanding window basis."
-dynamic = ["version"]
 keywords = []
 license = "MIT"
 readme = "README.md"
@@ -39,9 +38,6 @@ requires-python = ">=3.7"
 Documentation = "https://dream-faster.github.io/fold"
 Issues = "https://github.com/dream-faster/fold/issues"
 Source = "https://github.com/dream-faster/fold"
-
-[tool.hatch.version]
-path = "src/fold/__init__.py"
 
 [project.optional-dependencies]
 quality = [
