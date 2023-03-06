@@ -141,7 +141,7 @@ def test_per_column_transform() -> None:
     X["sine_2"] = X["sine"] + 1.0
     X["sine_3"] = X["sine"] + 2.0
     X["sine_4"] = X["sine"] + 3.0
-    y = X.shift(-1).squeeze()
+    y = X["sine"].shift(-1).squeeze()
 
     splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
     transformations = [
