@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List, Optional, Union
 
 
 @dataclass
@@ -16,10 +16,21 @@ class Splitter:
         raise NotImplementedError
 
 
+def validate_window_size(window_size: Union[int, float], length: int) -> int:
+    if window_size > 1 and type(window_size) is int:
+        return window_size
+    elif window_size < 1 and type(window_size) is float:
+        return int(window_size * length)
+    else:
+        raise ValueError(
+            "Invalid window size, should be either a float less than 1 or an int greater than 1"
+        )
+
+
 class SlidingWindowSplitter(Splitter):
     def __init__(
         self,
-        train_window_size: int,
+        train_window_size: Union[int, float],
         step: int,
         embargo: int = 0,
         start: int = 0,
@@ -33,22 +44,23 @@ class SlidingWindowSplitter(Splitter):
 
     def splits(self, length: int) -> List[Split]:
         end = self.end if self.end is not None else length
+        window_size = validate_window_size(self.window_size, length)
         return [
             Split(
                 model_index=index,
-                train_window_start=index - self.window_size,
+                train_window_start=index - window_size,
                 train_window_end=index - self.embargo,
                 test_window_start=index,
                 test_window_end=min(end, index + self.step),
             )
-            for index in range(self.start + self.window_size, end, self.step)
+            for index in range(self.start + window_size, end, self.step)
         ]
 
 
 class ExpandingWindowSplitter(Splitter):
     def __init__(
         self,
-        train_window_size: int,
+        train_window_size: Union[int, float],
         step: int,
         embargo: int = 0,
         start: int = 0,
@@ -62,6 +74,8 @@ class ExpandingWindowSplitter(Splitter):
 
     def splits(self, length: int) -> List[Split]:
         end = self.end if self.end is not None else length
+        window_size = validate_window_size(self.window_size, length)
+
         return [
             Split(
                 model_index=index,
@@ -70,27 +84,28 @@ class ExpandingWindowSplitter(Splitter):
                 test_window_start=index,
                 test_window_end=min(end, index + self.step),
             )
-            for index in range(self.start + self.window_size, end, self.step)
+            for index in range(self.start + window_size, end, self.step)
         ]
 
 
 class SingleWindowSplitter(Splitter):
     def __init__(
         self,
-        proportion: float,
+        train_window_size: Union[int, float],
         embargo: int = 0,
     ) -> None:
-        self.proportion = proportion
+        self.window_size = train_window_size
         self.embargo = embargo
 
     def splits(self, length: int) -> List[Split]:
-        index = int(length * self.proportion)
+        window_size = validate_window_size(self.window_size, length)
+
         return [
             Split(
                 model_index=0,
                 train_window_start=0,
-                train_window_end=index - self.embargo,
-                test_window_start=index,
+                train_window_end=window_size - self.embargo,
+                test_window_start=window_size,
                 test_window_end=length,
             ),
         ]
