@@ -3,12 +3,14 @@ build-backend = "hatchling.build"
 requires = ["hatchling"]
 
 [project]
+name = "fold"
+version = "0.0.1"
 authors = [
-  { name="Mark Aron Szulyovszky", email="mark.szulyovszky@gmail.com" },
-  { name="Daniel Szemerey", email="daniel@szemerey.eu" },
+  { name="Mark Aron Szulyovszky", email="mark@dreamfaster.ai" },
+  { name="Daniel Szemerey", email="daniel@dreamfaster.ai" },
 ]
 classifiers = [
-  "Development Status :: 4 - Beta",
+  "Development Status :: 5 - Production/Stable",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
@@ -16,6 +18,8 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
+  "License :: Other/Proprietary License",
+  "Operating System :: OS Independent",
 ]
 dependencies = [
   "numpy",
