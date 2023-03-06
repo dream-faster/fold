@@ -14,15 +14,13 @@
 <br />
 <div align="center">
   <a href="https://dream-faster.github.io/fold/">
-    <img src="docs/source/images/logo.png" alt="Logo" width="90" >
+    <img src="https://dream-faster.github.io/fold/docs/source/images/logo.png" alt="Logo" width="90" >
   </a>
 
 <h3 align="center"> <i>(/fold/)</i></h3>
   <p align="center">
-    Nowcasting with continuous evaluation (and soon, deployment)
+    Nowcasting with continuous evaluation
     <br />
-    <a href="https://github.com/dream-faster/fold">View Demo</a>  ~
-    <a href="https://github.com/dream-faster/fold/tree/main/src/fold/examples">Check Examples</a> ~
     <a href="https://dream-faster.github.io/fold/"><strong>Explore the docs »</strong></a>
   </p>
 </div>
@@ -100,13 +98,19 @@ Install from git directly
 You can quickly train your chosen models and get predictions by running:
 
 ```python
-from fold import ...
+from fold.loop import trian, backtest
+X
+y = X.squeeze()
+
+splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
+transformations = [
+  DummyRegressor(strategy="constant", constant=0),
+  OnlyPredictions(),
+]
+transformations_over_time = train(transformations, X, y, splitter)
+_, pred = backtest(transformations_over_time, X, y, splitter)
 ```
 
-
-```
-Outputs:
-```
 
 
 
