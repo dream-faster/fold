@@ -1,5 +1,4 @@
-from enum import Enum
-from typing import Optional, Tuple, Union
+from typing import Optional, Tuple
 
 import pandas as pd
 from tqdm import tqdm
