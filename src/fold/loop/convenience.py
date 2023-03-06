@@ -4,12 +4,8 @@ from sklearn.base import ClassifierMixin, RegressorMixin, TransformerMixin
 from sklearn.feature_selection import SelectorMixin
 from sklearn.pipeline import Pipeline
 
-from fold.models.sklearn import SKLearnClassifier, SKLearnRegressor
-from fold.transformations.sklearn import (
-    SKLearnFeatureSelector,
-    SKLearnPipeline,
-    SKLearnTransformation,
-)
+from fold.models.sklearn import SKLearnClassifier, SKLearnPipeline, SKLearnRegressor
+from fold.transformations.sklearn import SKLearnFeatureSelector, SKLearnTransformation
 
 from ..transformations.base import (
     BlocksOrWrappable,

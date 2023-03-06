@@ -88,7 +88,7 @@ class SKLearnPipeline(Model):
         y: Optional[pd.Series] = None,
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
-        self.pipeline.fit(X, y, sample_weights)
+        self.pipeline.fit(X, y)
 
     def predict(self, X: pd.DataFrame) -> pd.DataFrame:
         return pd.Series(
