@@ -32,7 +32,6 @@ description = "Timeseries modelling on a rolling/expanding window basis."
 dynamic = ["version"]
 keywords = []
 license = "MIT"
-name = "fold"
 readme = "README.md"
 requires-python = ">=3.7"
 
