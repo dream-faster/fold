@@ -25,6 +25,9 @@ def backtest(
     Does not mutate or change the transformations in any way, aka you can backtest multiple times.
     """
 
+    assert type(X) is pd.DataFrame, "X must be a pandas DataFrame."
+    assert type(y) is pd.Series, "y must be a pandas Series."
+
     results = [
         __backtest_on_window(
             split,

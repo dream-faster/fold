@@ -17,6 +17,8 @@ def infer(
     A follow-up call to `update` is required to update the transformations, when the ground truth is available.
     """
 
+    assert type(X) is pd.DataFrame, "X must be a pandas DataFrame."
+
     results = recursively_transform(X, None, None, transformations, fit=False)
     return results
 
