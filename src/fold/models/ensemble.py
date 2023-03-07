@@ -12,7 +12,6 @@ from ..utils.list import unique, wrap_in_list
 
 
 class Ensemble(Composite):
-
     properties = Composite.Properties()
 
     def __init__(self, models: Transformations) -> None:
@@ -32,7 +31,6 @@ class Ensemble(Composite):
 
 
 class PerColumnEnsemble(Composite):
-
     properties = Composite.Properties()
     models_already_cloned = False
 

@@ -7,7 +7,6 @@ from .base import Transformation
 
 
 class Test(Transformation):
-
     properties = Transformation.Properties()
     __test__ = False
 
@@ -37,7 +36,7 @@ class Test(Transformation):
             self.fit_func(X, y, sample_weights)
         else:
             raise ValueError(
-                f"fit_func must accept between 1 and 3 arguments, "
+                "fit_func must accept between 1 and 3 arguments, "
                 f"but {len(argspec.args)} were given."
             )
 

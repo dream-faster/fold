@@ -1,7 +1,6 @@
 from random import randint
 
 import numpy as np
-import pandas as pd
 
 from fold.loop import backtest, train
 from fold.models.dummy import DummyClassifier
@@ -11,7 +10,6 @@ from fold.utils.tests import generate_all_zeros, generate_sine_wave_data
 
 
 def test_ensemble_regression() -> None:
-
     X = generate_sine_wave_data()
     y = X.shift(-1).squeeze()
 
@@ -32,7 +30,6 @@ def test_ensemble_regression() -> None:
 
 
 def test_ensemble_classification() -> None:
-
     X = generate_all_zeros(1000)
     y = X.shift(-1).squeeze()
 
@@ -72,7 +69,6 @@ def test_ensemble_classification() -> None:
 
 
 def test_per_column_transform_predictions() -> None:
-
     X = generate_sine_wave_data()
     X["sine_2"] = X["sine"] + 1.0
     X["sine_3"] = X["sine"] + 2.0

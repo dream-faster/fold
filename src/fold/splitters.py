@@ -23,7 +23,8 @@ def translate_float_if_needed(window_size: Union[int, float], length: int) -> in
         return int(window_size * length)
     else:
         raise ValueError(
-            "Invalid window size, should be either a float less than 1 or an int greater than 1"
+            "Invalid window size, should be either a float less than 1 or an int"
+            " greater than 1"
         )
 
 

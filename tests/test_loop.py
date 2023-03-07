@@ -11,7 +11,6 @@ from fold.utils.tests import generate_all_zeros, generate_sine_wave_data
 def run_loop(
     train_method: TrainMethod, backend: Backend, transformations: Transformations
 ) -> None:
-
     # the naive model returns X as prediction, so y.shift(1) should be == pred
     X = generate_sine_wave_data()
     y = X["sine"].shift(-1)

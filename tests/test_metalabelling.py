@@ -7,7 +7,6 @@ from fold.utils.tests import generate_all_zeros
 
 
 def test_metalabeling() -> None:
-
     X = generate_all_zeros(1000)
     y = X.squeeze()
 

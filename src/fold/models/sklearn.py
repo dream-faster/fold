@@ -7,7 +7,6 @@ from fold.transformations.base import Transformation
 
 
 class SKLearnClassifier(Model):
-
     properties = Transformation.Properties(
         model_type=Transformation.Properties.ModelType.classifier
     )
@@ -45,7 +44,6 @@ class SKLearnClassifier(Model):
 
 
 class SKLearnRegressor(Model):
-
     properties = Transformation.Properties(
         model_type=Transformation.Properties.ModelType.regressor
     )
@@ -75,7 +73,6 @@ class SKLearnRegressor(Model):
 
 
 class SKLearnPipeline(Model):
-
     properties = Transformation.Properties()
 
     def __init__(self, pipeline) -> None:

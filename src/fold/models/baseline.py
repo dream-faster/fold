@@ -109,7 +109,6 @@ class BaselineRegressorDeprecated(Model):
 
 
 class BaselineNaive(Model):
-
     name = "BaselineNaive"
     properties = Transformation.Properties(requires_continuous_updates=True)
     past_y = None
@@ -124,7 +123,6 @@ class BaselineNaive(Model):
 
 
 class BaselineNaiveSeasonal(Model):
-
     name = "BaselineNaiveSeasonal"
     properties = Transformation.Properties(requires_continuous_updates=True)
     current_season = 0

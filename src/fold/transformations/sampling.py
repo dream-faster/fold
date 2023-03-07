@@ -8,7 +8,6 @@ from .base import Transformation
 
 
 class Sampling(Transformation):
-
     properties = Transformation.Properties()
 
     def __init__(

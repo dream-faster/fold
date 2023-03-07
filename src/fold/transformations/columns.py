@@ -14,7 +14,6 @@ from .identity import Identity
 
 
 class SelectColumns(Transformation):
-
     properties = Transformation.Properties()
 
     def __init__(self, columns: Union[List[str], str]) -> None:
@@ -34,7 +33,6 @@ class SelectColumns(Transformation):
 
 
 class DropColumns(Transformation):
-
     properties = Transformation.Properties()
 
     def __init__(self, columns: Union[List[str], str]) -> None:
@@ -85,7 +83,6 @@ def TransformColumn(
 
 
 class PerColumnTransform(Composite):
-
     properties = Composite.Properties()
 
     def __init__(

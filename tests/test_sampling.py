@@ -1,13 +1,7 @@
-from typing import Optional, Union
-
-import pandas as pd
 from imblearn.under_sampling import RandomUnderSampler
 
-from fold.loop import backtest, train
-from fold.models.base import Model
-from fold.models.dummy import DummyClassifier
+from fold.loop import train
 from fold.splitters import ExpandingWindowSplitter
-from fold.transformations.base import Transformation
 from fold.transformations.sampling import Sampling
 from fold.transformations.test import Test
 from fold.utils.tests import generate_zeros_and_ones_skewed
@@ -22,7 +16,6 @@ test_regressor = Test(fit_func=assert_on_fit, transform_func=lambda X: X)
 
 
 def test_sampling() -> None:
-
     X = generate_zeros_and_ones_skewed(length=100000, labels=[1, 0], weights=[0.2, 0.8])
     y = X.squeeze()
 

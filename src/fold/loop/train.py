@@ -121,7 +121,6 @@ def train_for_deployment(
     y: pd.Series,
     sample_weights: Optional[pd.Series] = None,
 ) -> DeployableTransformations:
-
     transformations = wrap_in_list(transformations)
     transformations: Transformations = replace_transformation_if_not_fold_native(
         transformations
@@ -139,7 +138,6 @@ def process_transformations_window(
     transformations: List[Union[Transformation, Composite]],
     split: Split,
 ) -> Tuple[int, List[Union[Transformation, Composite]]]:
-
     X_train = X.iloc[split.train_window_start : split.train_window_end]
     y_train = y.iloc[split.train_window_start : split.train_window_end]
 
