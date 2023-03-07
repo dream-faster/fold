@@ -25,7 +25,7 @@ def test_ensemble_regression() -> None:
     ]
 
     transformations_over_time = train(transformations, X, y, splitter)
-    _, pred = backtest(transformations_over_time, X, y, splitter)
+    pred = backtest(transformations_over_time, X, y, splitter)
     assert (np.isclose((X.squeeze()[pred.index]), (pred.squeeze() + 2.0))).all()
 
 
@@ -57,7 +57,7 @@ def test_ensemble_classification() -> None:
     ]
 
     transformations_over_time = train(transformations, X, y, splitter)
-    _, pred = backtest(transformations_over_time, X, y, splitter)
+    pred = backtest(transformations_over_time, X, y, splitter)
     assert (
         pred["probabilities_Ensemble-DummyClassifier-DummyClassifier-DummyClassifier_1"]
         == 0.5
@@ -86,6 +86,6 @@ def test_per_column_transform_predictions() -> None:
     ]
 
     transformations_over_time = train(transformations, X, y, splitter)
-    _, pred = backtest(transformations_over_time, X, y, splitter)
+    pred = backtest(transformations_over_time, X, y, splitter)
     expected = X.mean(axis=1) + 1.0
     assert (np.isclose(expected[pred.index].squeeze(), pred.squeeze())).all()

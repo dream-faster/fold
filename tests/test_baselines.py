@@ -15,5 +15,5 @@ def test_baseline_naive_seasonal() -> None:
         OnlyPredictions(),
     ]
     transformations_over_time = train(transformations, X, y, splitter)
-    _, pred = backtest(transformations_over_time, X, y, splitter)
+    pred = backtest(transformations_over_time, X, y, splitter)
     assert (pred.squeeze() == y.shift(10)[pred.index]).all()

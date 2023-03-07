@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from typing import Optional
 
 import pandas as pd
@@ -26,7 +24,7 @@ class Sampling(Transformation):
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         X, y = self.sampler.fit_resample(X, y)
-        self.model.fit(X, y)
+        self.model.fit(X, y, sample_weights)
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
         return self.model.transform(X)

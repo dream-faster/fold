@@ -19,7 +19,7 @@ def run_loop(
     transformations_over_time = train(
         transformations, X, y, splitter, train_method=train_method, backend=backend
     )
-    _, pred = backtest(transformations_over_time, X, y, splitter)
+    pred = backtest(transformations_over_time, X, y, splitter)
     assert (X.squeeze()[pred.index] == pred.squeeze()).all()
 
 

@@ -35,5 +35,5 @@ def test_metalabeling() -> None:
     ]
 
     transformations_over_time = train(transformations, X, y, splitter)
-    _, pred = backtest(transformations_over_time, X, y, splitter)
+    pred = backtest(transformations_over_time, X, y, splitter)
     assert (pred.squeeze() == 0.5).all()

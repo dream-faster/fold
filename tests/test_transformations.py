@@ -23,7 +23,7 @@ def test_no_transformation() -> None:
     transformations = [Identity()]
 
     transformations_over_time = train(transformations, X, y, splitter)
-    _, pred = backtest(transformations_over_time, X, y, splitter)
+    pred = backtest(transformations_over_time, X, y, splitter)
     assert (X.squeeze()[pred.index] == pred.squeeze()).all()
 
 
@@ -39,7 +39,7 @@ def test_nested_transformations() -> None:
     ]
 
     transformations_over_time = train(transformations, X, y, splitter)
-    _, pred = backtest(transformations_over_time, X, y, splitter)
+    pred = backtest(transformations_over_time, X, y, splitter)
     assert (
         np.isclose((X["sine_2"][pred.index]).values, (pred.squeeze() - 3.0).values)
     ).all()
@@ -62,7 +62,7 @@ def test_nested_transformations_with_feature_selection() -> None:
     ]
 
     transformations_over_time = train(transformations, X, y, splitter)
-    _, pred = backtest(transformations_over_time, X, y, splitter)
+    pred = backtest(transformations_over_time, X, y, splitter)
     assert (np.isclose((X["sine"][pred.index]), pred.squeeze())).all()
     assert pred.squeeze().name == "pred"
 
@@ -77,7 +77,7 @@ def test_column_select_single_column_transformation() -> None:
     transformations = [SelectColumns(columns=["sine_2"])]
 
     transformations_over_time = train(transformations, X, y, splitter)
-    _, pred = backtest(transformations_over_time, X, y, splitter)
+    pred = backtest(transformations_over_time, X, y, splitter)
     assert (X["sine_2"][pred.index] == pred.squeeze()).all()
 
 
@@ -90,7 +90,7 @@ def test_function_transformation() -> None:
     transformations = [lambda x: x - 1.0]
 
     transformations_over_time = train(transformations, X, y, splitter)
-    _, pred = backtest(transformations_over_time, X, y, splitter)
+    pred = backtest(transformations_over_time, X, y, splitter)
     assert (np.isclose((X.squeeze()[pred.index]), (pred.squeeze() + 1.0))).all()
 
 
@@ -127,7 +127,7 @@ def test_target_transformation() -> None:
     ]
 
     transformations_over_time = train(transformations, X, y, splitter)
-    _, pred = backtest(transformations_over_time, X, y, splitter)
+    pred = backtest(transformations_over_time, X, y, splitter)
     assert ((X.squeeze()[pred.index] + 1) == pred.squeeze()).all()
 
 
@@ -145,5 +145,5 @@ def test_per_column_transform() -> None:
     ]
 
     transformations_over_time = train(transformations, X, y, splitter)
-    _, pred = backtest(transformations_over_time, X, y, splitter)
+    pred = backtest(transformations_over_time, X, y, splitter)
     assert (np.isclose((X.loc[pred.index].sum(axis=1) + 4.0), pred.squeeze())).all()

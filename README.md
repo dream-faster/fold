@@ -117,7 +117,7 @@ transformations = [
   OnlyPredictions(),
 ]
 transformations_over_time = train(transformations, X, y, splitter)
-_, pred = backtest(transformations_over_time, X, y, splitter)
+pred = backtest(transformations_over_time, X, y, splitter)
 ```
 
 
@@ -125,22 +125,22 @@ _, pred = backtest(transformations_over_time, X, y, splitter)
 
 ## Features
 
-- Supports both Regression and Classification tasks
-- Feature selection on an expanding/rolling window basis (otherwise a great source of lookahead bias)
-- Use any scikit-learn model/pipeline natively
-- Use any univariate or sequence models (wrappers provided in [fold-models](https://github.com/dream-faster/fold-models))
-- Use any Deep Learning Time Series models (wrappers provided in [fold-models](https://github.com/dream-faster/fold-models))
-- Mini-batch or Online learning
-- Super easy syntax
-- Probabilistic foreacasts (soon for Regression as well)
-- Hyperparemeter optimization / Model selection (coming soon)
+- Supports both Regression and Classification tasks.
+- Online and Mini-batch learning.
+- Feature selection and other transformations (coming soon) on an expanding/rolling window basis
+- Use any scikit-learn model/pipeline natively!
+- Use any univariate or sequence models (wrappers provided in [fold-models](https://github.com/dream-faster/fold-models)).
+- Use any Deep Learning Time Series models (wrappers provided in [fold-models](https://github.com/dream-faster/fold-models)).
+- Super easy syntax!
+- Probabilistic foreacasts (currently, for Classification, soon for Regression as well).
+- Hyperparemeter optimization / Model selection (coming soon).
 
 
 ## Limitations
 
-- No intermittent time series support
-- No multi-step ahead forecasts (at least not for now)
-- No hierarchical time series support
+- No intermittent time series support, very limited support for non-continuous time series.
+- No multi-step ahead forecasts. If you want to forecast multiple steps ahead, transform `y` to aggregate the change over the forecasting horizon you're interested in.
+- No hierarchical time series support.
 
 ## Similar libraries
 It's like [SKTime](https://github.com/sktime/sktime), but with more focus and 100x less code, designed with distributed computing in mind.
