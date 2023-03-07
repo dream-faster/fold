@@ -6,7 +6,6 @@ from .base import FeatureSelector, Transformation
 
 
 class SKLearnTransformation(Transformation):
-
     properties = Transformation.Properties()
 
     def __init__(self, transformation) -> None:
@@ -36,7 +35,6 @@ class SKLearnTransformation(Transformation):
 
 
 class SKLearnFeatureSelector(FeatureSelector):
-
     properties = Transformation.Properties()
 
     def __init__(self, transformation) -> None:

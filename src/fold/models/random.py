@@ -1,4 +1,4 @@
-from random import choices, random
+from random import choices
 from typing import List, Optional, Union
 
 import numpy as np
@@ -9,7 +9,6 @@ from .base import Model
 
 
 class RandomClassifier(Model):
-
     properties = Transformation.Properties()
     name = "RandomClassifier"
 

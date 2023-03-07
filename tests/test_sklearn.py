@@ -9,7 +9,6 @@ from fold.utils.tests import generate_all_zeros
 
 
 def test_sklearn_classifier() -> None:
-
     X = generate_all_zeros(1000)
     y = X.squeeze()
 
@@ -24,7 +23,6 @@ def test_sklearn_classifier() -> None:
 
 
 def test_sklearn_regressor() -> None:
-
     X = generate_all_zeros(1000)
     y = X.squeeze()
 
@@ -39,7 +37,6 @@ def test_sklearn_regressor() -> None:
 
 
 def test_sklearn_pipeline() -> None:
-
     X = generate_all_zeros(1000)
     y = X.squeeze()
 

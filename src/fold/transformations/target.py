@@ -10,7 +10,6 @@ from ..transformations.base import Composite, Transformations, TransformationsAl
 
 
 class TransformTarget(Composite):
-
     properties = Composite.Properties(
         primary_only_single_pipeline=True,
         secondary_only_single_pipeline=True,

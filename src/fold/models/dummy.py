@@ -7,7 +7,6 @@ from .base import Model
 
 
 class DummyClassifier(Model):
-
     properties = Transformation.Properties()
     name = "DummyClassifier"
 
@@ -42,7 +41,6 @@ class DummyClassifier(Model):
 
 
 class DummyRegressor(Model):
-
     properties = Transformation.Properties()
     name = "DummyRegressor"
 

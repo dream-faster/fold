@@ -6,7 +6,6 @@ from .base import Transformation
 
 
 class FunctionTransformation(Transformation):
-
     properties = Transformation.Properties()
 
     def __init__(self, func: Callable) -> None:

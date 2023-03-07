@@ -3,7 +3,7 @@ from typing import Optional
 import pandas as pd
 
 from ..all_types import OutOfSamplePredictions
-from ..transformations.base import DeployableTransformations, Transformations
+from ..transformations.base import DeployableTransformations
 from .common import deepcopy_transformations, recursively_transform
 
 

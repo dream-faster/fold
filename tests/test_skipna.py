@@ -1,14 +1,12 @@
 import pandas as pd
 
 from fold.loop import backtest, train
-from fold.models.dummy import DummyClassifier
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.columns import SkipNA
 from fold.utils.tests import generate_all_zeros
 
 
 def test_skipna() -> None:
-
     X = generate_all_zeros(1000)
     X[:100] = pd.NA
     y = X.shift(-1).squeeze()
@@ -21,4 +19,4 @@ def test_skipna() -> None:
     transformations_over_time = train(transformations, X, y, splitter)
     _, pred = backtest(transformations_over_time, X, y, splitter)
     assert pred.squeeze()[:50].isna().all()
-    assert pred.squeeze()[50:].isna().any() == False
+    assert not pred.squeeze()[50:].isna().any()

@@ -6,7 +6,6 @@ from .base import Transformation
 
 
 class Identity(Transformation):
-
     properties = Transformation.Properties()
 
     name = "Identity"

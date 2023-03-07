@@ -6,7 +6,6 @@ from fold.utils.tests import generate_sine_wave_data
 
 
 def test_deployment() -> None:
-
     # the naive model returns X as prediction, so y.shift(1) should be == pred
     data = generate_sine_wave_data()
     X_train = data[:900]
@@ -25,7 +24,6 @@ def test_deployment() -> None:
 
     preds = []
     for index in X_test.index:
-
         X = X_test.loc[index:index]
         y = y_test.loc[index:index]
         preds.append(infer(deployable_transformations, X).squeeze())

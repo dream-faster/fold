@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import List, Optional, Union
+from typing import List, Optional
 
 import pandas as pd
 
@@ -16,7 +16,6 @@ def recursively_transform(
     transformations: Transformations,
     fit: bool = False,
 ) -> pd.DataFrame:
-
     if isinstance(transformations, List):
         for transformation in transformations:
             X = recursively_transform(X, y, sample_weights, transformation, fit)
@@ -41,11 +40,13 @@ def recursively_transform(
 
         if composite.properties.primary_only_single_pipeline:
             assert len(results_primary) == 1, ValueError(
-                f"Expected single output from primary transformations, got {len(results_primary)} instead."
+                "Expected single output from primary transformations, got"
+                f" {len(results_primary)} instead."
             )
         if composite.properties.primary_requires_predictions:
             assert is_prediction(results_primary[0]), ValueError(
-                "Expected predictions from primary transformations, but got something else."
+                "Expected predictions from primary transformations, but got something"
+                " else."
             )
 
         secondary_transformations = composite.get_child_transformations_secondary()
@@ -67,11 +68,13 @@ def recursively_transform(
 
             if composite.properties.secondary_only_single_pipeline:
                 assert len(results_secondary) == 1, ValueError(
-                    f"Expected single output from secondary transformations, got {len(results_secondary)} instead."
+                    "Expected single output from secondary transformations, got"
+                    f" {len(results_secondary)} instead."
                 )
             if composite.properties.secondary_requires_predictions:
                 assert is_prediction(results_secondary[0]), ValueError(
-                    "Expected predictions from secondary transformations, but got something else."
+                    "Expected predictions from secondary transformations, but got"
+                    " something else."
                 )
 
             return composite.postprocess_result_secondary(
@@ -125,7 +128,8 @@ def recursively_transform(
             return transformations.transform(X)
     else:
         raise ValueError(
-            f"{transformations} is not a Fold Transformation, but of type {type(transformations)}"
+            f"{transformations} is not a Fold Transformation, but of type"
+            f" {type(transformations)}"
         )
 
 

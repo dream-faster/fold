@@ -10,10 +10,8 @@ from fold.utils.checks import get_prediction_column
 from ..transformations.base import (
     BlocksOrWrappable,
     Composite,
-    Transformations,
     TransformationsAlwaysList,
 )
-from ..utils.list import wrap_in_list
 
 
 class MetaLabeling(Composite):
@@ -74,7 +72,6 @@ class MetaLabeling(Composite):
         primary_results: List[pd.DataFrame],
         secondary_results: List[pd.DataFrame],
     ) -> pd.DataFrame:
-
         primary_predictions = get_prediction_column(primary_results[0])
         meta_probabilities = secondary_results[0][
             [
@@ -92,7 +89,8 @@ class MetaLabeling(Composite):
         ]
         if len(meta_probabilities_positive_class.columns) != 1:
             raise ValueError(
-                f"Meta pipeline needs to be concluded with probabilities of the positive class: {str(self.positive_class)}"
+                "Meta pipeline needs to be concluded with probabilities of the"
+                f" positive class: {str(self.positive_class)}"
             )
         result = (
             primary_predictions * meta_probabilities_positive_class.squeeze()

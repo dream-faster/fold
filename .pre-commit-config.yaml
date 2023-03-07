@@ -1,22 +1,28 @@
 repos:
+  - repo: https://github.com/PyCQA/autoflake
+    rev: v2.0.1
+    hooks:
+      - id: autoflake
+        args: ['--in-place', '--remove-all-unused-imports', '--ignore-init-module-imports', '-r']
+        language_version: python3.9
+
   - repo: https://github.com/psf/black
-    rev: 22.6.0
+    rev: 22.12.0
     hooks:
       - id: black
-        args: ["--preview"]
-        language_version: python3
+        language_version: python3.9
 
   - repo: https://github.com/PyCQA/isort
-    rev: 5.10.1
+    rev: 5.11.5
     hooks:
       - id: isort
-        language_version: python3
+        language_version: python3.9
 
   - repo: https://github.com/pycqa/flake8
     rev: 4.0.1
     hooks:
       - id: flake8
         additional_dependencies:
-          - flake8-black>=0.3.3
-          - flake8-isort>=4.1.1
-        language_version: python3
+          - flake8-black
+          - flake8-isort
+        language_version: python3.9

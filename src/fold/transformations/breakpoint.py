@@ -1,4 +1,4 @@
-from typing import Callable, Optional
+from typing import Optional
 
 import pandas as pd
 
@@ -6,7 +6,6 @@ from .base import Transformation
 
 
 class Breakpoint(Transformation):
-
     properties = Transformation.Properties()
 
     def __init__(

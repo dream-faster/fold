@@ -6,7 +6,6 @@ from .base import Transformation
 
 
 class ToUnivariate(Transformation):
-
     properties = Transformation.Properties()
 
     def __init__(self, lag_column: str) -> None:

@@ -6,7 +6,6 @@ from fold.utils.tests import generate_sine_wave_data
 
 
 def test_baseline_naive_seasonal() -> None:
-
     X = generate_sine_wave_data(1000)
     y = X.squeeze()
 

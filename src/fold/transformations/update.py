@@ -6,7 +6,6 @@ from .base import Transformation
 
 
 class DontUpdate(Transformation):
-
     properties = Transformation.Properties()
     number_of_fits = 0
 
