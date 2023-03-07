@@ -7,9 +7,15 @@ theme:
   name: material
 
 nav:
-    - 'index.md'
-    - 'continuous-validation.md'
-    - 'design.md'
+    - Home: 'index.md'
+    - Concepts:
+      - Continuous Validation: 'continuous-validation.md'
+      - Design: 'design.md'
+      - Models: 'models.md'
+      - Splitters: 'splitters.md'
+    - Getting started:
+      - Quick Start: 'quickstart.md'
+      - Deployment: 'deployment.md'
     - 'reference.md'
 
 plugins:
