@@ -18,7 +18,6 @@
 ::: fold.transformations.sklearn
 ::: fold.transformations.target
 ::: fold.transformations.test
-::: fold.transformations.univariate
 ::: fold.transformations.update
 
 ::: fold.splitters
