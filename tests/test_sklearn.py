@@ -18,7 +18,7 @@ def test_sklearn_classifier() -> None:
         OnlyPredictions(),
     ]
     transformations_over_time = train(transformations, X, y, splitter)
-    _, pred = backtest(transformations_over_time, X, y, splitter)
+    pred = backtest(transformations_over_time, X, y, splitter)
     assert (pred.squeeze() == y[pred.index]).all()
 
 
@@ -32,7 +32,7 @@ def test_sklearn_regressor() -> None:
         OnlyPredictions(),
     ]
     transformations_over_time = train(transformations, X, y, splitter)
-    _, pred = backtest(transformations_over_time, X, y, splitter)
+    pred = backtest(transformations_over_time, X, y, splitter)
     assert (pred.squeeze() == y[pred.index]).all()
 
 
@@ -51,5 +51,5 @@ def test_sklearn_pipeline() -> None:
         OnlyPredictions(),
     ]
     transformations_over_time = train(transformations, X, y, splitter)
-    _, pred = backtest(transformations_over_time, X, y, splitter)
+    pred = backtest(transformations_over_time, X, y, splitter)
     assert (pred.squeeze() == y[pred.index]).all()

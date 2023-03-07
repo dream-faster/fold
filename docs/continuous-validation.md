@@ -19,6 +19,8 @@ Instead of only looking at the last 1 year, 1 month of out-of-sample predictions
 
 ## Also knowns as
 
+- Time Series Cross Validation
+- Rolling Origin Backtest
 - Rolling Out-of-sample Evaluation
 - Continuous Evaluation
 - "Backtesting" (not to be confused with evaluation of static trading models)
