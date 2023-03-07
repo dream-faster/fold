@@ -14,9 +14,8 @@
 <br />
 <div align="center">
   <a href="https://dream-faster.github.io/fold/">
-    <img src="https://dream-faster.github.io/fold/docs/source/images/logo.png" alt="Logo" width="90" >
+    <img src="https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/logo.png" alt="Logo" width="90" >
   </a>
-
 <h3 align="center"> <i>(/fold/)</i></h3>
   <p align="center">
     Nowcasting with continuous evaluation
@@ -44,7 +43,7 @@ It is from the ground-up extensible and lightweight.
 **It can also help you with creating complex blended models:**
 - Ensembling: (weighted) averaging the predictions of multiple models or pipelines
 - Stacking: feed multiple model's predictions into a model
-- Meta-labelling or residual-modelling: 
+- Meta-labeling or residual-modelling/hybrid models (coming soon)
 ... or any combinations of the above.
 Why? It [works really well for time series](https://linkinghub.elsevier.com/retrieve/pii/S0169207022001480).
   
@@ -132,6 +131,11 @@ _, pred = backtest(transformations_over_time, X, y, splitter)
 - No intermittent time series support
 - No multi-step ahead forecasts (at least not for now)
 - No hierarchical time series support
+
+## Similar libraries
+It's like [SKTime](https://github.com/sktime/sktime), but with more focus and 100x less code, designed with distributed computing in mind.
+It's like [River](https://github.com/online-ml/river), but supporting mini-batch, not just online learning.
+It’s very much like [timemachines](https://github.com/microprediction/timemachines), but with an API that’s more accessible for the Python community.
 
 
 ## Contribution
