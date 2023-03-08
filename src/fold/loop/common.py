@@ -16,11 +16,14 @@ def recursively_transform(
     y: Optional[pd.Series],
     sample_weights: Optional[pd.Series],
     transformations: Transformations,
-    fit: bool = False,
+    fit: bool,
+    is_first_split: bool,
 ) -> pd.DataFrame:
     if isinstance(transformations, List):
         for transformation in transformations:
-            X = recursively_transform(X, y, sample_weights, transformation, fit)
+            X = recursively_transform(
+                X, y, sample_weights, transformation, fit, is_first_split
+            )
         return X
 
     elif isinstance(transformations, Composite):
@@ -34,6 +37,7 @@ def recursively_transform(
                 sample_weights,
                 child_transformation,
                 fit,
+                is_first_split,
             )
             for index, child_transformation in enumerate(
                 composite.get_child_transformations_primary()
@@ -64,6 +68,7 @@ def recursively_transform(
                     sample_weights,
                     child_transformation,
                     fit,
+                    is_first_split,
                 )
                 for index, child_transformation in enumerate(secondary_transformations)
             ]
@@ -89,7 +94,7 @@ def recursively_transform(
         if len(X) == 0:
             return pd.DataFrame()
 
-        if transformations.properties.requires_continuous_updates:
+        if transformations.properties.requires_continuous_updates and is_first_split:
             y_df = y.to_frame() if y is not None else None
             # If the transformation requires continuous updates, we need to run the inference
             # & fit loop on each row, sequentially (one-by-one).

@@ -4,6 +4,7 @@ from typing import List, Optional, Union
 
 @dataclass
 class Split:
+    order: int
     model_index: int
     train_window_start: int
     train_window_end: int
@@ -49,13 +50,14 @@ class SlidingWindowSplitter(Splitter):
         step = translate_float_if_needed(self.step, length)
         return [
             Split(
+                order=order,
                 model_index=index,
                 train_window_start=index - window_size,
                 train_window_end=index - self.embargo,
                 test_window_start=index,
                 test_window_end=min(end, index + step),
             )
-            for index in range(self.start + window_size, end, step)
+            for order, index in enumerate(range(self.start + window_size, end, step))
         ]
 
 
@@ -81,13 +83,14 @@ class ExpandingWindowSplitter(Splitter):
 
         return [
             Split(
+                order=order,
                 model_index=index,
                 train_window_start=self.start,
                 train_window_end=index - self.embargo,
                 test_window_start=index,
                 test_window_end=min(end, index + step),
             )
-            for index in range(self.start + window_size, end, step)
+            for order, index in enumerate(range(self.start + window_size, end, step))
         ]
 
 
@@ -105,6 +108,7 @@ class SingleWindowSplitter(Splitter):
 
         return [
             Split(
+                order=0,
                 model_index=0,
                 train_window_start=0,
                 train_window_end=window_size - self.embargo,
