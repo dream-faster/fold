@@ -41,6 +41,8 @@ class DummyClassifier(Model):
 
     predict_in_sample = predict
 
+    update = fit
+
 
 class DummyRegressor(Model):
     properties = Transformation.Properties()
@@ -62,3 +64,5 @@ class DummyRegressor(Model):
         )
 
         return predictions
+
+    update = fit

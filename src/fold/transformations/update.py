@@ -16,7 +16,7 @@ class DontUpdate(Transformation):
     def fit(
         self,
         X: pd.DataFrame,
-        y: Optional[pd.Series] = None,
+        y: Optional[pd.Series],
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         if self.number_of_fits == 0:
@@ -47,7 +47,7 @@ class InjectPastDataAtInference(Transformation):
     def fit(
         self,
         X: pd.DataFrame,
-        y: Optional[pd.Series] = None,
+        y: Optional[pd.Series],
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         self.transformation.fit(X, y, sample_weights)

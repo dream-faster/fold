@@ -94,10 +94,15 @@ def recursively_transform(
         if len(X) == 0:
             return pd.DataFrame()
 
-        if transformations.properties.requires_continuous_updates and is_first_split:
+        if (
+            transformations.properties.requires_continuous_updates
+            and (fit and not is_first_split)
+            or not fit
+        ):
+            # If the transformation requires continuous updates, and this is the not first split, and we're in inference
+
             y_df = y.to_frame() if y is not None else None
-            # If the transformation requires continuous updates, we need to run the inference
-            # & fit loop on each row, sequentially (one-by-one).
+            # We need to run the inference & fit loop on each row, sequentially (one-by-one).
             # This is so the transformation can update its parameters after each sample.
 
             # Important: depending on whether we're training or not:

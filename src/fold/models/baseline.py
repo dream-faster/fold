@@ -109,27 +109,41 @@ class BaselineRegressorDeprecated(Model):
 
     predict_in_sample = predict
 
+    update = fit
+
 
 class BaselineNaive(Model):
     name = "BaselineNaive"
     properties = Model.Properties(requires_continuous_updates=True)
-    past_y = None
+
+    insample_y = None
+    last_y = None
 
     def fit(
         self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
     ) -> None:
-        self.past_y = y[-1]
+        self.insample_y = y.shift(1)
+
+    def update(
+        self,
+        X: pd.DataFrame,
+        y: Optional[pd.Series],
+        sample_weights: Optional[pd.Series] = None,
+    ) -> None:
+        self.last_y = y[-1]
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
-        return pd.Series(self.past_y, index=X.index)
+        return pd.Series(self.last_y, index=X.index)
 
-    predict_in_sample = predict
+    def predict_in_sample(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
+        return self.insample_y
 
 
 class BaselineNaiveSeasonal(Model):
     name = "BaselineNaiveSeasonal"
     properties = Model.Properties(requires_continuous_updates=True)
     current_season = 0
+    insample_y = None
 
     def __init__(self, seasonal_length: int) -> None:
         self.seasonal_length = seasonal_length
@@ -138,7 +152,19 @@ class BaselineNaiveSeasonal(Model):
     def fit(
         self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
     ) -> None:
-        self.past_ys[self.current_season % self.seasonal_length] = y[-1]
+        self.insample_y = y.shift(self.seasonal_length)
+        self.current_season = len(X) % self.seasonal_length
+        last_batch = y[-self.seasonal_length :]
+        for value in last_batch:
+            self.update(None, pd.Series([value]))
+
+    def update(
+        self,
+        X: pd.DataFrame,
+        y: Optional[pd.Series],
+        sample_weights: Optional[pd.Series] = None,
+    ) -> None:
+        self.past_ys[self.current_season % self.seasonal_length] = y.squeeze()
         self.current_season += 1
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
@@ -146,7 +172,8 @@ class BaselineNaiveSeasonal(Model):
         value = self.past_ys[index] if self.past_ys[index] is not None else 0.0
         return pd.Series([value], index=X.index)
 
-    predict_in_sample = predict
+    def predict_in_sample(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
+        return self.insample_y
 
 
 # class BaselineMean(Model):

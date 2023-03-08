@@ -13,10 +13,12 @@ class Identity(Transformation):
     def fit(
         self,
         X: pd.DataFrame,
-        y: Optional[pd.Series] = None,
+        y: Optional[pd.Series],
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         pass
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         return X
+
+    update = fit

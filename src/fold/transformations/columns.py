@@ -23,13 +23,15 @@ class SelectColumns(Transformation):
     def fit(
         self,
         X: pd.DataFrame,
-        y: Optional[pd.Series] = None,
+        y: Optional[pd.Series],
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         pass
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         return X[self.columns]
+
+    update = fit
 
 
 class DropColumns(Transformation):
@@ -42,13 +44,15 @@ class DropColumns(Transformation):
     def fit(
         self,
         X: pd.DataFrame,
-        y: Optional[pd.Series] = None,
+        y: Optional[pd.Series],
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         pass
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         return X.drop(columns=self.columns)
+
+    update = fit
 
 
 class RenameColumns(Transformation):
@@ -61,13 +65,15 @@ class RenameColumns(Transformation):
     def fit(
         self,
         X: pd.DataFrame,
-        y: Optional[pd.Series] = None,
+        y: Optional[pd.Series],
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         pass
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         return X.rename(columns=self.columns_mapper)
+
+    update = fit
 
 
 def TransformColumn(
@@ -124,7 +130,7 @@ class OnlyPredictions(Transformation):
     def fit(
         self,
         X: pd.DataFrame,
-        y: Optional[pd.Series] = None,
+        y: Optional[pd.Series],
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         pass
@@ -133,6 +139,8 @@ class OnlyPredictions(Transformation):
         return X.drop(
             columns=[col for col in X.columns if not col.startswith("predictions_")]
         )
+
+    update = fit
 
 
 class OnlyProbabilities(Transformation):
@@ -144,7 +152,7 @@ class OnlyProbabilities(Transformation):
     def fit(
         self,
         X: pd.DataFrame,
-        y: Optional[pd.Series] = None,
+        y: Optional[pd.Series],
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         pass
@@ -153,6 +161,8 @@ class OnlyProbabilities(Transformation):
         return X.drop(
             columns=[col for col in X.columns if not col.startswith("probabilities_")]
         )
+
+    update = fit
 
 
 class SkipNA(Composite):

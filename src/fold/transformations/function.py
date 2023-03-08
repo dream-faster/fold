@@ -15,7 +15,7 @@ class FunctionTransformation(Transformation):
     def fit(
         self,
         X: pd.DataFrame,
-        y: Optional[pd.Series] = None,
+        y: Optional[pd.Series],
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         pass
@@ -25,3 +25,5 @@ class FunctionTransformation(Transformation):
 
     def inverse_transform(self, X: pd.DataFrame) -> pd.DataFrame:
         return X
+
+    update = fit

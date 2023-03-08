@@ -18,7 +18,7 @@ class SKLearnTransformation(Transformation):
     def fit(
         self,
         X: pd.DataFrame,
-        y: Optional[pd.Series] = None,
+        y: Optional[pd.Series],
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         fit_func = (
@@ -32,6 +32,16 @@ class SKLearnTransformation(Transformation):
             fit_func(X, y)
         elif len(argspec.args) == 4:
             fit_func(X, y, sample_weights)
+
+    def update(
+        self,
+        X: pd.DataFrame,
+        y: Optional[pd.Series],
+        sample_weights: Optional[pd.Series] = None,
+    ) -> None:
+        if hasattr(self.transformation, "partial_fit"):
+            self.transformation.partial_fit(X, y, sample_weights)
+        # if we don't have partial_fit, we can't update the model (maybe throw an exception, and force user to wrap it into `DontUpdate`?)
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         if hasattr(self.transformation, "set_output"):
@@ -57,7 +67,7 @@ class SKLearnFeatureSelector(FeatureSelector):
     def fit(
         self,
         X: pd.DataFrame,
-        y: Optional[pd.Series] = None,
+        y: Optional[pd.Series],
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         self.transformation.fit(X, y)
@@ -70,3 +80,11 @@ class SKLearnFeatureSelector(FeatureSelector):
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         return X[self.selected_features]
+
+    def update(
+        self,
+        X: pd.DataFrame,
+        y: Optional[pd.Series],
+        sample_weights: Optional[pd.Series] = None,
+    ) -> None:
+        pass
