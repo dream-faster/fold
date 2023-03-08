@@ -1,3 +1,4 @@
+from inspect import getfullargspec
 from typing import Optional
 
 import pandas as pd
@@ -20,7 +21,17 @@ class SKLearnTransformation(Transformation):
         y: Optional[pd.Series] = None,
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
-        self.transformation.fit(X, y)
+        fit_func = (
+            self.transformation.partial_fit
+            if hasattr(self.transformation, "partial_fit")
+            else self.transformation.fit
+        )
+
+        argspec = getfullargspec(fit_func)
+        if len(argspec.args) == 2:
+            fit_func(X, y)
+        elif len(argspec.args) == 3:
+            fit_func(X, y, sample_weights)
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
         if hasattr(self.transformation, "set_output"):
