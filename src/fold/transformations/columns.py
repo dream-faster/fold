@@ -28,7 +28,7 @@ class SelectColumns(Transformation):
     ) -> None:
         pass
 
-    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         return X[self.columns]
 
 
@@ -47,7 +47,7 @@ class DropColumns(Transformation):
     ) -> None:
         pass
 
-    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         return X.drop(columns=self.columns)
 
 
@@ -129,7 +129,7 @@ class OnlyPredictions(Transformation):
     ) -> None:
         pass
 
-    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         return X.drop(
             columns=[col for col in X.columns if not col.startswith("predictions_")]
         )
@@ -149,7 +149,7 @@ class OnlyProbabilities(Transformation):
     ) -> None:
         pass
 
-    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         return X.drop(
             columns=[col for col in X.columns if not col.startswith("probabilities_")]
         )

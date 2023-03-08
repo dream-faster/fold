@@ -5,6 +5,8 @@ from typing import List, Optional
 
 import pandas as pd
 
+from fold.models.base import Model
+
 from ..transformations.base import Composite, Transformation, Transformations
 from ..utils.checks import is_prediction
 
@@ -81,7 +83,9 @@ def recursively_transform(
                 results_primary, results_secondary
             )
 
-    elif isinstance(transformations, Transformation):
+    elif isinstance(transformations, Transformation) or isinstance(
+        transformations, Model
+    ):
         if len(X) == 0:
             return pd.DataFrame()
 
@@ -96,11 +100,11 @@ def recursively_transform(
             # - we call fit() after transform(), at backtesting/inference time. The output are then out-of-sample predictions.
             def transform_row_train(X_row, y_row, sample_weights_row):
                 transformations.fit(X_row, y_row, sample_weights_row)
-                result = transformations.transform(X_row)
+                result = transformations.transform(X_row, in_sample=True)
                 return result
 
             def transform_row_inference_backtest(X_row, y_row, sample_weights_row):
-                result = transformations.transform(X_row)
+                result = transformations.transform(X_row, in_sample=False)
                 if y_row is not None:
                     transformations.fit(X_row, y_row, sample_weights_row)
                 return result
@@ -125,7 +129,7 @@ def recursively_transform(
         else:
             if fit:
                 transformations.fit(X, y, sample_weights)
-            return transformations.transform(X)
+            return transformations.transform(X, in_sample=fit)
     else:
         raise ValueError(
             f"{transformations} is not a Fold Transformation, but of type"

@@ -37,3 +37,5 @@ class RandomClassifier(Model):
         ]
 
         return pd.concat([predictions] + probabilities, axis="columns")
+
+    predict_in_sample = predict

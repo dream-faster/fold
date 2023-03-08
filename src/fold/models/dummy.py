@@ -39,6 +39,8 @@ class DummyClassifier(Model):
 
         return pd.concat([predictions] + probabilities, axis="columns")
 
+    predict_in_sample = predict
+
 
 class DummyRegressor(Model):
     properties = Transformation.Properties()

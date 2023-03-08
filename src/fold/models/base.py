@@ -11,9 +11,25 @@ class Model(Transformation):
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         raise NotImplementedError
 
-    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
-        pred = self.predict(X)
-        if isinstance(pred, pd.Series):
-            return pred.to_frame()
+    @abstractmethod
+    def predict_in_sample(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
+        raise NotImplementedError
+
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
+        if in_sample:
+            return postpostprocess_prediction(self.predict_in_sample(X), self.name)
         else:
-            return pred
+            return postpostprocess_prediction(self.predict(X), self.name)
+
+
+def postpostprocess_prediction(
+    dataframe_or_series: Union[pd.DataFrame, pd.Series], name: str
+) -> pd.DataFrame:
+    if isinstance(dataframe_or_series, pd.Series):
+        return dataframe_or_series.rename("predictions_" + name).to_frame()
+    elif isinstance(dataframe_or_series, pd.DataFrame):
+        return dataframe_or_series
+    else:
+        raise ValueError(
+            f"Expected dataframe or series, got {type(dataframe_or_series)} instead."
+        )
