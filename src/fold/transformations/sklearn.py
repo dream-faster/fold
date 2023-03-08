@@ -28,9 +28,9 @@ class SKLearnTransformation(Transformation):
         )
 
         argspec = getfullargspec(fit_func)
-        if len(argspec.args) == 2:
+        if len(argspec.args) == 3:
             fit_func(X, y)
-        elif len(argspec.args) == 3:
+        elif len(argspec.args) == 4:
             fit_func(X, y, sample_weights)
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
