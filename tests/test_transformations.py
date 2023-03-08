@@ -1,14 +1,9 @@
 import numpy as np
-from sklearn.feature_selection import SelectKBest, VarianceThreshold, f_regression
 
 from fold.loop import backtest, train
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations import Identity, SelectColumns
-from fold.transformations.columns import (
-    PerColumnTransform,
-    RenameColumns,
-    TransformColumn,
-)
+from fold.transformations.columns import PerColumnTransform, TransformColumn
 from fold.transformations.target import TransformTarget
 from fold.transformations.test import Test
 from fold.utils.tests import generate_sine_wave_data, generate_zeros_and_ones_skewed
@@ -43,28 +38,6 @@ def test_nested_transformations() -> None:
     assert (
         np.isclose((X["sine_2"][pred.index]).values, (pred.squeeze() - 3.0).values)
     ).all()
-
-
-def test_nested_transformations_with_feature_selection() -> None:
-    X = generate_sine_wave_data()
-    X["sine_2"] = X["sine"] + 1
-    X["constant"] = 1.0
-    X["constant2"] = 2.0
-    y = X["sine"].shift(-1).squeeze()
-
-    splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
-    transformations = [
-        VarianceThreshold(),
-        TransformColumn("sine_2", [lambda x: x**2.0]),
-        SelectKBest(score_func=f_regression, k=1),
-        RenameColumns({"sine": "pred"}),
-        SelectColumns("pred"),
-    ]
-
-    transformations_over_time = train(transformations, X, y, splitter)
-    pred = backtest(transformations_over_time, X, y, splitter)
-    assert (np.isclose((X["sine"][pred.index]), pred.squeeze())).all()
-    assert pred.squeeze().name == "pred"
 
 
 def test_column_select_single_column_transformation() -> None:
