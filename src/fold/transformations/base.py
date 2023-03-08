@@ -32,7 +32,7 @@ class Transformation(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         raise NotImplementedError
 
     def inverse_transform(self, X: pd.DataFrame) -> pd.DataFrame:

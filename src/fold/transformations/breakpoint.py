@@ -24,7 +24,7 @@ class Breakpoint(Transformation):
         if self.stop_at_fit:
             breakpoint()
 
-    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         if self.stop_at_transform:
             breakpoint()
         return X

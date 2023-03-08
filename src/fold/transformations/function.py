@@ -20,7 +20,7 @@ class FunctionTransformation(Transformation):
     ) -> None:
         pass
 
-    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         return self.func(X)
 
     def inverse_transform(self, X: pd.DataFrame) -> pd.DataFrame:

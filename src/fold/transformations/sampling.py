@@ -26,5 +26,5 @@ class Sampling(Transformation):
         X, y = self.sampler.fit_resample(X, y)
         self.model.fit(X, y, sample_weights)
 
-    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
-        return self.model.transform(X)
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
+        return self.model.transform(X, in_sample=in_sample)

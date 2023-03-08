@@ -107,10 +107,12 @@ class BaselineRegressorDeprecated(Model):
         else:
             raise ValueError(f"Strategy {self.strategy} not implemented")
 
+    predict_in_sample = predict
+
 
 class BaselineNaive(Model):
     name = "BaselineNaive"
-    properties = Transformation.Properties(requires_continuous_updates=True)
+    properties = Model.Properties(requires_continuous_updates=True)
     past_y = None
 
     def fit(
@@ -119,12 +121,14 @@ class BaselineNaive(Model):
         self.past_y = y[-1]
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
-        return pd.Series(self.past_y, index=X.index, name="predictions_BaselineNaive")
+        return pd.Series(self.past_y, index=X.index)
+
+    predict_in_sample = predict
 
 
 class BaselineNaiveSeasonal(Model):
     name = "BaselineNaiveSeasonal"
-    properties = Transformation.Properties(requires_continuous_updates=True)
+    properties = Model.Properties(requires_continuous_updates=True)
     current_season = 0
 
     def __init__(self, seasonal_length: int) -> None:
@@ -140,9 +144,9 @@ class BaselineNaiveSeasonal(Model):
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         index = self.current_season % self.seasonal_length
         value = self.past_ys[index] if self.past_ys[index] is not None else 0.0
-        return pd.Series(
-            [value], index=X.index, name="predictions_BaselineNaiveSeasonal"
-        )
+        return pd.Series([value], index=X.index)
+
+    predict_in_sample = predict
 
 
 # class BaselineMean(Model):

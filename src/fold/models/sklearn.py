@@ -7,9 +7,7 @@ from fold.transformations.base import Transformation
 
 
 class SKLearnClassifier(Model):
-    properties = Transformation.Properties(
-        model_type=Transformation.Properties.ModelType.classifier
-    )
+    properties = Model.Properties(model_type=Model.Properties.ModelType.classifier)
     fitted = False
 
     def __init__(self, model) -> None:
@@ -42,11 +40,11 @@ class SKLearnClassifier(Model):
         )
         return pd.concat([predictions, probabilities], axis="columns")
 
+    predict_in_sample = predict
+
 
 class SKLearnRegressor(Model):
-    properties = Transformation.Properties(
-        model_type=Transformation.Properties.ModelType.regressor
-    )
+    properties = Model.Properties(model_type=Model.Properties.ModelType.regressor)
     fitted = False
 
     def __init__(self, model) -> None:
@@ -71,6 +69,8 @@ class SKLearnRegressor(Model):
             name=f"predictions_{self.name}",
         ).to_frame()
 
+    predict_in_sample = predict
+
 
 class SKLearnPipeline(Model):
     properties = Transformation.Properties()
@@ -93,3 +93,5 @@ class SKLearnPipeline(Model):
             index=X.index,
             name=f"predictions_{self.name}",
         ).to_frame()
+
+    predict_in_sample = predict

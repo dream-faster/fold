@@ -33,7 +33,7 @@ class SKLearnTransformation(Transformation):
         elif len(argspec.args) == 4:
             fit_func(X, y, sample_weights)
 
-    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         if hasattr(self.transformation, "set_output"):
             return self.transformation.transform(X)
         else:
@@ -68,5 +68,5 @@ class SKLearnFeatureSelector(FeatureSelector):
                 self.transformation.get_support()
             ].to_list()
 
-    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         return X[self.selected_features]

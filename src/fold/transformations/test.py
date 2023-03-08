@@ -40,7 +40,7 @@ class Test(Transformation):
                 f"but {len(argspec.args)} were given."
             )
 
-    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         return_value = self.transform_func(X)
         if return_value is None:
             return X

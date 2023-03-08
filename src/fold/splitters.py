@@ -32,7 +32,7 @@ class SlidingWindowSplitter(Splitter):
     def __init__(
         self,
         train_window_size: Union[int, float],
-        step: int,
+        step: Union[int, float],
         embargo: int = 0,
         start: int = 0,
         end: Optional[int] = None,

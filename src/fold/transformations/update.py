@@ -25,8 +25,8 @@ class DontUpdate(Transformation):
         else:
             pass
 
-    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
-        return self.transformation.transform(X)
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
+        return self.transformation.transform(X, in_sample)
 
 
 class InjectPastDataAtInference(Transformation):
@@ -55,9 +55,9 @@ class InjectPastDataAtInference(Transformation):
             pd.concat([self.past_X, X], axis="index") if self.past_X is not None else X
         )
 
-    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         complete_X = (
             pd.concat([self.past_X, X], axis="index") if self.past_X is not None else X
         )
-        result = self.transformation.transform(complete_X)
+        result = self.transformation.transform(complete_X, in_sample)
         return result.loc[X.index]

@@ -18,5 +18,5 @@ class Identity(Transformation):
     ) -> None:
         pass
 
-    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         return X
