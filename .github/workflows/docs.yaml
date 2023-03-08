@@ -1,8 +1,7 @@
 name: docs 
 on:
   push:
-    branches:
-      - main
+
 permissions:
   contents: write
 jobs:
@@ -18,4 +17,7 @@ jobs:
           key: ${{ github.ref }}
           path: .cache
       - run: pip install ".[docs]"
-      - run: mkdocs gh-deploy --force
+      - run: mkdocs build
+      - name: Deploying to Github Pages
+        if: ${{ github.ref == 'refs/heads/master' }}
+        run: mkdocs gh-deploy --force
