@@ -61,3 +61,5 @@ class InjectPastDataAtInference(Transformation):
         )
         result = self.transformation.transform(complete_X, in_sample)
         return result.loc[X.index]
+
+    update = fit

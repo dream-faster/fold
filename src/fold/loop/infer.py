@@ -19,7 +19,9 @@ def infer(
 
     assert type(X) is pd.DataFrame, "X must be a pandas DataFrame."
 
-    results = recursively_transform(X, None, None, transformations, fit=False)
+    results = recursively_transform(
+        X, None, None, transformations, fit=False, is_first_split=False
+    )
     return results
 
 
