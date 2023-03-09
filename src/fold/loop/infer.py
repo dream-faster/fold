@@ -36,5 +36,7 @@ def update(
     Returns a new set of Transformations, does not mutate the original.
     """
     transformations = deepcopy_transformations(transformations)
-    _ = recursively_transform(X, y, sample_weights, transformations, fit=True)
+    _ = recursively_transform(
+        X, y, sample_weights, transformations, fit=True, is_first_split=False
+    )
     return transformations

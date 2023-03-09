@@ -40,7 +40,11 @@ class SKLearnTransformation(Transformation):
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         if hasattr(self.transformation, "partial_fit"):
-            self.transformation.partial_fit(X, y, sample_weights)
+            argspec = getfullargspec(self.transformation.partial_fit)
+            if len(argspec.args) == 3:
+                self.transformation.partial_fit(X, y)
+            elif len(argspec.args) == 4:
+                self.transformation.partial_fit(X, y, sample_weights)
         # if we don't have partial_fit, we can't update the model (maybe throw an exception, and force user to wrap it into `DontUpdate`?)
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:

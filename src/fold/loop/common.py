@@ -19,6 +19,10 @@ def recursively_transform(
     fit: bool,
     is_first_split: bool,
 ) -> pd.DataFrame:
+    """
+    The main function to transform (and fit) a pipline of transformations.
+    is_first_split is used to determine whether to run the inner loop for models that have `requires_continuous_updating` set to True.
+    """
     if isinstance(transformations, List):
         for transformation in transformations:
             X = recursively_transform(
@@ -109,14 +113,14 @@ def recursively_transform(
             # - we call fit() _before_ transform(), at training time. The output are in-sample predictions.
             # - we call fit() after transform(), at backtesting/inference time. The output are then out-of-sample predictions.
             def transform_row_train(X_row, y_row, sample_weights_row):
-                transformations.fit(X_row, y_row, sample_weights_row)
-                result = transformations.transform(X_row, in_sample=True)
+                transformations.update(X_row, y_row, sample_weights_row)
+                result = transformations.transform(X_row, in_sample=False)
                 return result
 
             def transform_row_inference_backtest(X_row, y_row, sample_weights_row):
                 result = transformations.transform(X_row, in_sample=False)
                 if y_row is not None:
-                    transformations.fit(X_row, y_row, sample_weights_row)
+                    transformations.update(X_row, y_row, sample_weights_row)
                 return result
 
             transform_row_function = (

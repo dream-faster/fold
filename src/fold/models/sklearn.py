@@ -85,6 +85,12 @@ class SKLearnRegressor(Model):
 
 
 class SKLearnPipeline(Model):
+    """
+    This is a wrapper for scikit-learn Pipelines, which are not compatible with fold.
+    It's usage is discouraged, as it's not possible to update an scikit-learn Pipeline with new data.
+    Fold has all the primitives that scikit-learn Pipelines provide, with an easy syntax.
+    """
+
     properties = Transformation.Properties()
 
     def __init__(self, pipeline) -> None:
@@ -107,3 +113,11 @@ class SKLearnPipeline(Model):
         ).to_frame()
 
     predict_in_sample = predict
+
+    def update(
+        self,
+        X: pd.DataFrame,
+        y: Optional[pd.Series],
+        sample_weights: Optional[pd.Series] = None,
+    ) -> None:
+        pass

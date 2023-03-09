@@ -7,7 +7,6 @@ from .base import Transformation
 
 class DontUpdate(Transformation):
     properties = Transformation.Properties()
-    number_of_fits = 0
 
     def __init__(self, transformation: Transformation) -> None:
         self.transformation = transformation
@@ -19,14 +18,18 @@ class DontUpdate(Transformation):
         y: Optional[pd.Series],
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
-        if self.number_of_fits == 0:
-            self.transformation.fit(X, y, sample_weights)
-            self.number_of_fits += 1
-        else:
-            pass
+        self.transformation.fit(X, y, sample_weights)
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         return self.transformation.transform(X, in_sample)
+
+    def update(
+        self,
+        X: pd.DataFrame,
+        y: Optional[pd.Series],
+        sample_weights: Optional[pd.Series] = None,
+    ) -> None:
+        pass
 
 
 class InjectPastDataAtInference(Transformation):

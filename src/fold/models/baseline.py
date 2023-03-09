@@ -123,6 +123,7 @@ class BaselineNaive(Model):
         self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
     ) -> None:
         self.insample_y = y.shift(1)
+        self.last_y = y.iloc[-1]
 
     def update(
         self,
@@ -130,7 +131,8 @@ class BaselineNaive(Model):
         y: Optional[pd.Series],
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
-        self.last_y = y[-1]
+        assert len(y) == 1
+        self.last_y = y.squeeze()
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         return pd.Series(self.last_y, index=X.index)
