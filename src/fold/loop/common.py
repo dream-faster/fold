@@ -98,10 +98,8 @@ def recursively_transform(
         if len(X) == 0:
             return pd.DataFrame()
 
-        if (
-            transformations.properties.requires_continuous_updates
-            and (fit and not is_first_split)
-            or not fit
+        if transformations.properties.requires_continuous_updates and (
+            (fit and not is_first_split) or not fit
         ):
             # If the transformation requires continuous updates, and this is the not first split, and we're in inference
 
