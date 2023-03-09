@@ -29,3 +29,13 @@ def generate_zeros_and_ones_skewed(
         choices(population=labels, weights=weights, k=length),
         index=pd.date_range(end="2022", periods=length, freq="s"),
     ).to_frame()
+
+
+def generate_monotonous_data(length: int = 1000) -> pd.DataFrame:
+    increment = 1 / length
+    values = np.arange(0, 1, increment)
+    return pd.Series(
+        values,
+        name="linear",
+        index=pd.date_range(end="2022", periods=len(values), freq="m"),
+    ).to_frame()
