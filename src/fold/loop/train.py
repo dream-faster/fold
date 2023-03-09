@@ -126,7 +126,7 @@ def train_for_deployment(
         transformations
     )
     _, transformations = process_transformations_window(
-        X, y, sample_weights, transformations, Split(0, 0, None, 0, None)
+        X, y, sample_weights, transformations, Split(0, 0, 0, None, 0, None)
     )
     return transformations
 
@@ -149,7 +149,12 @@ def process_transformations_window(
 
     transformations = deepcopy_transformations(transformations)
     X_train = recursively_transform(
-        X_train, y_train, sample_weights_train, transformations, fit=True
+        X_train,
+        y_train,
+        sample_weights_train,
+        transformations,
+        fit=True,
+        is_first_split=split.order == 0,
     )
 
     return split.model_index, transformations

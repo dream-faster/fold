@@ -16,11 +16,18 @@ def recursively_transform(
     y: Optional[pd.Series],
     sample_weights: Optional[pd.Series],
     transformations: Transformations,
-    fit: bool = False,
+    fit: bool,
+    is_first_split: bool,
 ) -> pd.DataFrame:
+    """
+    The main function to transform (and fit) a pipline of transformations.
+    is_first_split is used to determine whether to run the inner loop for models that have `requires_continuous_updating` set to True.
+    """
     if isinstance(transformations, List):
         for transformation in transformations:
-            X = recursively_transform(X, y, sample_weights, transformation, fit)
+            X = recursively_transform(
+                X, y, sample_weights, transformation, fit, is_first_split
+            )
         return X
 
     elif isinstance(transformations, Composite):
@@ -34,6 +41,7 @@ def recursively_transform(
                 sample_weights,
                 child_transformation,
                 fit,
+                is_first_split,
             )
             for index, child_transformation in enumerate(
                 composite.get_child_transformations_primary()
@@ -64,6 +72,7 @@ def recursively_transform(
                     sample_weights,
                     child_transformation,
                     fit,
+                    is_first_split,
                 )
                 for index, child_transformation in enumerate(secondary_transformations)
             ]
@@ -89,24 +98,27 @@ def recursively_transform(
         if len(X) == 0:
             return pd.DataFrame()
 
-        if transformations.properties.requires_continuous_updates:
+        if transformations.properties.requires_continuous_updates and (
+            (fit and not is_first_split) or not fit
+        ):
+            # If the transformation requires continuous updates, and this is the not first split, and we're in inference
+
             y_df = y.to_frame() if y is not None else None
-            # If the transformation requires continuous updates, we need to run the inference
-            # & fit loop on each row, sequentially (one-by-one).
+            # We need to run the inference & fit loop on each row, sequentially (one-by-one).
             # This is so the transformation can update its parameters after each sample.
 
             # Important: depending on whether we're training or not:
             # - we call fit() _before_ transform(), at training time. The output are in-sample predictions.
             # - we call fit() after transform(), at backtesting/inference time. The output are then out-of-sample predictions.
             def transform_row_train(X_row, y_row, sample_weights_row):
-                transformations.fit(X_row, y_row, sample_weights_row)
-                result = transformations.transform(X_row, in_sample=True)
+                transformations.update(X_row, y_row, sample_weights_row)
+                result = transformations.transform(X_row, in_sample=False)
                 return result
 
             def transform_row_inference_backtest(X_row, y_row, sample_weights_row):
                 result = transformations.transform(X_row, in_sample=False)
                 if y_row is not None:
-                    transformations.fit(X_row, y_row, sample_weights_row)
+                    transformations.update(X_row, y_row, sample_weights_row)
                 return result
 
             transform_row_function = (

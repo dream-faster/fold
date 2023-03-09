@@ -65,6 +65,7 @@ def __backtest_on_window(
             current_transformations
         ),  # we deepcopy here to avoid mutating the continuously updated transformations
         fit=False,
+        is_first_split=split.order == 0,
     )
 
     return X_test

@@ -3,12 +3,11 @@ from typing import Optional, Union
 import pandas as pd
 
 from fold.models.base import Model
-from fold.transformations.base import Transformation
+from fold.transformations.base import Transformation, fit_noop
 
 
 class SKLearnClassifier(Model):
     properties = Model.Properties(model_type=Model.Properties.ModelType.classifier)
-    fitted = False
 
     def __init__(self, model) -> None:
         self.model = model
@@ -19,11 +18,18 @@ class SKLearnClassifier(Model):
     ) -> None:
         if hasattr(self.model, "partial_fit"):
             self.model.partial_fit(X, y, sample_weights)
-            return
-        if self.fitted:
-            return
-        self.model.fit(X, y, sample_weights)
-        self.fitted = True
+        else:
+            self.model.fit(X, y, sample_weights)
+
+    def update(
+        self,
+        X: pd.DataFrame,
+        y: Optional[pd.Series],
+        sample_weights: Optional[pd.Series] = None,
+    ) -> None:
+        if hasattr(self.model, "partial_fit"):
+            self.model.partial_fit(X, y, sample_weights)
+        # if we don't have partial_fit, we can't update the model (maybe throw an exception, and force user to wrap it into `DontUpdate`?)
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         probabilities = pd.DataFrame(
@@ -45,7 +51,6 @@ class SKLearnClassifier(Model):
 
 class SKLearnRegressor(Model):
     properties = Model.Properties(model_type=Model.Properties.ModelType.regressor)
-    fitted = False
 
     def __init__(self, model) -> None:
         self.model = model
@@ -56,11 +61,18 @@ class SKLearnRegressor(Model):
     ) -> None:
         if hasattr(self.model, "partial_fit"):
             self.model.partial_fit(X, y, sample_weights)
-            return
-        if self.fitted:
-            return
-        self.model.fit(X, y, sample_weights)
-        self.fitted = True
+        else:
+            self.model.fit(X, y, sample_weights)
+
+    def update(
+        self,
+        X: pd.DataFrame,
+        y: Optional[pd.Series],
+        sample_weights: Optional[pd.Series] = None,
+    ) -> None:
+        if hasattr(self.model, "partial_fit"):
+            self.model.partial_fit(X, y, sample_weights)
+        # if we don't have partial_fit, we can't update the model (maybe throw an exception, and force user to wrap it into `DontUpdate`?)
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         return pd.Series(
@@ -73,6 +85,12 @@ class SKLearnRegressor(Model):
 
 
 class SKLearnPipeline(Model):
+    """
+    This is a wrapper for scikit-learn Pipelines, which are not compatible with fold.
+    It's usage is discouraged, as it's not possible to update an scikit-learn Pipeline with new data.
+    Fold has all the primitives that scikit-learn Pipelines provide, with an easy syntax.
+    """
+
     properties = Transformation.Properties()
 
     def __init__(self, pipeline) -> None:
@@ -82,7 +100,7 @@ class SKLearnPipeline(Model):
     def fit(
         self,
         X: pd.DataFrame,
-        y: Optional[pd.Series] = None,
+        y: Optional[pd.Series],
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         self.pipeline.fit(X, y)
@@ -95,3 +113,4 @@ class SKLearnPipeline(Model):
         ).to_frame()
 
     predict_in_sample = predict
+    update = fit_noop

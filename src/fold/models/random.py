@@ -1,10 +1,10 @@
 from random import choices
-from typing import List, Optional, Union
+from typing import List, Union
 
 import numpy as np
 import pandas as pd
 
-from ..transformations.base import Transformation
+from ..transformations.base import Transformation, fit_noop
 from .base import Model
 
 
@@ -16,10 +16,7 @@ class RandomClassifier(Model):
         self.all_classes = all_classes
         self.probability_mean = probability_mean
 
-    def fit(
-        self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
-    ) -> None:
-        pass
+    fit = fit_noop
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         predictions = pd.Series(
@@ -39,3 +36,5 @@ class RandomClassifier(Model):
         return pd.concat([predictions] + probabilities, axis="columns")
 
     predict_in_sample = predict
+
+    update = fit

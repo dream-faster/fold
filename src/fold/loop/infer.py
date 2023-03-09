@@ -19,7 +19,9 @@ def infer(
 
     assert type(X) is pd.DataFrame, "X must be a pandas DataFrame."
 
-    results = recursively_transform(X, None, None, transformations, fit=False)
+    results = recursively_transform(
+        X, None, None, transformations, fit=False, is_first_split=False
+    )
     return results
 
 
@@ -34,5 +36,7 @@ def update(
     Returns a new set of Transformations, does not mutate the original.
     """
     transformations = deepcopy_transformations(transformations)
-    _ = recursively_transform(X, y, sample_weights, transformations, fit=True)
+    _ = recursively_transform(
+        X, y, sample_weights, transformations, fit=True, is_first_split=False
+    )
     return transformations

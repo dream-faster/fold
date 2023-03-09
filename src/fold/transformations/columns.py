@@ -8,7 +8,13 @@ import pandas as pd
 from fold.transformations.common import get_concatenated_names
 
 from ..utils.list import wrap_in_list
-from .base import Composite, Transformation, Transformations, TransformationsAlwaysList
+from .base import (
+    Composite,
+    Transformation,
+    Transformations,
+    TransformationsAlwaysList,
+    fit_noop,
+)
 from .concat import Concat, ResolutionStrategy
 from .identity import Identity
 
@@ -20,16 +26,11 @@ class SelectColumns(Transformation):
         self.columns = wrap_in_list(columns)
         self.name = f"SelectColumns-{columns}"
 
-    def fit(
-        self,
-        X: pd.DataFrame,
-        y: Optional[pd.Series] = None,
-        sample_weights: Optional[pd.Series] = None,
-    ) -> None:
-        pass
-
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         return X[self.columns]
+
+    fit = fit_noop
+    update = fit
 
 
 class DropColumns(Transformation):
@@ -39,16 +40,11 @@ class DropColumns(Transformation):
         self.columns = wrap_in_list(columns)
         self.name = f"DropColumns-{columns}"
 
-    def fit(
-        self,
-        X: pd.DataFrame,
-        y: Optional[pd.Series] = None,
-        sample_weights: Optional[pd.Series] = None,
-    ) -> None:
-        pass
-
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         return X.drop(columns=self.columns)
+
+    fit = fit_noop
+    update = fit
 
 
 class RenameColumns(Transformation):
@@ -58,16 +54,11 @@ class RenameColumns(Transformation):
         self.columns_mapper = columns_mapper
         self.name = "RenameColumns"
 
-    def fit(
-        self,
-        X: pd.DataFrame,
-        y: Optional[pd.Series] = None,
-        sample_weights: Optional[pd.Series] = None,
-    ) -> None:
-        pass
-
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         return X.rename(columns=self.columns_mapper)
+
+    fit = fit_noop
+    update = fit
 
 
 def TransformColumn(
@@ -121,18 +112,13 @@ class OnlyPredictions(Transformation):
     def __init__(self) -> None:
         self.name = "OnlyPredictions"
 
-    def fit(
-        self,
-        X: pd.DataFrame,
-        y: Optional[pd.Series] = None,
-        sample_weights: Optional[pd.Series] = None,
-    ) -> None:
-        pass
-
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         return X.drop(
             columns=[col for col in X.columns if not col.startswith("predictions_")]
         )
+
+    fit = fit_noop
+    update = fit
 
 
 class OnlyProbabilities(Transformation):
@@ -141,18 +127,13 @@ class OnlyProbabilities(Transformation):
     def __init__(self) -> None:
         self.name = "OnlyProbabilities"
 
-    def fit(
-        self,
-        X: pd.DataFrame,
-        y: Optional[pd.Series] = None,
-        sample_weights: Optional[pd.Series] = None,
-    ) -> None:
-        pass
-
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         return X.drop(
             columns=[col for col in X.columns if not col.startswith("probabilities_")]
         )
+
+    fit = fit_noop
+    update = fit
 
 
 class SkipNA(Composite):

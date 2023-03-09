@@ -9,10 +9,16 @@ from ..transformations.base import Transformation
 class Model(Transformation):
     @abstractmethod
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
+        """
+        Predictions for exclusively out-of-sample data, the model has never seen before.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def predict_in_sample(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
+        """
+        Predictions for in-sample, already seen data.
+        """
         raise NotImplementedError
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:

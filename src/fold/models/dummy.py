@@ -1,8 +1,8 @@
-from typing import Optional, Union
+from typing import Union
 
 import pandas as pd
 
-from ..transformations.base import Transformation
+from ..transformations.base import Transformation, fit_noop
 from .base import Model
 
 
@@ -15,10 +15,7 @@ class DummyClassifier(Model):
         self.all_classes = all_classes
         self.predicted_probabilities = predicted_probabilities
 
-    def fit(
-        self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
-    ) -> None:
-        pass
+    fit = fit_noop
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         predictions = pd.Series(
@@ -41,6 +38,8 @@ class DummyClassifier(Model):
 
     predict_in_sample = predict
 
+    update = fit
+
 
 class DummyRegressor(Model):
     properties = Transformation.Properties()
@@ -48,11 +47,6 @@ class DummyRegressor(Model):
 
     def __init__(self, predicted_value: float) -> None:
         self.predicted_value = predicted_value
-
-    def fit(
-        self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
-    ) -> None:
-        pass
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         predictions = pd.Series(
@@ -62,3 +56,6 @@ class DummyRegressor(Model):
         )
 
         return predictions
+
+    fit = fit_noop
+    update = fit

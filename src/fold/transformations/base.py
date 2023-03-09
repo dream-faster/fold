@@ -26,9 +26,24 @@ class Transformation(ABC):
     def fit(
         self,
         X: pd.DataFrame,
-        y: Optional[pd.Series] = None,
+        y: Optional[pd.Series],
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
+        """
+        Called once, with on initial training window.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def update(
+        self,
+        X: pd.DataFrame,
+        y: Optional[pd.Series],
+        sample_weights: Optional[pd.Series] = None,
+    ) -> None:
+        """
+        Subsequent calls to update the model, on each fold.
+        """
         raise NotImplementedError
 
     @abstractmethod
@@ -114,3 +129,12 @@ TransformationsAlwaysList = List[Union[Transformation, Composite]]
 
 BlockOrWrappable = Union[Transformation, Composite, Callable, BaseEstimator]
 BlocksOrWrappable = Union[BlockOrWrappable, List[BlockOrWrappable]]
+
+
+def fit_noop(
+    self,
+    X: pd.DataFrame,
+    y: Optional[pd.Series],
+    sample_weights: Optional[pd.Series] = None,
+) -> None:
+    pass
