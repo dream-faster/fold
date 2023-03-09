@@ -7,8 +7,7 @@ from fold.utils.tests import generate_all_zeros
 
 
 def test_metalabeling() -> None:
-    X = generate_all_zeros(1000)
-    y = X.squeeze()
+    X, y = generate_all_zeros(1000)
 
     splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
     transformations = [

@@ -7,11 +7,11 @@ from fold.utils.tests import generate_sine_wave_data
 
 def test_deployment() -> None:
     # the naive model returns X as prediction, so y.shift(1) should be == pred
-    data = generate_sine_wave_data()
-    X_train = data[:900]
-    X_test = data[900:]
-    y_train = data["sine"][:900]
-    y_test = data["sine"][900:]
+    X, y = generate_sine_wave_data()
+    X_train = X[:900]
+    X_test = X[900:]
+    y_train = y[:900]
+    y_test = y[900:]
 
     transformations = [BaselineNaive()]
     deployable_transformations = train_for_deployment(transformations, X_train, y_train)

@@ -17,8 +17,7 @@ from fold.utils.tests import generate_all_zeros, generate_sine_wave_data
 
 
 def test_sklearn_classifier() -> None:
-    X = generate_all_zeros(1000)
-    y = X.squeeze()
+    X, y = generate_all_zeros(1000)
 
     splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
     transformations = [
@@ -31,8 +30,7 @@ def test_sklearn_classifier() -> None:
 
 
 def test_sklearn_regressor() -> None:
-    X = generate_all_zeros(1000)
-    y = X.squeeze()
+    X, y = generate_all_zeros(1000)
 
     splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
     transformations = [
@@ -45,8 +43,7 @@ def test_sklearn_regressor() -> None:
 
 
 def test_sklearn_pipeline() -> None:
-    X = generate_all_zeros(1000)
-    y = X.squeeze()
+    X, y = generate_all_zeros(1000)
 
     splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
     transformations = [
@@ -64,8 +61,7 @@ def test_sklearn_pipeline() -> None:
 
 
 def test_sklearn_partial_fit() -> None:
-    X = generate_all_zeros(1000)
-    y = X.squeeze()
+    X, y = generate_all_zeros(1000)
 
     class TestEstimator(TransformerMixin):
         fit_called = False
@@ -93,11 +89,10 @@ def test_sklearn_partial_fit() -> None:
 
 
 def test_nested_transformations_with_feature_selection() -> None:
-    X = generate_sine_wave_data()
+    X, y = generate_sine_wave_data()
     X["sine_2"] = X["sine"] + 1
     X["constant"] = 1.0
     X["constant2"] = 2.0
-    y = X["sine"].shift(-1).squeeze()
 
     splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
     transformations = [
