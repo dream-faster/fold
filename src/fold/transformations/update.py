@@ -2,7 +2,7 @@ from typing import Optional
 
 import pandas as pd
 
-from .base import Transformation
+from .base import Transformation, fit_noop
 
 
 class DontUpdate(Transformation):
@@ -23,13 +23,7 @@ class DontUpdate(Transformation):
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         return self.transformation.transform(X, in_sample)
 
-    def update(
-        self,
-        X: pd.DataFrame,
-        y: Optional[pd.Series],
-        sample_weights: Optional[pd.Series] = None,
-    ) -> None:
-        pass
+    update = fit_noop
 
 
 class InjectPastDataAtInference(Transformation):

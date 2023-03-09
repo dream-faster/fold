@@ -79,9 +79,8 @@ def test_per_column_transform_predictions() -> None:
     transformations = [
         PerColumnEnsemble(
             lambda x: (x + 1.0)
-            .squeeze()
-            .rename(f"predictions_{randint(1, 1000)}")
-            .to_frame()
+            # .squeeze()
+            .rename(f"predictions_{randint(1, 1000)}").to_frame()
         ),
     ]
 

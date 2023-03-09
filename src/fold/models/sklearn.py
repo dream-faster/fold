@@ -3,7 +3,7 @@ from typing import Optional, Union
 import pandas as pd
 
 from fold.models.base import Model
-from fold.transformations.base import Transformation
+from fold.transformations.base import Transformation, fit_noop
 
 
 class SKLearnClassifier(Model):
@@ -113,11 +113,4 @@ class SKLearnPipeline(Model):
         ).to_frame()
 
     predict_in_sample = predict
-
-    def update(
-        self,
-        X: pd.DataFrame,
-        y: Optional[pd.Series],
-        sample_weights: Optional[pd.Series] = None,
-    ) -> None:
-        pass
+    update = fit_noop

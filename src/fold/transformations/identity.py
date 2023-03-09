@@ -1,8 +1,6 @@
-from typing import Optional
-
 import pandas as pd
 
-from .base import Transformation
+from .base import Transformation, fit_noop
 
 
 class Identity(Transformation):
@@ -10,15 +8,8 @@ class Identity(Transformation):
 
     name = "Identity"
 
-    def fit(
-        self,
-        X: pd.DataFrame,
-        y: Optional[pd.Series],
-        sample_weights: Optional[pd.Series] = None,
-    ) -> None:
-        pass
-
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         return X
 
+    fit = fit_noop
     update = fit

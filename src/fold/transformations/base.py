@@ -129,3 +129,12 @@ TransformationsAlwaysList = List[Union[Transformation, Composite]]
 
 BlockOrWrappable = Union[Transformation, Composite, Callable, BaseEstimator]
 BlocksOrWrappable = Union[BlockOrWrappable, List[BlockOrWrappable]]
+
+
+def fit_noop(
+    self,
+    X: pd.DataFrame,
+    y: Optional[pd.Series],
+    sample_weights: Optional[pd.Series] = None,
+) -> None:
+    pass

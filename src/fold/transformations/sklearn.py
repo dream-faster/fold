@@ -3,7 +3,7 @@ from typing import Optional
 
 import pandas as pd
 
-from .base import FeatureSelector, Transformation
+from .base import FeatureSelector, Transformation, fit_noop
 
 
 class SKLearnTransformation(Transformation):
@@ -85,10 +85,4 @@ class SKLearnFeatureSelector(FeatureSelector):
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         return X[self.selected_features]
 
-    def update(
-        self,
-        X: pd.DataFrame,
-        y: Optional[pd.Series],
-        sample_weights: Optional[pd.Series] = None,
-    ) -> None:
-        pass
+    update = fit_noop
