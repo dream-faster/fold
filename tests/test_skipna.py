@@ -7,9 +7,9 @@ from fold.utils.tests import generate_all_zeros
 
 
 def test_skipna() -> None:
-    X = generate_all_zeros(1000)
+    X, y = generate_all_zeros(1000)
     X[:100] = pd.NA
-    y = X.shift(-1).squeeze()
+    y[:100] = pd.NA
 
     splitter = ExpandingWindowSplitter(train_window_size=50, step=400)
     transformations = [

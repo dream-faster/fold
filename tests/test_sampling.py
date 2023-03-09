@@ -16,8 +16,9 @@ test_regressor = Test(fit_func=assert_on_fit, transform_func=lambda X: X)
 
 
 def test_sampling() -> None:
-    X = generate_zeros_and_ones_skewed(length=100000, labels=[1, 0], weights=[0.2, 0.8])
-    y = X.squeeze()
+    X, y = generate_zeros_and_ones_skewed(
+        length=100000, labels=[1, 0], weights=[0.2, 0.8]
+    )
 
     splitter = ExpandingWindowSplitter(train_window_size=90000, step=90000)
     transformations = [
