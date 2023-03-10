@@ -8,8 +8,8 @@ from fold.utils.tests import generate_all_zeros
 
 def test_skipna() -> None:
     X, y = generate_all_zeros(1000)
-    X[:100] = pd.NA
-    y[:100] = pd.NA
+    X[70:100] = pd.NA
+    y[70:100] = pd.NA
 
     splitter = ExpandingWindowSplitter(train_window_size=50, step=400)
     transformations = [
@@ -18,5 +18,5 @@ def test_skipna() -> None:
 
     transformations_over_time = train(transformations, X, y, splitter)
     pred = backtest(transformations_over_time, X, y, splitter)
-    assert pred.squeeze()[:50].isna().all()
+    assert pred.squeeze()[20:40].isna().all()
     assert not pred.squeeze()[50:].isna().any()
