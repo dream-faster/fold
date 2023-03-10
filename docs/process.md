@@ -7,7 +7,7 @@
 - Hyperparameter Optimization - "What hyperparameters to use?"
 - Feature selection - "What features to use?"
 
-**These modules are executed only on the first, "training window", then they're static, and can't be updated.**
+**These modules are trained only on the first split's "training window", then they're static, and can't be updated.**
 The predictions on the first, "training window" are always "in-sample", as the models have already "seen" (were trained on) that data.
 
 ### 2. Model training
