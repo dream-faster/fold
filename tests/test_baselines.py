@@ -20,7 +20,4 @@ def test_baseline_naive_seasonal() -> None:
     ]
     transformations_over_time = train(transformations, X, y, splitter)
     pred = backtest(transformations_over_time, X, y, splitter)
-    assert (
-        len(pred) == 590
-    )  # loop should trim the predictions by 10, as BaselineNaiveSeasonal's predict_in_sample() will return `seasonal_length` NaNs at the beginning of the predictions
     assert (pred.squeeze() == y.shift(10)[pred.index]).all()

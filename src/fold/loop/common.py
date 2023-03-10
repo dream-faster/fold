@@ -99,12 +99,13 @@ def recursively_transform(
         if len(X) == 0:
             return pd.DataFrame()
 
-        if (
-            transformations.properties.requires_continuous_updates
-            and not is_first_split
+        # If the transformation requires continuous updates, and:
+        # - we're training, and this is not the first split, or
+        # - we're not training (i.e. we're backtesting or inferring)
+        # enter the inner loop.
+        if transformations.properties.requires_continuous_updates and (
+            (fit and not is_first_split) or not fit
         ):
-            # If the transformation requires continuous updates, and this is the not first split
-
             y_df = y.to_frame() if y is not None else None
             # We need to run the inference & fit loop on each row, sequentially (one-by-one).
             # This is so the transformation can update its parameters after each sample.
@@ -144,7 +145,7 @@ def recursively_transform(
             X, y = trim_initial_nans(X, y)
             if fit:
                 transformations.fit(X, y, sample_weights)
-            return transformations.transform(X, in_sample=is_first_split)
+            return transformations.transform(X, in_sample=fit)
 
     else:
         raise ValueError(
