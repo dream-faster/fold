@@ -108,7 +108,7 @@ def test_per_column_transform() -> None:
     splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
     transformations = [
         PerColumnTransform([lambda x: x, lambda x: x + 1.0]),
-        lambda x: x.sum(axis=1),
+        lambda x: x.sum(axis=1).to_frame(),
     ]
 
     transformations_over_time = train(transformations, X, y, splitter)
