@@ -6,6 +6,7 @@ from typing import List, Optional
 import pandas as pd
 
 from fold.models.base import Model
+from fold.utils.pandas import trim_initial_nans
 
 from ..transformations.base import Composite, Transformation, Transformations
 from ..utils.checks import is_prediction
@@ -98,10 +99,11 @@ def recursively_transform(
         if len(X) == 0:
             return pd.DataFrame()
 
-        if transformations.properties.requires_continuous_updates and (
-            (fit and not is_first_split) or not fit
+        if (
+            transformations.properties.requires_continuous_updates
+            and not is_first_split
         ):
-            # If the transformation requires continuous updates, and this is the not first split, and we're in inference
+            # If the transformation requires continuous updates, and this is the not first split
 
             y_df = y.to_frame() if y is not None else None
             # We need to run the inference & fit loop on each row, sequentially (one-by-one).
@@ -139,9 +141,11 @@ def recursively_transform(
             )
 
         else:
+            X, y = trim_initial_nans(X, y)
             if fit:
                 transformations.fit(X, y, sample_weights)
-            return transformations.transform(X, in_sample=fit)
+            return transformations.transform(X, in_sample=is_first_split)
+
     else:
         raise ValueError(
             f"{transformations} is not a Fold Transformation, but of type"

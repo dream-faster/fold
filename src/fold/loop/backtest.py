@@ -3,6 +3,8 @@ from typing import Optional
 import pandas as pd
 from tqdm import tqdm
 
+from fold.utils.pandas import trim_initial_nans_single
+
 from ..all_types import OutOfSamplePredictions, TransformationsOverTime
 from ..splitters import Split, Splitter
 from .common import deepcopy_transformations, recursively_transform
@@ -68,4 +70,4 @@ def __backtest_on_window(
         is_first_split=split.order == 0,
     )
 
-    return X_test
+    return trim_initial_nans_single(X_test)

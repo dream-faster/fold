@@ -35,6 +35,10 @@ def update(
     Update a set of Transformations with new data.
     Returns a new set of Transformations, does not mutate the original.
     """
+
+    assert type(X) is pd.DataFrame, "X must be a pandas DataFrame."
+    assert type(y) is pd.Series, "y must be a pandas Series."
+
     transformations = deepcopy_transformations(transformations)
     _ = recursively_transform(
         X, y, sample_weights, transformations, fit=True, is_first_split=False

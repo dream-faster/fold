@@ -143,9 +143,10 @@ pred = backtest(transformations_over_time, X, y, splitter)
 - No hierarchical time series support.
 
 ## Similar libraries
-It's like [SKTime](https://github.com/sktime/sktime), but with more focus and 100x less code, designed with distributed computing in mind.
-It's like [River](https://github.com/online-ml/river), but supporting mini-batch, not just online learning.
-It’s very much like [timemachines](https://github.com/microprediction/timemachines), but with an API that’s more accessible for the Python community.
+- It's like [SKTime](https://github.com/sktime/sktime), but with more focus and 100x less code, designed with distributed computing in mind, effective cross-validation, and a substantial speed bump.
+- It's like [River](https://github.com/online-ml/river), but with support for effective cross validation, and mini-batch (with parallelization and therefore, a huge speed-bump), not just online learning.
+- It's like [Darts](https://github.com/unit8co/darts), but with support for hybrid models, effective cross validation, hybrid models, and a substantial speed bump.
+- It’s very much like [timemachines](https://github.com/microprediction/timemachines), but with an API that’s more accessible for the Python community and support for distributed computing.
 
 
 ## Contribution

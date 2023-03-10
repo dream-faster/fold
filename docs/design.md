@@ -2,9 +2,10 @@
 
 1. There's no explicit "Pipeline" class. This allows us to hand back the job of fitting a collection of models to `train()`. This enables parallelization and reduces duplicate code. See section on Composites.
 
-
 2. We allow both tabular and sequence models, in the same pipeline.
-   If a Model has `requires_continuous_updates` property set to `True`, the main loop creates an inner "inference & fit" loop, so the Model can update its parameters on each timestamp.
+
+3. We allow both online and mini-batch models, in the same pipeline.
+If a Model has `requires_continuous_updates` property set to `True`, the main loop creates an inner "inference & fit" loop, so the Model can update its parameters on each timestamp.
 
 
 
@@ -25,3 +26,13 @@ Composites enable us to:
 
 - Merge two, entirely different set of Transformations/Pipelines, like ensembling.
 - Use the result of the first (primary) set of Transformations/Pipeline in the second Transformations/Pipeline. (like MetaLabeling, or TargetTransformation)
+
+
+### Mini-batch and Continuously updating Models
+
+A mini-batch model is retrained for every split, defined for the whole pipeline, by the [Splitter](splitters.md).
+It can not update its state in the meantime.
+
+For a continuously updating model, the "inner loop" calls the `.update()` method after each timestamp, then `.predict()`.
+Except for "in sample" predictions, which is done in a batch manner, with `predict_in_sample()` 
+

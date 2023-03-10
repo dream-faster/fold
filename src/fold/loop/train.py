@@ -5,7 +5,7 @@ from sklearn.base import BaseEstimator
 
 from ..all_types import TransformationsOverTime
 from ..models.base import Model
-from ..splitters import Split, Splitter
+from ..splitters import SlidingWindowSplitter, Split, Splitter
 from ..transformations.base import (
     BlocksOrWrappable,
     Composite,
@@ -32,29 +32,16 @@ def train(
     train_method: TrainMethod = TrainMethod.parallel,
     backend: Backend = Backend.no,
 ) -> TransformationsOverTime:
-    """Train a list of transformations over time.
-
-    Args:
-        transformations (List[ Union[Transformation, Composite, Model, Callable, BaseEstimator] ]): _description_
-        X (pd.DataFrame): _description_
-        y (pd.Series): _description_
-        splitter (Splitter): _description_
-        sample_weights (Optional[pd.Series], optional): _description_. Defaults to None.
-        train_method (TrainMethod, optional): _description_. Defaults to TrainMethod.parallel.
-        backend (Backend, optional): _description_. Defaults to Backend.no.
-
-    Raises:
-        ValueError: _description_
-
-    Returns:
-        TransformationsOverTime: _description_
-    """
-
-    transformations = wrap_in_list(transformations)
-    transformations = replace_transformation_if_not_fold_native(transformations)
 
     assert type(X) is pd.DataFrame, "X must be a pandas DataFrame."
     assert type(y) is pd.Series, "y must be a pandas Series."
+    if type(splitter) is SlidingWindowSplitter:
+        assert (
+            train_method == TrainMethod.parallel
+        ), "SlidingWindowSplitter is conceptually incompatible with TrainMethod.sequential"
+
+    transformations = wrap_in_list(transformations)
+    transformations = replace_transformation_if_not_fold_native(transformations)
 
     splits = splitter.splits(length=len(y))
     if len(splits) == 0:
@@ -121,6 +108,10 @@ def train_for_deployment(
     y: pd.Series,
     sample_weights: Optional[pd.Series] = None,
 ) -> DeployableTransformations:
+
+    assert type(X) is pd.DataFrame, "X must be a pandas DataFrame."
+    assert type(y) is pd.Series, "y must be a pandas Series."
+
     transformations = wrap_in_list(transformations)
     transformations: Transformations = replace_transformation_if_not_fold_native(
         transformations

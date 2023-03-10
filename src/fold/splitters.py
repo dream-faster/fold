@@ -32,7 +32,9 @@ def translate_float_if_needed(window_size: Union[int, float], length: int) -> in
 class SlidingWindowSplitter(Splitter):
     def __init__(
         self,
-        train_window_size: Union[int, float],
+        train_window_size: Union[
+            int, float
+        ],  # this is what you don't out of sample get predictions for
         step: Union[int, float],
         embargo: int = 0,
         start: int = 0,
@@ -64,7 +66,9 @@ class SlidingWindowSplitter(Splitter):
 class ExpandingWindowSplitter(Splitter):
     def __init__(
         self,
-        train_window_size: Union[int, float],
+        train_window_size: Union[
+            int, float
+        ],  # this is what you don't out of sample get predictions for
         step: Union[int, float],
         embargo: int = 0,
         start: int = 0,
@@ -97,7 +101,9 @@ class ExpandingWindowSplitter(Splitter):
 class SingleWindowSplitter(Splitter):
     def __init__(
         self,
-        train_window_size: Union[int, float],
+        train_window_size: Union[
+            int, float
+        ],  # this is what you don't out of sample get predictions for
         embargo: int = 0,
     ) -> None:
         self.window_size = train_window_size
