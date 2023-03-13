@@ -20,7 +20,7 @@ def test_sampling() -> None:
         length=100000, labels=[1, 0], weights=[0.2, 0.8]
     )
 
-    splitter = ExpandingWindowSplitter(train_window_size=90000, step=90000)
+    splitter = ExpandingWindowSplitter(initial_training_window=90000, step=90000)
     transformations = [
         Sampling(RandomUnderSampler(), test_regressor),
     ]

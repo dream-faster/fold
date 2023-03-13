@@ -93,7 +93,7 @@ from fold.loop import trian, backtest
 X
 y = X.squeeze()
 
-splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
+splitter = ExpandingWindowSplitter(initial_training_window=400, step=400)
 transformations = [
   DummyRegressor(strategy="constant", constant=0),
   OnlyPredictions(),

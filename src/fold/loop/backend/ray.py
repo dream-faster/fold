@@ -2,7 +2,7 @@ from typing import Callable, List, Optional
 
 import pandas as pd
 
-from ...splitters import Split
+from ...splitters import Fold
 from ...transformations.base import Transformations
 
 
@@ -12,7 +12,7 @@ def train_transformations(
     X: pd.DataFrame,
     y: pd.Series,
     sample_weights: Optional[pd.Series],
-    splits: List[Split],
+    splits: List[Fold],
 ):
     import ray
 

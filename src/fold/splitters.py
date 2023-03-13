@@ -3,7 +3,7 @@ from typing import List, Optional, Union
 
 
 @dataclass
-class Split:
+class Fold:
     order: int
     model_index: int
     train_window_start: int
@@ -13,7 +13,7 @@ class Split:
 
 
 class Splitter:
-    def splits(self, length: int) -> List[Split]:
+    def splits(self, length: int) -> List[Fold]:
         raise NotImplementedError
 
 
@@ -32,7 +32,7 @@ def translate_float_if_needed(window_size: Union[int, float], length: int) -> in
 class SlidingWindowSplitter(Splitter):
     def __init__(
         self,
-        train_window_size: Union[
+        initial_train_window: Union[
             int, float
         ],  # this is what you don't out of sample get predictions for
         step: Union[int, float],
@@ -40,18 +40,18 @@ class SlidingWindowSplitter(Splitter):
         start: int = 0,
         end: Optional[int] = None,
     ) -> None:
-        self.window_size = train_window_size
+        self.window_size = initial_train_window
         self.step = step
         self.embargo = embargo
         self.start = start
         self.end = end
 
-    def splits(self, length: int) -> List[Split]:
+    def splits(self, length: int) -> List[Fold]:
         end = self.end if self.end is not None else length
         window_size = translate_float_if_needed(self.window_size, length)
         step = translate_float_if_needed(self.step, length)
         return [
-            Split(
+            Fold(
                 order=order,
                 model_index=index,
                 train_window_start=index - window_size,
@@ -66,7 +66,7 @@ class SlidingWindowSplitter(Splitter):
 class ExpandingWindowSplitter(Splitter):
     def __init__(
         self,
-        train_window_size: Union[
+        initial_training_window: Union[
             int, float
         ],  # this is what you don't out of sample get predictions for
         step: Union[int, float],
@@ -74,19 +74,19 @@ class ExpandingWindowSplitter(Splitter):
         start: int = 0,
         end: Optional[int] = None,
     ) -> None:
-        self.window_size = train_window_size
+        self.window_size = initial_training_window
         self.step = step
         self.embargo = embargo
         self.start = start
         self.end = end
 
-    def splits(self, length: int) -> List[Split]:
+    def splits(self, length: int) -> List[Fold]:
         end = self.end if self.end is not None else length
         window_size = translate_float_if_needed(self.window_size, length)
         step = translate_float_if_needed(self.step, length)
 
         return [
-            Split(
+            Fold(
                 order=order,
                 model_index=index,
                 train_window_start=self.start,
@@ -101,19 +101,19 @@ class ExpandingWindowSplitter(Splitter):
 class SingleWindowSplitter(Splitter):
     def __init__(
         self,
-        train_window_size: Union[
+        training_window: Union[
             int, float
         ],  # this is what you don't out of sample get predictions for
         embargo: int = 0,
     ) -> None:
-        self.window_size = train_window_size
+        self.window_size = training_window
         self.embargo = embargo
 
-    def splits(self, length: int) -> List[Split]:
+    def splits(self, length: int) -> List[Fold]:
         window_size = translate_float_if_needed(self.window_size, length)
 
         return [
-            Split(
+            Fold(
                 order=0,
                 model_index=0,
                 train_window_start=0,

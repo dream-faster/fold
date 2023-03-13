@@ -37,9 +37,7 @@ class InjectPastDataAtInference(Transformation):
     def __init__(self, transformation: Transformation) -> None:
         self.transformation = transformation
         self.name = f"InjectPastDataAtInference-{transformation.name}"
-        self.properties.requires_continuous_updates = (
-            transformation.properties.requires_continuous_updates
-        )
+        self.properties.mode = transformation.properties.mode
 
     def fit(
         self,

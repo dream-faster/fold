@@ -16,7 +16,11 @@ class Transformation(ABC):
             regressor = "regressor"
             classifier = "classifier"
 
-        requires_continuous_updates: bool = False
+        class Mode(enum.Enum):
+            minibatch = "minibatch"
+            online = "online"
+
+        mode: Mode = Mode.minibatch
         model_type: Optional[ModelType] = None
 
     properties: Properties

@@ -5,7 +5,7 @@ from sklearn.base import BaseEstimator
 
 from ..all_types import TransformationsOverTime
 from ..models.base import Model
-from ..splitters import SlidingWindowSplitter, Split, Splitter
+from ..splitters import Fold, SlidingWindowSplitter, Splitter
 from ..transformations.base import (
     BlocksOrWrappable,
     Composite,
@@ -32,7 +32,6 @@ def train(
     train_method: TrainMethod = TrainMethod.parallel,
     backend: Backend = Backend.no,
 ) -> TransformationsOverTime:
-
     assert type(X) is pd.DataFrame, "X must be a pandas DataFrame."
     assert type(y) is pd.Series, "y must be a pandas Series."
     if type(splitter) is SlidingWindowSplitter:
@@ -108,7 +107,6 @@ def train_for_deployment(
     y: pd.Series,
     sample_weights: Optional[pd.Series] = None,
 ) -> DeployableTransformations:
-
     assert type(X) is pd.DataFrame, "X must be a pandas DataFrame."
     assert type(y) is pd.Series, "y must be a pandas Series."
 
@@ -117,7 +115,7 @@ def train_for_deployment(
         transformations
     )
     _, transformations = process_transformations_window(
-        X, y, sample_weights, transformations, Split(0, 0, 0, None, 0, None)
+        X, y, sample_weights, transformations, Fold(0, 0, 0, None, 0, None)
     )
     return transformations
 
@@ -127,7 +125,7 @@ def process_transformations_window(
     y: pd.Series,
     sample_weights: Optional[pd.Series],
     transformations: List[Union[Transformation, Composite]],
-    split: Split,
+    split: Fold,
 ) -> Tuple[int, List[Union[Transformation, Composite]]]:
     X_train = X.iloc[split.train_window_start : split.train_window_end]
     y_train = y.iloc[split.train_window_start : split.train_window_end]

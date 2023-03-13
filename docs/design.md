@@ -5,7 +5,7 @@
 2. We allow both tabular and sequence models, in the same pipeline.
 
 3. We allow both online and mini-batch models, in the same pipeline.
-If a Model has `requires_continuous_updates` property set to `True`, the main loop creates an inner "inference & fit" loop, so the Model can update its parameters on each timestamp.
+If a Model has `learning_mode` property set to `LearningMode.online`, the main loop creates an inner "inference & fit" loop, so the Model can update its parameters on each timestamp.
 
 
 
