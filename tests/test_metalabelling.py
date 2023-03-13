@@ -9,7 +9,7 @@ from fold.utils.tests import generate_all_zeros
 def test_metalabeling() -> None:
     X, y = generate_all_zeros(1000)
 
-    splitter = ExpandingWindowSplitter(initial_training_window=400, step=400)
+    splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     transformations = [
         MetaLabeling(
             primary=[

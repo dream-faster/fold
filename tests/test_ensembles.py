@@ -12,7 +12,7 @@ from fold.utils.tests import generate_all_zeros, generate_sine_wave_data
 def test_ensemble_regression() -> None:
     X, y = generate_sine_wave_data()
 
-    splitter = ExpandingWindowSplitter(initial_training_window=400, step=400)
+    splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     transformations = [
         Ensemble(
             [
@@ -31,7 +31,7 @@ def test_ensemble_regression() -> None:
 def test_ensemble_classification() -> None:
     X, y = generate_all_zeros(1000)
 
-    splitter = ExpandingWindowSplitter(initial_training_window=400, step=400)
+    splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     transformations = [
         Ensemble(
             [
@@ -72,7 +72,7 @@ def test_per_column_transform_predictions() -> None:
     X["sine_3"] = X["sine"] + 2.0
     X["sine_4"] = X["sine"] + 3.0
 
-    splitter = ExpandingWindowSplitter(initial_training_window=400, step=400)
+    splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     transformations = [
         PerColumnEnsemble(
             lambda x: (x + 1.0)

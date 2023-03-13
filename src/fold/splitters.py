@@ -66,7 +66,7 @@ class SlidingWindowSplitter(Splitter):
 class ExpandingWindowSplitter(Splitter):
     def __init__(
         self,
-        initial_training_window: Union[
+        initial_train_window: Union[
             int, float
         ],  # this is what you don't out of sample get predictions for
         step: Union[int, float],
@@ -74,7 +74,7 @@ class ExpandingWindowSplitter(Splitter):
         start: int = 0,
         end: Optional[int] = None,
     ) -> None:
-        self.window_size = initial_training_window
+        self.window_size = initial_train_window
         self.step = step
         self.embargo = embargo
         self.start = start
@@ -101,12 +101,12 @@ class ExpandingWindowSplitter(Splitter):
 class SingleWindowSplitter(Splitter):
     def __init__(
         self,
-        training_window: Union[
+        train_window: Union[
             int, float
         ],  # this is what you don't out of sample get predictions for
         embargo: int = 0,
     ) -> None:
-        self.window_size = training_window
+        self.window_size = train_window
         self.embargo = embargo
 
     def splits(self, length: int) -> List[Fold]:

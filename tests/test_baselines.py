@@ -12,7 +12,7 @@ def test_baseline_naive_seasonal() -> None:
     def check_if_not_nan(x):
         assert not x.isna().squeeze().any()
 
-    splitter = ExpandingWindowSplitter(initial_training_window=400, step=400)
+    splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     transformations = [
         BaselineNaiveSeasonal(seasonal_length=10),
         Test(fit_func=check_if_not_nan, transform_func=lambda X: X),
