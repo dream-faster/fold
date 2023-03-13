@@ -6,7 +6,7 @@ from tqdm import tqdm
 from fold.utils.pandas import trim_initial_nans_single
 
 from ..all_types import OutOfSamplePredictions, TransformationsOverTime
-from ..splitters import Split, Splitter
+from ..splitters import Fold, Splitter
 from .common import deepcopy_transformations, recursively_transform
 
 
@@ -41,7 +41,7 @@ def backtest(
 
 
 def __backtest_on_window(
-    split: Split,
+    split: Fold,
     X: pd.DataFrame,
     y: pd.Series,
     transformations_over_time: TransformationsOverTime,

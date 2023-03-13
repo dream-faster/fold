@@ -11,7 +11,7 @@ def test_skipna() -> None:
     X[70:100] = pd.NA
     y[70:100] = pd.NA
 
-    splitter = ExpandingWindowSplitter(train_window_size=50, step=400)
+    splitter = ExpandingWindowSplitter(initial_train_window=50, step=400)
     transformations = [
         SkipNA([lambda x: x, lambda x: x]),
     ]

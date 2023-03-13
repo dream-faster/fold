@@ -114,7 +114,7 @@ class BaselineRegressorDeprecated(Model):
 
 class BaselineNaive(Model):
     name = "BaselineNaive"
-    properties = Model.Properties(requires_continuous_updates=True)
+    properties = Model.Properties(mode=Transformation.Properties.Mode.online)
 
     insample_y = None
     last_y = None
@@ -143,7 +143,7 @@ class BaselineNaive(Model):
 
 class BaselineNaiveSeasonal(Model):
     name = "BaselineNaiveSeasonal"
-    properties = Model.Properties(requires_continuous_updates=True)
+    properties = Model.Properties(mode=Transformation.Properties.Mode.online)
     current_season = 0
     insample_y = None
 
@@ -181,7 +181,7 @@ class BaselineNaiveSeasonal(Model):
 # class BaselineMean(Model):
 
 #     name = "BaselineMean"
-#     properties = Transformation.Properties(requires_continuous_updates=True)
+#     properties = Transformation.Properties(mode=Transformation.Properties.Mode.online)
 #     length = 0
 #     rolling_mean = None
 

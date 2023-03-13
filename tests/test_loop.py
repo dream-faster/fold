@@ -14,7 +14,7 @@ def run_loop(
     # the naive model returns X as prediction, so y.shift(1) should be == pred
     X, y = generate_sine_wave_data()
 
-    splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
+    splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     transformations_over_time = train(
         transformations, X, y, splitter, train_method=train_method, backend=backend
     )
@@ -66,7 +66,7 @@ def test_sameple_weights() -> None:
     X, y = generate_all_zeros(1000)
     sample_weights = y
 
-    splitter = ExpandingWindowSplitter(train_window_size=400, step=400)
+    splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     transformations = [
         test_sample_weights_exist,
     ]

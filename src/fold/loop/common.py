@@ -99,12 +99,13 @@ def recursively_transform(
         if len(X) == 0:
             return pd.DataFrame()
 
-        # If the transformation requires continuous updates, and:
+        # If the transformation needs to be "online", and:
         # - we're training, and this is not the first split, or
         # - we're not training (i.e. we're backtesting or inferring)
         # enter the inner loop.
-        if transformations.properties.requires_continuous_updates and (
-            (fit and not is_first_split) or not fit
+        if (
+            transformations.properties.mode == Transformation.Properties.Mode.online
+            and ((fit and not is_first_split) or not fit)
         ):
             y_df = y.to_frame() if y is not None else None
             # We need to run the inference & fit loop on each row, sequentially (one-by-one).
