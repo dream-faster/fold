@@ -31,57 +31,39 @@
 It supports both univariate and (soon) multivariate time series.
 It is from the ground-up extensible and lightweight.
 
-**Avoid the mistakes people make with time series ML:**
 
-- ignoring useful features otherwise available in production (value in T-1)
-
-- accidentally using information that wouldn't otherwise be available at the time of training/evaluation (lookahead bias)
-
-
-**It can train models without lookahead bias:**
-
-- with expanding window
-
-- with rolling window
-
-- even with a single train/test split, if you really want it
-  
-**It can also help you with creating complex blended models:**
-
-- Ensembling: (weighted) averaging the predictions of multiple models or pipelines
-
-- Stacking: feed multiple model's predictions into a model
-
-- Meta-labeling or residual-modelling/hybrid models (coming soon)
-... or any combinations of the above.
-
-Why? It [works really well for time series](https://linkinghub.elsevier.com/retrieve/pii/S0169207022001480).
-  
-
-
-
-  
 <br/>
 
 ## Fold solves the following problems:
 
-- Time series are often evaluated on single or multiple (finite) train-test splits. This is a source of grave mistakes.<br/>
-**→ fold allows to simulate and evaluate your models like they would have performed, in reality/when deployed.**
+- Accidentally using information that wouldn't otherwise be available at the time of training/evaluation (lookahead bias).<br/>
+**→ fold allows you to use any model, transformation or function in a pipeline, while making sure it'll never have access to "future data".**
 
-- Complex models are hard to create and manage<br/>
-**→ Fold supports easy composite model creation**
+- Time series Cross-validation is painful OR really slow with the existing libraries. People end up using a single train-test split when evaluating time series models, which is sub-optimal from many perspective. [Why use cross validation?](continuous-validation.md)<br/>
+**→ fold allows to simulate and evaluate your models like they would have performed, in reality/when deployed. Choose between sliding or expanding window.**
+
+- Model selection, Feature selection and Hyperparameter optimization is done on the whole time series, introducing major lookahead bias, creating unrealistic expectations of performance.<br/>
+**→ Allowing methodologically “correct” way to do Model selection, Feature selection and Hyperparameter Optimization (we call this the pre-validation step, done on the first window's train split).**
 
 - Too many dependencies and an either you use-all-or-none-of-it approach<br/>
-**→ Fold has very few hard dependencies (only pandas, numpy, tqdm and scikit-learn). It supports scikit-learn Pipelines by default. It's main aim is to be as simple and few lines as possible.**
+**→ Fold has very few hard dependencies (only pandas, numpy, tqdm and scikit-learn), and has a fraction of the number of lines of code as other major Time series libraries.**
 
-- Works well with industry standard libraries as well as with Myalo's other open source toolkits (eg.: [Krisi evaluation](https://github.com/dream-faster/krisi) or [Fold Models]([h](https://github.com/dream-faster/fold-models))<br/>
-**→ Don't need to choose between `sktime`, `darts` or `statsforecast` models. We will or already support them all (coming soon)**
+- Choosing between a time series library that only support certain kind of models.<br/>
+**→ Don't need to choose between `xgboost`, `sktime`, `darts` or `statsforecast` models. We will or already support them all, either natively or through [`fold-models`](https://github.com/dream-faster/fold-models)**
 
-- Most of the time series libraries don't support distributed computing at all.<br/>
-**→ Fold was built with distributed computing in mind. Your pipeline is automatically parallelized wherever it can be (coming soon)**
+- Most time series ML libraries have little or no support distributed computing.<br/>
+**→ Fold was built with distributed computing in mind. Your pipeline is automatically parallelized wherever it can be (for some extent, the rest is coming really soon)**
 
-- Easy to deploy.<br/>
-**→ Don't stop at training models.**
+- Using a single model, instead of ensembling, stacking or creating hybrid models.<br/>
+**→ Fold is _really_ flexible in what kind of pipelines you create and has native support for ensembling, stacking, hybrid models and meta-labeling. Why? [works really well for time series](https://linkinghub.elsevier.com/retrieve/pii/S0169207022001480).**
+
+- Hard to deploy models, that can't be updated.<br/>
+**→ Don't stop at training models, with `fold`, you can deploy with a couple of lines of code, and also update your models as new data comes in. Don't assume your models will not get out-of-date.**
+
+- We can't compare, ensemble or use online and mini-batch learning models together.<br/>
+**→ `fold` supports both types of models natively.**
+
+
 
 
 <br/>
@@ -127,8 +109,8 @@ pred = backtest(transformations_over_time, X, y, splitter)
 
 - Supports both Regression and Classification tasks.
 - Online and Mini-batch learning.
-- Feature selection and other transformations (coming soon) on an expanding/rolling window basis
-- Use any scikit-learn model/pipeline natively!
+- Feature selection and other transformations on an expanding/rolling window basis
+- Use any scikit-learn/tabular model natively!
 - Use any univariate or sequence models (wrappers provided in [fold-models](https://github.com/dream-faster/fold-models)).
 - Use any Deep Learning Time Series models (wrappers provided in [fold-models](https://github.com/dream-faster/fold-models)).
 - Super easy syntax!
