@@ -36,20 +36,20 @@ It is from the ground-up extensible and lightweight.
 
 ## Fold solves the following problems:
 
-- Accidentally using information that wouldn't otherwise be available at the time of training/evaluation (lookahead bias).
+- Accidentally using information that wouldn't otherwise be available at the time of training/evaluation (lookahead bias).<br/>
 **→ fold allows you to use any model, transformation or function in a pipeline, while making sure it'll never have access to "future data".**
 
 - Time series Cross-validation is painful OR really slow with the existing libraries. People end up using a single train-test split when evaluating time series models, which is sub-optimal from many perspective. [Why use cross validation?](continuous-validation.md)<br/>
 **→ fold allows to simulate and evaluate your models like they would have performed, in reality/when deployed. Choose between sliding or expanding window.**
 
 - Model selection, Feature selection and Hyperparameter optimization is done on the whole time series, introducing major lookahead bias, creating unrealistic expectations of performance.<br/>
-**→ Allowing methodologically “correct” way to do Model selection, Feature selection and Hyperparameter Optimization (we call this the pre-validation step, done on the first window's train split).
+**→ Allowing methodologically “correct” way to do Model selection, Feature selection and Hyperparameter Optimization (we call this the pre-validation step, done on the first window's train split).**
 
 - Too many dependencies and an either you use-all-or-none-of-it approach<br/>
 **→ Fold has very few hard dependencies (only pandas, numpy, tqdm and scikit-learn), and has a fraction of the number of lines of code as other major Time series libraries.**
 
-- Choosing between a time series library that only support certain kind of models.
-**→ Don't need to choose between `xgboost`, `sktime`, `darts` or `statsforecast` models. We will or already support them all, either natively or through [`fold-models`](https://github.com/dream-faster/fold-models)<br/>**
+- Choosing between a time series library that only support certain kind of models.<br/>
+**→ Don't need to choose between `xgboost`, `sktime`, `darts` or `statsforecast` models. We will or already support them all, either natively or through [`fold-models`](https://github.com/dream-faster/fold-models)**
 
 - Most time series ML libraries have little or no support distributed computing.<br/>
 **→ Fold was built with distributed computing in mind. Your pipeline is automatically parallelized wherever it can be (for some extent, the rest is coming really soon)**
