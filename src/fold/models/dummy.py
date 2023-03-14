@@ -15,8 +15,6 @@ class DummyClassifier(Model):
         self.all_classes = all_classes
         self.predicted_probabilities = predicted_probabilities
 
-    fit = fit_noop
-
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         predictions = pd.Series(
             [self.predicted_value] * len(X),
@@ -37,7 +35,7 @@ class DummyClassifier(Model):
         return pd.concat([predictions] + probabilities, axis="columns")
 
     predict_in_sample = predict
-
+    fit = fit_noop
     update = fit
 
 
@@ -49,13 +47,11 @@ class DummyRegressor(Model):
         self.predicted_value = predicted_value
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
-        predictions = pd.Series(
+        return pd.Series(
             [self.predicted_value] * len(X),
             index=X.index,
-            name="predictions_DummyClassifier",
         )
 
-        return predictions
-
+    predict_in_sample = predict
     fit = fit_noop
     update = fit
