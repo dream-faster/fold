@@ -65,7 +65,7 @@ def recursively_transform(
 
         secondary_transformations = composite.get_child_transformations_secondary()
         if secondary_transformations is None:
-            return composite.postprocess_result_primary(results_primary)
+            return composite.postprocess_result_primary(results_primary, y)
         else:
             results_secondary = [
                 process_secondary_child_transform(
@@ -94,7 +94,7 @@ def recursively_transform(
                 )
 
             return composite.postprocess_result_secondary(
-                results_primary, results_secondary
+                results_primary, results_secondary, y
             )
 
     elif isinstance(transformations, Transformation) or isinstance(

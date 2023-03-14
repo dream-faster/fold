@@ -89,13 +89,16 @@ class Composite(ABC):
         return None
 
     @abstractmethod
-    def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
+    def postprocess_result_primary(
+        self, results: List[pd.DataFrame], y: Optional[pd.Series]
+    ) -> pd.DataFrame:
         raise NotImplementedError
 
     def postprocess_result_secondary(
         self,
         primary_results: List[pd.DataFrame],
         secondary_results: List[pd.DataFrame],
+        y: Optional[pd.Series],
     ) -> pd.DataFrame:
         raise NotImplementedError
 

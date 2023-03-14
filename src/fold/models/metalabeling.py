@@ -68,13 +68,16 @@ class MetaLabeling(Composite):
         y = y.astype(int) == predictions.astype(int)
         return X, y
 
-    def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
+    def postprocess_result_primary(
+        self, results: List[pd.DataFrame], y: Optional[pd.Series]
+    ) -> pd.DataFrame:
         raise NotImplementedError
 
     def postprocess_result_secondary(
         self,
         primary_results: List[pd.DataFrame],
         secondary_results: List[pd.DataFrame],
+        y: Optional[pd.Series],
     ) -> pd.DataFrame:
         primary_predictions = get_prediction_column(primary_results[0])
         meta_probabilities = secondary_results[0][
