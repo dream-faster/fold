@@ -9,6 +9,11 @@ from .base import Transformation
 class Test(Transformation):
     properties = Transformation.Properties()
     __test__ = False
+    no_of_calls_fit = 0
+    no_of_calls_update = 0
+    no_of_calls_transform_insample = 0
+    no_of_calls_transform_outofsample = 0
+    no_of_calls_inverse_transform = 0
 
     def __init__(
         self,
@@ -41,6 +46,7 @@ class Test(Transformation):
                 "fit_func must accept between 1 and 3 arguments, "
                 f"but {len(argspec.args)} were given."
             )
+        self.no_of_calls_fit += 1
 
     def update(
         self,
@@ -62,14 +68,20 @@ class Test(Transformation):
                 "update_func must accept between 1 and 3 arguments, "
                 f"but {len(argspec.args)} were given."
             )
+        self.no_of_calls_update += 1
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
+        if in_sample:
+            self.no_of_calls_transform_insample += 1
+        else:
+            self.no_of_calls_transform_outofsample += 1
         return_value = self.transform_func(X)
         if return_value is None:
             return X
         return return_value
 
     def inverse_transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        self.no_of_calls_inverse_transform += 1
         if self.inverse_transform_func is not None:
             self.inverse_transform_func(X)
         return X

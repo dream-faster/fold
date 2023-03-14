@@ -9,6 +9,7 @@ from .columns import (
 from .concat import Concat
 from .function import FunctionTransformation
 from .identity import Identity
+from .lags import AddLagsY
 from .sample import Sample
 from .sklearn import SKLearnFeatureSelector, SKLearnTransformation
 from .target import TransformTarget

@@ -7,7 +7,7 @@ from fold.utils.pandas import trim_initial_nans_single
 
 from ..all_types import OutOfSamplePredictions, TransformationsOverTime
 from ..splitters import Fold, Splitter
-from .common import deepcopy_transformations, recursively_transform
+from .common import Stage, deepcopy_transformations, recursively_transform
 
 
 def backtest(
@@ -65,9 +65,8 @@ def __backtest_on_window(
         sample_weights_test,
         deepcopy_transformations(
             current_transformations
-        ),  # we deepcopy here to avoid mutating the continuously updated transformations
-        fit=False,
-        is_first_split=split.order == 0,
+        ),  # we deepcopy here to avoid mutating the online transformations
+        stage=Stage.update,
     )
 
     return trim_initial_nans_single(X_test)

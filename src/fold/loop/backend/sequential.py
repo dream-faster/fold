@@ -16,12 +16,5 @@ def train_transformations(
     splits: List[Fold],
 ):
     return [
-        func(
-            X,
-            y,
-            sample_weights,
-            transformations,
-            split,
-        )
-        for split in tqdm(splits)
+        func(X, y, sample_weights, transformations, split) for split in tqdm(splits)
     ]
