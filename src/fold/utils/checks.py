@@ -5,7 +5,11 @@ import pandas as pd
 
 def is_prediction(input: pd.DataFrame) -> bool:
     if len(input.columns) == 1:
-        return input.columns[0].startswith("predictions_")
+        return (
+            input.columns[0].startswith("predictions_")
+            if type(input.columns[0]) is str
+            else False
+        )
     else:
         is_predictions_col_present = input.columns[0].startswith("predictions_")
         return is_predictions_col_present and all(

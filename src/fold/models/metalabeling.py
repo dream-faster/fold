@@ -51,7 +51,11 @@ class MetaLabeling(Composite):
         self.name = "MetaLabeling-" + get_concatenated_names(self.primary + self.meta)
 
     def preprocess_X_secondary(
-        self, X: pd.DataFrame, results_primary: List[pd.DataFrame], index: int
+        self,
+        X: pd.DataFrame,
+        results_primary: List[pd.DataFrame],
+        index: int,
+        fit: bool,
     ) -> pd.DataFrame:
         if self.primary_output_included:
             return pd.concat([X] + results_primary, axis="columns")
