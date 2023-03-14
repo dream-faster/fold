@@ -19,5 +19,5 @@ jobs:
       - run: pip install ".[docs]"
       - run: mkdocs build
       - name: Deploying to Github Pages
-        if: ${{ github.ref == 'refs/heads/master' }}
+        if: github.ref == 'refs/heads/main'
         run: mkdocs gh-deploy --force
