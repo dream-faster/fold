@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from copy import deepcopy
 from typing import Callable, List, Optional
 
 import pandas as pd
@@ -20,7 +19,7 @@ class SelectBest(Composite):
         self,
         models: TransformationsAlwaysList,
         scorer: Callable,
-        is_scorer_loss: bool,
+        is_scorer_loss: bool = True,
         selected_model: Optional[Transformations] = None,
     ) -> None:
         self.models = models
@@ -29,9 +28,11 @@ class SelectBest(Composite):
         self.is_scorer_loss = is_scorer_loss
         self.selected_model = selected_model
 
-    def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
+    def postprocess_result_primary(
+        self, results: List[pd.DataFrame], y: Optional[pd.Series]
+    ) -> pd.DataFrame:
         if self.selected_model is None:
-            scores = [self.scorer(result) for result in results]
+            scores = [self.scorer(y, result) for result in results]
             selected_index = (
                 scores.index(min(scores))
                 if self.is_scorer_loss
@@ -46,7 +47,7 @@ class SelectBest(Composite):
         if self.selected_model is None:
             return self.models
         else:
-            return self.selected_model
+            return [self.selected_model]
 
     def clone(self, clone_child_transformations: Callable) -> SelectBest:
         return SelectBest(

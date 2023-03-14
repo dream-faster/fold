@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Callable, List, Tuple
+from typing import Callable, List, Optional, Tuple
 
 import pandas as pd
 
@@ -23,7 +23,9 @@ class Ensemble(Composite):
         self.models = models
         self.name = "Ensemble-" + get_concatenated_names(models)
 
-    def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
+    def postprocess_result_primary(
+        self, results: List[pd.DataFrame], y: Optional[pd.Series]
+    ) -> pd.DataFrame:
         return postprocess_results(results, self.name)
 
     def get_child_transformations_primary(self) -> TransformationsAlwaysList:
@@ -55,7 +57,9 @@ class PerColumnEnsemble(Composite):
         X = X.iloc[:, index].to_frame()
         return X, y
 
-    def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
+    def postprocess_result_primary(
+        self, results: List[pd.DataFrame], y: Optional[pd.Series]
+    ) -> pd.DataFrame:
         return postprocess_results(results, self.name)
 
     def get_child_transformations_primary(self) -> TransformationsAlwaysList:

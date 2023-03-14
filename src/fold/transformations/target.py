@@ -41,7 +41,9 @@ class TransformTarget(Composite):
         else:
             return y.to_frame(), None
 
-    def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
+    def postprocess_result_primary(
+        self, results: List[pd.DataFrame], y: Optional[pd.Series]
+    ) -> pd.DataFrame:
         raise NotImplementedError
 
     def preprocess_secondary(
@@ -55,7 +57,10 @@ class TransformTarget(Composite):
         return X, results_primary[0].squeeze()
 
     def postprocess_result_secondary(
-        self, primary_results: List[pd.DataFrame], secondary_results: List[pd.DataFrame]
+        self,
+        primary_results: List[pd.DataFrame],
+        secondary_results: List[pd.DataFrame],
+        y: Optional[pd.Series],
     ) -> pd.DataFrame:
         return secondary_results[0]
 

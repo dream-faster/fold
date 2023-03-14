@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Callable, List, Union
+from typing import Callable, List, Optional, Union
 
 import pandas as pd
 
@@ -42,7 +42,9 @@ class Concat(Composite):
             ]
         )
 
-    def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
+    def postprocess_result_primary(
+        self, results: List[pd.DataFrame], y: Optional[pd.Series]
+    ) -> pd.DataFrame:
         columns = flatten([result.columns.to_list() for result in results])
         duplicates = keep_only_duplicates(columns)
 

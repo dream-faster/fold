@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Callable, List, Tuple, Union
+from typing import Callable, List, Optional, Tuple, Union
 
 import pandas as pd
 
@@ -94,7 +94,9 @@ class PerColumnTransform(Composite):
     ) -> Tuple[pd.DataFrame, T]:
         return X.iloc[:, index].to_frame(), y
 
-    def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
+    def postprocess_result_primary(
+        self, results: List[pd.DataFrame], y: Optional[pd.Series]
+    ) -> pd.DataFrame:
         return pd.concat(results, axis="columns")
 
     def get_child_transformations_primary(self) -> TransformationsAlwaysList:
@@ -163,7 +165,9 @@ class SkipNA(Composite):
         self.isna = X.isna().any(axis=1)
         return X[~self.isna], y[~self.isna] if y is not None else None
 
-    def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
+    def postprocess_result_primary(
+        self, results: List[pd.DataFrame], y: Optional[pd.Series]
+    ) -> pd.DataFrame:
         results = [result.reindex(self.original_index) for result in results]
         return pd.concat(results, axis="columns")
 

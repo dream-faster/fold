@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Callable, List, Tuple
+from typing import Any, Callable, List, Optional, Tuple
 
 import pandas as pd
 
@@ -42,7 +42,9 @@ class Sample(Composite):
         else:
             return X, y
 
-    def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
+    def postprocess_result_primary(
+        self, results: List[pd.DataFrame], y: Optional[pd.Series]
+    ) -> pd.DataFrame:
         return results[0]
 
     def get_child_transformations_primary(self) -> TransformationsAlwaysList:
