@@ -25,10 +25,7 @@
 </div>
 <br />
 
-**Fold** is a Nowcasting continuous evaluation/deployment library.
-(also known as walk-forward evaluation)
-
-It supports both univariate and (soon) multivariate time series.
+**Fold** is a [Now|Fore]casting continuous evaluation/deployment library.
 It is from the ground-up extensible and lightweight.
 
 
@@ -115,7 +112,7 @@ pred = backtest(transformations_over_time, X, y, splitter)
 - Use any Deep Learning Time Series models (wrappers provided in [fold-models](https://github.com/dream-faster/fold-models)).
 - Super easy syntax!
 - Probabilistic foreacasts (currently, for Classification, soon for Regression as well).
-- Hyperparemeter optimization / Model selection (coming soon).
+- Hyperparemeter optimization / Model selection.
 
 
 ## Limitations
