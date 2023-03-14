@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable, List, Optional, Union
+from typing import Callable, List, Optional, Tuple, Union
 
 import pandas as pd
 
@@ -10,6 +10,7 @@ from fold.utils.checks import get_prediction_column
 from ..transformations.base import (
     BlocksOrWrappable,
     Composite,
+    T,
     TransformationsAlwaysList,
 )
 
@@ -50,19 +51,22 @@ class MetaLabeling(Composite):
         self.primary_output_included = primary_output_included
         self.name = "MetaLabeling-" + get_concatenated_names(self.primary + self.meta)
 
-    def preprocess_X_secondary(
-        self, X: pd.DataFrame, results_primary: List[pd.DataFrame], index: int
-    ) -> pd.DataFrame:
-        if self.primary_output_included:
-            return pd.concat([X] + results_primary, axis="columns")
-        else:
-            return X
-
-    def preprocess_y_secondary(
-        self, y: pd.Series, results_primary: List[pd.DataFrame]
-    ) -> pd.Series:
+    def preprocess_secondary(
+        self,
+        X: pd.DataFrame,
+        y: T,
+        results_primary: List[pd.DataFrame],
+        index: int,
+        fit: bool,
+    ) -> Tuple[pd.DataFrame, T]:
+        X = (
+            pd.concat([X] + results_primary, axis="columns")
+            if self.primary_output_included
+            else X
+        )
         predictions = get_prediction_column(results_primary[0])
-        return y.astype(int) == predictions.astype(int)
+        y = y.astype(int) == predictions.astype(int)
+        return X, y
 
     def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
         raise NotImplementedError

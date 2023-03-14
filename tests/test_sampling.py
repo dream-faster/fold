@@ -2,7 +2,7 @@ from imblearn.under_sampling import RandomUnderSampler
 
 from fold.loop import train
 from fold.splitters import ExpandingWindowSplitter
-from fold.transformations.sampling import Sampling
+from fold.transformations.sample import Sample
 from fold.transformations.test import Test
 from fold.utils.tests import generate_zeros_and_ones_skewed
 
@@ -22,7 +22,7 @@ def test_sampling() -> None:
 
     splitter = ExpandingWindowSplitter(initial_train_window=90000, step=90000)
     transformations = [
-        Sampling(RandomUnderSampler(), test_regressor),
+        Sample(RandomUnderSampler(), test_regressor),
     ]
 
     _ = train(transformations, X, y, splitter)

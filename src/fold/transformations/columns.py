@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Callable, List, Optional, Union
+from typing import Callable, List, Tuple, Union
 
 import pandas as pd
 
@@ -10,6 +10,7 @@ from fold.transformations.common import get_concatenated_names
 from ..utils.list import wrap_in_list
 from .base import (
     Composite,
+    T,
     Transformation,
     Transformations,
     TransformationsAlwaysList,
@@ -88,10 +89,10 @@ class PerColumnTransform(Composite):
             self.transformations = [deepcopy(self.transformations) for _ in X.columns]
             self.transformations_already_cloned = True
 
-    def preprocess_X_primary(
-        self, X: pd.DataFrame, index: int, y: Optional[pd.Series]
-    ) -> pd.DataFrame:
-        return X.iloc[:, index].to_frame()
+    def preprocess_primary(
+        self, X: pd.DataFrame, index: int, y: T, fit: bool
+    ) -> Tuple[pd.DataFrame, T]:
+        return X.iloc[:, index].to_frame(), y
 
     def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
         return pd.concat(results, axis="columns")
@@ -155,15 +156,12 @@ class SkipNA(Composite):
             ]
         )
 
-    def preprocess_X_primary(
-        self, X: pd.DataFrame, index: int, y: Optional[pd.Series]
-    ) -> pd.DataFrame:
+    def preprocess_primary(
+        self, X: pd.DataFrame, index: int, y: T, fit: bool
+    ) -> Tuple[pd.DataFrame, T]:
         self.original_index = X.index.copy()
         self.isna = X.isna().any(axis=1)
-        return X[~self.isna]
-
-    def preprocess_y_primary(self, y: pd.Series) -> pd.Series:
-        return y[~self.isna]
+        return X[~self.isna], y[~self.isna] if y is not None else None
 
     def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
         results = [result.reindex(self.original_index) for result in results]

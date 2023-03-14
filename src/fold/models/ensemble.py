@@ -1,11 +1,16 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Callable, List, Optional
+from typing import Callable, List, Tuple
 
 import pandas as pd
 
-from ..transformations.base import Composite, Transformations, TransformationsAlwaysList
+from ..transformations.base import (
+    Composite,
+    T,
+    Transformations,
+    TransformationsAlwaysList,
+)
 from ..transformations.common import get_concatenated_names
 from ..utils.checks import all_have_probabilities
 from ..utils.list import unique, wrap_in_list
@@ -44,10 +49,11 @@ class PerColumnEnsemble(Composite):
             self.models = [deepcopy(self.models) for _ in X.columns]
             self.models_already_cloned = True
 
-    def preprocess_X_primary(
-        self, X: pd.DataFrame, index: int, y: Optional[pd.Series]
-    ) -> pd.DataFrame:
-        return X.iloc[:, index].to_frame()
+    def preprocess_primary(
+        self, X: pd.DataFrame, index: int, y: T, fit: bool
+    ) -> Tuple[pd.DataFrame, pd.Series]:
+        X = X.iloc[:, index].to_frame()
+        return X, y
 
     def postprocess_result_primary(self, results: List[pd.DataFrame]) -> pd.DataFrame:
         return postprocess_results(results, self.name)

@@ -14,7 +14,7 @@
 ::: fold.transformations.concat
 ::: fold.transformations.function
 ::: fold.transformations.identity
-::: fold.transformations.sampling
+::: fold.transformations.sample
 ::: fold.transformations.sklearn
 ::: fold.transformations.target
 ::: fold.transformations.test

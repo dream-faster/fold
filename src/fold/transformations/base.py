@@ -3,7 +3,7 @@ from __future__ import annotations
 import enum
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Callable, List, Optional, Union
+from typing import Callable, List, Optional, Tuple, TypeVar, Union
 
 import pandas as pd
 from sklearn.base import BaseEstimator
@@ -62,6 +62,9 @@ class FeatureSelector(Transformation):
     selected_features: List[str]
 
 
+T = TypeVar("T", Optional[pd.Series], pd.Series)
+
+
 class Composite(ABC):
     @dataclass
     class Properties:
@@ -103,23 +106,20 @@ class Composite(ABC):
     def before_fit(self, X: pd.DataFrame) -> None:
         pass
 
-    def preprocess_X_primary(
-        self, X: pd.DataFrame, index: int, y: Optional[pd.Series]
-    ) -> pd.DataFrame:
-        return X
+    def preprocess_primary(
+        self, X: pd.DataFrame, index: int, y: T, fit: bool
+    ) -> Tuple[pd.DataFrame, T]:
+        return X, y
 
-    def preprocess_X_secondary(
-        self, X: pd.DataFrame, results_primary: List[pd.DataFrame], index: int
-    ) -> pd.DataFrame:
-        return X
-
-    def preprocess_y_primary(self, y: pd.Series) -> pd.Series:
-        return y
-
-    def preprocess_y_secondary(
-        self, y: pd.Series, results_primary: List[pd.DataFrame]
-    ) -> pd.Series:
-        return y
+    def preprocess_secondary(
+        self,
+        X: pd.DataFrame,
+        y: T,
+        results_primary: List[pd.DataFrame],
+        index: int,
+        fit: bool,
+    ) -> Tuple[pd.DataFrame, T]:
+        return X, y
 
 
 Transformations = Union[

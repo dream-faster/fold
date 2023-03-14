@@ -35,12 +35,15 @@ def recursively_transform(
         composite: Composite = transformations
         # TODO: here we have the potential to parallelize/distribute training of child transformations
         composite.before_fit(X)
+
         results_primary = [
-            recursively_transform(
-                composite.preprocess_X_primary(X, index, y),
-                composite.preprocess_y_primary(y) if y is not None else None,
-                sample_weights,
+            process_primary_child_transform(
+                composite,
+                index,
                 child_transformation,
+                X,
+                y,
+                sample_weights,
                 fit,
                 is_first_split,
             )
@@ -65,13 +68,14 @@ def recursively_transform(
             return composite.postprocess_result_primary(results_primary)
         else:
             results_secondary = [
-                recursively_transform(
-                    composite.preprocess_X_secondary(X, results_primary, index),
-                    composite.preprocess_y_secondary(y, results_primary)
-                    if y is not None
-                    else None,
-                    sample_weights,
+                process_secondary_child_transform(
+                    composite,
+                    index,
                     child_transformation,
+                    X,
+                    y,
+                    sample_weights,
+                    results_primary,
                     fit,
                     is_first_split,
                 )
@@ -153,6 +157,39 @@ def recursively_transform(
             f"{transformations} is not a Fold Transformation, but of type"
             f" {type(transformations)}"
         )
+
+
+def process_primary_child_transform(
+    composite: Composite,
+    index: int,
+    child_transform: Transformations,
+    X: pd.DataFrame,
+    y: Optional[pd.Series],
+    sample_weights: Optional[pd.Series],
+    fit: bool,
+    is_first_split: bool,
+) -> pd.DataFrame:
+    X, y = composite.preprocess_primary(X, index, y, fit=fit)
+    return recursively_transform(
+        X, y, sample_weights, child_transform, fit, is_first_split
+    )
+
+
+def process_secondary_child_transform(
+    composite: Composite,
+    index: int,
+    child_transform: Transformations,
+    X: pd.DataFrame,
+    y: Optional[pd.Series],
+    sample_weights: Optional[pd.Series],
+    results_primary: List[pd.DataFrame],
+    fit: bool,
+    is_first_split: bool,
+) -> pd.DataFrame:
+    X, y = composite.preprocess_secondary(X, y, results_primary, index, fit)
+    return recursively_transform(
+        X, y, sample_weights, child_transform, fit, is_first_split
+    )
 
 
 def deepcopy_transformations(transformation: Transformations) -> Transformations:
