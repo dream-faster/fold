@@ -10,7 +10,7 @@ from ..transformations.common import get_concatenated_names
 
 class SelectBest(Composite):
     """
-    Selects the best model from a list of models based on a scorer.
+    Don't use this just yet. Coming in v0.2.
     """
 
     properties = Composite.Properties()
@@ -47,7 +47,7 @@ class SelectBest(Composite):
         if self.selected_model is None:
             return self.models
         else:
-            return [self.selected_model]
+            return self.selected_model
 
     def clone(self, clone_child_transformations: Callable) -> SelectBest:
         return SelectBest(

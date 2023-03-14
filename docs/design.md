@@ -33,6 +33,6 @@ Composites enable us to:
 A mini-batch model is retrained for every split, defined for the whole pipeline, by the [Splitter](splitters.md).
 It can not update its state in the meantime.
 
-For a continuously updating model, the "inner loop" calls the `.update()` method after each timestamp, then `.predict()`.
+For an `online` model, the "inner loop" calls the `.update()` method after each timestamp, then `.predict()`.
 Except for "in sample" predictions, which is done in a batch manner, with `predict_in_sample()` 
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from enum import Enum
 from typing import List, Optional
 
 import pandas as pd
@@ -12,23 +13,29 @@ from ..transformations.base import Composite, Transformation, Transformations
 from ..utils.checks import is_prediction
 
 
+class Stage(Enum):
+    inital_fit = "inital_fit"
+    update = "update"
+    infer = "infer"
+
+    def is_fit_or_update(self) -> bool:
+        return self in [Stage.inital_fit, Stage.update]
+
+
 def recursively_transform(
     X: pd.DataFrame,
     y: Optional[pd.Series],
     sample_weights: Optional[pd.Series],
     transformations: Transformations,
-    fit: bool,
-    is_first_split: bool,
+    stage: Stage,
 ) -> pd.DataFrame:
     """
-    The main function to transform (and fit) a pipline of transformations.
-    is_first_split is used to determine whether to run the inner loop for models that have `requires_continuous_updating` set to True.
+    The main function to transform (and fit or update) a pipline of transformations.
+    `stage` is used to determine whether to run the inner loop for online models.
     """
     if isinstance(transformations, List):
         for transformation in transformations:
-            X = recursively_transform(
-                X, y, sample_weights, transformation, fit, is_first_split
-            )
+            X = recursively_transform(X, y, sample_weights, transformation, stage)
         return X
 
     elif isinstance(transformations, Composite):
@@ -44,8 +51,7 @@ def recursively_transform(
                 X,
                 y,
                 sample_weights,
-                fit,
-                is_first_split,
+                stage,
             )
             for index, child_transformation in enumerate(
                 composite.get_child_transformations_primary()
@@ -76,8 +82,7 @@ def recursively_transform(
                     y,
                     sample_weights,
                     results_primary,
-                    fit,
-                    is_first_split,
+                    stage,
                 )
                 for index, child_transformation in enumerate(secondary_transformations)
             ]
@@ -109,7 +114,7 @@ def recursively_transform(
         # enter the inner loop.
         if (
             transformations.properties.mode == Transformation.Properties.Mode.online
-            and ((fit and not is_first_split) or not fit)
+            and stage != Stage.infer
         ):
             y_df = y.to_frame() if y is not None else None
             # We need to run the inference & fit loop on each row, sequentially (one-by-one).
@@ -130,13 +135,15 @@ def recursively_transform(
                 return result
 
             transform_row_function = (
-                transform_row_train if fit else transform_row_inference_backtest
+                transform_row_train
+                if stage == Stage.inital_fit
+                else transform_row_inference_backtest
             )
             return pd.concat(
                 [
                     transform_row_function(
                         X.loc[index:index],
-                        y_df.loc[index] if y is not None else None,
+                        y_df.loc[index:index] if y is not None else None,
                         sample_weights.loc[index]
                         if sample_weights is not None
                         else None,
@@ -148,9 +155,11 @@ def recursively_transform(
 
         else:
             X, y = trim_initial_nans(X, y)
-            if fit:
+            if stage == Stage.inital_fit:
                 transformations.fit(X, y, sample_weights)
-            return transformations.transform(X, in_sample=fit)
+            elif stage == Stage.update:
+                transformations.update(X, y, sample_weights)
+            return transformations.transform(X, in_sample=stage == Stage.inital_fit)
 
     else:
         raise ValueError(
@@ -166,13 +175,10 @@ def process_primary_child_transform(
     X: pd.DataFrame,
     y: Optional[pd.Series],
     sample_weights: Optional[pd.Series],
-    fit: bool,
-    is_first_split: bool,
+    stage: Stage,
 ) -> pd.DataFrame:
-    X, y = composite.preprocess_primary(X, index, y, fit=fit)
-    return recursively_transform(
-        X, y, sample_weights, child_transform, fit, is_first_split
-    )
+    X, y = composite.preprocess_primary(X, index, y, fit=stage.is_fit_or_update())
+    return recursively_transform(X, y, sample_weights, child_transform, stage)
 
 
 def process_secondary_child_transform(
@@ -183,13 +189,12 @@ def process_secondary_child_transform(
     y: Optional[pd.Series],
     sample_weights: Optional[pd.Series],
     results_primary: List[pd.DataFrame],
-    fit: bool,
-    is_first_split: bool,
+    stage: Stage,
 ) -> pd.DataFrame:
-    X, y = composite.preprocess_secondary(X, y, results_primary, index, fit)
-    return recursively_transform(
-        X, y, sample_weights, child_transform, fit, is_first_split
+    X, y = composite.preprocess_secondary(
+        X, y, results_primary, index, fit=stage.is_fit_or_update()
     )
+    return recursively_transform(X, y, sample_weights, child_transform, stage)
 
 
 def deepcopy_transformations(transformation: Transformations) -> Transformations:

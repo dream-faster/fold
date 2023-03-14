@@ -4,7 +4,7 @@ import pandas as pd
 
 from ..all_types import OutOfSamplePredictions
 from ..transformations.base import DeployableTransformations
-from .common import deepcopy_transformations, recursively_transform
+from .common import Stage, deepcopy_transformations, recursively_transform
 
 
 def infer(
@@ -19,9 +19,7 @@ def infer(
 
     assert type(X) is pd.DataFrame, "X must be a pandas DataFrame."
 
-    results = recursively_transform(
-        X, None, None, transformations, fit=False, is_first_split=False
-    )
+    results = recursively_transform(X, None, None, transformations, stage=Stage.infer)
     return results
 
 
@@ -40,7 +38,5 @@ def update(
     assert type(y) is pd.Series, "y must be a pandas Series."
 
     transformations = deepcopy_transformations(transformations)
-    _ = recursively_transform(
-        X, y, sample_weights, transformations, fit=True, is_first_split=False
-    )
+    _ = recursively_transform(X, y, sample_weights, transformations, stage=Stage.update)
     return transformations

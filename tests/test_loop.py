@@ -46,7 +46,7 @@ def test_loop_parallel():
     )
 
 
-def test_loop_with_continuous_transformation():
+def test_loop_with_online_transformation():
     run_loop(
         TrainMethod.parallel,
         Backend.no,
@@ -71,3 +71,63 @@ def test_sameple_weights() -> None:
         test_sample_weights_exist,
     ]
     _ = train(transformations, X, y, splitter, sample_weights=sample_weights)
+
+
+def test_loop_method_sequential_parallel_call_times() -> None:
+    X, y = generate_sine_wave_data()
+
+    splitter = ExpandingWindowSplitter(initial_train_window=400, step=200)
+    transformations = Test(fit_func=lambda x: x, transform_func=lambda x: x)
+    transformations_over_time = train(
+        transformations,
+        X,
+        y,
+        splitter,
+        train_method=TrainMethod.parallel,
+    )
+
+    assert transformations_over_time[0].iloc[0].no_of_calls_fit == 1
+    assert transformations_over_time[0].iloc[0].no_of_calls_transform_insample == 1
+    # assert transformations_over_time[0].iloc[0].no_of_calls_transform_outofsample == 0
+
+    assert transformations_over_time[0].iloc[1].no_of_calls_fit == 1
+    assert transformations_over_time[0].iloc[1].no_of_calls_transform_insample == 1
+    # assert transformations_over_time[0].iloc[1].no_of_calls_transform_outofsample == 1
+
+    assert transformations_over_time[0].iloc[2].no_of_calls_fit == 1
+    assert transformations_over_time[0].iloc[2].no_of_calls_transform_insample == 1
+    # assert transformations_over_time[0].iloc[2].no_of_calls_transform_outofsample == 2
+
+    _ = backtest(transformations_over_time, X, y, splitter)
+    assert transformations_over_time[0].iloc[0].no_of_calls_fit == 1
+    assert transformations_over_time[0].iloc[0].no_of_calls_transform_insample == 1
+
+
+def test_loop_method_sequential_minibatch_call_times() -> None:
+    X, y = generate_sine_wave_data()
+
+    splitter = ExpandingWindowSplitter(initial_train_window=400, step=200)
+    transformations = Test(fit_func=lambda x: x, transform_func=lambda x: x)
+    transformations_over_time = train(
+        transformations,
+        X,
+        y,
+        splitter,
+        train_method=TrainMethod.sequential,
+    )
+
+    assert transformations_over_time[0].iloc[0].no_of_calls_fit == 1
+    assert transformations_over_time[0].iloc[0].no_of_calls_transform_insample == 1
+    # assert transformations_over_time[0].iloc[0].no_of_calls_transform_outofsample == 0
+
+    assert transformations_over_time[0].iloc[1].no_of_calls_fit == 1
+    assert transformations_over_time[0].iloc[1].no_of_calls_transform_insample == 1
+    # assert transformations_over_time[0].iloc[1].no_of_calls_transform_outofsample == 1
+
+    assert transformations_over_time[0].iloc[2].no_of_calls_fit == 1
+    assert transformations_over_time[0].iloc[2].no_of_calls_transform_insample == 1
+    # assert transformations_over_time[0].iloc[2].no_of_calls_transform_outofsample == 2
+
+    _ = backtest(transformations_over_time, X, y, splitter)
+    assert transformations_over_time[0].iloc[0].no_of_calls_fit == 1
+    assert transformations_over_time[0].iloc[0].no_of_calls_transform_insample == 1

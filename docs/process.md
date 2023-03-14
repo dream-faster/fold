@@ -2,6 +2,7 @@
 
 
 ### 1. Information gathering
+(coming soon, not fully implemented yet)
 
 - Model Selection - "What's the best model or combination of models?" 
 - Hyperparameter Optimization - "What hyperparameters to use?"
@@ -18,7 +19,7 @@ Then, there are two methods to choose from, how to go forward:
 
 - Sequentially updating
 If training mode is sequential, then update the models for each subsequent fold.
-Plus if model requires continuous updates, then update the model within the fold as well.
+Plus if model is `online`, then update the model within the fold as well.
 
 - Parallel, independent models
 If training mode is independent, then for each fold, use as many data as possible for the initial training (till `train_window_ends` for each fold)
