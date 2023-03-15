@@ -32,8 +32,10 @@ def postpostprocess_prediction(
     dataframe_or_series: Union[pd.DataFrame, pd.Series], name: str
 ) -> pd.DataFrame:
     if isinstance(dataframe_or_series, pd.Series):
-        return dataframe_or_series.rename("predictions_" + name).to_frame()
+        return dataframe_or_series.rename(f"predictions_{name}").to_frame()
     elif isinstance(dataframe_or_series, pd.DataFrame):
+        if len(dataframe_or_series.columns) == 1:
+            dataframe_or_series.columns = [f"predictions_{name}"]
         return dataframe_or_series
     else:
         raise ValueError(
