@@ -16,6 +16,7 @@ from ..utils.checks import is_prediction
 class Stage(Enum):
     inital_fit = "inital_fit"
     update = "update"
+    update_online_only = "update_online_only"
     infer = "infer"
 
     def is_fit_or_update(self) -> bool:
@@ -111,7 +112,7 @@ def recursively_transform(
         # If the transformation needs to be "online", and we're in the update stage, we need to run the inner loop.
         if (
             transformations.properties.mode == Transformation.Properties.Mode.online
-            and stage == Stage.update
+            and stage in [Stage.update, Stage.update_online_only]
         ):
             y_df = y.to_frame() if y is not None else None
             # We need to run the inference & fit loop on each row, sequentially (one-by-one).
@@ -123,7 +124,7 @@ def recursively_transform(
                     transformations.update(X_row, y_row, sample_weights_row)
                 return result
 
-            concatenated = pd.concat(
+            return pd.concat(
                 [
                     transform_row_inference_backtest(
                         X.loc[index:index],
@@ -135,11 +136,6 @@ def recursively_transform(
                     for index in X.index
                 ],
                 axis="index",
-            )
-            return (
-                concatenated
-                if type(concatenated) is pd.DataFrame
-                else concatenated.to_frame()
             )
 
         # or the model is "mini-batch" updating or we're in initial_fit stage

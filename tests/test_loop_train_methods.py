@@ -84,17 +84,17 @@ def test_loop_parallel_minibatch_call_times() -> None:
 
     _ = _backtest_and_mutate(transformations_over_time, X, y, splitter)
     assert transformations_over_time[0].iloc[0].no_of_calls_fit == 1
-    assert transformations_over_time[0].iloc[0].no_of_calls_update == 1
+    assert transformations_over_time[0].iloc[0].no_of_calls_update == 0
     assert transformations_over_time[0].iloc[0].no_of_calls_transform_insample == 1
     assert transformations_over_time[0].iloc[0].no_of_calls_transform_outofsample == 1
 
     assert transformations_over_time[0].iloc[1].no_of_calls_fit == 1
-    assert transformations_over_time[0].iloc[1].no_of_calls_update == 1
+    assert transformations_over_time[0].iloc[1].no_of_calls_update == 0
     assert transformations_over_time[0].iloc[1].no_of_calls_transform_insample == 1
     assert transformations_over_time[0].iloc[1].no_of_calls_transform_outofsample == 1
 
     assert transformations_over_time[0].iloc[2].no_of_calls_fit == 1
-    assert transformations_over_time[0].iloc[2].no_of_calls_update == 1
+    assert transformations_over_time[0].iloc[2].no_of_calls_update == 0
     assert transformations_over_time[0].iloc[2].no_of_calls_transform_insample == 1
     assert transformations_over_time[0].iloc[2].no_of_calls_transform_outofsample == 1
 
@@ -172,17 +172,17 @@ def test_loop_sequential_minibatch_call_times() -> None:
 
     _ = _backtest_and_mutate(transformations_over_time, X, y, splitter)
     assert transformations_over_time[0].iloc[0].no_of_calls_fit == 1
-    assert transformations_over_time[0].iloc[0].no_of_calls_update == 1
+    assert transformations_over_time[0].iloc[0].no_of_calls_update == 0
     assert transformations_over_time[0].iloc[0].no_of_calls_transform_insample == 1
     assert transformations_over_time[0].iloc[0].no_of_calls_transform_outofsample == 1
 
     assert transformations_over_time[0].iloc[1].no_of_calls_fit == 1
-    assert transformations_over_time[0].iloc[1].no_of_calls_update == 2
+    assert transformations_over_time[0].iloc[1].no_of_calls_update == 1
     assert transformations_over_time[0].iloc[1].no_of_calls_transform_insample == 1
     assert transformations_over_time[0].iloc[1].no_of_calls_transform_outofsample == 2
 
     assert transformations_over_time[0].iloc[2].no_of_calls_fit == 1
-    assert transformations_over_time[0].iloc[2].no_of_calls_update == 3
+    assert transformations_over_time[0].iloc[2].no_of_calls_update == 2
     assert transformations_over_time[0].iloc[2].no_of_calls_transform_insample == 1
     assert transformations_over_time[0].iloc[2].no_of_calls_transform_outofsample == 3
 

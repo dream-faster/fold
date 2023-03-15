@@ -80,11 +80,8 @@ def __backtest_on_window(
         transformation_over_time.loc[split.model_index]
         for transformation_over_time in transformations_over_time
     ]
-    current_transformations = (
-        current_transformations
-        if mutate
-        else deepcopy_transformations(current_transformations)
-    )
+    if not mutate:
+        current_transformations = deepcopy_transformations(current_transformations)
 
     X_test = X.iloc[split.test_window_start : split.test_window_end]
     y_test = y.iloc[split.test_window_start : split.test_window_end]
@@ -98,7 +95,7 @@ def __backtest_on_window(
         y_test,
         sample_weights_test,
         current_transformations,
-        stage=Stage.update,
+        stage=Stage.update_online_only,
     )
 
     return trim_initial_nans_single(X_test)
