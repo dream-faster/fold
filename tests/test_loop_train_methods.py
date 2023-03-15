@@ -13,6 +13,9 @@ from fold.utils.tests import generate_sine_wave_data
 
 
 class TestNoOverlap(Model):
+    properties = Model.Properties()
+    name = "TestNoOverlap"
+
     def fit(
         self,
         X: pd.DataFrame,
@@ -42,11 +45,14 @@ class TestNoOverlap(Model):
         return X
 
 
-def get_transformations_to_test():
-    return [
+def get_transformations_to_test(mode):
+    t = [
         Test(fit_func=lambda x: x, transform_func=lambda x: x),
         TestNoOverlap(),
     ]
+    t[0].properties.mode = mode
+    t[1].properties.mode = mode
+    return t
 
 
 def test_loop_parallel_minibatch_call_times() -> None:
@@ -54,7 +60,7 @@ def test_loop_parallel_minibatch_call_times() -> None:
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=200)
     transformations_over_time = train(
-        get_transformations_to_test(),
+        get_transformations_to_test(mode=Transformation.Properties.Mode.minibatch),
         X,
         y,
         splitter,
@@ -97,11 +103,8 @@ def test_loop_parallel_online_call_times() -> None:
     X, y = generate_sine_wave_data()
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=200)
-    transformations = get_transformations_to_test()
-    transformations[0].properties.mode = Transformation.Properties.Mode.online
-
     transformations_over_time = train(
-        transformations,
+        get_transformations_to_test(mode=Transformation.Properties.Mode.online),
         X,
         y,
         splitter,
@@ -145,7 +148,7 @@ def test_loop_sequential_minibatch_call_times() -> None:
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=200)
     transformations_over_time = train(
-        get_transformations_to_test(),
+        get_transformations_to_test(mode=Transformation.Properties.Mode.minibatch),
         X,
         y,
         splitter,
@@ -158,28 +161,28 @@ def test_loop_sequential_minibatch_call_times() -> None:
     assert transformations_over_time[0].iloc[0].no_of_calls_transform_outofsample == 0
 
     assert transformations_over_time[0].iloc[1].no_of_calls_fit == 1
-    assert transformations_over_time[0].iloc[1].no_of_calls_update == 0
+    assert transformations_over_time[0].iloc[1].no_of_calls_update == 1
     assert transformations_over_time[0].iloc[1].no_of_calls_transform_insample == 1
     assert transformations_over_time[0].iloc[1].no_of_calls_transform_outofsample == 1
 
     assert transformations_over_time[0].iloc[2].no_of_calls_fit == 1
-    assert transformations_over_time[0].iloc[2].no_of_calls_update == 0
+    assert transformations_over_time[0].iloc[2].no_of_calls_update == 2
     assert transformations_over_time[0].iloc[2].no_of_calls_transform_insample == 1
     assert transformations_over_time[0].iloc[2].no_of_calls_transform_outofsample == 2
 
     _ = _backtest_and_mutate(transformations_over_time, X, y, splitter)
     assert transformations_over_time[0].iloc[0].no_of_calls_fit == 1
-    assert transformations_over_time[0].iloc[0].no_of_calls_update == 0
+    assert transformations_over_time[0].iloc[0].no_of_calls_update == 1
     assert transformations_over_time[0].iloc[0].no_of_calls_transform_insample == 1
     assert transformations_over_time[0].iloc[0].no_of_calls_transform_outofsample == 1
 
     assert transformations_over_time[0].iloc[1].no_of_calls_fit == 1
-    assert transformations_over_time[0].iloc[1].no_of_calls_update == 0
+    assert transformations_over_time[0].iloc[1].no_of_calls_update == 2
     assert transformations_over_time[0].iloc[1].no_of_calls_transform_insample == 1
     assert transformations_over_time[0].iloc[1].no_of_calls_transform_outofsample == 2
 
     assert transformations_over_time[0].iloc[2].no_of_calls_fit == 1
-    assert transformations_over_time[0].iloc[2].no_of_calls_update == 0
+    assert transformations_over_time[0].iloc[2].no_of_calls_update == 3
     assert transformations_over_time[0].iloc[2].no_of_calls_transform_insample == 1
     assert transformations_over_time[0].iloc[2].no_of_calls_transform_outofsample == 3
 
@@ -188,10 +191,8 @@ def test_loop_method_sequential_online_call_times() -> None:
     X, y = generate_sine_wave_data()
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=200)
-    transformations = get_transformations_to_test()
-    transformations[0].properties.mode = Transformation.Properties.Mode.online
     transformations_over_time = train(
-        transformations,
+        get_transformations_to_test(mode=Transformation.Properties.Mode.online),
         X,
         y,
         splitter,
@@ -215,16 +216,16 @@ def test_loop_method_sequential_online_call_times() -> None:
 
     _ = _backtest_and_mutate(transformations_over_time, X, y, splitter)
     assert transformations_over_time[0].iloc[0].no_of_calls_fit == 1
-    assert transformations_over_time[0].iloc[0].no_of_calls_update == 0
+    assert transformations_over_time[0].iloc[0].no_of_calls_update == 200
     assert transformations_over_time[0].iloc[0].no_of_calls_transform_insample == 1
-    assert transformations_over_time[0].iloc[0].no_of_calls_transform_outofsample == 1
+    assert transformations_over_time[0].iloc[0].no_of_calls_transform_outofsample == 200
 
     assert transformations_over_time[0].iloc[1].no_of_calls_fit == 1
-    assert transformations_over_time[0].iloc[1].no_of_calls_update == 0
+    assert transformations_over_time[0].iloc[1].no_of_calls_update == 400
     assert transformations_over_time[0].iloc[1].no_of_calls_transform_insample == 1
-    assert transformations_over_time[0].iloc[1].no_of_calls_transform_outofsample == 2
+    assert transformations_over_time[0].iloc[1].no_of_calls_transform_outofsample == 400
 
     assert transformations_over_time[0].iloc[2].no_of_calls_fit == 1
-    assert transformations_over_time[0].iloc[2].no_of_calls_update == 0
+    assert transformations_over_time[0].iloc[2].no_of_calls_update == 600
     assert transformations_over_time[0].iloc[2].no_of_calls_transform_insample == 1
-    assert transformations_over_time[0].iloc[2].no_of_calls_transform_outofsample == 3
+    assert transformations_over_time[0].iloc[2].no_of_calls_transform_outofsample == 600

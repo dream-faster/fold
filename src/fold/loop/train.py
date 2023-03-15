@@ -136,7 +136,16 @@ def train_for_deployment(
         y,
         sample_weights,
         transformations,
-        Fold(0, 0, 0, None, 0, None),
+        Fold(
+            order=0,
+            model_index=0,
+            train_window_start=0,
+            train_window_end=None,
+            update_window_start=0,
+            update_window_end=0,
+            test_window_start=0,
+            test_window_end=None,
+        ),
         True,
     )
     return transformations
