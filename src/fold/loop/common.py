@@ -108,10 +108,7 @@ def recursively_transform(
         if len(X) == 0:
             return pd.DataFrame()
 
-        # If the transformation needs to be "online", and:
-        # - we're training, and this is not the first split, or
-        # - we're not training (i.e. we're backtesting or inferring)
-        # enter the inner loop.
+        # If the transformation needs to be "online", and we're in the update stage, we need to run the inner loop.
         if (
             transformations.properties.mode == Transformation.Properties.Mode.online
             and stage == Stage.update
@@ -120,28 +117,15 @@ def recursively_transform(
             # We need to run the inference & fit loop on each row, sequentially (one-by-one).
             # This is so the transformation can update its parameters after each sample.
 
-            # Important: depending on whether we're training or not:
-            # - we call fit() _before_ transform(), at training time. The output are in-sample predictions.
-            # - we call fit() after transform(), at backtesting/inference time. The output are then out-of-sample predictions.
-            def transform_row_train(X_row, y_row, sample_weights_row):
-                transformations.update(X_row, y_row, sample_weights_row)
-                result = transformations.transform(X_row, in_sample=False)
-                return result
-
             def transform_row_inference_backtest(X_row, y_row, sample_weights_row):
                 result = transformations.transform(X_row, in_sample=False)
                 if y_row is not None:
                     transformations.update(X_row, y_row, sample_weights_row)
                 return result
 
-            transform_row_function = (
-                transform_row_train
-                if stage == Stage.inital_fit
-                else transform_row_inference_backtest
-            )
             return pd.concat(
                 [
-                    transform_row_function(
+                    transform_row_inference_backtest(
                         X.loc[index:index],
                         y_df.loc[index:index] if y is not None else None,
                         sample_weights.loc[index]
@@ -153,6 +137,7 @@ def recursively_transform(
                 axis="index",
             )
 
+        # or the model is "mini-batch" updating or we're in initial_fit stage
         else:
             X, y = trim_initial_nans(X, y)
             if stage == Stage.inital_fit:
