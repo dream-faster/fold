@@ -7,7 +7,7 @@ from .base import Transformation
 
 
 class AddLagsY(Transformation):
-    properties = Transformation.Properties()
+    properties = Transformation.Properties(mode=Transformation.Properties.Mode.online)
 
     def __init__(self, lags: Union[List[int], int]) -> None:
         self.lags = wrap_in_list(lags)

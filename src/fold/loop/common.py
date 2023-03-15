@@ -142,9 +142,12 @@ def recursively_transform(
             X, y = trim_initial_nans(X, y)
             if stage == Stage.inital_fit:
                 transformations.fit(X, y, sample_weights)
-            elif stage == Stage.update:
+            return_value = transformations.transform(
+                X, in_sample=stage == Stage.inital_fit
+            )
+            if stage == Stage.update:
                 transformations.update(X, y, sample_weights)
-            return transformations.transform(X, in_sample=stage == Stage.inital_fit)
+            return return_value
 
     else:
         raise ValueError(
