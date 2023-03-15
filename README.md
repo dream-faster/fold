@@ -29,6 +29,10 @@
 It is from the ground-up extensible and lightweight.
 
 
+<div>
+  <img src="https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/main_features.png" alt="Fold's main features" width="100%" >
+</div>
+
 <br/>
 
 ## Fold solves the following problems:
