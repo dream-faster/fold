@@ -9,6 +9,11 @@ from .base import Transformation
 class Test(Transformation):
     properties = Transformation.Properties()
     __test__ = False
+    no_of_calls_fit = 0
+    no_of_calls_update = 0
+    no_of_calls_transform_insample = 0
+    no_of_calls_transform_outofsample = 0
+    no_of_calls_inverse_transform = 0
 
     def __init__(
         self,
@@ -29,6 +34,7 @@ class Test(Transformation):
         y: Optional[pd.Series],
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
+        self.no_of_calls_fit += 1
         argspec = getfullargspec(self.fit_func)
         if len(argspec.args) == 1:
             self.fit_func(X)
@@ -48,6 +54,7 @@ class Test(Transformation):
         y: Optional[pd.Series],
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
+        self.no_of_calls_update += 1
         if self.update_func is None:
             return
         argspec = getfullargspec(self.update_func)
@@ -64,12 +71,17 @@ class Test(Transformation):
             )
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
+        if in_sample:
+            self.no_of_calls_transform_insample += 1
+        else:
+            self.no_of_calls_transform_outofsample += 1
         return_value = self.transform_func(X)
         if return_value is None:
             return X
         return return_value
 
     def inverse_transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        self.no_of_calls_inverse_transform += 1
         if self.inverse_transform_func is not None:
             self.inverse_transform_func(X)
         return X

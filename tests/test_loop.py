@@ -1,4 +1,5 @@
-from fold.loop import backtest, train
+from fold.loop import train
+from fold.loop.backtest import backtest
 from fold.loop.types import Backend, TrainMethod
 from fold.models.baseline import BaselineNaive, BaselineRegressorDeprecated
 from fold.splitters import ExpandingWindowSplitter
@@ -46,7 +47,7 @@ def test_loop_parallel():
     )
 
 
-def test_loop_with_continuous_transformation():
+def test_loop_with_online_transformation():
     run_loop(
         TrainMethod.parallel,
         Backend.no,

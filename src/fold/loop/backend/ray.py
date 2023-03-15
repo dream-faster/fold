@@ -13,6 +13,7 @@ def train_transformations(
     y: pd.Series,
     sample_weights: Optional[pd.Series],
     splits: List[Fold],
+    never_update: bool,
 ):
     import ray
 
@@ -20,5 +21,8 @@ def train_transformations(
     X = ray.put(X)
     y = ray.put(y)
     return ray.get(
-        [func.remote(X, y, sample_weights, transformations, split) for split in splits]
+        [
+            func.remote(X, y, sample_weights, transformations, split, never_update)
+            for split in splits
+        ]
     )

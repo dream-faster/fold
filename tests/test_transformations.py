@@ -114,3 +114,18 @@ def test_per_column_transform() -> None:
     transformations_over_time = train(transformations, X, y, splitter)
     pred = backtest(transformations_over_time, X, y, splitter)
     assert (np.isclose((X.loc[pred.index].sum(axis=1) + 4.0), pred.squeeze())).all()
+
+
+# def test_add_lags_y() -> None:
+#     X, y = generate_sine_wave_data()
+
+#     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
+#     transformations = [
+#         AddLagsY(lags=[1, 2, 3]),
+#     ]
+
+#     transformations_over_time = train(transformations, X, y, splitter)
+#     pred = backtest(transformations_over_time, X, y, splitter)
+#     assert pred["y_lag_1"].shift(1).equals(pred["y"])
+#     assert pred["y_lag_2"].shift(2).equals(pred["y"])
+#     assert pred["y_lag_3"].shift(3).equals(pred["y"])
