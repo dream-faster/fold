@@ -34,6 +34,7 @@ class Test(Transformation):
         y: Optional[pd.Series],
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
+        self.no_of_calls_fit += 1
         argspec = getfullargspec(self.fit_func)
         if len(argspec.args) == 1:
             self.fit_func(X)
@@ -46,7 +47,6 @@ class Test(Transformation):
                 "fit_func must accept between 1 and 3 arguments, "
                 f"but {len(argspec.args)} were given."
             )
-        self.no_of_calls_fit += 1
 
     def update(
         self,
@@ -54,6 +54,7 @@ class Test(Transformation):
         y: Optional[pd.Series],
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
+        self.no_of_calls_update += 1
         if self.update_func is None:
             return
         argspec = getfullargspec(self.update_func)
@@ -68,7 +69,6 @@ class Test(Transformation):
                 "update_func must accept between 1 and 3 arguments, "
                 f"but {len(argspec.args)} were given."
             )
-        self.no_of_calls_update += 1
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         if in_sample:

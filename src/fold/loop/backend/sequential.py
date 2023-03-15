@@ -14,7 +14,9 @@ def train_transformations(
     y: pd.Series,
     sample_weights: Optional[pd.Series],
     splits: List[Fold],
+    never_update: bool,
 ):
     return [
-        func(X, y, sample_weights, transformations, split) for split in tqdm(splits)
+        func(X, y, sample_weights, transformations, split, never_update)
+        for split in tqdm(splits)
     ]

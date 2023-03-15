@@ -30,13 +30,11 @@ class AddLagsY(Transformation):
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         self.past_y[y.index[0]] = y.squeeze()
-        self.past_y = pd.concat([self.past_y, y], axis="index")[: -self.max_lag].rename(
-            "y"
-        )
+        self.past_y = pd.concat([self.past_y, y], axis="index")[: -self.max_lag]
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         X = X.copy()
         y = self.y_in_sample if in_sample else self.past_y
         for lag in self.lags:
-            X[f"y_lag_{lag}"] = y.shift(lag)
+            X[f"y_lag_{lag}"] = y.shift(lag)[-len(X) :]
         return X

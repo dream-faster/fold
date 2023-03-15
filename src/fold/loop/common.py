@@ -114,7 +114,7 @@ def recursively_transform(
         # enter the inner loop.
         if (
             transformations.properties.mode == Transformation.Properties.Mode.online
-            and stage != Stage.infer
+            and stage == Stage.update
         ):
             y_df = y.to_frame() if y is not None else None
             # We need to run the inference & fit loop on each row, sequentially (one-by-one).

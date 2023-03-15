@@ -8,6 +8,8 @@ class Fold:
     model_index: int
     train_window_start: int
     train_window_end: int
+    update_window_start: int
+    update_window_end: int
     test_window_start: int
     test_window_end: int
 
@@ -56,6 +58,8 @@ class SlidingWindowSplitter(Splitter):
                 model_index=index,
                 train_window_start=index - window_size,
                 train_window_end=index - self.embargo,
+                update_window_start=0,  # SlidingWindowSplitter is incompatible with sequential updates
+                update_window_end=0,
                 test_window_start=index,
                 test_window_end=min(end, index + step),
             )
@@ -91,6 +95,9 @@ class ExpandingWindowSplitter(Splitter):
                 model_index=index,
                 train_window_start=self.start,
                 train_window_end=index - self.embargo,
+                update_window_start=index
+                - step,  # the length of the update window is the step size, see documentation
+                update_window_end=index - self.embargo,
                 test_window_start=index,
                 test_window_end=min(end, index + step),
             )
@@ -118,6 +125,8 @@ class SingleWindowSplitter(Splitter):
                 model_index=0,
                 train_window_start=0,
                 train_window_end=window_size - self.embargo,
+                update_window_start=0,
+                update_window_end=0,  # SingleWindowSplitter is incompatible with sequantial updating
                 test_window_start=window_size,
                 test_window_end=length,
             ),

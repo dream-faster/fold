@@ -55,6 +55,7 @@ def train(
             sample_weights,
             transformations,
             splits[0],
+            never_update=True,
         )
 
         rest_idx, rest_transformations = zip(
@@ -65,6 +66,7 @@ def train(
                 y,
                 sample_weights,
                 splits[1:],
+                False,
             )
         )
         processed_idx = [first_batch_index] + list(rest_idx)
@@ -82,6 +84,7 @@ def train(
                 y,
                 sample_weights,
                 splits,
+                True,
             )
         )
 
@@ -91,11 +94,7 @@ def train(
         processed_transformation = transformations
         for split in splits:
             processed_id, processed_transformation = process_transformations_window(
-                X,
-                y,
-                sample_weights,
-                processed_transformation,
-                split,
+                X, y, sample_weights, processed_transformation, split, False
             )
             processed_idx.append(processed_id)
             processed_transformations.append(processed_transformation)
@@ -138,6 +137,7 @@ def train_for_deployment(
         sample_weights,
         transformations,
         Fold(0, 0, 0, None, 0, None),
+        True,
     )
     return transformations
 
@@ -148,18 +148,27 @@ def process_transformations_window(
     sample_weights: Optional[pd.Series],
     transformations: List[Union[Transformation, Composite]],
     split: Fold,
+    never_update: bool,
 ) -> Tuple[int, List[Union[Transformation, Composite]]]:
-    X_train = X.iloc[split.train_window_start : split.train_window_end]
-    y_train = y.iloc[split.train_window_start : split.train_window_end]
+    # we need a different flag here, that allows us to
+    # reduce the size of the train window, to only get the fresh data
+    stage = Stage.inital_fit if (split.order == 0 or never_update) else Stage.update
+    window_start = (
+        split.update_window_start if stage == Stage.update else split.train_window_start
+    )
+    window_end = (
+        split.update_window_end if stage == Stage.update else split.train_window_end
+    )
+    X_train = X.iloc[window_start:window_end]
+    y_train = y.iloc[window_start:window_end]
 
     sample_weights_train = (
-        sample_weights.iloc[split.train_window_start : split.train_window_end]
+        sample_weights.iloc[window_start:window_end]
         if sample_weights is not None
         else None
     )
 
     transformations = deepcopy_transformations(transformations)
-    stage = Stage.inital_fit if split.order == 0 else Stage.update
     X_train = recursively_transform(
         X_train,
         y_train,
