@@ -28,14 +28,11 @@
 <div>
   <img src="docs/images/main_features.png" alt="Fold's main features" width="100%" >
 </div>
-
 **Fold** is a [Now|Fore]casting continuous evaluation/deployment library.
 It is from the ground-up extensible and lightweight.
 
-Fold's pipeline:
-
 <div>
-  <img src="docs/images/fold_pipeline.png" alt="How Fold fits into the Pipeline" width="100%" >
+  <img src="docs/images/third_party.png" alt="Fold's main features" width="100%" >
 </div>
 
 <br/>
