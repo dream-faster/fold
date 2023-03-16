@@ -57,6 +57,7 @@ docs = [
   "mkdocs-include-markdown-plugin",
   "mkdocs-autorefs"
 ]
+ray = ["ray"]
 
 [tool.hatch.envs.quality]
 dependencies = [
