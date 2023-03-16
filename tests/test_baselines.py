@@ -24,3 +24,23 @@ def test_baseline_naive_seasonal() -> None:
     assert (
         len(pred) == 600
     )  # should return non-NaN predictions for the all out-of-sample sets
+
+
+def test_univariate() -> None:
+    _, y = generate_sine_wave_data(1000)
+
+    def check_if_not_nan(x):
+        assert not x.isna().squeeze().any()
+
+    splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
+    transformations = [
+        BaselineNaiveSeasonal(seasonal_length=10),
+        Test(fit_func=check_if_not_nan, transform_func=lambda y: y),
+        OnlyPredictions(),
+    ]
+    transformations_over_time = train(transformations, None, y, splitter)
+    pred = backtest(transformations_over_time, None, y, splitter)
+    assert (pred.squeeze() == y.shift(10)[pred.index]).all()
+    assert (
+        len(pred) == 600
+    )  # should return non-NaN predictions for the all out-of-sample sets

@@ -12,7 +12,7 @@ from .types import Backend, Stage
 
 def backtest(
     transformations_over_time: TransformationsOverTime,
-    X: pd.DataFrame,
+    X: Optional[pd.DataFrame],
     y: pd.Series,
     splitter: Splitter,
     backend: Backend = Backend.no,
@@ -23,8 +23,10 @@ def backtest(
     Run backtest on a set of TransformationsOverTime and given data.
     Does not mutate or change the transformations in any way, aka you can backtest multiple times.
     """
-
-    assert type(X) is pd.DataFrame, "X must be a pandas DataFrame."
+    if X is None:
+        X = pd.DataFrame(0, index=y.index, columns=[0])
+    else:
+        assert type(X) is pd.DataFrame, "X must be a pandas DataFrame."
     assert type(y) is pd.Series, "y must be a pandas Series."
 
     results = [
