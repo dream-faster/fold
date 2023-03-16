@@ -1,26 +1,27 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from enum import Enum
-from typing import List, Optional
+from typing import Callable, List, Optional
 
 import pandas as pd
 
-from fold.models.base import Model
-from fold.utils.pandas import trim_initial_nans
-
+from ..models.base import Model
 from ..transformations.base import Composite, Transformation, Transformations
 from ..utils.checks import is_prediction
-
-
-class Stage(Enum):
-    inital_fit = "inital_fit"
-    update = "update"
-    update_online_only = "update_online_only"
-    infer = "infer"
-
-    def is_fit_or_update(self) -> bool:
-        return self in [Stage.inital_fit, Stage.update]
+from ..utils.pandas import trim_initial_nans
+from .backend.ray import (
+    process_primary_child_transformations as _process_primary_child_transformations_ray,
+)
+from .backend.ray import (
+    process_secondary_child_transformations as _process_secondary_child_transformations_ray,
+)
+from .backend.sequential import (
+    process_primary_child_transformations as _process_primary_child_transformations_sequential,
+)
+from .backend.sequential import (
+    process_secondary_child_transformations as _process_secondary_child_transformations_sequential,
+)
+from .types import Backend, Stage
 
 
 def recursively_transform(
@@ -29,6 +30,7 @@ def recursively_transform(
     sample_weights: Optional[pd.Series],
     transformations: Transformations,
     stage: Stage,
+    backend: Backend,
 ) -> pd.DataFrame:
     """
     The main function to transform (and fit or update) a pipline of transformations.
@@ -36,28 +38,27 @@ def recursively_transform(
     """
     if isinstance(transformations, List):
         for transformation in transformations:
-            X = recursively_transform(X, y, sample_weights, transformation, stage)
+            X = recursively_transform(
+                X, y, sample_weights, transformation, stage, backend
+            )
         return X
 
     elif isinstance(transformations, Composite):
         composite: Composite = transformations
         # TODO: here we have the potential to parallelize/distribute training of child transformations
         composite.before_fit(X)
-
-        results_primary = [
-            process_primary_child_transform(
-                composite,
-                index,
-                child_transformation,
-                X,
-                y,
-                sample_weights,
-                stage,
-            )
-            for index, child_transformation in enumerate(
-                composite.get_child_transformations_primary()
-            )
-        ]
+        primary_transformations = composite.get_child_transformations_primary()
+        process_func = __get_process_primary_function(backend)
+        results_primary = process_func(
+            process_primary_child_transform,
+            enumerate(primary_transformations),
+            composite,
+            X,
+            y,
+            sample_weights,
+            stage,
+            backend,
+        )
 
         if composite.properties.primary_only_single_pipeline:
             assert len(results_primary) == 1, ValueError(
@@ -74,19 +75,18 @@ def recursively_transform(
         if secondary_transformations is None:
             return composite.postprocess_result_primary(results_primary, y)
         else:
-            results_secondary = [
-                process_secondary_child_transform(
-                    composite,
-                    index,
-                    child_transformation,
-                    X,
-                    y,
-                    sample_weights,
-                    results_primary,
-                    stage,
-                )
-                for index, child_transformation in enumerate(secondary_transformations)
-            ]
+            process_func = __get_process_secondary_function(backend)
+            results_secondary = process_func(
+                process_secondary_child_transform,
+                enumerate(secondary_transformations),
+                composite,
+                X,
+                y,
+                sample_weights,
+                results_primary,
+                stage,
+                backend,
+            )
 
             if composite.properties.secondary_only_single_pipeline:
                 assert len(results_secondary) == 1, ValueError(
@@ -157,6 +157,20 @@ def recursively_transform(
         )
 
 
+def __get_process_primary_function(backend: Backend) -> Callable:
+    if backend == Backend.ray:
+        return _process_primary_child_transformations_ray
+    else:
+        return _process_primary_child_transformations_sequential
+
+
+def __get_process_secondary_function(backend: Backend) -> Callable:
+    if backend == Backend.ray:
+        return _process_secondary_child_transformations_ray
+    else:
+        return _process_secondary_child_transformations_sequential
+
+
 def process_primary_child_transform(
     composite: Composite,
     index: int,
@@ -165,9 +179,10 @@ def process_primary_child_transform(
     y: Optional[pd.Series],
     sample_weights: Optional[pd.Series],
     stage: Stage,
+    backend: Backend,
 ) -> pd.DataFrame:
     X, y = composite.preprocess_primary(X, index, y, fit=stage.is_fit_or_update())
-    return recursively_transform(X, y, sample_weights, child_transform, stage)
+    return recursively_transform(X, y, sample_weights, child_transform, stage, backend)
 
 
 def process_secondary_child_transform(
@@ -179,11 +194,12 @@ def process_secondary_child_transform(
     sample_weights: Optional[pd.Series],
     results_primary: List[pd.DataFrame],
     stage: Stage,
+    backend: Backend,
 ) -> pd.DataFrame:
     X, y = composite.preprocess_secondary(
         X, y, results_primary, index, fit=stage.is_fit_or_update()
     )
-    return recursively_transform(X, y, sample_weights, child_transform, stage)
+    return recursively_transform(X, y, sample_weights, child_transform, stage, backend)
 
 
 def deepcopy_transformations(transformation: Transformations) -> Transformations:

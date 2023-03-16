@@ -49,7 +49,7 @@ It is from the ground-up extensible and lightweight.
 **→ Don't need to choose between `xgboost`, `sktime`, `darts` or `statsforecast` models. We will or already support them all, either natively or through [`fold-models`](https://github.com/dream-faster/fold-models)**
 
 - Most time series ML libraries have little or no support distributed computing.<br/>
-**→ Fold was built with distributed computing in mind. Your pipeline is automatically parallelized wherever it can be (for some extent, the rest is coming really soon)**
+**→ Fold was built with distributed computing in mind. Your pipeline is automatically parallelized wherever it can be**
 
 - Using a single model, instead of ensembling, stacking or creating hybrid models.<br/>
 **→ Fold is _really_ flexible in what kind of pipelines you create and has native support for ensembling, stacking, hybrid models and meta-labeling. Why? [works really well for time series](https://linkinghub.elsevier.com/retrieve/pii/S0169207022001480).**
