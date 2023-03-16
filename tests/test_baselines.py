@@ -35,7 +35,7 @@ def test_univariate() -> None:
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     transformations = [
         BaselineNaiveSeasonal(seasonal_length=10),
-        Test(fit_func=check_if_not_nan, transform_func=lambda y: y),
+        Test(fit_func=check_if_not_nan, transform_func=lambda X: X),
         OnlyPredictions(),
     ]
     transformations_over_time = train(transformations, None, y, splitter)
