@@ -25,14 +25,17 @@ from .types import Backend, Stage, TrainMethod
 
 def train(
     transformations: BlocksOrWrappable,
-    X: pd.DataFrame,
+    X: Optional[pd.DataFrame],
     y: pd.Series,
     splitter: Splitter,
     sample_weights: Optional[pd.Series] = None,
     train_method: TrainMethod = TrainMethod.parallel,
     backend: Backend = Backend.no,
 ) -> TransformationsOverTime:
-    assert type(X) is pd.DataFrame, "X must be a pandas DataFrame."
+    if X is None:
+        X = pd.DataFrame(0, index=y.index, columns=[0])
+    else:
+        assert type(X) is pd.DataFrame, "X must be a pandas DataFrame."
     assert type(y) is pd.Series, "y must be a pandas Series."
     if type(splitter) is SlidingWindowSplitter:
         assert (
