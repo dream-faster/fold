@@ -8,6 +8,7 @@ from fold.transformations.common import get_concatenated_names
 
 from ..transformations.base import (
     Composite,
+    InvertibleTransformation,
     T,
     Transformations,
     TransformationsAlwaysList,
@@ -21,7 +22,9 @@ class TransformTarget(Composite):
     )
 
     def __init__(
-        self, X_transformations: Transformations, y_transformation: Transformations
+        self,
+        X_transformations: Transformations,
+        y_transformation: InvertibleTransformation,
     ) -> None:
         self.X_transformations = [X_transformations]
         self.y_transformation = y_transformation
@@ -62,7 +65,7 @@ class TransformTarget(Composite):
         secondary_results: List[pd.DataFrame],
         y: Optional[pd.Series],
     ) -> pd.DataFrame:
-        return secondary_results[0]
+        return self.y_transformation.inverse_transform(secondary_results[0])
 
     def get_child_transformations_primary(self) -> TransformationsAlwaysList:
         return [self.y_transformation]
