@@ -6,9 +6,11 @@ import pandas as pd
 
 def trim_initial_nans(X: pd.DataFrame, y: pd.Series) -> Tuple[pd.DataFrame, pd.Series]:
     # Optimize for speed, if the first value is not NaN, we can save all the subsequent computation
-    if not X.iloc[0].isna().any():
+    if not X.iloc[0].isna().any() and (y is None or not np.isnan(y.iloc[0])):
         return X, y
-    first_valid_index = get_first_valid_index(X)
+    first_valid_index_X = get_first_valid_index(X)
+    first_valid_index_y = get_first_valid_index(y)
+    first_valid_index = max(first_valid_index_X, first_valid_index_y)
     return X.iloc[first_valid_index:], y.iloc[first_valid_index:]
 
 

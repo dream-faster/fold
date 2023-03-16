@@ -48,13 +48,19 @@ def test_target_transformation_difference() -> None:
     X, y = generate_monotonous_data()
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
 
+    def assert_y_not_nan(X, y):
+        assert not np.isnan(y).any()
+
     transformations = [
         TransformTarget(
-            DummyRegressor(0.000999),
+            [
+                Test(fit_func=assert_y_not_nan, transform_func=lambda x: x),
+                DummyRegressor(0.000999),
+            ],
             y_transformation=Difference(),
         ),
     ]
 
     transformations_over_time = train(transformations, X, y, splitter)
     pred = backtest(transformations_over_time, X, y, splitter)
-    assert np.isclose(X.squeeze()[pred.index], pred.squeeze(), atol=0.01).all()
+    assert np.isclose(y[pred.index], pred.squeeze(), atol=0.0001).all()

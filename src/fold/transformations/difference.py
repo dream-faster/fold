@@ -26,7 +26,7 @@ class Difference(InvertibleTransformation):
         y: Optional[pd.Series],
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
-        if len(X) > self.lag:
+        if len(X) >= self.lag:
             self.last_rows_X = X.iloc[-self.lag : None]
         else:
             self.last_rows_X = pd.concat([self.last_rows_X, X], axis="index").iloc[
@@ -35,7 +35,7 @@ class Difference(InvertibleTransformation):
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         if in_sample:
-            return X.diff(self.lag).fillna(value=0.0, limit=self.lag)
+            return X.diff(self.lag)
         else:
             return (
                 pd.concat([self.last_rows_X, X], axis="index")
@@ -46,4 +46,4 @@ class Difference(InvertibleTransformation):
     def inverse_transform(self, X: pd.Series) -> pd.Series:
         # this is only called when used in `TransformTarget`, when we reconstruct the original
         # series from the diffed predictions.
-        return X.cumsum() + self.last_rows_X.iloc[-1].squeeze()
+        return X.cumsum() + self.last_rows_X.iloc[0].squeeze()
