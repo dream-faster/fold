@@ -57,7 +57,7 @@ class Transformation(ABC):
 
 class InvertibleTransformation(Transformation, ABC):
     @abstractmethod
-    def inverse_transform(self, X: pd.DataFrame) -> pd.DataFrame:
+    def inverse_transform(self, X: pd.Series) -> pd.Series:
         raise NotImplementedError
 
 

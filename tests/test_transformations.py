@@ -6,6 +6,7 @@ from fold.models.base import Model
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations import Identity, SelectColumns
 from fold.transformations.columns import PerColumnTransform, TransformColumn
+from fold.transformations.difference import Difference
 from fold.transformations.lags import AddLagsY
 from fold.utils.tests import generate_sine_wave_data
 
@@ -104,3 +105,16 @@ def test_add_lags_y_online():
     assert (pred["y_lag_1"] == y.shift(1)[pred.index]).all()
     assert (pred["y_lag_2"] == y.shift(2)[pred.index]).all()
     assert (pred["y_lag_3"] == y.shift(3)[pred.index]).all()
+
+
+def test_difference():
+    X, y = generate_sine_wave_data(resolution=600)
+    splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
+    transformations = Difference()
+    transformations_over_time = train(transformations, X, y, splitter)
+    pred = backtest(transformations_over_time, X, y, splitter)
+    assert np.isclose(
+        X.squeeze()[pred.index],
+        transformations_over_time[0].iloc[0].inverse_transform(pred).squeeze(),
+        atol=1e-3,
+    ).all()
