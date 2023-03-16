@@ -3,11 +3,11 @@ from typing import Optional
 import pandas as pd
 from tqdm import tqdm
 
-from fold.utils.pandas import trim_initial_nans_single
-
 from ..all_types import OutOfSamplePredictions, TransformationsOverTime
 from ..splitters import Fold, Splitter
-from .common import Stage, deepcopy_transformations, recursively_transform
+from ..utils.pandas import trim_initial_nans_single
+from .common import deepcopy_transformations, recursively_transform
+from .types import Backend, Stage
 
 
 def backtest(
@@ -15,6 +15,7 @@ def backtest(
     X: pd.DataFrame,
     y: pd.Series,
     splitter: Splitter,
+    backend: Backend = Backend.no,
     sample_weights: Optional[pd.Series] = None,
 ) -> OutOfSamplePredictions:
     """
@@ -33,6 +34,7 @@ def backtest(
             X,
             y,
             sample_weights,
+            backend,
             mutate=False,
         )
         for split in tqdm(splitter.splits(length=len(X)))
@@ -45,6 +47,7 @@ def _backtest_and_mutate(
     X: pd.DataFrame,
     y: pd.Series,
     splitter: Splitter,
+    backend: Backend = Backend.no,
     sample_weights: Optional[pd.Series] = None,
 ) -> OutOfSamplePredictions:
     """
@@ -61,6 +64,7 @@ def _backtest_and_mutate(
             X,
             y,
             sample_weights,
+            backend,
             mutate=True,
         )
         for split in tqdm(splitter.splits(length=len(X)))
@@ -74,6 +78,7 @@ def __backtest_on_window(
     X: pd.DataFrame,
     y: pd.Series,
     sample_weights: Optional[pd.Series],
+    backend: Backend,
     mutate: bool,
 ) -> pd.DataFrame:
     current_transformations = [
@@ -96,6 +101,7 @@ def __backtest_on_window(
         sample_weights_test,
         current_transformations,
         stage=Stage.update_online_only,
+        backend=backend,
     )
 
     return trim_initial_nans_single(X_test)

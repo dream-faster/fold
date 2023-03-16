@@ -35,3 +35,13 @@ class TrainMethod(Enum):
                 return strategy
         else:
             raise ValueError(f"Unknown TrainMethod: {value}")
+
+
+class Stage(Enum):
+    inital_fit = "inital_fit"
+    update = "update"
+    update_online_only = "update_online_only"
+    infer = "infer"
+
+    def is_fit_or_update(self) -> bool:
+        return self in [Stage.inital_fit, Stage.update]
