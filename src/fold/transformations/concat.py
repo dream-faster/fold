@@ -74,3 +74,32 @@ class Concat(Composite):
             transformations=clone_child_transformations(self.transformations),
             if_duplicate_keep=self.if_duplicate_keep,
         )
+
+
+class Pipeline(Composite):
+    properties = Composite.Properties(primary_only_single_pipeline=True)
+
+    def __init__(
+        self,
+        transformations: Transformations,
+    ) -> None:
+        self.transformations = transformations
+        self.name = "Pipeline-" + "-".join(
+            [
+                transformation.name if hasattr(transformation, "name") else ""
+                for transformation in transformations
+            ]
+        )
+
+    def postprocess_result_primary(
+        self, results: List[pd.DataFrame], y: Optional[pd.Series]
+    ) -> pd.DataFrame:
+        return results[0]
+
+    def get_child_transformations_primary(self) -> TransformationsAlwaysList:
+        return [self.transformations]
+
+    def clone(self, clone_child_transformations: Callable) -> Pipeline:
+        return Pipeline(
+            transformations=clone_child_transformations(self.transformations)
+        )
