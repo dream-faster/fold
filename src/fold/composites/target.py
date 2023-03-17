@@ -8,12 +8,11 @@ from fold.transformations.common import get_concatenated_names
 from fold.utils.checks import get_prediction_column_name
 
 from ..transformations.base import (
-    Composite,
     InvertibleTransformation,
-    T,
     Transformations,
     TransformationsAlwaysList,
 )
+from .base import Composite, T
 
 
 class TransformTarget(Composite):

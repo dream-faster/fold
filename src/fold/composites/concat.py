@@ -5,8 +5,11 @@ from typing import Callable, List, Optional, Union
 
 import pandas as pd
 
-from ..utils.list import flatten, has_intersection, keep_only_duplicates
-from .base import Composite, Transformations, TransformationsAlwaysList
+from ..transformations.base import Transformations, TransformationsAlwaysList
+from ..transformations.columns import SelectColumns
+from ..transformations.identity import Identity
+from ..utils.list import flatten, has_intersection, keep_only_duplicates, wrap_in_list
+from .base import Composite
 
 
 class ResolutionStrategy(Enum):
@@ -103,3 +106,15 @@ class Pipeline(Composite):
         return Pipeline(
             transformations=clone_child_transformations(self.transformations)
         )
+
+
+def TransformColumn(
+    columns: Union[List[str], str], transformation: Transformations
+) -> Composite:
+    return Concat(
+        [
+            [SelectColumns(columns)] + wrap_in_list(transformation),
+            Identity(),
+        ],
+        if_duplicate_keep=ResolutionStrategy.left,
+    )

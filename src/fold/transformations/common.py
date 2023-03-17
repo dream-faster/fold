@@ -1,7 +1,10 @@
-from typing import List
+from typing import TYPE_CHECKING, List
 
-from ..transformations.base import Composite, Transformation, Transformations
+from ..transformations.base import Transformation, Transformations
 from ..utils.list import flatten, wrap_in_list
+
+if TYPE_CHECKING:
+    from ..composites.base import Composite
 
 
 def get_flat_list_of_transformations(

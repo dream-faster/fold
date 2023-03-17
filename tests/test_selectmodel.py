@@ -1,8 +1,8 @@
 from sklearn.metrics import mean_squared_error
 
+from fold.composites.select import SelectBest
 from fold.loop import backtest, train
 from fold.models.dummy import DummyRegressor
-from fold.models.select import SelectBest
 from fold.splitters import ExpandingWindowSplitter
 from fold.utils.tests import generate_monotonous_data
 

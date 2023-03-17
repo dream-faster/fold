@@ -4,11 +4,11 @@ import pandas as pd
 from sklearn.base import BaseEstimator
 
 from ..all_types import TransformationsOverTime
+from ..composites.base import Composite
 from ..models.base import Model
 from ..splitters import Fold, SlidingWindowSplitter, Splitter
 from ..transformations.base import (
     BlocksOrWrappable,
-    Composite,
     DeployableTransformations,
     Transformation,
     Transformations,

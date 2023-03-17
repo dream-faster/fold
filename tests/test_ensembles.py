@@ -2,11 +2,11 @@ from random import randint
 
 import numpy as np
 
+from fold.composites.concat import Pipeline
+from fold.composites.ensemble import Ensemble, PerColumnEnsemble
 from fold.loop import backtest, train
 from fold.models.dummy import DummyClassifier
-from fold.models.ensemble import Ensemble, PerColumnEnsemble
 from fold.splitters import ExpandingWindowSplitter
-from fold.transformations.concat import Pipeline
 from fold.utils.tests import generate_all_zeros, generate_sine_wave_data
 
 

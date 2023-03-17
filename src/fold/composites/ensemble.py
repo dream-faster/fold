@@ -5,15 +5,11 @@ from typing import Callable, List, Optional, Tuple
 
 import pandas as pd
 
-from ..transformations.base import (
-    Composite,
-    T,
-    Transformations,
-    TransformationsAlwaysList,
-)
+from ..transformations.base import Transformations, TransformationsAlwaysList
 from ..transformations.common import get_concatenated_names
 from ..utils.checks import all_have_probabilities
 from ..utils.list import unique, wrap_in_list
+from .base import Composite, T
 
 
 class Ensemble(Composite):

@@ -3,7 +3,10 @@ from __future__ import annotations
 import enum
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Callable, List, Optional, Tuple, TypeVar, Union
+from typing import TYPE_CHECKING, Callable, List, Optional, Union
+
+if TYPE_CHECKING:
+    from ..composites.base import Composite
 
 import pandas as pd
 from sklearn.base import BaseEstimator
@@ -74,79 +77,16 @@ class FeatureSelector(Transformation):
     selected_features: List[str]
 
 
-T = TypeVar("T", Optional[pd.Series], pd.Series)
-
-
-class Composite(ABC):
-    @dataclass
-    class Properties:
-        primary_requires_predictions: bool = (
-            False  # Primary transformations need output from a model
-        )
-        primary_only_single_pipeline: bool = False  # Primary transformations should contain only a single pipeline, not multiple.
-        secondary_requires_predictions: bool = (
-            False  # Secondary transformations need output from a model
-        )
-        secondary_only_single_pipeline: bool = False  # Secondary transformations should contain only a single pipeline, not multiple.
-
-    properties: Properties
-
-    @abstractmethod
-    def get_child_transformations_primary(self) -> TransformationsAlwaysList:
-        raise NotImplementedError
-
-    def get_child_transformations_secondary(
-        self,
-    ) -> Optional[TransformationsAlwaysList]:
-        return None
-
-    @abstractmethod
-    def postprocess_result_primary(
-        self, results: List[pd.DataFrame], y: Optional[pd.Series]
-    ) -> pd.DataFrame:
-        raise NotImplementedError
-
-    def postprocess_result_secondary(
-        self,
-        primary_results: List[pd.DataFrame],
-        secondary_results: List[pd.DataFrame],
-        y: Optional[pd.Series],
-    ) -> pd.DataFrame:
-        raise NotImplementedError
-
-    @abstractmethod
-    def clone(self, clone_child_transformations: Callable) -> Composite:
-        raise NotImplementedError
-
-    def before_fit(self, X: pd.DataFrame) -> None:
-        pass
-
-    def preprocess_primary(
-        self, X: pd.DataFrame, index: int, y: T, fit: bool
-    ) -> Tuple[pd.DataFrame, T]:
-        return X, y
-
-    def preprocess_secondary(
-        self,
-        X: pd.DataFrame,
-        y: T,
-        results_primary: List[pd.DataFrame],
-        index: int,
-        fit: bool,
-    ) -> Tuple[pd.DataFrame, T]:
-        return X, y
-
-
 Transformations = Union[
     Transformation,
-    Composite,
-    List[Union[Transformation, Composite]],
+    "Composite",
+    List[Union[Transformation, "Composite"]],
 ]
 DeployableTransformations = Transformations
 
-TransformationsAlwaysList = List[Union[Transformation, Composite]]
+TransformationsAlwaysList = List[Union[Transformation, "Composite"]]
 
-BlockOrWrappable = Union[Transformation, Composite, Callable, BaseEstimator]
+BlockOrWrappable = Union[Transformation, "Composite", Callable, BaseEstimator]
 BlocksOrWrappable = Union[BlockOrWrappable, List[BlockOrWrappable]]
 
 

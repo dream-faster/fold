@@ -1,6 +1,6 @@
+from fold.composites.hybrid import Hybrid
 from fold.loop import backtest, train
 from fold.models.dummy import DummyRegressor
-from fold.models.hybrid import Hybrid
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.columns import OnlyPredictions
 from fold.utils.tests import generate_monotonous_data

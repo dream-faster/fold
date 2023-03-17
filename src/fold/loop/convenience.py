@@ -8,12 +8,8 @@ from fold.models.base import Model
 from fold.models.sklearn import SKLearnClassifier, SKLearnPipeline, SKLearnRegressor
 from fold.transformations.sklearn import SKLearnFeatureSelector, SKLearnTransformation
 
-from ..transformations.base import (
-    BlocksOrWrappable,
-    Composite,
-    Transformation,
-    Transformations,
-)
+from ..composites.base import Composite
+from ..transformations.base import BlocksOrWrappable, Transformation, Transformations
 from ..transformations.function import WrapFunction
 
 
