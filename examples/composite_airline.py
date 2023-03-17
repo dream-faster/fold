@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from fold_models.sktime import WrapSktime
 from krisi import score
-from sktime.datasets import load_airline
+from sktime.datasets import load_solar
 from sktime.forecasting.arima import AutoARIMA
 from sktime.forecasting.naive import NaiveForecaster
 
@@ -10,12 +10,14 @@ from fold.loop import backtest, train
 from fold.models.ensemble import Ensemble
 from fold.splitters import ExpandingWindowSplitter
 
-y = load_airline()
+# Load Data
+y = load_solar()
 
-
+# Create splitter
 splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=1)
 X = pd.DataFrame(np.zeros(len(y)), index=y.index)
 
+#
 transformations = [
     Ensemble(
         [
