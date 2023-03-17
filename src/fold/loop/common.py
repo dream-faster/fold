@@ -261,6 +261,12 @@ def _postprocess_X_y_into_memory(
     # don't update the transformation if we're in inference mode (y is None)
     if transformation.properties.memory is None or y is None:
         return
+
+    window_size = (
+        len(X)
+        if transformation.properties.memory == 0
+        else transformation.properties.memory
+    )
     if in_sample:
         # store the whole training X and y
         transformation._state = Transformation.State(
@@ -275,15 +281,11 @@ def _postprocess_X_y_into_memory(
         memory_y.name = y.name
         #  memory requirement is greater than the current batch, so we use the previous memory as well
         transformation._state = Transformation.State(
-            memory_X=pd.concat([memory_X, X], axis="index").iloc[
-                -transformation.properties.memory :
-            ],
-            memory_y=pd.concat([memory_y, y], axis="index").iloc[
-                -transformation.properties.memory :
-            ],
+            memory_X=pd.concat([memory_X, X], axis="index").iloc[-window_size:],
+            memory_y=pd.concat([memory_y, y], axis="index").iloc[-window_size:],
         )
     else:
         transformation._state = Transformation.State(
-            memory_X=X.iloc[-transformation.properties.memory :],
-            memory_y=y.iloc[-transformation.properties.memory :],
+            memory_X=X.iloc[-window_size:],
+            memory_y=y.iloc[-window_size:],
         )

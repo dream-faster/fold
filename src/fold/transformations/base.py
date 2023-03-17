@@ -21,7 +21,9 @@ class Transformation(ABC):
             online = "online"
 
         mode: Mode = Mode.minibatch
-        memory: Optional[int] = None
+        memory: Optional[
+            int
+        ] = None  # if not `None`, will inject past window with size of `memory` to update() & transformation(). if `0`, it'll remember all data.
         model_type: Optional[ModelType] = None
 
     @dataclass
