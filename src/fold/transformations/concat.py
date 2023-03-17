@@ -82,7 +82,6 @@ class Pipeline(Composite):
     def __init__(
         self,
         transformations: Transformations,
-        if_duplicate_keep: Union[ResolutionStrategy, str] = ResolutionStrategy.both,
     ) -> None:
         self.transformations = transformations
         self.name = "Pipeline-" + "-".join(
@@ -101,7 +100,7 @@ class Pipeline(Composite):
         return results[0]
 
     def get_child_transformations_primary(self) -> TransformationsAlwaysList:
-        return self.transformations
+        return [self.transformations]
 
     def clone(self, clone_child_transformations: Callable) -> Pipeline:
         return Pipeline(
