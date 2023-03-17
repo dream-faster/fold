@@ -1,6 +1,5 @@
 <!-- # Fold -->
-
-
+<!-- Formatted with Prettier -->
 
 <p align="center">
   <a href="https://dream-faster.github.io/fold/"><img alt="Docs" src="https://img.shields.io/github/actions/workflow/status/dream-faster/fold/docs.yaml?logo=readthedocs"></a>
@@ -9,88 +8,44 @@
   <a href="https://discord.gg/EKJQgfuBpE"><img alt="Discord Community" src="https://img.shields.io/badge/Discord-%235865F2.svg?logo=discord&logoColor=white"></a>
 </p>
 
-
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
   <a href="https://dream-faster.github.io/fold/">
     <img src="https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/logo.png" alt="Logo" width="90" >
   </a>
-<h3 align="center"> <i>(/fold/)</i></h3>
+<h3 align="center"><b>FOLD</b><br> <i>(/fold/)</i></h3>
   <p align="center">
-    Nowcasting with Continuous Evaluation and Composite Pipelines
-    <br />
+    <b>[Now|Fore]casting with Continuous Evaluation & Composite Pipelines</b><br> Build, train and deploy pipeines with your favourite modeling library as Fold is from the ground-up extensible and lightweight.
+    <br/>
     <a href="https://dream-faster.github.io/fold/"><strong>Explore the docs »</strong></a>
   </p>
 </div>
 <br />
 
-<div>
-  <img src="docs/images/main_features.png" alt="Fold's main features" width="100%" >
-</div>
-**Fold** is a [Now|Fore]casting continuous evaluation/deployment library.
-It is from the ground-up extensible and lightweight.
+<!-- INTRO -->
 
-<div>
-  <img src="docs/images/third_party.png" alt="Fold's main features" width="100%" >
-</div>
+![Fold's main features](docs/images/main_features.png)
+
+- Composite Pipelines with Continuous Validation at speed - [what does it mean for me?](#benefits-for-your-Forecasting)
+- Distributed computing - [why is this importan?](#benefits-for-your-Forecasting)
+- Update deployed models - [why is this importan?](#benefits-for-your-Forecasting)
 
 <br/>
 
-## Fold solves the following problems:
+![Fold works with many third party libraries](docs/images/third_party.png)
 
-- Accidentally using information that wouldn't otherwise be available at the time of training/evaluation (lookahead bias). <p style="color:orange;">**→ fold allows you to use any model, transformation or function in a pipeline, while making sure it'll never have access to "future data".**<p>
-
-- Time series Cross-validation is painful OR really slow with the existing libraries. People end up using a single train-test split when evaluating time series models, which is sub-optimal from many perspective. [Why use cross validation?](continuous-validation.md)<p style="color:orange;">
-**→ fold allows to simulate and evaluate your models like they would have performed, in reality/when deployed. Choose between sliding or expanding window.**</p>
-
-<details>
-  <summary>👇 Expand for further differentiators </summary>
-<br>
-
-
-
-
-
-- Model selection, Feature selection and Hyperparameter optimization is done on the whole time series, introducing major lookahead bias, creating unrealistic expectations of performance.<p style="color:orange;">
-**→ Allowing methodologically “correct” way to do Model selection, Feature selection and Hyperparameter Optimization (we call this the pre-validation step, done on the first window's train split).**</p>
-
-- Too many dependencies and an either you use-all-or-none-of-it approach<p style="color:orange;">
-**→ Fold has very few hard dependencies (only pandas, numpy, tqdm and scikit-learn), and has a fraction of the number of lines of code as other major Time series libraries.**</p>
-
-- Choosing between a time series library that only support certain kind of models.<p style="color:orange;">
-**→ Don't need to choose between `xgboost`, `sktime`, `darts` or `statsforecast` models. We will or already support them all, either natively or through [`fold-models`](https://github.com/dream-faster/fold-models)**</p>
-
-- Most time series ML libraries have little or no support distributed computing.<p style="color:orange;">
-**→ Fold was built with distributed computing in mind. Your pipeline is automatically parallelized wherever it can be (for some extent, the rest is coming really soon)**</p>
-
-- Using a single model, instead of ensembling, stacking or creating hybrid models.<p style="color:orange;">
-**→ Fold is _really_ flexible in what kind of pipelines you create and has native support for ensembling, stacking, hybrid models and meta-labeling. Why? [works really well for time series](https://linkinghub.elsevier.com/retrieve/pii/S0169207022001480).**</p>
-
-- Hard to deploy models, that can't be updated.<p style="color:orange;">
-**→ Don't stop at training models, with `fold`, you can deploy with a couple of lines of code, and also update your models as new data comes in. Don't assume your models will not get out-of-date.**</p>
-
-- We can't compare, ensemble or use online and mini-batch learning models together.<p style="color:orange;">
-**→ `fold` supports both types of models natively.**</p>
-</details>
-</li>
-
-
+<!-- GETTING STARTED -->
 <br/>
 
 ## Installation
 
+- Prerequisites: `python >= 3.7` and `pip`
 
-The project was entirely built in ``python``. 
-
-Prerequisites
-
-* ``python >= 3.7`` and ``pip``
-
-
-Install from git directly
-
-*  ``pip install https://github.com/dream-faster/fold/archive/main.zip ``
+- Install from git directly:
+  ```
+  pip install https://github.com/dream-faster/fold/archive/main.zip
+  ```
 
 <br/>
 
@@ -99,7 +54,7 @@ Install from git directly
 You can quickly train your chosen models and get predictions by running:
 
 ```python
-from fold.loop import trian, backtest
+from fold.loop import train, backtest
 X
 y = X.squeeze()
 
@@ -112,10 +67,17 @@ transformations_over_time = train(transformations, X, y, splitter)
 pred = backtest(transformations_over_time, X, y, splitter)
 ```
 
+<!-- GETTING STARTED -->
+## Examples and Walkthroughs
 
+| Link                                                                      | Dataset Type |
+| ------------------------------------------------------------------------- | ------------ |
+| [⚡️ Energy Demand Walkthrough](github.com/dream-faster/fold/examples/energy) | Energy       |
+| [🚋 Basic end-to-end walkthrough](github.com/dream-faster/fold/examples/energy)                                                                  | Energy         |
 
+<br/>
 
-## Features
+## Core Features
 
 - Supports both Regression and Classification tasks.
 - Online and Mini-batch learning.
@@ -126,27 +88,54 @@ pred = backtest(transformations_over_time, X, y, splitter)
 - Super easy syntax!
 - Probabilistic foreacasts (currently, for Classification, soon for Regression as well).
 - Hyperparemeter optimization / Model selection.
+  
 
+## Contribution
+
+Join our [Discord](https://discord.gg/EKJQgfuBpE) for live discussion!
+
+The project uses `isort` and `black` for formatting.
+
+Submit an issue or reach out to us on info at dream-faster.ai for any inquiries.
+
+## Benefits for your Forecasting
+
+## Fold solves the following problems:
+
+- Accidentally using information that wouldn't otherwise be available at the time of training/evaluation (lookahead bias). <p style="color:orange;">**→ fold allows you to use any model, transformation or function in a pipeline, while making sure it'll never have access to "future data".**<p>
+
+- Time series Cross-validation is painful OR really slow with the existing libraries. People end up using a single train-test split when evaluating time series models, which is sub-optimal from many perspective. [Why use cross validation?](continuous-validation.md)<p style="color:orange;">
+  **→ fold allows to simulate and evaluate your models like they would have performed, in reality/when deployed. Choose between sliding or expanding window.**</p>
+
+<details>
+  <summary>👇 Expand for further differentiators </summary>
+<br>
+
+- Model selection, Feature selection and Hyperparameter optimization is done on the whole time series, introducing major lookahead bias, creating unrealistic expectations of performance.<p style="color:orange;">
+  **→ Allowing methodologically “correct” way to do Model selection, Feature selection and Hyperparameter Optimization (we call this the pre-validation step, done on the first window's train split).**</p>
+
+- Too many dependencies and an either you use-all-or-none-of-it approach<p style="color:orange;">
+  **→ Fold has very few hard dependencies (only pandas, numpy, tqdm and scikit-learn), and has a fraction of the number of lines of code as other major Time series libraries.**</p>
+
+- Choosing between a time series library that only support certain kind of models.<p style="color:orange;">
+  **→ Don't need to choose between `xgboost`, `sktime`, `darts` or `statsforecast` models. We will or already support them all, either natively or through [`fold-models`](https://github.com/dream-faster/fold-models)**</p>
+
+- Most time series ML libraries have little or no support distributed computing.<p style="color:orange;">
+  **→ Fold was built with distributed computing in mind. Your pipeline is automatically parallelized wherever it can be (for some extent, the rest is coming really soon)**</p>
+
+- Using a single model, instead of ensembling, stacking or creating hybrid models.<p style="color:orange;">
+  **→ Fold is _really_ flexible in what kind of pipelines you create and has native support for ensembling, stacking, hybrid models and meta-labeling. Why? [works really well for time series](https://linkinghub.elsevier.com/retrieve/pii/S0169207022001480).**</p>
+
+- Hard to deploy models, that can't be updated.<p style="color:orange;">
+  **→ Don't stop at training models, with `fold`, you can deploy with a couple of lines of code, and also update your models as new data comes in. Don't assume your models will not get out-of-date.**</p>
+
+- We can't compare, ensemble or use online and mini-batch learning models together.<p style="color:orange;">
+**→ `fold` supports both types of models natively.**</p>
+</details>
+</li>
 
 ## Limitations
 
 - No intermittent time series support, very limited support for non-continuous time series.
 - No multi-step ahead forecasts. If you want to forecast multiple steps ahead, transform `y` to aggregate the change over the forecasting horizon you're interested in.
 - No hierarchical time series support.
-
-## Similar libraries
-- It's like [SKTime](https://github.com/sktime/sktime), but with more focus and 100x less code, designed with distributed computing in mind, effective cross-validation, and a substantial speed bump.
-- It's like [River](https://github.com/online-ml/river), but with support for effective cross validation, and mini-batch (with parallelization and therefore, a huge speed-bump), not just online learning.
-- It's like [Darts](https://github.com/unit8co/darts), but with support for hybrid models, effective cross validation, hybrid models, and a substantial speed bump.
-- It’s very much like [timemachines](https://github.com/microprediction/timemachines), but with an API that’s more accessible for the Python community and support for distributed computing.
-
-
-## Contribution
-
-Join our [Discord](https://discord.gg/EKJQgfuBpE) for live discussion!
-
-The project uses ``isort`` and ``black`` for formatting.
-
-Submit an issue or reach out to us on info at dream-faster.ai for any inquiries.
-
-
