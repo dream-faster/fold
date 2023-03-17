@@ -68,12 +68,13 @@ pred = backtest(transformations_over_time, X, y, splitter)
 ```
 
 <!-- GETTING STARTED -->
+
 ## Examples and Walkthroughs
 
-| Link                                                                      | Dataset Type |
-| ------------------------------------------------------------------------- | ------------ |
-| [⚡️ Energy Demand Walkthrough](github.com/dream-faster/fold/examples/energy) | Energy       |
-| [🚋 Basic end-to-end walkthrough](github.com/dream-faster/fold/examples/energy)                                                                  | Energy         |
+| Link                                                                            | Dataset Type |
+| ------------------------------------------------------------------------------- | ------------ |
+| [⚡️ Energy Demand Walkthrough](github.com/dream-faster/fold/examples/energy)   | Energy       |
+| [🚋 Basic end-to-end walkthrough](github.com/dream-faster/fold/examples/energy) | Energy       |
 
 <br/>
 
@@ -88,7 +89,12 @@ pred = backtest(transformations_over_time, X, y, splitter)
 - Super easy syntax!
 - Probabilistic foreacasts (currently, for Classification, soon for Regression as well).
 - Hyperparemeter optimization / Model selection.
-  
+
+## Dream Faster Forecasting Suite
+
+[![Dream Faster's Suite - Krisi](docs/images/dream_faster_suite_krisi.png)](https://github.com/dream-faster/krisi)
+[![Dream Faster's Suite - Fold](docs/images/dream_faster_suite_fold.png)](https://github.com/dream-faster/fold)
+[![Dream Faster's Suite - Fold/Models](docs/images/dream_faster_suite_fold_models.png)](https://github.com/dream-faster/fold-models)
 
 ## Contribution
 
