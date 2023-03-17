@@ -125,7 +125,7 @@ def recursively_transform(
                 result = transformations.transform(X_row, in_sample=False)
                 if y_row is not None:
                     transformations.update(X_row, y_row, sample_weights_row)
-                    _postprocess_X_y_into_memory(transformations, X_row, y_row)
+                    _postprocess_X_y_into_memory(transformations, X_row, y_row, False)
                 return result.loc[X_row.index]
 
             return pd.concat(
@@ -152,7 +152,12 @@ def recursively_transform(
             # 1. fit (if we're in the initial_fit stage)
             if stage == Stage.inital_fit:
                 transformations.fit(X_processed, y_processed, sample_weights)
-                _postprocess_X_y_into_memory(transformations, X_processed, y_processed)
+                _postprocess_X_y_into_memory(
+                    transformations,
+                    X_processed,
+                    y_processed,
+                    in_sample=stage == Stage.inital_fit,
+                )
             # 2. transform (inference)
             X_processed, y_processed = _preprocess_X_y_with_memory(
                 transformations, X, y
@@ -163,7 +168,7 @@ def recursively_transform(
             # 3. update (if we're in the update stage)
             if stage == Stage.update:
                 transformations.update(X_processed, y_processed, sample_weights)
-                _postprocess_X_y_into_memory(transformations, X, y)
+                _postprocess_X_y_into_memory(transformations, X, y, False)
             return return_value.loc[X.index]
 
     else:
@@ -242,18 +247,22 @@ def _preprocess_X_y_with_memory(
 
 
 def _postprocess_X_y_into_memory(
-    transformation: Transformation, X: pd.DataFrame, y: Optional[pd.Series]
+    transformation: Transformation,
+    X: pd.DataFrame,
+    y: Optional[pd.Series],
+    in_sample: bool,
 ) -> None:
     # don't update the transformation if we're in inference mode (y is None)
     if transformation.properties.memory is None or y is None:
         return
-    if transformation.properties.memory > len(X):
+    if in_sample:
+        # store the whole training X and y
         transformation._state = Transformation.State(
-            memory_X=X.iloc[-transformation.properties.memory :],
-            memory_y=y.iloc[-transformation.properties.memory :],
+            memory_X=X,
+            memory_y=y,
         )
-
-    else:
+    elif transformation.properties.memory < len(X):
+        #  memory requirement is greater than the current batch, so we use the previous memory as well
         transformation._state = Transformation.State(
             memory_X=pd.concat([transformation._state.memory_X, X], axis="index").iloc[
                 -transformation.properties.memory :
@@ -261,4 +270,9 @@ def _postprocess_X_y_into_memory(
             memory_y=pd.concat([transformation._state.memory_y, y], axis="index").iloc[
                 -transformation.properties.memory :
             ],
+        )
+    else:
+        transformation._state = Transformation.State(
+            memory_X=X.iloc[-transformation.properties.memory :],
+            memory_y=y.iloc[-transformation.properties.memory :],
         )

@@ -114,16 +114,12 @@ class BaselineRegressorDeprecated(Model):
 
 class BaselineNaive(Model):
     name = "BaselineNaive"
-    properties = Model.Properties(mode=Transformation.Properties.Mode.online)
-
-    insample_y = None
-    last_y = None
+    properties = Model.Properties(mode=Transformation.Properties.Mode.online, memory=1)
 
     def fit(
         self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
     ) -> None:
-        self.insample_y = y.shift(1)
-        self.last_y = y.iloc[-1]
+        pass
 
     def update(
         self,
@@ -131,14 +127,14 @@ class BaselineNaive(Model):
         y: Optional[pd.Series],
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
-        assert len(y) == 1
-        self.last_y = y.squeeze()
+        pass
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
-        return pd.Series(self.last_y, index=X.index)
+        # it's an online transformation, so len(X) will be always 1,
+        return pd.Series(X.squeeze(), index=X.index)
 
     def predict_in_sample(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
-        return self.insample_y
+        return self._state.memory_y.shift(1)
 
 
 class BaselineNaiveSeasonal(Model):
