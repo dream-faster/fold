@@ -1,144 +1,29 @@
 from __future__ import annotations
 
-from enum import Enum
 from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
 
-from ..transformations.base import Transformation
+from ..transformations.base import Transformation, fit_noop
 from .base import Model
-
-
-class BaselineRegressorDeprecated(Model):
-    class Strategy(Enum):
-        sliding_mean = "sliding_mean"
-        expanding_mean = "expanding_mean"
-        seasonal_mean = "seasonal_mean"
-        naive = "naive"
-        seasonal_naive = "seasonal_naive"
-        expanding_fold = "expanding_fold"
-        sliding_fold = "sliding_fold"
-
-        @staticmethod
-        def from_str(
-            value: Union[str, BaselineRegressorDeprecated.Strategy]
-        ) -> BaselineRegressorDeprecated.Strategy:
-            if isinstance(value, BaselineRegressorDeprecated.Strategy):
-                return value
-            for strategy in BaselineRegressorDeprecated.Strategy:
-                if strategy.value == value:
-                    return strategy
-            else:
-                raise ValueError(f"Unknown Strategy: {value}")
-
-    properties = Transformation.Properties()
-
-    def __init__(
-        self,
-        strategy: Union[BaselineRegressorDeprecated.Strategy, str],
-        window_size: int = 100,
-        seasonal_length: Optional[int] = None,
-    ) -> None:
-        self.strategy = BaselineRegressorDeprecated.Strategy.from_str(strategy)
-        self.window_size = window_size
-        self.seasonal_length = seasonal_length
-        self.name = f"BaselineModel-{self.strategy.value}"
-
-    def fit(
-        self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
-    ) -> None:
-        self.fitted_X = X
-
-    def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
-        def wrap_into_series(x: np.ndarray) -> pd.Series:
-            return pd.Series(x, index=X.index)
-
-        if self.strategy == BaselineRegressorDeprecated.Strategy.sliding_mean:
-            return wrap_into_series(
-                [
-                    np.mean(X.values[max(i - self.window_size, 0) : i + 1])
-                    for i in range(len(X))
-                ]
-            )
-        elif self.strategy == BaselineRegressorDeprecated.Strategy.expanding_mean:
-            return wrap_into_series([np.mean(X.values[: i + 1]) for i in range(len(X))])
-        elif self.strategy == BaselineRegressorDeprecated.Strategy.naive:
-            return X
-        elif self.strategy == BaselineRegressorDeprecated.Strategy.sliding_fold:
-            return wrap_into_series(
-                [
-                    calculate_fold_predictions(
-                        X.values[max(i - self.window_size, 0) : i + 1]
-                    )
-                    for i in range(len(X))
-                ]
-            )
-        elif self.strategy == BaselineRegressorDeprecated.Strategy.expanding_fold:
-            return wrap_into_series(
-                [calculate_fold_predictions(X.values[: i + 1]) for i in len(X)]
-            )
-        elif self.strategy == BaselineRegressorDeprecated.Strategy.seasonal_naive:
-            if self.seasonal_length is None:
-                raise ValueError(
-                    "Seasonal length must be specified for seasonal naive strategy"
-                )
-            seasonally_shifted = [
-                X.values[i - self.seasonal_length] for i in range(len(X))
-            ]
-            # but prevent lookahead bias
-            seasonally_shifted[: self.seasonal_length] = X.values[
-                : self.seasonal_length
-            ]
-            return wrap_into_series(seasonally_shifted)
-        elif self.strategy == BaselineRegressorDeprecated.Strategy.seasonal_mean:
-            if self.seasonal_length is None:
-                raise ValueError(
-                    "Seasonal length must be specified for seasonal naive strategy"
-                )
-            seasonal_means = [
-                np.nanmean(X.shift(season).values[:: self.seasonal_length])
-                for season in range(self.seasonal_length)
-            ]
-
-            return wrap_into_series(
-                [seasonal_means[i % self.seasonal_length] for i in range(len(X))]
-            )
-        else:
-            raise ValueError(f"Strategy {self.strategy} not implemented")
-
-    predict_in_sample = predict
-
-    update = fit
 
 
 class BaselineNaive(Model):
     name = "BaselineNaive"
-    properties = Model.Properties(mode=Transformation.Properties.Mode.online)
-
-    insample_y = None
-    last_y = None
-
-    def fit(
-        self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
-    ) -> None:
-        self.insample_y = y.shift(1)
-        self.last_y = y.iloc[-1]
-
-    def update(
-        self,
-        X: pd.DataFrame,
-        y: Optional[pd.Series],
-        sample_weights: Optional[pd.Series] = None,
-    ) -> None:
-        assert len(y) == 1
-        self.last_y = y.squeeze()
+    properties = Model.Properties(mode=Transformation.Properties.Mode.online, memory=1)
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
-        return pd.Series(self.last_y, index=X.index)
+        # it's an online transformation, so len(X) will be always 1,
+        return pd.Series(
+            self._state.memory_y.iloc[-1].squeeze(), index=X.index[-1:None]
+        )
 
     def predict_in_sample(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
-        return self.insample_y
+        return self._state.memory_y.shift(1)
+
+    fit = fit_noop
+    update = fit
 
 
 class BaselineNaiveSeasonal(Model):

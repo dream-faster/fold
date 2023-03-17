@@ -14,7 +14,7 @@ from ..transformations.base import (
     Transformation,
     Transformations,
 )
-from ..transformations.function import FunctionTransformation
+from ..transformations.function import WrapFunction
 
 
 def replace_transformation_if_not_fold_native(
@@ -27,7 +27,7 @@ def replace_transformation_if_not_fold_native(
     elif isinstance(transformation, ClassifierMixin):
         return SKLearnClassifier(transformation)
     elif isinstance(transformation, Callable):
-        return FunctionTransformation(transformation)
+        return WrapFunction(transformation, None)
     elif isinstance(transformation, SelectorMixin):
         return SKLearnFeatureSelector(transformation)
     elif isinstance(transformation, TransformerMixin):

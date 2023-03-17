@@ -28,33 +28,21 @@ class DontUpdate(Transformation):
 
 class InjectPastDataAtInference(Transformation):
     """
-    This transformation is used to inject all past `X` into the wrapped transformation, but only at inference time.
+    This transformation is used to inject `window_size` (if None, all) of past `X` into the wrapped transformation, but only at inference time.
     """
 
-    properties = Transformation.Properties()
-    past_X: Optional[pd.DataFrame] = None
-
-    def __init__(self, transformation: Transformation) -> None:
+    def __init__(
+        self, transformation: Transformation, window_size: Optional[int]
+    ) -> None:
         self.transformation = transformation
         self.name = f"InjectPastDataAtInference-{transformation.name}"
-        self.properties.mode = transformation.properties.mode
-
-    def fit(
-        self,
-        X: pd.DataFrame,
-        y: Optional[pd.Series],
-        sample_weights: Optional[pd.Series] = None,
-    ) -> None:
-        self.transformation.fit(X, y, sample_weights)
-        self.past_X = (
-            pd.concat([self.past_X, X], axis="index") if self.past_X is not None else X
+        self.properties = Transformation.Properties(
+            memory=0 if window_size is None else window_size,
+            mode=transformation.properties.mode,
         )
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
-        complete_X = (
-            pd.concat([self.past_X, X], axis="index") if self.past_X is not None else X
-        )
-        result = self.transformation.transform(complete_X, in_sample)
-        return result.loc[X.index]
+        return self.transformation.transform(X, in_sample)
 
+    fit = fit_noop
     update = fit

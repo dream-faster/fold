@@ -7,7 +7,7 @@ from .columns import (
     TransformColumn,
 )
 from .concat import Concat
-from .function import FunctionTransformation
+from .function import WrapFunction
 from .identity import Identity
 
 # from .lags import AddLagsY

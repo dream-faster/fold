@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Callable, List, Optional
+from typing import Callable, List, Optional, Tuple
 
 import pandas as pd
 
@@ -114,21 +114,30 @@ def recursively_transform(
             transformations.properties.mode == Transformation.Properties.Mode.online
             and stage in [Stage.update, Stage.update_online_only]
         ):
-            y_df = y.to_frame() if y is not None else None
             # We need to run the inference & fit loop on each row, sequentially (one-by-one).
             # This is so the transformation can update its parameters after each sample.
 
-            def transform_row_inference_backtest(X_row, y_row, sample_weights_row):
-                result = transformations.transform(X_row, in_sample=False)
+            def transform_row(
+                X_row: pd.DataFrame, y_row: Optional[pd.Series], sample_weights_row
+            ):
+                X_row_with_memory, y_row_with_memory = _preprocess_X_y_with_memory(
+                    transformations, X_row, y_row
+                )
+                result = transformations.transform(X_row_with_memory, in_sample=False)
                 if y_row is not None:
-                    transformations.update(X_row, y_row, sample_weights_row)
-                return result
+                    transformations.update(
+                        X_row_with_memory, y_row_with_memory, sample_weights_row
+                    )
+                    _postprocess_X_y_into_memory(
+                        transformations, X_row_with_memory, y_row_with_memory, False
+                    )
+                return result.loc[X_row.index]
 
             return pd.concat(
                 [
-                    transform_row_inference_backtest(
+                    transform_row(
                         X.loc[index:index],
-                        y_df.loc[index:index] if y is not None else None,
+                        y.loc[index:index] if y is not None else None,
                         sample_weights.loc[index]
                         if sample_weights is not None
                         else None,
@@ -141,14 +150,31 @@ def recursively_transform(
         # or the model is "mini-batch" updating or we're in initial_fit stage
         else:
             X, y = trim_initial_nans(X, y)
-            if stage == Stage.inital_fit:
-                transformations.fit(X, y, sample_weights)
-            return_value = transformations.transform(
-                X, in_sample=stage == Stage.inital_fit
+            X_with_memory, y_with_memory = _preprocess_X_y_with_memory(
+                transformations, X, y
             )
+            # The order is:
+            # 1. fit (if we're in the initial_fit stage)
+            if stage == Stage.inital_fit:
+                transformations.fit(X_with_memory, y_with_memory, sample_weights)
+                _postprocess_X_y_into_memory(
+                    transformations,
+                    X_with_memory,
+                    y_with_memory,
+                    in_sample=stage == Stage.inital_fit,
+                )
+            # 2. transform (inference)
+            X_with_memory, y_with_memory = _preprocess_X_y_with_memory(
+                transformations, X, y
+            )
+            return_value = transformations.transform(
+                X_with_memory, in_sample=stage == Stage.inital_fit
+            )
+            # 3. update (if we're in the update stage)
             if stage == Stage.update:
-                transformations.update(X, y, sample_weights)
-            return return_value
+                transformations.update(X_with_memory, y_with_memory, sample_weights)
+                _postprocess_X_y_into_memory(transformations, X, y, False)
+            return return_value.loc[X.index]
 
     else:
         raise ValueError(
@@ -209,3 +235,57 @@ def deepcopy_transformations(transformation: Transformations) -> Transformations
         return transformation.clone(deepcopy_transformations)
     else:
         return deepcopy(transformation)
+
+
+def _preprocess_X_y_with_memory(
+    transformation: Transformation, X: pd.DataFrame, y: Optional[pd.Series]
+) -> Tuple[pd.DataFrame, pd.Series]:
+    if transformation._state is None or transformation.properties.memory is None:
+        return X, y
+    memory_X, memory_y = transformation._state.memory_X, transformation._state.memory_y
+    if y is None:
+        return pd.concat([memory_X, X], axis="index"), y
+    else:
+        memory_y.name = y.name
+        return pd.concat([memory_X, X], axis="index"), pd.concat(
+            [memory_y, y], axis="index"
+        )
+
+
+def _postprocess_X_y_into_memory(
+    transformation: Transformation,
+    X: pd.DataFrame,
+    y: Optional[pd.Series],
+    in_sample: bool,
+) -> None:
+    # don't update the transformation if we're in inference mode (y is None)
+    if transformation.properties.memory is None or y is None:
+        return
+
+    window_size = (
+        len(X)
+        if transformation.properties.memory == 0
+        else transformation.properties.memory
+    )
+    if in_sample:
+        # store the whole training X and y
+        transformation._state = Transformation.State(
+            memory_X=X,
+            memory_y=y,
+        )
+    elif transformation.properties.memory < len(X):
+        memory_X, memory_y = (
+            transformation._state.memory_X,
+            transformation._state.memory_y,
+        )
+        memory_y.name = y.name
+        #  memory requirement is greater than the current batch, so we use the previous memory as well
+        transformation._state = Transformation.State(
+            memory_X=pd.concat([memory_X, X], axis="index").iloc[-window_size:],
+            memory_y=pd.concat([memory_y, y], axis="index").iloc[-window_size:],
+        )
+    else:
+        transformation._state = Transformation.State(
+            memory_X=X.iloc[-window_size:],
+            memory_y=y.iloc[-window_size:],
+        )
