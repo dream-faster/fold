@@ -16,9 +16,15 @@ class AddLagsY(Transformation):
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         X = X.copy()
-        for lag in self.lags:
-            X[f"y_lag_{lag}"] = self._state.memory_y.shift(lag)[-len(X) :]
-        return X
+        if in_sample:
+            for lag in self.lags:
+                X[f"y_lag_{lag}"] = self._state.memory_y.shift(lag)[-len(X) :]
+            return X
+        else:
+            past_y = self._state.memory_y.reindex(X.index)
+            for lag in self.lags:
+                X[f"y_lag_{lag}"] = past_y.shift(lag)[-len(X) :]
+            return X
 
     fit = fit_noop
     update = fit_noop
