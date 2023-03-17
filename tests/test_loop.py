@@ -30,7 +30,8 @@ def test_loop_sequential():
         InjectPastDataAtInference(
             BaselineRegressorDeprecated(
                 strategy=BaselineRegressorDeprecated.Strategy.naive
-            )
+            ),
+            window_size=None,
         ),
     )
 
@@ -42,7 +43,8 @@ def test_loop_parallel():
         InjectPastDataAtInference(
             BaselineRegressorDeprecated(
                 strategy=BaselineRegressorDeprecated.Strategy.naive
-            )
+            ),
+            window_size=None,
         ),
     )
 
