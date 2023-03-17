@@ -4,6 +4,7 @@ import pandas as pd
 
 from ..all_types import OutOfSamplePredictions
 from ..transformations.base import DeployableTransformations
+from .checks import check_types
 from .common import deepcopy_transformations, recursively_transform
 from .types import Backend, Stage
 
@@ -39,11 +40,7 @@ def update(
     Update a set of Transformations with new data.
     Returns a new set of Transformations, does not mutate the original.
     """
-    if X is None:
-        X = pd.DataFrame(0, index=y.index, columns=[0])
-    else:
-        assert type(X) is pd.DataFrame, "X must be a pandas DataFrame."
-    assert type(y) is pd.Series, "y must be a pandas Series."
+    X, y = check_types(X, y)
 
     transformations = deepcopy_transformations(transformations)
     _ = recursively_transform(
