@@ -120,16 +120,16 @@ def recursively_transform(
             def transform_row(
                 X_row: pd.DataFrame, y_row: Optional[pd.Series], sample_weights_row
             ):
-                X_row_processed, y_row_processed = _preprocess_X_y_with_memory(
+                X_row_with_memory, y_row_with_memory = _preprocess_X_y_with_memory(
                     transformations, X_row, y_row
                 )
-                result = transformations.transform(X_row_processed, in_sample=False)
+                result = transformations.transform(X_row_with_memory, in_sample=False)
                 if y_row is not None:
                     transformations.update(
-                        X_row_processed, y_row_processed, sample_weights_row
+                        X_row_with_memory, y_row_with_memory, sample_weights_row
                     )
                     _postprocess_X_y_into_memory(
-                        transformations, X_row_processed, y_row_processed, False
+                        transformations, X_row_with_memory, y_row_with_memory, False
                     )
                 return result.loc[X_row.index]
 
@@ -150,29 +150,29 @@ def recursively_transform(
         # or the model is "mini-batch" updating or we're in initial_fit stage
         else:
             X, y = trim_initial_nans(X, y)
-            X_processed, y_processed = _preprocess_X_y_with_memory(
+            X_with_memory, y_with_memory = _preprocess_X_y_with_memory(
                 transformations, X, y
             )
             # The order is:
             # 1. fit (if we're in the initial_fit stage)
             if stage == Stage.inital_fit:
-                transformations.fit(X_processed, y_processed, sample_weights)
+                transformations.fit(X_with_memory, y_with_memory, sample_weights)
                 _postprocess_X_y_into_memory(
                     transformations,
-                    X_processed,
-                    y_processed,
+                    X_with_memory,
+                    y_with_memory,
                     in_sample=stage == Stage.inital_fit,
                 )
             # 2. transform (inference)
-            X_processed, y_processed = _preprocess_X_y_with_memory(
+            X_with_memory, y_with_memory = _preprocess_X_y_with_memory(
                 transformations, X, y
             )
             return_value = transformations.transform(
-                X_processed, in_sample=stage == Stage.inital_fit
+                X_with_memory, in_sample=stage == Stage.inital_fit
             )
             # 3. update (if we're in the update stage)
             if stage == Stage.update:
-                transformations.update(X_processed, y_processed, sample_weights)
+                transformations.update(X_with_memory, y_with_memory, sample_weights)
                 _postprocess_X_y_into_memory(transformations, X, y, False)
             return return_value.loc[X.index]
 
