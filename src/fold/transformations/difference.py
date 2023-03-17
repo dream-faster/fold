@@ -44,6 +44,4 @@ class Difference(InvertibleTransformation):
             )
 
     def inverse_transform(self, X: pd.Series) -> pd.Series:
-        # this is only called when used in `TransformTarget`, when we reconstruct the original
-        # series from the diffed predictions.
         return X.cumsum() + self.last_rows_X.iloc[0].squeeze()
