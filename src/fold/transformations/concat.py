@@ -94,9 +94,6 @@ class Pipeline(Composite):
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
     ) -> pd.DataFrame:
-        assert (
-            len(results) == 1
-        ), "Pipeline should receive a sequence of models that result in a single output."
         return results[0]
 
     def get_child_transformations_primary(self) -> TransformationsAlwaysList:
