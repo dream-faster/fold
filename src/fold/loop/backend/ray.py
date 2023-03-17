@@ -2,8 +2,9 @@ from typing import Callable, List, Optional
 
 import pandas as pd
 
+from ...composites.base import Composite
 from ...splitters import Fold
-from ...transformations.base import Composite, Transformations
+from ...transformations.base import Transformations
 from ..types import Backend, Stage
 
 

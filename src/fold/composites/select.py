@@ -4,8 +4,9 @@ from typing import Callable, List, Optional
 
 import pandas as pd
 
-from ..transformations.base import Composite, Transformations, TransformationsAlwaysList
+from ..transformations.base import Transformations, TransformationsAlwaysList
 from ..transformations.common import get_concatenated_names
+from .base import Composite
 
 
 class SelectBest(Composite):

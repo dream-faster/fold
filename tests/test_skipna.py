@@ -1,8 +1,8 @@
 import pandas as pd
 
+from fold.composites.columns import SkipNA
 from fold.loop import backtest, train
 from fold.splitters import ExpandingWindowSplitter
-from fold.transformations.columns import SkipNA
 from fold.utils.tests import generate_all_zeros
 
 

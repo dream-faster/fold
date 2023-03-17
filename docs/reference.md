@@ -3,20 +3,24 @@
 ::: fold.loop.infer
 
 ::: fold.models.baseline
-::: fold.models.ensemble
-::: fold.models.metalabeling
 ::: fold.models.random
 ::: fold.models.sklearn
+
+::: fold.composites.ensemble
+::: fold.composites.metalabeling
+::: fold.composites.columns
+::: fold.composites.concat
+::: fold.composites.hybrid
+::: fold.composites.sample
+::: fold.composites.select
+::: fold.composites.target
 
 ::: fold.transformations.base
 ::: fold.transformations.breakpoint
 ::: fold.transformations.columns
-::: fold.transformations.concat
 ::: fold.transformations.function
 ::: fold.transformations.identity
-::: fold.transformations.sample
 ::: fold.transformations.sklearn
-::: fold.transformations.target
 ::: fold.transformations.test
 ::: fold.transformations.update
 

@@ -5,14 +5,10 @@ from sklearn.feature_selection import SelectKBest, VarianceThreshold, f_regressi
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
+from fold.composites.concat import TransformColumn
 from fold.loop import backtest, train
 from fold.splitters import ExpandingWindowSplitter
-from fold.transformations.columns import (
-    OnlyPredictions,
-    RenameColumns,
-    SelectColumns,
-    TransformColumn,
-)
+from fold.transformations.columns import OnlyPredictions, RenameColumns, SelectColumns
 from fold.utils.tests import generate_all_zeros, generate_sine_wave_data
 
 

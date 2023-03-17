@@ -1,6 +1,7 @@
 from typing import List
 
-from ..transformations.base import Composite, Transformation, Transformations
+from ..composites.base import Composite
+from ..transformations.base import Transformation, Transformations
 from ..utils.list import flatten, wrap_in_list
 
 

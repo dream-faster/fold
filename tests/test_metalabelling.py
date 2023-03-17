@@ -1,6 +1,6 @@
+from fold.composites.metalabeling import MetaLabeling
 from fold.loop import backtest, train
 from fold.models.dummy import DummyClassifier
-from fold.models.metalabeling import MetaLabeling
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.columns import OnlyPredictions
 from fold.utils.tests import generate_all_zeros
