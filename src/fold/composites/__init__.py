@@ -1,5 +1,6 @@
 from .base import Composite
-from .ensemble import Ensemble, PerColumnEnsemble
+from .columns import PerColumnEnsemble, PerColumnTransform, SkipNA
+from .ensemble import Ensemble
 from .hybrid import Hybrid
 from .metalabeling import MetaLabeling
 from .sample import Sample
