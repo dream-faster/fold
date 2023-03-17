@@ -18,6 +18,7 @@ from .backend.ray import train_transformations as _train_transformations_ray
 from .backend.sequential import (
     train_transformations as _train_transformations_sequential,
 )
+from .checks import check_types
 from .common import deepcopy_transformations, recursively_transform
 from .convenience import replace_transformation_if_not_fold_native
 from .types import Backend, Stage, TrainMethod
@@ -32,11 +33,8 @@ def train(
     train_method: TrainMethod = TrainMethod.parallel,
     backend: Backend = Backend.no,
 ) -> TransformationsOverTime:
-    if X is None:
-        X = pd.DataFrame(0, index=y.index, columns=[0])
-    else:
-        assert type(X) is pd.DataFrame, "X must be a pandas DataFrame."
-    assert type(y) is pd.Series, "y must be a pandas Series."
+    X, y = check_types(X, y)
+
     if type(splitter) is SlidingWindowSplitter:
         assert (
             train_method == TrainMethod.parallel
@@ -136,8 +134,7 @@ def train_for_deployment(
     y: pd.Series,
     sample_weights: Optional[pd.Series] = None,
 ) -> DeployableTransformations:
-    assert type(X) is pd.DataFrame, "X must be a pandas DataFrame."
-    assert type(y) is pd.Series, "y must be a pandas Series."
+    X, y = check_types(X, y)
 
     transformations = wrap_in_list(transformations)
     transformations: Transformations = replace_transformation_if_not_fold_native(

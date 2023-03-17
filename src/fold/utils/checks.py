@@ -34,6 +34,8 @@ def all_have_probabilities(results: List[pd.DataFrame]) -> bool:
 
 
 def get_prediction_column(input: pd.DataFrame) -> pd.Series:
-    return input[
-        [col for col in input.columns if col.startswith("predictions_")][0]
-    ].squeeze()
+    return input[get_prediction_column_name(input)].squeeze()
+
+
+def get_prediction_column_name(input: pd.DataFrame) -> str:
+    return [col for col in input.columns if col.startswith("predictions_")][0]

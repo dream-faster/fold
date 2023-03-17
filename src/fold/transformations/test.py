@@ -3,11 +3,11 @@ from typing import Callable, Optional
 
 import pandas as pd
 
-from .base import Transformation
+from .base import InvertibleTransformation
 
 
-class Test(Transformation):
-    properties = Transformation.Properties()
+class Test(InvertibleTransformation):
+    properties = InvertibleTransformation.Properties()
     __test__ = False
     no_of_calls_fit = 0
     no_of_calls_update = 0
@@ -80,8 +80,8 @@ class Test(Transformation):
             return X
         return return_value
 
-    def inverse_transform(self, X: pd.DataFrame) -> pd.DataFrame:
+    def inverse_transform(self, X: pd.Series) -> pd.Series:
         self.no_of_calls_inverse_transform += 1
         if self.inverse_transform_func is not None:
-            self.inverse_transform_func(X)
+            return self.inverse_transform_func(X)
         return X

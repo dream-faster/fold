@@ -6,6 +6,7 @@ from tqdm import tqdm
 from ..all_types import OutOfSamplePredictions, TransformationsOverTime
 from ..splitters import Fold, Splitter
 from ..utils.pandas import trim_initial_nans_single
+from .checks import check_types
 from .common import deepcopy_transformations, recursively_transform
 from .types import Backend, Stage
 
@@ -23,11 +24,7 @@ def backtest(
     Run backtest on a set of TransformationsOverTime and given data.
     Does not mutate or change the transformations in any way, aka you can backtest multiple times.
     """
-    if X is None:
-        X = pd.DataFrame(0, index=y.index, columns=[0])
-    else:
-        assert type(X) is pd.DataFrame, "X must be a pandas DataFrame."
-    assert type(y) is pd.Series, "y must be a pandas Series."
+    X, y = check_types(X, y)
 
     results = [
         __backtest_on_window(
@@ -46,7 +43,7 @@ def backtest(
 
 def _backtest_and_mutate(
     transformations_over_time: TransformationsOverTime,
-    X: pd.DataFrame,
+    X: Optional[pd.DataFrame],
     y: pd.Series,
     splitter: Splitter,
     backend: Backend = Backend.no,
@@ -55,9 +52,7 @@ def _backtest_and_mutate(
     """
     Backtest a list of transformations over time, and mutates `transformations_over_time` inplace.
     """
-
-    assert type(X) is pd.DataFrame, "X must be a pandas DataFrame."
-    assert type(y) is pd.Series, "y must be a pandas Series."
+    X, y = check_types(X, y)
 
     results = [
         __backtest_on_window(

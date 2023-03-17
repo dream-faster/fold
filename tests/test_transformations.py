@@ -6,10 +6,9 @@ from fold.models.base import Model
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations import Identity, SelectColumns
 from fold.transformations.columns import PerColumnTransform, TransformColumn
+from fold.transformations.difference import Difference
 from fold.transformations.lags import AddLagsY
-from fold.transformations.target import TransformTarget
-from fold.transformations.test import Test
-from fold.utils.tests import generate_sine_wave_data, generate_zeros_and_ones_skewed
+from fold.utils.tests import generate_sine_wave_data
 
 
 def test_no_transformation() -> None:
@@ -66,42 +65,6 @@ def test_function_transformation() -> None:
     assert (np.isclose((X.squeeze()[pred.index]), (pred.squeeze() + 1.0))).all()
 
 
-test_transform_plus_2 = Test(lambda x: x, lambda x: x + 2.0, lambda x: x - 2.0)
-
-
-def all_y_values_above_1(X, y):
-    assert np.all(y >= 1.0)
-
-
-def all_y_values_below_1(X, y):
-    assert np.all(y <= 1.0)
-
-
-test_all_y_values_below_1 = Test(
-    fit_func=all_y_values_below_1, transform_func=lambda X: X
-)
-test_all_y_values_above_1 = Test(
-    fit_func=all_y_values_above_1, transform_func=lambda X: X
-)
-
-
-def test_target_transformation() -> None:
-    X, y = generate_zeros_and_ones_skewed(length=1000, weights=[0.5, 0.5])
-
-    splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-
-    transformations = [
-        TransformTarget(
-            [lambda x: x + 1, test_all_y_values_above_1], test_transform_plus_2
-        ),
-        test_all_y_values_below_1,
-    ]
-
-    transformations_over_time = train(transformations, X, y, splitter)
-    pred = backtest(transformations_over_time, X, y, splitter)
-    assert ((X.squeeze()[pred.index] + 1) == pred.squeeze()).all()
-
-
 def test_per_column_transform() -> None:
     X, y = generate_sine_wave_data()
     X["sine_2"] = X["sine"] + 1.0
@@ -142,3 +105,16 @@ def test_add_lags_y_online():
     assert (pred["y_lag_1"] == y.shift(1)[pred.index]).all()
     assert (pred["y_lag_2"] == y.shift(2)[pred.index]).all()
     assert (pred["y_lag_3"] == y.shift(3)[pred.index]).all()
+
+
+def test_difference():
+    X, y = generate_sine_wave_data(resolution=600)
+    splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
+    transformations = Difference()
+    transformations_over_time = train(transformations, X, y, splitter)
+    pred = backtest(transformations_over_time, X, y, splitter)
+    assert np.isclose(
+        X.squeeze()[pred.index],
+        transformations_over_time[0].iloc[0].inverse_transform(pred).squeeze(),
+        atol=1e-3,
+    ).all()

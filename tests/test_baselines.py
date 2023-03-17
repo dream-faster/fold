@@ -3,11 +3,12 @@ from fold.models.baseline import BaselineNaiveSeasonal
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.columns import OnlyPredictions
 from fold.transformations.test import Test
-from fold.utils.tests import generate_sine_wave_data
+from fold.utils.tests import check_if_transformation_mutates, generate_sine_wave_data
 
 
 def test_baseline_naive_seasonal() -> None:
     X, y = generate_sine_wave_data(1000)
+    check_if_transformation_mutates(X, y, BaselineNaiveSeasonal(seasonal_length=10))
 
     def check_if_not_nan(x):
         assert not x.isna().squeeze().any()
