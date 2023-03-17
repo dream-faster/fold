@@ -36,9 +36,10 @@ def train(
     X, y = check_types(X, y)
 
     if type(splitter) is SlidingWindowSplitter:
-        assert (
-            train_method == TrainMethod.parallel
-        ), "SlidingWindowSplitter is conceptually incompatible with TrainMethod.sequential"
+        assert train_method == TrainMethod.parallel, (
+            "SlidingWindowSplitter is conceptually incompatible with"
+            " TrainMethod.sequential"
+        )
 
     transformations = wrap_in_list(transformations)
     transformations = replace_transformation_if_not_fold_native(transformations)

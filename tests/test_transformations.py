@@ -1,13 +1,11 @@
 import numpy as np
 
 from fold.loop import backtest, train
-from fold.loop.types import TrainMethod
-from fold.models.base import Model
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations import Identity, SelectColumns
 from fold.transformations.columns import PerColumnTransform, TransformColumn
 from fold.transformations.difference import Difference
-from fold.transformations.lags import AddLagsY
+from fold.transformations.lags import AddLagsX, AddLagsY
 from fold.utils.tests import generate_sine_wave_data
 
 
@@ -82,29 +80,26 @@ def test_per_column_transform() -> None:
     assert (np.isclose((X.loc[pred.index].sum(axis=1) + 4.0), pred.squeeze())).all()
 
 
-def test_add_lags_y_minibatch_sequential() -> None:
-    X, y = generate_sine_wave_data()
-    splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    transformations = AddLagsY(lags=[1, 2, 3])
-    transformations_over_time = train(
-        transformations, X, y, splitter, train_method=TrainMethod.sequential
-    )
-    pred = backtest(transformations_over_time, X, y, splitter)
-    assert (pred["y_lag_1"] == y.shift(1)[pred.index]).all()
-    assert (pred["y_lag_2"] == y.shift(2)[pred.index]).all()
-    assert (pred["y_lag_3"] == y.shift(3)[pred.index]).all()
-
-
-def test_add_lags_y_online():
+def test_add_lags_y():
     X, y = generate_sine_wave_data(resolution=600)
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
     transformations = AddLagsY(lags=[1, 2, 3])
-    transformations.properties.mode = Model.Properties.Mode.online
     transformations_over_time = train(transformations, X, y, splitter)
     pred = backtest(transformations_over_time, X, y, splitter)
     assert (pred["y_lag_1"] == y.shift(1)[pred.index]).all()
     assert (pred["y_lag_2"] == y.shift(2)[pred.index]).all()
     assert (pred["y_lag_3"] == y.shift(3)[pred.index]).all()
+
+
+def test_add_lags_X():
+    X, y = generate_sine_wave_data(resolution=600)
+    splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
+    transformations = AddLagsX(columns_and_lags=[("sine", [1, 2, 3])])
+    transformations_over_time = train(transformations, X, y, splitter)
+    pred = backtest(transformations_over_time, X, y, splitter)
+    assert (pred["sine_lag_1"] == X["sine"].shift(1)[pred.index]).all()
+    assert (pred["sine_lag_2"] == X["sine"].shift(2)[pred.index]).all()
+    assert (pred["sine_lag_3"] == X["sine"].shift(3)[pred.index]).all()
 
 
 def test_difference():

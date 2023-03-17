@@ -22,8 +22,8 @@ class Backend(Enum):
 class TrainMethod(Enum):
     parallel = "parallel"
     sequential = "sequential"
-    parallel_with_search = (
-        "parallel_with_search"  # Don't use it just yet, not yet fully documented
+    parallel_with_search = (  # Don't use it just yet, not yet fully documented
+        "parallel_with_search"
     )
 
     @staticmethod
