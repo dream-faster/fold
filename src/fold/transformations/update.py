@@ -31,8 +31,6 @@ class InjectPastDataAtInference(Transformation):
     This transformation is used to inject `window_size` (if None, all) of past `X` into the wrapped transformation, but only at inference time.
     """
 
-    past_X: Optional[pd.DataFrame] = None
-
     def __init__(
         self, transformation: Transformation, window_size: Optional[int]
     ) -> None:
