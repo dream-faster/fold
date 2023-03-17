@@ -20,7 +20,6 @@
 ::: fold.transformations.columns
 ::: fold.transformations.function
 ::: fold.transformations.identity
-::: fold.transformations.sample
 ::: fold.transformations.sklearn
 ::: fold.transformations.test
 ::: fold.transformations.update
