@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Callable, List, Optional
+from typing import Callable, List, Optional, Tuple
 
 import pandas as pd
 
@@ -118,15 +118,19 @@ def recursively_transform(
             # We need to run the inference & fit loop on each row, sequentially (one-by-one).
             # This is so the transformation can update its parameters after each sample.
 
-            def transform_row_inference_backtest(X_row, y_row, sample_weights_row):
+            def transform_row(
+                X_row: pd.DataFrame, y_row: Optional[pd.Series], sample_weights_row
+            ):
+                X_row, _ = _preprocess_X_y_with_memory(transformations, X_row, None)
                 result = transformations.transform(X_row, in_sample=False)
                 if y_row is not None:
                     transformations.update(X_row, y_row, sample_weights_row)
-                return result
+                    _postprocess_X_y_into_memory(transformations, X_row, y_row)
+                return result.loc[X_row.index]
 
             return pd.concat(
                 [
-                    transform_row_inference_backtest(
+                    transform_row(
                         X.loc[index:index],
                         y_df.loc[index:index] if y is not None else None,
                         sample_weights.loc[index]
@@ -141,14 +145,26 @@ def recursively_transform(
         # or the model is "mini-batch" updating or we're in initial_fit stage
         else:
             X, y = trim_initial_nans(X, y)
-            if stage == Stage.inital_fit:
-                transformations.fit(X, y, sample_weights)
-            return_value = transformations.transform(
-                X, in_sample=stage == Stage.inital_fit
+            X_processed, y_processed = _preprocess_X_y_with_memory(
+                transformations, X, y
             )
+            # The order is:
+            # 1. fit (if we're in the initial_fit stage)
+            if stage == Stage.inital_fit:
+                transformations.fit(X_processed, y_processed, sample_weights)
+                _postprocess_X_y_into_memory(transformations, X_processed, y_processed)
+            # 2. transform (inference)
+            X_processed, y_processed = _preprocess_X_y_with_memory(
+                transformations, X, y
+            )
+            return_value = transformations.transform(
+                X_processed, in_sample=stage == Stage.inital_fit
+            )
+            # 3. update (if we're in the update stage)
             if stage == Stage.update:
-                transformations.update(X, y, sample_weights)
-            return return_value
+                transformations.update(X_processed, y_processed, sample_weights)
+                _postprocess_X_y_into_memory(transformations, X, y)
+            return return_value.loc[X.index]
 
     else:
         raise ValueError(
@@ -209,3 +225,40 @@ def deepcopy_transformations(transformation: Transformations) -> Transformations
         return transformation.clone(deepcopy_transformations)
     else:
         return deepcopy(transformation)
+
+
+def _preprocess_X_y_with_memory(
+    transformation: Transformation, X: pd.DataFrame, y: Optional[pd.Series]
+) -> Tuple[pd.DataFrame, pd.Series]:
+    if transformation._state is None or transformation.properties.memory is None:
+        return X, y
+    memory_X, memory_y = transformation._state.memory_X, transformation._state.memory_y
+    if y is None:
+        return pd.concat([memory_X, X], axis="index"), y
+    else:
+        return pd.concat([memory_X, X], axis="index"), pd.concat(
+            [memory_y, y], axis="index"
+        )
+
+
+def _postprocess_X_y_into_memory(
+    transformation: Transformation, X: pd.DataFrame, y: Optional[pd.Series]
+) -> None:
+    # don't update the transformation if we're in inference mode (y is None)
+    if transformation.properties.memory is None or y is None:
+        return
+    if transformation.properties.memory > len(X):
+        transformation._state = Transformation.State(
+            memory_X=X.iloc[-transformation.properties.memory :],
+            memory_y=y.iloc[-transformation.properties.memory :],
+        )
+
+    else:
+        transformation._state = Transformation.State(
+            memory_X=pd.concat([transformation._state.memory_X, X], axis="index").iloc[
+                -transformation.properties.memory :
+            ],
+            memory_y=pd.concat([transformation._state.memory_y, y], axis="index").iloc[
+                -transformation.properties.memory :
+            ],
+        )

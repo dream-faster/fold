@@ -21,10 +21,17 @@ class Transformation(ABC):
             online = "online"
 
         mode: Mode = Mode.minibatch
+        memory: Optional[int] = None
         model_type: Optional[ModelType] = None
+
+    @dataclass
+    class State:
+        memory_X: pd.DataFrame
+        memory_y: Optional[pd.Series]
 
     properties: Properties
     name: str
+    _state: Optional[State] = None
 
     @abstractmethod
     def fit(
