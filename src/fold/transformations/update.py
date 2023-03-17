@@ -36,9 +36,9 @@ class InjectPastDataAtInference(Transformation):
     ) -> None:
         self.transformation = transformation
         self.name = f"InjectPastDataAtInference-{transformation.name}"
-        self.properties.mode = transformation.properties.mode
         self.properties = Transformation.Properties(
-            memory=0 if window_size is None else window_size
+            memory=0 if window_size is None else window_size,
+            mode=transformation.properties.mode,
         )
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
