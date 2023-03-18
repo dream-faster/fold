@@ -1,5 +1,4 @@
 <!-- # Fold -->
-<!-- Formatted with Prettier -->
 
 <p align="center">
   <a href="https://dream-faster.github.io/fold/"><img alt="Docs" src="https://img.shields.io/github/actions/workflow/status/dream-faster/fold/docs.yaml?logo=readthedocs"></a>
@@ -16,7 +15,7 @@
   </a>
 <h3 align="center"><b>FOLD</b><br> <i>(/fold/)</i></h3>
   <p align="center">
-    <b>[Now|Fore]casting with Continuous Evaluation & Composite Pipelines</b><br> Build, train and deploy pipeines with your favourite modeling library as Fold is from the ground-up extensible and lightweight.
+    <b>A Time Series Continuous Evaluation (Cross-validation) library that lets you build, deploy and update composite models easily. An order of magnitude speed-up, combined with flexibility and rigour.</b><br>
     <br/>
     <a href="https://dream-faster.github.io/fold/"><strong>Explore the docs »</strong></a>
   </p>
@@ -27,9 +26,12 @@
 
 ![Fold's main features](docs/images/main_features.png)
 
-- Composite Pipelines with Continuous Validation at speed - [what does it mean for me?](#benefits-for-your-Forecasting)
-- Distributed computing - [why is this importan?](#benefits-for-your-Forecasting)
-- Update deployed models - [why is this importan?](#benefits-for-your-Forecasting)
+- Composite Pipelines with Continuous Validation (Cross Validation) - [What does that mean?](#Fold-is-different)
+- Distributed computing - [Why is this important?](#Fold-is-different)
+- Update deployed models - [why is this importan?](#Fold-is-different)
+
+Continuous validation prevents you from accidentally using information that wouldn't otherwise be available at the time of training/evaluation (lookahead bias).
+
 
 <br/>
 
@@ -67,13 +69,37 @@ transformations_over_time = train(transformations, X, y, splitter)
 pred = backtest(transformations_over_time, X, y, splitter)
 ```
 
+
+## Fold is different
+
+- Continuous Validation (Time Series cross-validation) at lightning speed.<br/>
+  <span style="color:orange;">**→ fold allows to simulate and evaluate your models like they would have performed, in reality/when deployed, with clever use of paralellization and design.**</span>
+
+- Create composite models: ensembles, hybrids, stacking pipelines, easily.<br/>
+  <span style="color:orange;">**→ Underutilized, but [the easiest, fastest way to increase performance of your Time Series models.](https://linkinghub.elsevier.com/retrieve/pii/S0169207022001480)**
+  </span>
+
+- Built with Distributed Computing in mind.<br/>
+  <span style="color:orange;">**→ Deploy your pipelines to a cluster with `ray`, and use `modin` to handle huge, out-of-memory datasets.**</span>
+
+- Bridging the gap between Online and Mini-Batch learning.<br/>
+  <span style="color:orange;">**→ Mix and match `xgboost` with ARIMA, in a single pipeline, update your models, preprocessing steps on every timestamp, if that's desired.**</span>
+
+- Update your deployed models, easily, as new data flows in.<br/>
+  <span style="color:orange;">**→ Real world is not static. Let your models adapt, without the need to re-train from scratch.**</span>
+
+
+
+
+</li>
+
 <!-- GETTING STARTED -->
 
 ## Examples and Walkthroughs
 
-| Link                                                                            | Dataset Type |
-| ------------------------------------------------------------------------------- | ------------ |
-| [⚡️ Energy Demand Walkthrough](github.com/dream-faster/fold/examples/energy)   | Energy       |
+| Link                                                                           | Dataset Type |
+| ------------------------------------------------------------------------------ | ------------ |
+| [⚡️ Energy Demand Walkthrough](github.com/dream-faster/fold/examples/energy)    | Energy       |
 | [🚋 Basic end-to-end walkthrough](github.com/dream-faster/fold/examples/energy) | Energy       |
 
 <br/>
@@ -88,13 +114,13 @@ pred = backtest(transformations_over_time, X, y, splitter)
 - Use any Deep Learning Time Series models (wrappers provided in [fold-models](https://github.com/dream-faster/fold-models)).
 - Super easy syntax!
 - Probabilistic foreacasts (currently, for Classification, soon for Regression as well).
-- Hyperparemeter optimization / Model selection.
+- Hyperparemeter optimization / Model selection. (coming in early April!)
 
-## Dream Faster Forecasting Suite
+## Our open source Time Series toolkit
 
-[![Dream Faster's Suite - Krisi](docs/images/dream_faster_suite_krisi.png)](https://github.com/dream-faster/krisi)
-[![Dream Faster's Suite - Fold](docs/images/dream_faster_suite_fold.png)](https://github.com/dream-faster/fold)
-[![Dream Faster's Suite - Fold/Models](docs/images/dream_faster_suite_fold_models.png)](https://github.com/dream-faster/fold-models)
+[![Krisi](docs/images/dream_faster_suite_krisi.png)](https://github.com/dream-faster/krisi)
+[![Fold](docs/images/dream_faster_suite_fold.png)](https://github.com/dream-faster/fold)
+[![Fold/Models](docs/images/dream_faster_suite_fold_models.png)](https://github.com/dream-faster/fold-models)
 
 ## Contribution
 
@@ -104,41 +130,6 @@ The project uses `isort` and `black` for formatting.
 
 Submit an issue or reach out to us on info at dream-faster.ai for any inquiries.
 
-## Benefits for your Forecasting
-
-## Fold solves the following problems:
-
-- Accidentally using information that wouldn't otherwise be available at the time of training/evaluation (lookahead bias). <p style="color:orange;">**→ fold allows you to use any model, transformation or function in a pipeline, while making sure it'll never have access to "future data".**<p>
-
-- Time series Cross-validation is painful OR really slow with the existing libraries. People end up using a single train-test split when evaluating time series models, which is sub-optimal from many perspective. [Why use cross validation?](continuous-validation.md)<p style="color:orange;">
-  **→ fold allows to simulate and evaluate your models like they would have performed, in reality/when deployed. Choose between sliding or expanding window.**</p>
-
-<details>
-  <summary>👇 Expand for further differentiators </summary>
-<br>
-
-- Model selection, Feature selection and Hyperparameter optimization is done on the whole time series, introducing major lookahead bias, creating unrealistic expectations of performance.<p style="color:orange;">
-  **→ Allowing methodologically “correct” way to do Model selection, Feature selection and Hyperparameter Optimization (we call this the pre-validation step, done on the first window's train split).**</p>
-
-- Too many dependencies and an either you use-all-or-none-of-it approach<p style="color:orange;">
-  **→ Fold has very few hard dependencies (only pandas, numpy, tqdm and scikit-learn), and has a fraction of the number of lines of code as other major Time series libraries.**</p>
-
-- Choosing between a time series library that only support certain kind of models.<p style="color:orange;">
-  **→ Don't need to choose between `xgboost`, `sktime`, `darts` or `statsforecast` models. We will or already support them all, either natively or through [`fold-models`](https://github.com/dream-faster/fold-models)**</p>
-
-- Most time series ML libraries have little or no support distributed computing.<p style="color:orange;">
-  **→ Fold was built with distributed computing in mind. Your pipeline is automatically parallelized wherever it can be (for some extent, the rest is coming really soon)**</p>
-
-- Using a single model, instead of ensembling, stacking or creating hybrid models.<p style="color:orange;">
-  **→ Fold is _really_ flexible in what kind of pipelines you create and has native support for ensembling, stacking, hybrid models and meta-labeling. Why? [works really well for time series](https://linkinghub.elsevier.com/retrieve/pii/S0169207022001480).**</p>
-
-- Hard to deploy models, that can't be updated.<p style="color:orange;">
-  **→ Don't stop at training models, with `fold`, you can deploy with a couple of lines of code, and also update your models as new data comes in. Don't assume your models will not get out-of-date.**</p>
-
-- We can't compare, ensemble or use online and mini-batch learning models together.<p style="color:orange;">
-**→ `fold` supports both types of models natively.**</p>
-</details>
-</li>
 
 ## Limitations
 
