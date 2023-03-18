@@ -1,11 +1,10 @@
 from fold.loop import train
 from fold.loop.backtest import backtest
 from fold.loop.types import Backend, TrainMethod
-from fold.models.baseline import BaselineNaive, BaselineRegressorDeprecated
+from fold.models.baseline import BaselineNaive
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.base import Transformations
 from fold.transformations.test import Test
-from fold.transformations.update import InjectPastDataAtInference
 from fold.utils.tests import generate_all_zeros, generate_sine_wave_data
 
 
@@ -17,7 +16,7 @@ def run_loop(
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     transformations_over_time = train(
-        transformations, X, y, splitter, train_method=train_method, backend=backend
+        transformations, None, y, splitter, train_method=train_method, backend=backend
     )
     pred = backtest(transformations_over_time, X, y, splitter)
     assert (X.squeeze()[pred.index] == pred.squeeze()).all()
@@ -27,11 +26,7 @@ def test_loop_sequential():
     run_loop(
         TrainMethod.sequential,
         Backend.no,
-        InjectPastDataAtInference(
-            BaselineRegressorDeprecated(
-                strategy=BaselineRegressorDeprecated.Strategy.naive
-            )
-        ),
+        BaselineNaive(),
     )
 
 
@@ -39,11 +34,7 @@ def test_loop_parallel():
     run_loop(
         TrainMethod.parallel,
         Backend.no,
-        InjectPastDataAtInference(
-            BaselineRegressorDeprecated(
-                strategy=BaselineRegressorDeprecated.Strategy.naive
-            )
-        ),
+        BaselineNaive(),
     )
 
 

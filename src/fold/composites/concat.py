@@ -5,8 +5,11 @@ from typing import Callable, List, Optional, Union
 
 import pandas as pd
 
-from ..utils.list import flatten, has_intersection, keep_only_duplicates
-from .base import Composite, Transformations, TransformationsAlwaysList
+from ..transformations.base import Transformations, TransformationsAlwaysList
+from ..transformations.columns import SelectColumns
+from ..transformations.identity import Identity
+from ..utils.list import flatten, has_intersection, keep_only_duplicates, wrap_in_list
+from .base import Composite
 
 
 class ResolutionStrategy(Enum):
@@ -74,3 +77,44 @@ class Concat(Composite):
             transformations=clone_child_transformations(self.transformations),
             if_duplicate_keep=self.if_duplicate_keep,
         )
+
+
+class Pipeline(Composite):
+    properties = Composite.Properties(primary_only_single_pipeline=True)
+
+    def __init__(
+        self,
+        transformations: Transformations,
+    ) -> None:
+        self.transformations = transformations
+        self.name = "Pipeline-" + "-".join(
+            [
+                transformation.name if hasattr(transformation, "name") else ""
+                for transformation in transformations
+            ]
+        )
+
+    def postprocess_result_primary(
+        self, results: List[pd.DataFrame], y: Optional[pd.Series]
+    ) -> pd.DataFrame:
+        return results[0]
+
+    def get_child_transformations_primary(self) -> TransformationsAlwaysList:
+        return [self.transformations]
+
+    def clone(self, clone_child_transformations: Callable) -> Pipeline:
+        return Pipeline(
+            transformations=clone_child_transformations(self.transformations)
+        )
+
+
+def TransformColumn(
+    columns: Union[List[str], str], transformation: Transformations
+) -> Composite:
+    return Concat(
+        [
+            [SelectColumns(columns)] + wrap_in_list(transformation),
+            Identity(),
+        ],
+        if_duplicate_keep=ResolutionStrategy.left,
+    )

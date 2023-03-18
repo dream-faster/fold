@@ -8,13 +8,9 @@ from fold.models.base import Model
 from fold.models.sklearn import SKLearnClassifier, SKLearnPipeline, SKLearnRegressor
 from fold.transformations.sklearn import SKLearnFeatureSelector, SKLearnTransformation
 
-from ..transformations.base import (
-    BlocksOrWrappable,
-    Composite,
-    Transformation,
-    Transformations,
-)
-from ..transformations.function import FunctionTransformation
+from ..composites.base import Composite
+from ..transformations.base import BlocksOrWrappable, Transformation, Transformations
+from ..transformations.function import WrapFunction
 
 
 def replace_transformation_if_not_fold_native(
@@ -27,7 +23,7 @@ def replace_transformation_if_not_fold_native(
     elif isinstance(transformation, ClassifierMixin):
         return SKLearnClassifier(transformation)
     elif isinstance(transformation, Callable):
-        return FunctionTransformation(transformation)
+        return WrapFunction(transformation, None)
     elif isinstance(transformation, SelectorMixin):
         return SKLearnFeatureSelector(transformation)
     elif isinstance(transformation, TransformerMixin):

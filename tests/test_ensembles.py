@@ -2,9 +2,11 @@ from random import randint
 
 import numpy as np
 
+from fold.composites.columns import PerColumnEnsemble
+from fold.composites.concat import Pipeline
+from fold.composites.ensemble import Ensemble
 from fold.loop import backtest, train
 from fold.models.dummy import DummyClassifier
-from fold.models.ensemble import Ensemble, PerColumnEnsemble
 from fold.splitters import ExpandingWindowSplitter
 from fold.utils.tests import generate_all_zeros, generate_sine_wave_data
 
@@ -86,3 +88,54 @@ def test_per_column_transform_predictions() -> None:
     pred = backtest(transformations_over_time, X, y, splitter)
     expected = X.mean(axis=1) + 1.0
     assert (np.isclose(expected[pred.index].squeeze(), pred.squeeze())).all()
+
+
+def test_dummy_pipeline_classification() -> None:
+    X, y = generate_all_zeros(1000)
+
+    splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
+    transformations = Pipeline(
+        [
+            DummyClassifier(
+                predicted_value=1,
+                all_classes=[1, 0],
+                predicted_probabilities=[1.0, 0.0],
+            ),
+            DummyClassifier(
+                predicted_value=1,
+                all_classes=[1, 0],
+                predicted_probabilities=[0.5, 0.5],
+            ),
+            DummyClassifier(
+                predicted_value=0,
+                all_classes=[1, 0],
+                predicted_probabilities=[0.0, 1.0],
+            ),
+        ]
+    )
+
+    transformations_over_time = train(transformations, X, y, splitter)
+    pred = backtest(transformations_over_time, X, y, splitter)
+
+    transformations_baseline = [
+        DummyClassifier(
+            predicted_value=1,
+            all_classes=[1, 0],
+            predicted_probabilities=[1.0, 0.0],
+        ),
+        DummyClassifier(
+            predicted_value=1,
+            all_classes=[1, 0],
+            predicted_probabilities=[0.5, 0.5],
+        ),
+        DummyClassifier(
+            predicted_value=0,
+            all_classes=[1, 0],
+            predicted_probabilities=[0.0, 1.0],
+        ),
+    ]
+
+    transformations_over_time_baseline = train(transformations_baseline, X, y, splitter)
+    pred_baseline = backtest(transformations_over_time_baseline, X, y, splitter)
+
+    assert (pred == pred_baseline).all(axis=0).all()

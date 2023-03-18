@@ -4,11 +4,11 @@ import pandas as pd
 from sklearn.base import BaseEstimator
 
 from ..all_types import TransformationsOverTime
+from ..composites.base import Composite
 from ..models.base import Model
 from ..splitters import Fold, SlidingWindowSplitter, Splitter
 from ..transformations.base import (
     BlocksOrWrappable,
-    Composite,
     DeployableTransformations,
     Transformation,
     Transformations,
@@ -18,26 +18,28 @@ from .backend.ray import train_transformations as _train_transformations_ray
 from .backend.sequential import (
     train_transformations as _train_transformations_sequential,
 )
-from .common import Stage, deepcopy_transformations, recursively_transform
+from .checks import check_types
+from .common import deepcopy_transformations, recursively_transform
 from .convenience import replace_transformation_if_not_fold_native
-from .types import Backend, TrainMethod
+from .types import Backend, Stage, TrainMethod
 
 
 def train(
     transformations: BlocksOrWrappable,
-    X: pd.DataFrame,
+    X: Optional[pd.DataFrame],
     y: pd.Series,
     splitter: Splitter,
     sample_weights: Optional[pd.Series] = None,
     train_method: TrainMethod = TrainMethod.parallel,
     backend: Backend = Backend.no,
 ) -> TransformationsOverTime:
-    assert type(X) is pd.DataFrame, "X must be a pandas DataFrame."
-    assert type(y) is pd.Series, "y must be a pandas Series."
+    X, y = check_types(X, y)
+
     if type(splitter) is SlidingWindowSplitter:
-        assert (
-            train_method == TrainMethod.parallel
-        ), "SlidingWindowSplitter is conceptually incompatible with TrainMethod.sequential"
+        assert train_method == TrainMethod.parallel, (
+            "SlidingWindowSplitter is conceptually incompatible with"
+            " TrainMethod.sequential"
+        )
 
     transformations = wrap_in_list(transformations)
     transformations = replace_transformation_if_not_fold_native(transformations)
@@ -56,6 +58,7 @@ def train(
             transformations,
             splits[0],
             never_update=True,
+            backend=backend,
         )
 
         rest_idx, rest_transformations = zip(
@@ -67,6 +70,7 @@ def train(
                 sample_weights,
                 splits[1:],
                 False,
+                backend,
             )
         )
         processed_idx = [first_batch_index] + list(rest_idx)
@@ -85,6 +89,7 @@ def train(
                 sample_weights,
                 splits,
                 True,
+                backend,
             )
         )
 
@@ -94,7 +99,13 @@ def train(
         processed_transformation = transformations
         for split in splits:
             processed_id, processed_transformation = process_transformations_window(
-                X, y, sample_weights, processed_transformation, split, False
+                X,
+                y,
+                sample_weights,
+                processed_transformation,
+                split,
+                False,
+                backend,
             )
             processed_idx.append(processed_id)
             processed_transformations.append(processed_transformation)
@@ -124,8 +135,7 @@ def train_for_deployment(
     y: pd.Series,
     sample_weights: Optional[pd.Series] = None,
 ) -> DeployableTransformations:
-    assert type(X) is pd.DataFrame, "X must be a pandas DataFrame."
-    assert type(y) is pd.Series, "y must be a pandas Series."
+    X, y = check_types(X, y)
 
     transformations = wrap_in_list(transformations)
     transformations: Transformations = replace_transformation_if_not_fold_native(
@@ -147,6 +157,7 @@ def train_for_deployment(
             test_window_end=None,
         ),
         True,
+        backend=Backend.no,
     )
     return transformations
 
@@ -158,6 +169,7 @@ def process_transformations_window(
     transformations: List[Union[Transformation, Composite]],
     split: Fold,
     never_update: bool,
+    backend: Backend,
 ) -> Tuple[int, List[Union[Transformation, Composite]]]:
     # we need a different flag here, that allows us to
     # reduce the size of the train window, to only get the fresh data
@@ -179,11 +191,7 @@ def process_transformations_window(
 
     transformations = deepcopy_transformations(transformations)
     X_train = recursively_transform(
-        X_train,
-        y_train,
-        sample_weights_train,
-        transformations,
-        stage,
+        X_train, y_train, sample_weights_train, transformations, stage, backend
     )
 
     return split.model_index, transformations

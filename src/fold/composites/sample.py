@@ -6,7 +6,8 @@ import pandas as pd
 
 from fold.transformations.common import get_concatenated_names
 
-from .base import BlocksOrWrappable, Composite, T, TransformationsAlwaysList
+from ..transformations.base import BlocksOrWrappable, TransformationsAlwaysList
+from .base import Composite, T
 
 
 class Sample(Composite):

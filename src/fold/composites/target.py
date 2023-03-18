@@ -5,23 +5,27 @@ from typing import Callable, List, Optional, Tuple
 import pandas as pd
 
 from fold.transformations.common import get_concatenated_names
+from fold.utils.checks import get_prediction_column_name
 
 from ..transformations.base import (
-    Composite,
-    T,
+    InvertibleTransformation,
     Transformations,
     TransformationsAlwaysList,
 )
+from .base import Composite, T
 
 
 class TransformTarget(Composite):
     properties = Composite.Properties(
         primary_only_single_pipeline=True,
         secondary_only_single_pipeline=True,
+        secondary_requires_predictions=True,
     )
 
     def __init__(
-        self, X_transformations: Transformations, y_transformation: Transformations
+        self,
+        X_transformations: Transformations,
+        y_transformation: InvertibleTransformation,
     ) -> None:
         self.X_transformations = [X_transformations]
         self.y_transformation = y_transformation
@@ -62,7 +66,13 @@ class TransformTarget(Composite):
         secondary_results: List[pd.DataFrame],
         y: Optional[pd.Series],
     ) -> pd.DataFrame:
-        return secondary_results[0]
+        predictions = secondary_results[0]
+        predictions[
+            get_prediction_column_name(predictions)
+        ] = self.y_transformation.inverse_transform(
+            predictions[get_prediction_column_name(predictions)]
+        )
+        return predictions
 
     def get_child_transformations_primary(self) -> TransformationsAlwaysList:
         return [self.y_transformation]
