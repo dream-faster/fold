@@ -24,7 +24,7 @@
 
 <!-- INTRO -->
 
-![Fold's main features](docs/images/main_features.png)
+![Fold's main features](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/main_features.png)
 
 - Composite Pipelines with Continuous Validation (Cross Validation) - [What does that mean?](#Fold-is-different)
 - Distributed computing - [Why is this important?](#Fold-is-different)
@@ -35,7 +35,7 @@ Continuous validation prevents you from accidentally using information that woul
 
 <br/>
 
-![Fold works with many third party libraries](docs/images/third_party.png)
+![Fold works with many third party libraries](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/third_party.png)
 
 <!-- GETTING STARTED -->
 <br/>
@@ -118,9 +118,9 @@ pred = backtest(transformations_over_time, X, y, splitter)
 
 ## Our open source Time Series toolkit
 
-[![Krisi](docs/images/dream_faster_suite_krisi.png)](https://github.com/dream-faster/krisi)
-[![Fold](docs/images/dream_faster_suite_fold.png)](https://github.com/dream-faster/fold)
-[![Fold/Models](docs/images/dream_faster_suite_fold_models.png)](https://github.com/dream-faster/fold-models)
+[![Krisi](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/dream_faster_suite_krisi.png)](https://github.com/dream-faster/krisi)
+[![Fold](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/dream_faster_suite_fold.png)](https://github.com/dream-faster/fold)
+[![Fold/Models](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/dream_faster_suite_fold_models.png)](https://github.com/dream-faster/fold-models)
 
 ## Contribution
 
