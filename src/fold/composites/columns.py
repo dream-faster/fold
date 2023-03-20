@@ -5,11 +5,11 @@ from typing import Callable, List, Optional, Tuple
 
 import pandas as pd
 
-from ..transformations.base import Transformations, TransformationsAlwaysList
-from ..transformations.common import get_concatenated_names
+from ..transformations.base import Pipeline, Pipelines
 from ..utils.checks import all_have_probabilities
 from ..utils.list import unique, wrap_in_list
 from .base import Composite, T
+from .common import get_concatenated_names
 
 
 class PerColumnEnsemble(Composite):
@@ -21,8 +21,8 @@ class PerColumnEnsemble(Composite):
     properties = Composite.Properties()
     models_already_cloned = False
 
-    def __init__(self, models: Transformations, models_already_cloned=False) -> None:
-        self.models: TransformationsAlwaysList = wrap_in_list(models)
+    def __init__(self, pipeline: Pipeline, models_already_cloned=False) -> None:
+        self.models: Pipelines = wrap_in_list(pipeline)
         self.name = "PerColumnEnsemble-" + get_concatenated_names(self.models)
         self.models_already_cloned = models_already_cloned
 
@@ -42,18 +42,17 @@ class PerColumnEnsemble(Composite):
     ) -> pd.DataFrame:
         return postprocess_results(results, self.name)
 
-    def get_child_transformations_primary(self) -> TransformationsAlwaysList:
+    def get_child_transformations_primary(self) -> Pipelines:
         return self.models
 
     def clone(self, clone_child_transformations: Callable) -> PerColumnEnsemble:
         return PerColumnEnsemble(
-            models=clone_child_transformations(self.models),
+            pipeline=clone_child_transformations(self.models),
             models_already_cloned=self.models_already_cloned,
         )
 
 
 class SkipNA(Composite):
-
     """
     Skips rows with NaN values in the input data.
     Adds back the rows with NaN values after the transformations are applied.
@@ -62,14 +61,9 @@ class SkipNA(Composite):
 
     properties = Composite.Properties()
 
-    def __init__(self, transformations: Transformations) -> None:
-        self.transformations = [transformations]
-        self.name = "SkipNA-" + "-".join(
-            [
-                transformation.name if hasattr(transformation, "name") else ""
-                for transformation in self.transformations
-            ]
-        )
+    def __init__(self, pipeline: Pipeline) -> None:
+        self.pipeline = [pipeline]
+        self.name = "SkipNA-" + get_concatenated_names(self.pipeline)
 
     def preprocess_primary(
         self, X: pd.DataFrame, index: int, y: T, fit: bool
@@ -84,29 +78,31 @@ class SkipNA(Composite):
         results = [result.reindex(self.original_index) for result in results]
         return pd.concat(results, axis="columns")
 
-    def get_child_transformations_primary(self) -> TransformationsAlwaysList:
-        return self.transformations
+    def get_child_transformations_primary(self) -> Pipelines:
+        return self.pipeline
 
     def clone(self, clone_child_transformations: Callable) -> SkipNA:
         return SkipNA(
-            transformations=clone_child_transformations(self.transformations),
+            pipeline=clone_child_transformations(self.pipeline),
         )
 
 
 class PerColumnTransform(Composite):
+    """
+    Apply a single pipeline for each column, separatelu.
+    """
+
     properties = Composite.Properties()
 
-    def __init__(
-        self, transformations: Transformations, transformations_already_cloned=False
-    ) -> None:
-        self.transformations = wrap_in_list(transformations)
-        self.name = "PerColumnTransform-" + get_concatenated_names(self.transformations)
-        self.transformations_already_cloned = transformations_already_cloned
+    def __init__(self, pipeline: Pipeline, pipeline_already_cloned=False) -> None:
+        self.pipeline = wrap_in_list(pipeline)
+        self.name = "PerColumnTransform-" + get_concatenated_names(self.pipeline)
+        self.pipeline_already_cloned = pipeline_already_cloned
 
     def before_fit(self, X: pd.DataFrame) -> None:
-        if not self.transformations_already_cloned:
-            self.transformations = [deepcopy(self.transformations) for _ in X.columns]
-            self.transformations_already_cloned = True
+        if not self.pipeline_already_cloned:
+            self.pipeline = [deepcopy(self.pipeline) for _ in X.columns]
+            self.pipeline_already_cloned = True
 
     def preprocess_primary(
         self, X: pd.DataFrame, index: int, y: T, fit: bool
@@ -118,13 +114,13 @@ class PerColumnTransform(Composite):
     ) -> pd.DataFrame:
         return pd.concat(results, axis="columns")
 
-    def get_child_transformations_primary(self) -> TransformationsAlwaysList:
-        return self.transformations
+    def get_child_transformations_primary(self) -> Pipelines:
+        return self.pipeline
 
     def clone(self, clone_child_transformations: Callable) -> PerColumnTransform:
         return PerColumnTransform(
-            transformations=clone_child_transformations(self.transformations),
-            transformations_already_cloned=self.transformations_already_cloned,
+            pipeline=clone_child_transformations(self.pipeline),
+            pipeline_already_cloned=self.pipeline_already_cloned,
         )
 
 

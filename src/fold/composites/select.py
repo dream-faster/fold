@@ -4,9 +4,9 @@ from typing import Callable, List, Optional
 
 import pandas as pd
 
-from ..transformations.base import Transformations, TransformationsAlwaysList
-from ..transformations.common import get_concatenated_names
+from ..transformations.base import Pipelines, Transformations
 from .base import Composite
+from .common import get_concatenated_names
 
 
 class SelectBest(Composite):
@@ -18,7 +18,7 @@ class SelectBest(Composite):
 
     def __init__(
         self,
-        models: TransformationsAlwaysList,
+        models: Pipelines,
         scorer: Callable,
         is_scorer_loss: bool = True,
         selected_model: Optional[Transformations] = None,
@@ -44,7 +44,7 @@ class SelectBest(Composite):
         else:
             return results[0]
 
-    def get_child_transformations_primary(self) -> TransformationsAlwaysList:
+    def get_child_transformations_primary(self) -> Pipelines:
         if self.selected_model is None:
             return self.models
         else:

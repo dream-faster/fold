@@ -4,7 +4,7 @@ from fold.loop.types import Backend, TrainMethod
 from fold.models.baseline import BaselineNaive
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.base import Transformations
-from fold.transformations.test import Test
+from fold.transformations.dev import Test
 from fold.utils.tests import generate_all_zeros, generate_sine_wave_data
 
 

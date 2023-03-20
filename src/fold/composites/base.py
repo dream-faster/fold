@@ -4,7 +4,7 @@ from typing import Callable, List, Optional, Tuple, TypeVar
 
 import pandas as pd
 
-from ..transformations.base import TransformationsAlwaysList
+from ..transformations.base import Pipelines
 
 T = TypeVar("T", Optional[pd.Series], pd.Series)
 
@@ -17,23 +17,27 @@ class Composite(ABC):
     @dataclass
     class Properties:
         primary_requires_predictions: bool = (
-            False  # Primary transformations need output from a model
+            False  # Primary pipeline need output from a model
         )
-        primary_only_single_pipeline: bool = False  # Primary transformations should contain only a single pipeline, not multiple.
+        primary_only_single_pipeline: bool = (
+            False  # There should be a single primary pipeline.
+        )
         secondary_requires_predictions: bool = (
-            False  # Secondary transformations need output from a model
+            False  # Secondary pipeline need output from a model
         )
-        secondary_only_single_pipeline: bool = False  # Secondary transformations should contain only a single pipeline, not multiple.
+        secondary_only_single_pipeline: bool = (
+            False  # There should be a single secondary pipeline.
+        )
 
     properties: Properties
 
     @abstractmethod
-    def get_child_transformations_primary(self) -> TransformationsAlwaysList:
+    def get_child_transformations_primary(self) -> Pipelines:
         raise NotImplementedError
 
     def get_child_transformations_secondary(
         self,
-    ) -> Optional[TransformationsAlwaysList]:
+    ) -> Optional[Pipelines]:
         return None
 
     @abstractmethod

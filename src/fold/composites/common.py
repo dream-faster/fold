@@ -1,14 +1,14 @@
 from typing import List
 
-from ..composites.base import Composite
-from ..transformations.base import Transformation, Transformations
+from ..transformations.base import Pipelines, Transformations
 from ..utils.list import flatten, wrap_in_list
+from .base import Composite
 
 
 def get_flat_list_of_transformations(
-    transformations: Transformations,
-) -> List[Transformation]:
-    def get_all_transformations(transformations: Transformations) -> Transformations:
+    transformations: Pipelines,
+) -> List[Transformations]:
+    def get_all_transformations(transformations: Pipelines) -> Transformations:
         if isinstance(transformations, List):
             return [get_all_transformations(t) for t in transformations]
         elif isinstance(transformations, Composite):
@@ -30,7 +30,7 @@ def get_flat_list_of_transformations(
     return flatten(wrap_in_list(get_all_transformations(transformations)))
 
 
-def get_concatenated_names(transformations: Transformations) -> str:
+def get_concatenated_names(transformations: Pipelines) -> str:
     return "-".join(
         [
             transformation.name if hasattr(transformation, "name") else ""

@@ -7,6 +7,10 @@ from .base import Transformation, fit_noop
 
 
 class AddLagsY(Transformation):
+    """
+    Adds past values of `y`.
+    """
+
     def __init__(self, lags: Union[List[int], int]) -> None:
         self.lags = wrap_in_list(lags)
         self.name = f"AddLagsY-{self.lags}"
@@ -31,6 +35,10 @@ class AddLagsY(Transformation):
 
 
 class AddLagsX(Transformation):
+    """
+    Adds past values of `X` for the desired column(s).
+    """
+
     ColumnAndLag = Tuple[str, Union[int, List[int]]]
 
     def __init__(

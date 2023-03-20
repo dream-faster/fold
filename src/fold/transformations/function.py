@@ -6,6 +6,10 @@ from .base import Transformation, fit_noop
 
 
 class WrapFunction(Transformation):
+    """
+    Wraps and arbitrary function that will run at inference.
+    """
+
     def __init__(self, func: Callable, past_window_size: Optional[int]) -> None:
         self.func = func
         self.name = func.__name__

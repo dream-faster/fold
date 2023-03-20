@@ -4,14 +4,10 @@ from typing import Callable, List, Optional, Tuple
 
 import pandas as pd
 
-from fold.transformations.common import get_concatenated_names
+from fold.composites.common import get_concatenated_names
 from fold.utils.checks import get_prediction_column_name
 
-from ..transformations.base import (
-    InvertibleTransformation,
-    Transformations,
-    TransformationsAlwaysList,
-)
+from ..transformations.base import InvertibleTransformation, Pipelines, Transformations
 from .base import Composite, T
 
 
@@ -84,12 +80,12 @@ class TransformTarget(Composite):
         )
         return predictions
 
-    def get_child_transformations_primary(self) -> TransformationsAlwaysList:
+    def get_child_transformations_primary(self) -> Pipelines:
         return [self.y_transformation]
 
     def get_child_transformations_secondary(
         self,
-    ) -> Optional[TransformationsAlwaysList]:
+    ) -> Optional[Pipelines]:
         return self.X_pipeline
 
     def clone(self, clone_child_transformations: Callable) -> TransformTarget:

@@ -4,9 +4,9 @@ from typing import Any, Callable, List, Optional, Tuple
 
 import pandas as pd
 
-from fold.transformations.common import get_concatenated_names
+from fold.composites.common import get_concatenated_names
 
-from ..transformations.base import BlocksOrWrappable, TransformationsAlwaysList
+from ..transformations.base import BlocksOrWrappable, Pipelines
 from .base import Composite, T
 
 
@@ -23,11 +23,11 @@ class Sample(Composite):
     def __init__(
         self,
         sampler: Any,
-        transformations: BlocksOrWrappable,
+        pipeline: BlocksOrWrappable,
     ) -> None:
         self.sampler = sampler
-        self.transformations = [transformations]
-        self.name = f"Sample-{sampler.__class__.__name__}-{get_concatenated_names(self.transformations)}"
+        self.pipeline = [pipeline]
+        self.name = f"Sample-{sampler.__class__.__name__}-{get_concatenated_names(self.pipeline)}"
 
     def preprocess_primary(
         self, X: pd.DataFrame, index: int, y: T, fit: bool
@@ -48,11 +48,11 @@ class Sample(Composite):
     ) -> pd.DataFrame:
         return results[0]
 
-    def get_child_transformations_primary(self) -> TransformationsAlwaysList:
-        return self.transformations
+    def get_child_transformations_primary(self) -> Pipelines:
+        return self.pipeline
 
     def clone(self, clone_child_transformations: Callable) -> Sample:
         return Sample(
             sampler=self.sampler,
-            transformations=clone_child_transformations(self.transformations),
+            pipeline=clone_child_transformations(self.pipeline),
         )

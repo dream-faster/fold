@@ -8,7 +8,7 @@ from fold.loop.types import TrainMethod
 from fold.models.base import Model
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.base import Transformation
-from fold.transformations.test import Test
+from fold.transformations.dev import Test
 from fold.utils.tests import generate_sine_wave_data
 
 

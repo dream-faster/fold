@@ -4,10 +4,10 @@ from typing import Callable, List, Optional
 
 import pandas as pd
 
-from ..transformations.base import TransformationsAlwaysList
-from ..transformations.common import get_concatenated_names
+from ..transformations.base import Pipelines
 from .base import Composite
 from .columns import postprocess_results
+from .common import get_concatenated_names
 
 
 class Ensemble(Composite):
@@ -17,19 +17,19 @@ class Ensemble(Composite):
 
     properties = Composite.Properties()
 
-    def __init__(self, models: TransformationsAlwaysList) -> None:
-        self.models = models
-        self.name = "Ensemble-" + get_concatenated_names(models)
+    def __init__(self, pipelines: Pipelines) -> None:
+        self.pipelines = pipelines
+        self.name = "Ensemble-" + get_concatenated_names(pipelines)
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
     ) -> pd.DataFrame:
         return postprocess_results(results, self.name)
 
-    def get_child_transformations_primary(self) -> TransformationsAlwaysList:
-        return self.models
+    def get_child_transformations_primary(self) -> Pipelines:
+        return self.pipelines
 
     def clone(self, clone_child_transformations: Callable) -> Ensemble:
         return Ensemble(
-            models=clone_child_transformations(self.models),
+            pipelines=clone_child_transformations(self.pipelines),
         )

@@ -5,11 +5,12 @@ from typing import Callable, List, Optional, Union
 
 import pandas as pd
 
-from ..transformations.base import Transformations, TransformationsAlwaysList
+from ..transformations.base import Pipelines, Transformations
 from ..transformations.columns import SelectColumns
-from ..transformations.identity import Identity
+from ..transformations.dev import Identity
 from ..utils.list import flatten, has_intersection, keep_only_duplicates, wrap_in_list
 from .base import Composite
+from .common import get_concatenated_names
 
 
 class ResolutionStrategy(Enum):
@@ -38,17 +39,12 @@ class Concat(Composite):
 
     def __init__(
         self,
-        transformations: Transformations,
+        pipelines: Pipelines,
         if_duplicate_keep: Union[ResolutionStrategy, str] = ResolutionStrategy.both,
     ) -> None:
-        self.transformations = transformations
+        self.pipelines = pipelines
         self.if_duplicate_keep = ResolutionStrategy.from_str(if_duplicate_keep)
-        self.name = "Concat-" + "-".join(
-            [
-                transformation.name if hasattr(transformation, "name") else ""
-                for transformation in transformations
-            ]
-        )
+        self.name = "Concat-" + get_concatenated_names(pipelines)
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
@@ -74,12 +70,12 @@ class Concat(Composite):
         else:
             return pd.concat(results, axis="columns")
 
-    def get_child_transformations_primary(self) -> TransformationsAlwaysList:
-        return self.transformations
+    def get_child_transformations_primary(self) -> Pipelines:
+        return self.pipelines
 
     def clone(self, clone_child_transformations: Callable) -> Concat:
         return Concat(
-            transformations=clone_child_transformations(self.transformations),
+            pipelines=clone_child_transformations(self.pipelines),
             if_duplicate_keep=self.if_duplicate_keep,
         )
 
@@ -94,36 +90,32 @@ class Pipeline(Composite):
 
     def __init__(
         self,
-        transformations: Transformations,
+        pipeline: "Pipeline",
     ) -> None:
-        self.transformations = transformations
-        self.name = "Pipeline-" + "-".join(
-            [
-                transformation.name if hasattr(transformation, "name") else ""
-                for transformation in transformations
-            ]
-        )
+        self.pipeline = pipeline
+        self.name = "Pipeline-" + get_concatenated_names(pipeline)
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
     ) -> pd.DataFrame:
         return results[0]
 
-    def get_child_transformations_primary(self) -> TransformationsAlwaysList:
-        return [self.transformations]
+    def get_child_transformations_primary(self) -> Pipelines:
+        return [self.pipeline]
 
     def clone(self, clone_child_transformations: Callable) -> Pipeline:
-        return Pipeline(
-            transformations=clone_child_transformations(self.transformations)
-        )
+        return Pipeline(pipeline=clone_child_transformations(self.pipeline))
 
 
 def TransformColumn(
-    columns: Union[List[str], str], transformation: Transformations
+    columns: Union[List[str], str], pipeline: Transformations
 ) -> Composite:
+    """
+    Transforms a single or multiple columns using the given pipeline.
+    """
     return Concat(
         [
-            [SelectColumns(columns)] + wrap_in_list(transformation),
+            [SelectColumns(columns)] + wrap_in_list(pipeline),
             Identity(),
         ],
         if_duplicate_keep=ResolutionStrategy.left,

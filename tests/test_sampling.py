@@ -3,7 +3,7 @@ from imblearn.under_sampling import RandomUnderSampler
 from fold.composites.sample import Sample
 from fold.loop import train
 from fold.splitters import ExpandingWindowSplitter
-from fold.transformations.test import Test
+from fold.transformations.dev import Test
 from fold.utils.tests import generate_zeros_and_ones_skewed
 
 

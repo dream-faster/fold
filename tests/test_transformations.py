@@ -4,7 +4,8 @@ from fold.composites.columns import PerColumnTransform
 from fold.composites.concat import TransformColumn
 from fold.loop import backtest, train
 from fold.splitters import ExpandingWindowSplitter
-from fold.transformations import Identity, SelectColumns
+from fold.transformations.columns import SelectColumns
+from fold.transformations.dev import Identity
 from fold.transformations.difference import Difference
 from fold.transformations.lags import AddLagsX, AddLagsY
 from fold.utils.tests import generate_sine_wave_data
