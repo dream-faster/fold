@@ -58,9 +58,6 @@ docs = [
   "mkdocs-autorefs"
 ]
 ray = ["ray"]
-examples = [
-  "datasets @ https://github.com/dream-faster/datasets/archive/main.zip"
-]
 
 [tool.hatch.envs.quality]
 dependencies = [
@@ -107,6 +104,3 @@ pythonpath = [
   "src"
 ]
 testpaths = ["tests"]
-
-[tool.hatch.metadata]
-allow-direct-references = true
