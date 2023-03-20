@@ -37,6 +37,9 @@ def recursively_transform(
     The main function to transform (and fit or update) a pipline of transformations.
     `stage` is used to determine whether to run the inner loop for online models.
     """
+    if y is not None and len(X) != len(y):
+        y = y[X.index]
+
     if isinstance(transformations, List):
         for transformation in transformations:
             X = recursively_transform(
@@ -244,6 +247,14 @@ def _preprocess_X_y_with_memory(
     if transformation._state is None or transformation.properties.memory is None:
         return X, y
     memory_X, memory_y = transformation._state.memory_X, transformation._state.memory_y
+    non_overlapping_indices = ~memory_X.index.isin(X.index)
+    memory_X, memory_y = (
+        memory_X[non_overlapping_indices],
+        memory_y[non_overlapping_indices],
+    )
+    if len(memory_X) == 0:
+        return X, y
+    assert len(memory_X) == len(memory_y)
     if y is None:
         return pd.concat([memory_X, X], axis="index"), y
     else:

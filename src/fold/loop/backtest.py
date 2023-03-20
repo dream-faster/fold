@@ -39,7 +39,7 @@ def backtest(
         )
         for split in tqdm(splitter.splits(length=len(X)))
     ]
-    return pd.concat(results, axis="index")
+    return trim_initial_nans_single(pd.concat(results, axis="index"))
 
 
 def __backtest_on_window(
@@ -65,7 +65,7 @@ def __backtest_on_window(
         if sample_weights is not None
         else None
     )
-    X_test = recursively_transform(
+    return recursively_transform(
         X_test,
         y_test,
         sample_weights_test,
@@ -73,5 +73,3 @@ def __backtest_on_window(
         stage=Stage.update_online_only,
         backend=backend,
     )
-
-    return trim_initial_nans_single(X_test)

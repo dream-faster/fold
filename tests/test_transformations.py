@@ -83,7 +83,7 @@ def test_per_column_transform() -> None:
 
 
 def test_add_lags_y():
-    X, y = generate_sine_wave_data(resolution=600)
+    X, y = generate_sine_wave_data(resolution=6000)
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
     transformations = AddLagsY(lags=[1, 2, 3])
     transformations_over_time = train(transformations, X, y, splitter)
@@ -94,7 +94,7 @@ def test_add_lags_y():
 
 
 def test_add_lags_X():
-    X, y = generate_sine_wave_data(resolution=600)
+    X, y = generate_sine_wave_data(resolution=6000)
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
     transformations = AddLagsX(columns_and_lags=[("sine", [1, 2, 3])])
     transformations_over_time = train(transformations, X, y, splitter)

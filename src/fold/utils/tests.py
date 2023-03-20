@@ -16,7 +16,7 @@ def generate_sine_wave_data(
     series = pd.Series(
         my_wave,
         name="sine",
-        index=pd.date_range(end="2022", periods=len(my_wave), freq="m"),
+        index=pd.date_range(end="2022", periods=len(my_wave), freq="min"),
     )
     X = series.to_frame()
     y = series.shift(-1)[:-1]
