@@ -24,7 +24,8 @@
 
 <!-- INTRO -->
 
-![Fold's main features](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/main_features.png)
+![Fold's main features](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/main_features.svg#gh-light-mode-only) 
+![Fold's main features](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/main_features_dark.svg#gh-dark-mode-only)
 
 - Composite Pipelines with Continuous Validation (Cross Validation) - [What does that mean?](#Fold-is-different)
 - Distributed computing - [Why is this important?](#Fold-is-different)
@@ -35,7 +36,8 @@ Continuous validation prevents you from accidentally using information that woul
 
 <br/>
 
-![Fold works with many third party libraries](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/third_party.png)
+![Fold works with many third party libraries](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/third_party.svg#gh-light-mode-only)
+![Fold works with many third party libraries](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/third_party_dark.svg#gh-dark-mode-only)
 
 <!-- GETTING STARTED -->
 <br/>
@@ -118,9 +120,12 @@ pred = backtest(transformations_over_time, X, y, splitter)
 
 ## Our open source Time Series toolkit
 
-[![Krisi](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/dream_faster_suite_krisi.png)](https://github.com/dream-faster/krisi)
-[![Fold](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/dream_faster_suite_fold.png)](https://github.com/dream-faster/fold)
-[![Fold/Models](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/dream_faster_suite_fold_models.png)](https://github.com/dream-faster/fold-models)
+[![Krisi](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/dream_faster_suite_krisi.svg#gh-light-mode-only)](https://github.com/dream-faster/krisi)
+[![Krisi](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/dream_faster_suite_krisi_dark.svg#gh-dark-mode-only)](https://github.com/dream-faster/krisi)
+[![Fold](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/dream_faster_suite_fold.svg#gh-light-mode-only)](https://github.com/dream-faster/fold)
+[![Fold](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/dream_faster_suite_fold_dark.svg#gh-dark-mode-only)](https://github.com/dream-faster/fold)
+[![Fold/Models](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/dream_faster_suite_fold_models.svg#gh-light-mode-only)](https://github.com/dream-faster/fold-models)
+[![Fold/Models](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/dream_faster_suite_fold_models_dark.svg#gh-dark-mode-only)](https://github.com/dream-faster/fold-models)
 
 ## Contribution
 
