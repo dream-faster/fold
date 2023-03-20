@@ -16,12 +16,11 @@
 ::: fold.composites.target
 
 ::: fold.transformations.base
-::: fold.transformations.breakpoint
 ::: fold.transformations.columns
 ::: fold.transformations.function
 ::: fold.transformations.identity
+::: fold.transformations.lags
 ::: fold.transformations.sklearn
-::: fold.transformations.test
 ::: fold.transformations.update
 
 ::: fold.splitters
