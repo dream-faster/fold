@@ -24,7 +24,7 @@
 
 <!-- INTRO -->
 
-![Fold's main features](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/main_features.svg#gh-light-mode-only)
+![Fold's main features](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/main_features.svg#gh-light-mode-only) 
 ![Fold's main features](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/main_features_dark.svg#gh-dark-mode-only)
 
 - Composite Pipelines with Continuous Validation (Cross Validation) - [What does that mean?](#Fold-is-different)

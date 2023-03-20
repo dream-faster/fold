@@ -18,7 +18,7 @@
 </g>
 <rect x="55" y="19" width="17" height="17" fill="url(#pattern1)"/>
 <g clip-path="url(#clip1_116_217)">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M1065.44 84C1054.14 84 1045 93.1667 1045 104.507C1045 113.572 1050.85 121.245 1058.98 123.961C1059.99 124.165 1060.36 123.52 1060.36 122.977C1060.36 122.502 1060.33 120.872 1060.33 119.174C1054.64 120.397 1053.46 116.73 1053.46 116.73C1052.55 114.353 1051.19 113.742 1051.19 113.742C1049.33 112.486 1051.33 112.486 1051.33 112.486C1053.39 112.622 1054.48 114.591 1054.48 114.591C1056.3 117.714 1059.25 116.832 1060.43 116.288C1060.6 114.964 1061.14 114.047 1061.72 113.538C1057.18 113.063 1052.41 111.298 1052.41 103.42C1052.41 101.18 1053.22 99.3462 1054.51 97.9204C1054.31 97.4113 1053.59 95.3058 1054.71 92.4879C1054.71 92.4879 1056.44 91.9446 1060.33 94.5929C1061.99 94.144 1063.71 93.9157 1065.44 93.9137C1067.16 93.9137 1068.92 94.1517 1070.55 94.5929C1074.44 91.9446 1076.17 92.4879 1076.17 92.4879C1077.28 95.3058 1076.57 97.4113 1076.37 97.9204C1077.69 99.3462 1078.47 101.18 1078.47 103.42C1078.47 111.298 1073.7 113.029 1069.13 113.538C1069.87 114.183 1070.51 115.405 1070.51 117.341C1070.51 120.091 1070.48 122.298 1070.48 122.977C1070.48 123.52 1070.85 124.165 1071.87 123.962C1079.99 121.245 1085.84 113.572 1085.84 104.507C1085.88 93.1667 1076.71 84 1065.44 84Z" fill="#24292F"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M1065.44 84C1054.14 84 1045 93.1667 1045 104.507C1045 113.572 1050.85 121.245 1058.98 123.961C1059.99 124.165 1060.36 123.52 1060.36 122.977C1060.36 122.502 1060.33 120.872 1060.33 119.174C1054.64 120.397 1053.46 116.73 1053.46 116.73C1052.55 114.353 1051.19 113.742 1051.19 113.742C1049.33 112.486 1051.33 112.486 1051.33 112.486C1053.39 112.622 1054.48 114.591 1054.48 114.591C1056.3 117.714 1059.25 116.832 1060.43 116.288C1060.6 114.964 1061.14 114.047 1061.72 113.538C1057.18 113.063 1052.41 111.298 1052.41 103.42C1052.41 101.18 1053.22 99.3462 1054.51 97.9204C1054.31 97.4112 1053.59 95.3058 1054.71 92.4879C1054.71 92.4879 1056.44 91.9446 1060.33 94.5929C1061.99 94.144 1063.71 93.9157 1065.44 93.9137C1067.16 93.9137 1068.92 94.1517 1070.55 94.5929C1074.44 91.9446 1076.17 92.4879 1076.17 92.4879C1077.28 95.3058 1076.57 97.4112 1076.37 97.9204C1077.69 99.3462 1078.47 101.18 1078.47 103.42C1078.47 111.298 1073.7 113.029 1069.13 113.538C1069.87 114.183 1070.51 115.405 1070.51 117.341C1070.51 120.091 1070.48 122.298 1070.48 122.977C1070.48 123.52 1070.85 124.165 1071.87 123.962C1079.99 121.245 1085.84 113.572 1085.84 104.507C1085.88 93.1667 1076.71 84 1065.44 84Z" fill="#24292F"/>
 </g>
 </g>
 <defs>
@@ -42,7 +42,7 @@
 <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_116_217"/>
 <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_116_217" result="shape"/>
 </filter>
-<filter id="filter2_d_116_217" x="92.2756" y="52.3225" width="149.148" height="102.061" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<filter id="filter2_d_116_217" x="92.2756" y="52.3224" width="149.148" height="102.061" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
 <feFlood flood-opacity="0" result="BackgroundImageFix"/>
 <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
 <feOffset/>
@@ -55,7 +55,7 @@
 <pattern id="pattern0" patternContentUnits="objectBoundingBox" width="1" height="1">
 <use xlink:href="#image0_116_217" transform="matrix(0.015625 0 0 0.0110518 0 -0.00457317)"/>
 </pattern>
-<filter id="filter3_d_116_217" x="209.387" y="57.7273" width="793.844" height="97.4546" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<filter id="filter3_d_116_217" x="209.387" y="57.7273" width="793.844" height="97.4545" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
 <feFlood flood-opacity="0" result="BackgroundImageFix"/>
 <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
 <feOffset/>
@@ -65,7 +65,7 @@
 <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_116_217"/>
 <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_116_217" result="shape"/>
 </filter>
-<filter id="filter4_d_116_217" x="44.4698" y="-16.0908" width="190.297" height="87.2825" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<filter id="filter4_d_116_217" x="44.4698" y="-16.0909" width="190.297" height="87.2827" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
 <feFlood flood-opacity="0" result="BackgroundImageFix"/>
 <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
 <feOffset/>
