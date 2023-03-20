@@ -11,7 +11,7 @@ T = TypeVar("T", Optional[pd.Series], pd.Series)
 
 class Composite(ABC):
     """
-    A Composite transformation is a transformation that contains other transformations.
+    A Composite contains other transformations.
     """
 
     @dataclass

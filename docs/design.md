@@ -28,7 +28,7 @@ Composites enable us to:
 - Use the result of the first (primary) set of Transformations/Pipeline in the second Transformations/Pipeline. (like MetaLabeling, or TargetTransformation)
 
 
-### Mini-batch and Continuously updating Models
+### Mini-batch and Online Models
 
 A mini-batch model is retrained for every split, defined for the whole pipeline, by the [Splitter](splitters.md).
 It can not update its state in the meantime.
