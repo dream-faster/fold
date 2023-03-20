@@ -4,8 +4,8 @@ from fold.composites.target import TransformTarget
 from fold.loop import backtest, train
 from fold.models.dummy import DummyRegressor
 from fold.splitters import ExpandingWindowSplitter
+from fold.transformations.dev import Test
 from fold.transformations.difference import Difference
-from fold.transformations.test import Test
 from fold.utils.tests import generate_monotonous_data, generate_zeros_and_ones_skewed
 
 

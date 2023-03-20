@@ -4,10 +4,10 @@ from typing import Callable, List, Optional, Tuple
 
 import pandas as pd
 
-from fold.transformations.common import get_concatenated_names
+from fold.composites.common import get_concatenated_names
 from fold.utils.checks import get_prediction_column
 
-from ..transformations.base import BlocksOrWrappable, TransformationsAlwaysList
+from ..transformations.base import BlocksOrWrappable, Pipelines
 from .base import Composite, T
 
 
@@ -86,12 +86,12 @@ class Hybrid(Composite):
             .to_frame()
         )
 
-    def get_child_transformations_primary(self) -> TransformationsAlwaysList:
+    def get_child_transformations_primary(self) -> Pipelines:
         return self.primary
 
     def get_child_transformations_secondary(
         self,
-    ) -> Optional[TransformationsAlwaysList]:
+    ) -> Optional[Pipelines]:
         return self.meta
 
     def clone(self, clone_child_transformations: Callable) -> Hybrid:

@@ -10,6 +10,10 @@ from .base import Model
 
 
 class BaselineNaive(Model):
+    """
+    A model that predicts the last value seen.
+    """
+
     name = "BaselineNaive"
     properties = Model.Properties(mode=Transformation.Properties.Mode.online, memory=1)
 
@@ -27,6 +31,10 @@ class BaselineNaive(Model):
 
 
 class BaselineNaiveSeasonal(Model):
+    """
+    A model that predicts the last value seen in the same season.
+    """
+
     name = "BaselineNaiveSeasonal"
     properties = Model.Properties(mode=Transformation.Properties.Mode.online)
     current_season = 0

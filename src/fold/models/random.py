@@ -9,6 +9,10 @@ from .base import Model
 
 
 class RandomClassifier(Model):
+    """
+    A model that predicts random classes and probabilities.
+    """
+
     properties = Transformation.Properties()
     name = "RandomClassifier"
 

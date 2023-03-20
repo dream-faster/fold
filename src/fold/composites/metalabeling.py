@@ -4,17 +4,17 @@ from typing import Callable, List, Optional, Tuple, Union
 
 import pandas as pd
 
-from fold.transformations.common import get_concatenated_names
+from fold.composites.common import get_concatenated_names
 from fold.utils.checks import get_prediction_column
 
-from ..transformations.base import BlocksOrWrappable, TransformationsAlwaysList
+from ..transformations.base import BlocksOrWrappable, Pipelines
 from .base import Composite, T
 
 
 class MetaLabeling(Composite):
 
     """
-    This is a composite transformation that takes a primary pipeline and a meta pipeline.
+    MetaLabeling takes a primary pipeline and a meta pipeline.
     The primary pipeline is used to predict the target variable.
     The meta pipeline is used to predict whether the primary model's prediction's are correct.
     It multiplies the probabilities from the meta pipeline with the predictions of the primary pipeline.
@@ -105,12 +105,12 @@ class MetaLabeling(Composite):
         meta_probabilities = meta_probabilities.rename(columns=dc)
         return pd.concat([result, meta_probabilities], axis="columns")
 
-    def get_child_transformations_primary(self) -> TransformationsAlwaysList:
+    def get_child_transformations_primary(self) -> Pipelines:
         return self.primary
 
     def get_child_transformations_secondary(
         self,
-    ) -> Optional[TransformationsAlwaysList]:
+    ) -> Optional[Pipelines]:
         return self.meta
 
     def clone(self, clone_child_transformations: Callable) -> MetaLabeling:

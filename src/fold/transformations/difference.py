@@ -6,6 +6,10 @@ from .base import InvertibleTransformation
 
 
 class Difference(InvertibleTransformation):
+    """
+    Performs differencing.
+    """
+
     properties = InvertibleTransformation.Properties()
     name = "Difference"
 

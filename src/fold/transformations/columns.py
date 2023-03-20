@@ -9,6 +9,10 @@ from .base import Transformation, fit_noop
 
 
 class SelectColumns(Transformation):
+    """
+    Select a single or multiple columns.
+    """
+
     properties = Transformation.Properties()
 
     def __init__(self, columns: Union[List[str], str]) -> None:
@@ -23,6 +27,10 @@ class SelectColumns(Transformation):
 
 
 class DropColumns(Transformation):
+    """
+    Drops a single or multiple columns.
+    """
+
     properties = Transformation.Properties()
 
     def __init__(self, columns: Union[List[str], str]) -> None:
@@ -37,6 +45,10 @@ class DropColumns(Transformation):
 
 
 class RenameColumns(Transformation):
+    """
+    Renames columns.
+    """
+
     properties = Transformation.Properties()
 
     def __init__(self, columns_mapper: dict) -> None:
@@ -51,6 +63,10 @@ class RenameColumns(Transformation):
 
 
 class OnlyPredictions(Transformation):
+    """
+    Drops all columns except the output model(s)' predictions.
+    """
+
     properties = Transformation.Properties()
 
     def __init__(self) -> None:
@@ -66,6 +82,10 @@ class OnlyPredictions(Transformation):
 
 
 class OnlyProbabilities(Transformation):
+    """
+    Drops all columns except the output model(s)' probabilities.
+    """
+
     properties = Transformation.Properties()
 
     def __init__(self) -> None:

@@ -2,7 +2,7 @@ from fold.loop import backtest, train
 from fold.models.baseline import BaselineNaiveSeasonal
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.columns import OnlyPredictions
-from fold.transformations.test import Test
+from fold.transformations.dev import Test
 from fold.utils.tests import check_if_transformation_mutates, generate_sine_wave_data
 
 

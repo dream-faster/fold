@@ -6,6 +6,10 @@ from .base import Transformation, fit_noop
 
 
 class DontUpdate(Transformation):
+    """
+    Don't update the wrapped Transformation
+    """
+
     properties = Transformation.Properties()
 
     def __init__(self, transformation: Transformation) -> None:

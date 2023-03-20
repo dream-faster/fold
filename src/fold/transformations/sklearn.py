@@ -7,6 +7,10 @@ from .base import FeatureSelector, Transformation, fit_noop
 
 
 class SKLearnTransformation(Transformation):
+    """
+    Wraps an SKLearn Transformation.
+    """
+
     properties = Transformation.Properties()
 
     def __init__(self, transformation) -> None:
@@ -60,7 +64,12 @@ class SKLearnTransformation(Transformation):
 
 
 class SKLearnFeatureSelector(FeatureSelector):
+    """
+    Wraps an SKLearn Feature Selector class, stores the selected columns in `selected_features` property
+    """
+
     properties = Transformation.Properties()
+    selected_features: Optional[str] = None
 
     def __init__(self, transformation) -> None:
         if hasattr(transformation, "set_output"):
