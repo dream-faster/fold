@@ -6,6 +6,10 @@ from .base import Transformation
 
 
 class Breakpoint(Transformation):
+    """
+    A transformation that stops execution at the specified point.
+    """
+
     properties = Transformation.Properties()
 
     def __init__(

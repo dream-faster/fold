@@ -11,6 +11,10 @@ from .columns import postprocess_results
 
 
 class Ensemble(Composite):
+    """
+    Ensemble (average) the results of multiple pipelines.
+    """
+
     properties = Composite.Properties()
 
     def __init__(self, models: TransformationsAlwaysList) -> None:

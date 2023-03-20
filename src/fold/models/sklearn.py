@@ -7,6 +7,10 @@ from fold.transformations.base import Transformation, fit_noop
 
 
 class SKLearnClassifier(Model):
+    """
+    Wraps an SKLearn Classifier model.
+    """
+
     properties = Model.Properties(model_type=Model.Properties.ModelType.classifier)
 
     def __init__(self, model) -> None:
@@ -50,6 +54,10 @@ class SKLearnClassifier(Model):
 
 
 class SKLearnRegressor(Model):
+    """
+    Wraps an SKLearn regressor model.
+    """
+
     properties = Model.Properties(model_type=Model.Properties.ModelType.regressor)
 
     def __init__(self, model) -> None:
@@ -86,9 +94,9 @@ class SKLearnRegressor(Model):
 
 class SKLearnPipeline(Model):
     """
-    This is a wrapper for scikit-learn Pipelines, which are not compatible with fold.
+    Wraps an scikit-learn Pipeline.
     It's usage is discouraged, as it's not possible to update an scikit-learn Pipeline with new data.
-    Fold has all the primitives that scikit-learn Pipelines provide, with an easy syntax.
+    Fold has all the primitives that scikit-learn Pipelines provide, just wrap your Transformations into an array.
     """
 
     properties = Transformation.Properties()

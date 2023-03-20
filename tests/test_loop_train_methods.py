@@ -3,7 +3,7 @@ from typing import Optional, Union
 import pandas as pd
 
 from fold.loop import train
-from fold.loop.backtest import _backtest_and_mutate
+from fold.loop.backtest import backtest
 from fold.loop.types import TrainMethod
 from fold.models.base import Model
 from fold.splitters import ExpandingWindowSplitter
@@ -82,7 +82,7 @@ def test_loop_parallel_minibatch_call_times() -> None:
     assert transformations_over_time[0].iloc[2].no_of_calls_transform_insample == 1
     assert transformations_over_time[0].iloc[2].no_of_calls_transform_outofsample == 0
 
-    _ = _backtest_and_mutate(transformations_over_time, X, y, splitter)
+    _ = backtest(transformations_over_time, X, y, splitter, mutate=True)
     assert transformations_over_time[0].iloc[0].no_of_calls_fit == 1
     assert transformations_over_time[0].iloc[0].no_of_calls_update == 0
     assert transformations_over_time[0].iloc[0].no_of_calls_transform_insample == 1
@@ -126,7 +126,7 @@ def test_loop_parallel_online_call_times() -> None:
     assert transformations_over_time[0].iloc[2].no_of_calls_transform_insample == 1
     assert transformations_over_time[0].iloc[2].no_of_calls_transform_outofsample == 0
 
-    _ = _backtest_and_mutate(transformations_over_time, X, y, splitter)
+    _ = backtest(transformations_over_time, X, y, splitter, mutate=True)
     assert transformations_over_time[0].iloc[0].no_of_calls_fit == 1
     assert transformations_over_time[0].iloc[0].no_of_calls_update == 200
     assert transformations_over_time[0].iloc[0].no_of_calls_transform_insample == 1
@@ -170,7 +170,7 @@ def test_loop_sequential_minibatch_call_times() -> None:
     assert transformations_over_time[0].iloc[2].no_of_calls_transform_insample == 1
     assert transformations_over_time[0].iloc[2].no_of_calls_transform_outofsample == 2
 
-    _ = _backtest_and_mutate(transformations_over_time, X, y, splitter)
+    _ = backtest(transformations_over_time, X, y, splitter, mutate=True)
     assert transformations_over_time[0].iloc[0].no_of_calls_fit == 1
     assert transformations_over_time[0].iloc[0].no_of_calls_update == 0
     assert transformations_over_time[0].iloc[0].no_of_calls_transform_insample == 1
@@ -214,7 +214,7 @@ def test_loop_method_sequential_online_call_times() -> None:
     assert transformations_over_time[0].iloc[2].no_of_calls_transform_insample == 1
     assert transformations_over_time[0].iloc[2].no_of_calls_transform_outofsample == 400
 
-    _ = _backtest_and_mutate(transformations_over_time, X, y, splitter)
+    _ = backtest(transformations_over_time, X, y, splitter, mutate=True)
     assert transformations_over_time[0].iloc[0].no_of_calls_fit == 1
     assert transformations_over_time[0].iloc[0].no_of_calls_update == 200
     assert transformations_over_time[0].iloc[0].no_of_calls_transform_insample == 1

@@ -29,6 +29,11 @@ class ResolutionStrategy(Enum):
 
 
 class Concat(Composite):
+    """
+    Concatenates the results of multiple pipelines.
+    """
+
+    ResolutionStrategy = ResolutionStrategy
     properties = Composite.Properties()
 
     def __init__(
@@ -80,6 +85,11 @@ class Concat(Composite):
 
 
 class Pipeline(Composite):
+    """
+    An optional wrapper that is equivalent to using a single array for the transformations.
+    It executes the transformations in the order they are provided.
+    """
+
     properties = Composite.Properties(primary_only_single_pipeline=True)
 
     def __init__(

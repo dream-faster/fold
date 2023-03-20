@@ -18,11 +18,12 @@ def backtest(
     splitter: Splitter,
     backend: Backend = Backend.no,
     sample_weights: Optional[pd.Series] = None,
+    mutate: bool = False,
 ) -> OutOfSamplePredictions:
     """
     Backtest a list of transformations over time.
     Run backtest on a set of TransformationsOverTime and given data.
-    Does not mutate or change the transformations in any way, aka you can backtest multiple times.
+    Only mutates the data when `mutate` is True, but its usage is discouraged.
     """
     X, y = check_types(X, y)
 
@@ -34,35 +35,7 @@ def backtest(
             y,
             sample_weights,
             backend,
-            mutate=False,
-        )
-        for split in tqdm(splitter.splits(length=len(X)))
-    ]
-    return pd.concat(results, axis="index")
-
-
-def _backtest_and_mutate(
-    transformations_over_time: TransformationsOverTime,
-    X: Optional[pd.DataFrame],
-    y: pd.Series,
-    splitter: Splitter,
-    backend: Backend = Backend.no,
-    sample_weights: Optional[pd.Series] = None,
-) -> OutOfSamplePredictions:
-    """
-    Backtest a list of transformations over time, and mutates `transformations_over_time` inplace.
-    """
-    X, y = check_types(X, y)
-
-    results = [
-        __backtest_on_window(
-            transformations_over_time,
-            split,
-            X,
-            y,
-            sample_weights,
-            backend,
-            mutate=True,
+            mutate=mutate,
         )
         for split in tqdm(splitter.splits(length=len(X)))
     ]

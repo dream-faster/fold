@@ -14,7 +14,7 @@ from .base import Composite, T
 class MetaLabeling(Composite):
 
     """
-    This is a composite transformation that takes a primary pipeline and a meta pipeline.
+    MetaLabeling takes a primary pipeline and a meta pipeline.
     The primary pipeline is used to predict the target variable.
     The meta pipeline is used to predict whether the primary model's prediction's are correct.
     It multiplies the probabilities from the meta pipeline with the predictions of the primary pipeline.
