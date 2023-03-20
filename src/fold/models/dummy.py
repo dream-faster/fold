@@ -7,6 +7,10 @@ from .base import Model
 
 
 class DummyClassifier(Model):
+    """
+    A model that predicts a single class and probabilities.
+    """
+
     properties = Transformation.Properties()
     name = "DummyClassifier"
 
@@ -40,6 +44,10 @@ class DummyClassifier(Model):
 
 
 class DummyRegressor(Model):
+    """
+    A model that predicts a single value.
+    """
+
     properties = Transformation.Properties()
     name = "DummyRegressor"
 

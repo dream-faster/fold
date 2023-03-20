@@ -3,6 +3,7 @@
 ::: fold.loop.infer
 
 ::: fold.models.baseline
+::: fold.models.dummy
 ::: fold.models.random
 ::: fold.models.sklearn
 
@@ -17,8 +18,8 @@
 
 ::: fold.transformations.base
 ::: fold.transformations.columns
+::: fold.transformations.difference
 ::: fold.transformations.function
-::: fold.transformations.identity
 ::: fold.transformations.lags
 ::: fold.transformations.sklearn
 ::: fold.transformations.update
