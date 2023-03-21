@@ -120,7 +120,6 @@ def test_difference():
 
 
 def test_holiday_transformation() -> None:
-    # the naive model returns X as prediction, so y.shift(1) should be == pred
     X, y = generate_sine_wave_data()
     new_index = pd.date_range(start="1/1/2018", periods=len(X))
     X.index = new_index
