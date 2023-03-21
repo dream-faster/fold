@@ -59,7 +59,19 @@ class HolidayTypes(Enum):
 class AddHolidayFeatures(Transformation):
     """
     Adds holiday features for given regions as a column.
-    For each passed country_code it produces a column of Boolean if the given index is a holiday or not.
+
+
+    Parameters
+    ----------
+    country_codes: List of Country codes (eg.: `US`, `DE`) for each of which to create a column according to type
+    type: How the holidays should be calculated
+        - holiday_binary: Non-special days = 0.0 | holidays = 1.0
+        - holiday_weekend: Non-special days = 0.0 | Weekends = 1.0 | holidays == 2.0 | holidays + weekend == 3.0
+        - holidays_differentiated: Non-special days = 0.0 | Weekends = 1.0 | holidays = 2.0 + according to holiday type.
+
+    Returns
+    ----------
+    pd.DataFrame with the original X concatinated with the holiday DataFrame, that has len(columns) == country_codes
     """
 
     properties = Transformation.Properties()
