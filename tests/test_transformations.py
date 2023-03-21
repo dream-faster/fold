@@ -5,10 +5,11 @@ from fold.composites.concat import TransformColumn
 from fold.loop import backtest, train
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.columns import SelectColumns
+from fold.transformations.date import AddDateTimeFeatures, DateTimeFeature
 from fold.transformations.dev import Identity
 from fold.transformations.difference import Difference
 from fold.transformations.lags import AddLagsX, AddLagsY
-from fold.utils.tests import generate_sine_wave_data
+from fold.utils.tests import generate_all_zeros, generate_sine_wave_data
 
 
 def test_no_transformation() -> None:
@@ -115,3 +116,36 @@ def test_difference():
         transformations_over_time[0].iloc[0].inverse_transform(pred).squeeze(),
         atol=1e-3,
     ).all()
+
+
+def test_datetime_features():
+    X, y = generate_all_zeros(length=600)
+    splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
+    transformations = AddDateTimeFeatures(
+        [
+            DateTimeFeature.second,
+            DateTimeFeature.minute,
+            DateTimeFeature.hour,
+            DateTimeFeature.day_of_week,
+            DateTimeFeature.day_of_month,
+            DateTimeFeature.day_of_year,
+            DateTimeFeature.week,
+            DateTimeFeature.week_of_year,
+            DateTimeFeature.month,
+            DateTimeFeature.quarter,
+            DateTimeFeature.year,
+        ]
+    )
+    transformations_over_time = train(transformations, X, y, splitter)
+    pred = backtest(transformations_over_time, X, y, splitter)
+    assert (pred["second"] == X.loc[pred.index].index.second).all()
+    assert (pred["minute"] == X.loc[pred.index].index.minute).all()
+    assert (pred["hour"] == X.loc[pred.index].index.hour).all()
+    assert (pred["day_of_week"] == X.loc[pred.index].index.dayofweek).all()
+    assert (pred["day_of_month"] == X.loc[pred.index].index.day).all()
+    assert (pred["day_of_year"] == X.loc[pred.index].index.dayofyear).all()
+    assert (pred["week"] == X.loc[pred.index].index.week).all()
+    assert (pred["week_of_year"] == X.loc[pred.index].index.weekofyear).all()
+    assert (pred["month"] == X.loc[pred.index].index.month).all()
+    assert (pred["quarter"] == X.loc[pred.index].index.quarter).all()
+    assert (pred["year"] == X.loc[pred.index].index.year).all()
