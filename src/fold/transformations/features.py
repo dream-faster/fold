@@ -98,6 +98,8 @@ class AddHolidayFeatures(Transformation):
 
         elif self.type is HolidayTypes.holiday_weekend:
             holiday_df = get_multi_holidays(X.index, self.country_codes)
+
+            # All values that are bigger than 0 are holidays, but we don't want to differentiate between them
             holiday_df[holiday_df != 0.0] = 1.0
 
             extra_holiday_features = holiday_df.mul(2).add(
