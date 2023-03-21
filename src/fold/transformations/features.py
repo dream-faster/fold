@@ -58,7 +58,7 @@ class HolidayTypes(Enum):
 
 class AddHolidayFeatures(Transformation):
     """
-    Adds holiday features for given regions as a column.
+    Adds holiday features for given regions as multiple columns.
 
 
     Parameters
