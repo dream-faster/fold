@@ -153,8 +153,8 @@ def test_holiday_minute_transformation() -> None:
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     transformations = [
         AddHolidayFeatures(["US", "DE"], type="holiday_binary"),
-        AddHolidayFeatures(["DE"], type="holiday_weekend"),
-        AddHolidayFeatures(["US"], type="holidays_differentiated"),
+        AddHolidayFeatures(["DE"], type="weekday_weekend_holiday"),
+        AddHolidayFeatures(["US"], type="weekday_weekend_uniqueholiday"),
     ]
 
     transformations_over_time = train(transformations, X, y, splitter)
@@ -168,11 +168,12 @@ def test_holiday_minute_transformation() -> None:
         pred["DE_holiday_binary"]["2021-12-25"].mean() == 1.0
     ), "Christmas should be a holiday for DE."
     assert (
-        pred["DE_holiday_weekend"]["2021-12-25"].mean() == 3.0
+        pred["DE_weekday_weekend_holiday"]["2021-12-25"].mean() == 3.0
     ), "2021-12-25 should be both a holiday and a weekend."
     assert (
-        pred["US_holidays_differentiated"]["2021-12-31"].mean() == 12.0
+        pred["US_weekday_weekend_uniqueholiday"]["2021-12-31"].mean() == 12.0
     ), "2021-12-31 should be a holiday with a special id."
+
 
 def test_datetime_features():
     X, y = generate_all_zeros(length=600)
@@ -205,4 +206,3 @@ def test_datetime_features():
     assert (pred["month"] == X.loc[pred.index].index.month).all()
     assert (pred["quarter"] == X.loc[pred.index].index.quarter).all()
     assert (pred["year"] == X.loc[pred.index].index.year).all()
-

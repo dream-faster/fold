@@ -40,16 +40,16 @@ def get_multi_holidays(
     return df
 
 
-class HolidayTypes(Enum):
+class LabelingMethod(Enum):
     holiday_binary = "holiday_binary"
-    holiday_weekend = "holiday_weekend"
-    holidays_differentiated = "holidays_differentiated"
+    weekday_weekend_holiday = "weekday_weekend_holiday"
+    weekday_weekend_uniqueholiday = "weekday_weekend_uniqueholiday"
 
     @staticmethod
-    def from_str(value: Union[str, "HolidayTypes"]) -> "HolidayTypes":
-        if isinstance(value, HolidayTypes):
+    def from_str(value: Union[str, "LabelingMethod"]) -> "LabelingMethod":
+        if isinstance(value, LabelingMethod):
             return value
-        for strategy in HolidayTypes:
+        for strategy in LabelingMethod:
             if strategy.value == value:
                 return strategy
         else:
@@ -66,8 +66,8 @@ class AddHolidayFeatures(Transformation):
     country_codes: List of Country codes (eg.: `US`, `DE`) for each of which to create a column according to type
     type: How the holidays should be calculated
         - holiday_binary: Non-special days = 0.0 | holidays = 1.0
-        - holiday_weekend: Non-special days = 0.0 | Weekends = 1.0 | holidays == 2.0 | holidays + weekend == 3.0
-        - holidays_differentiated: Non-special days = 0.0 | Weekends = 1.0 | holidays = 2.0 + according to holiday type.
+        - weekday_weekend_holiday: Non-special days = 0.0 | Weekends = 1.0 | holidays == 2.0 | holidays + weekend == 3.0
+        - weekday_weekend_uniqueholiday: Non-special days = 0.0 | Weekends = 1.0 | holidays = 2.0 + according to holiday type.
 
     Returns
     ----------
@@ -79,18 +79,18 @@ class AddHolidayFeatures(Transformation):
     def __init__(
         self,
         country_codes: Union[List[str], str],
-        type: Union[str, HolidayTypes] = HolidayTypes.holiday_weekend,
+        type: Union[str, LabelingMethod] = LabelingMethod.weekday_weekend_holiday,
     ) -> None:
         self.country_codes = wrap_in_list(country_codes)
         self.name = f"AddHolidayFeatures-{self.country_codes}"
-        self.type = HolidayTypes.from_str(type)
+        self.type = LabelingMethod.from_str(type)
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
-        if self.type is HolidayTypes.holiday_binary:
+        if self.type is LabelingMethod.holiday_binary:
             extra_holiday_features = get_multi_holidays(X.index, self.country_codes)
             extra_holiday_features[extra_holiday_features != 0.0] = 1.0
 
-        elif self.type is HolidayTypes.holiday_weekend:
+        elif self.type is LabelingMethod.weekday_weekend_holiday:
             extra_holiday_features = get_multi_holidays(X.index, self.country_codes)
 
             # All values that are bigger than 0 are holidays, but we don't want to differentiate between them
@@ -100,7 +100,7 @@ class AddHolidayFeatures(Transformation):
                 get_weekends(X.index), axis="index"
             )
 
-        elif self.type is HolidayTypes.holidays_differentiated:
+        elif self.type is LabelingMethod.weekday_weekend_uniqueholiday:
             extra_holiday_features = get_multi_holidays(
                 X.index, self.country_codes
             ).add(get_weekends(X.index), axis="index")
