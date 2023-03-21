@@ -138,26 +138,26 @@ def test_holiday_transformation() -> None:
 
 def test_holiday_minute_transformation() -> None:
     X, y = generate_sine_wave_data()
-    new_index = pd.date_range(start="11/20/2018", freq="H", periods=len(X))
+    new_index = pd.date_range(start="2018-11-16", freq="H", periods=len(X))
     X.index = new_index
     y.index = new_index
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    transformations = [AddHolidayFeatures(["US", "DE"])]
+    transformations = [AddHolidayFeatures(["US", "DE"], type="holiday_binary")]
 
     transformations_over_time = train(transformations, X, y, splitter)
     pred = backtest(transformations_over_time, X, y, splitter)
 
     assert (np.isclose((X.squeeze()[pred.index]), (pred["sine"]))).all()
     assert (
-        pred["US"]["2018-12-25"].all() == 1.0
+        pred["US"]["2018-12-25"].mean() == 1.0
     ), "Christmas should be a holiday for US."
     assert (
-        pred["DE"]["2018-12-25"].all() == 1.0
+        pred["DE"]["2018-12-25"].mean() == 1.0
     ), "Christmas should be a holiday for DE."
     assert (
-        pred["US"]["2018-12-20"].all() == 0.0
+        pred["US"]["2018-12-20"].mean() == 0.0
     ), "2018-12-20 should not be a holiday for US."
     assert (
-        pred["DE"]["2018-12-20"].all() == 0.0
+        pred["DE"]["2018-12-20"].mean() == 0.0
     ), "2018-12-20 should not be a holiday for DE."
