@@ -4,6 +4,7 @@ from fold.composites.columns import PerColumnTransform
 from fold.composites.concat import TransformColumn
 from fold.loop import backtest, train
 from fold.splitters import ExpandingWindowSplitter
+from fold.transformations import AddHolidayFeatures
 from fold.transformations.columns import SelectColumns
 from fold.transformations.dev import Identity
 from fold.transformations.difference import Difference
@@ -115,3 +116,15 @@ def test_difference():
         transformations_over_time[0].iloc[0].inverse_transform(pred).squeeze(),
         atol=1e-3,
     ).all()
+
+
+def test_holiday_transformation() -> None:
+    # the naive model returns X as prediction, so y.shift(1) should be == pred
+    X, y = generate_sine_wave_data()
+
+    splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
+    transformations = [AddHolidayFeatures(["US", "DE"])]
+
+    transformations_over_time = train(transformations, X, y, splitter)
+    pred = backtest(transformations_over_time, X, y, splitter)
+    assert (np.isclose((X.squeeze()[pred.index]), (pred.squeeze() + 1.0))).all()

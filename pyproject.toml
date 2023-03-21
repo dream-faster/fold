@@ -58,6 +58,9 @@ docs = [
   "mkdocs-autorefs"
 ]
 ray = ["ray"]
+extended_transformations =[
+  "holidays"
+]
 
 [tool.hatch.envs.quality]
 dependencies = [
