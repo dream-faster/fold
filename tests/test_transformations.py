@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 from fold.composites.columns import PerColumnTransform
 from fold.composites.concat import TransformColumn
@@ -121,6 +122,9 @@ def test_difference():
 def test_holiday_transformation() -> None:
     # the naive model returns X as prediction, so y.shift(1) should be == pred
     X, y = generate_sine_wave_data()
+    new_index = pd.date_range(start="1/1/2018", periods=len(X))
+    X.index = new_index
+    y.index = new_index
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     transformations = [AddHolidayFeatures(["US", "DE"])]
