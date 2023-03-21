@@ -29,7 +29,7 @@ class AddHolidayFeatures(Transformation):
                 pd.concat(
                     [
                         pd.Series(
-                            X.apply(lambda d: d.index in self.holidays),
+                            X.index.map(lambda d: d in country),
                             name=country.country,
                             index=X.index,
                         )
