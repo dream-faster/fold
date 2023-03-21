@@ -26,6 +26,32 @@ def get_holidays(dates: pd.DatetimeIndex, country_codes: List[str]) -> pd.DataFr
     )
 
 
+def encode_series(series: pd.Series) -> pd.Series:
+    return series.astype("category").cat.codes
+
+
+def get_multi_holidays(
+    dates: pd.DatetimeIndex, country_codes: List[str]
+) -> pd.DataFrame:
+    return (
+        (
+            pd.DataFrame.from_dict(
+                {
+                    country_code: holidays.country_holidays(
+                        country_code,
+                        years=range(dates[0].year, dates[-1].year),
+                        language="en_US",
+                    )
+                    for country_code in country_codes
+                }
+            ).apply(encode_series)
+            + 1
+        )
+        .reindex(dates)
+        .fillna(0)
+    )
+
+
 class HolidayTypes(Enum):
     holiday_binary = "holiday_binary"
     holiday_weekend = "holiday_weekend"
@@ -71,7 +97,9 @@ class AddHolidayFeatures(Transformation):
             )
 
         elif self.type is HolidayTypes.holidays_differentiated:
-            return get_holidays(X.index, self.country_codes) + get_weekends(X.index)
+            return get_multi_holidays(X.index, self.country_codes).add(
+                get_weekends(X.index), axis="index"
+            )
 
     fit = fit_noop
     update = fit_noop
