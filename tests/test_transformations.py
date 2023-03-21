@@ -130,4 +130,28 @@ def test_holiday_transformation() -> None:
 
     transformations_over_time = train(transformations, X, y, splitter)
     pred = backtest(transformations_over_time, X, y, splitter)
+
     assert (np.isclose((X.squeeze()[pred.index]), (pred["sine"]))).all()
+    assert pred["US"]["2019-12-25"] is True, "Christmas should be a holiday for US."
+    assert pred["DE"]["2019-12-25"] is True, "Christmas should be a holiday for DE."
+
+    new_index = pd.date_range(start="11/20/2018", freq="H", periods=len(X))
+    X.index = new_index
+    y.index = new_index
+
+    transformations_over_time = train(transformations, X, y, splitter)
+    pred = backtest(transformations_over_time, X, y, splitter)
+
+    assert (np.isclose((X.squeeze()[pred.index]), (pred["sine"]))).all()
+    assert (
+        pred["US"]["2018-12-25"].all() is True
+    ), "Christmas should be a holiday for US."
+    assert (
+        pred["DE"]["2018-12-25"].all() is True
+    ), "Christmas should be a holiday for DE."
+    assert (
+        pred["US"]["2018-12-20"].all() is False
+    ), "2018-12-20 should not be a holiday for US."
+    assert (
+        pred["DE"]["2018-12-20"].all() is False
+    ), "2018-12-20 should not be a holiday for DE."
