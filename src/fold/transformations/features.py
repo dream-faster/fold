@@ -15,11 +15,13 @@ def get_weekends(dates: pd.DatetimeIndex) -> pd.Series:
 def get_holidays(dates: pd.DatetimeIndex, country_codes: List[str]) -> pd.DataFrame:
     return pd.DataFrame(
         {
-            country_code: dates.isin(
+            country_code: dates.normalize()
+            .isin(
                 holidays.country_holidays(
-                    country_code, years=range(dates[0].year, dates[-1].year)
+                    country_code, years=dates.year.unique().to_list()
                 )
-            ).astype(int)
+            )
+            .astype(int)
             for country_code in country_codes
         },
         index=dates,
@@ -39,7 +41,7 @@ def get_multi_holidays(
                 {
                     country_code: holidays.country_holidays(
                         country_code,
-                        years=range(dates[0].year, dates[-1].year),
+                        years=dates.year.unique().to_list(),
                         language="en_US",
                     )
                     for country_code in country_codes
@@ -87,19 +89,21 @@ class AddHolidayFeatures(Transformation):
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         if self.type is HolidayTypes.holiday_binary:
-            return get_holidays(X.index, self.country_codes)
+            extra_holiday_features = get_holidays(X.index, self.country_codes)
 
         elif self.type is HolidayTypes.holiday_weekend:
-            return (
+            extra_holiday_features = (
                 get_holidays(X.index, self.country_codes)
                 .mul(2)
                 .add(get_weekends(X.index), axis="index")
             )
 
         elif self.type is HolidayTypes.holidays_differentiated:
-            return get_multi_holidays(X.index, self.country_codes).add(
-                get_weekends(X.index), axis="index"
-            )
+            extra_holiday_features = get_multi_holidays(
+                X.index, self.country_codes
+            ).add(get_weekends(X.index), axis="index")
+
+        return pd.concat([X, extra_holiday_features], axis="columns")
 
     fit = fit_noop
     update = fit_noop
