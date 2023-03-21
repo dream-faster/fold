@@ -12,25 +12,6 @@ def get_weekends(dates: pd.DatetimeIndex) -> pd.Series:
     return pd.Series((dates.weekday > 4).astype(int), index=dates)
 
 
-# def get_holidays(dates: pd.DatetimeIndex, country_codes: List[str]) -> pd.DataFrame:
-#     pd.DataFrame.from_dict(
-#         holidays.country_holidays(country_code, years=dates.year.unique().to_list())
-#     )
-#     return pd.DataFrame(
-#         {
-#             country_code: dates.normalize()
-#             .isin(
-#                 holidays.country_holidays(
-#                     country_code, years=dates.year.unique().to_list()
-#                 )
-#             )
-#             .astype(int)
-#             for country_code in country_codes
-#         },
-#         index=dates,
-#     )
-
-
 def encode_series(series: pd.Series) -> pd.Series:
     return series.astype("category").cat.codes
 
@@ -95,14 +76,15 @@ class AddHolidayFeatures(Transformation):
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         if self.type is HolidayTypes.holiday_binary:
             extra_holiday_features = get_multi_holidays(X.index, self.country_codes)
+            extra_holiday_features[extra_holiday_features != 0.0] = 1.0
 
         elif self.type is HolidayTypes.holiday_weekend:
-            holiday_df = get_multi_holidays(X.index, self.country_codes)
+            extra_holiday_features = get_multi_holidays(X.index, self.country_codes)
 
             # All values that are bigger than 0 are holidays, but we don't want to differentiate between them
-            holiday_df[holiday_df != 0.0] = 1.0
+            extra_holiday_features[extra_holiday_features != 0.0] = 1.0
 
-            extra_holiday_features = holiday_df.mul(2).add(
+            extra_holiday_features = extra_holiday_features.mul(2).add(
                 get_weekends(X.index), axis="index"
             )
 
