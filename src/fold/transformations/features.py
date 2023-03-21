@@ -10,6 +10,7 @@ from .base import Transformation, fit_noop
 class AddHolidayFeatures(Transformation):
     """
     Adds holiday features for given regions as a column.
+    For each passed country_code it produces a column of Boolean if the given index is a holiday or not.
     """
 
     properties = Transformation.Properties()
