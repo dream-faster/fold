@@ -16,7 +16,7 @@ class AddHolidayFeatures(Transformation):
 
     def __init__(self, country_codes: Union[List[str], str]) -> None:
         self.country_codes = wrap_in_list(country_codes)
-        self.name = f"AddRegions-{self.country_codes}"
+        self.name = f"AddHolidayFeatures-{self.country_codes}"
         self.holidays = [
             holidays.country_holidays(country_code)
             for country_code in self.country_codes
@@ -25,7 +25,7 @@ class AddHolidayFeatures(Transformation):
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         return pd.concat(
             [
-                X.copy(),
+                X,
                 pd.DataFrame(
                     {
                         country.country: X.index.to_series()
@@ -36,7 +36,7 @@ class AddHolidayFeatures(Transformation):
                     index=X.index,
                 ),
             ],
-            axis=1,
+            axis="columns",
         )
 
     fit = fit_noop
