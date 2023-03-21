@@ -131,4 +131,4 @@ def test_holiday_transformation() -> None:
 
     transformations_over_time = train(transformations, X, y, splitter)
     pred = backtest(transformations_over_time, X, y, splitter)
-    assert (np.isclose((X.squeeze()[pred.index]), (pred.squeeze() + 1.0))).all()
+    assert (np.isclose((X.squeeze()[pred.index]), (pred["sine"]))).all()

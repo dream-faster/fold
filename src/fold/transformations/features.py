@@ -28,7 +28,9 @@ class AddHolidayFeatures(Transformation):
                 X.copy(),
                 pd.DataFrame(
                     {
-                        country.country: X.index.map(lambda d: d in country).to_list()
+                        country.country: X.index.to_series()
+                        .map(lambda d: d in country)
+                        .to_list()
                         for country in self.holidays
                     },
                     index=X.index,
