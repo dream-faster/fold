@@ -26,16 +26,12 @@ class AddHolidayFeatures(Transformation):
         return pd.concat(
             [
                 X.copy(),
-                pd.concat(
-                    [
-                        pd.Series(
-                            X.index.map(lambda d: d in country),
-                            name=country.country,
-                            index=X.index,
-                        )
+                pd.DataFrame(
+                    {
+                        country.country: X.index.map(lambda d: d in country).to_list()
                         for country in self.holidays
-                    ],
-                    axis=1,
+                    },
+                    index=X.index,
                 ),
             ],
             axis=1,
