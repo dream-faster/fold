@@ -2,7 +2,6 @@ from datetime import date
 from enum import Enum
 from typing import List, Union
 
-import holidays
 import pandas as pd
 
 from ..utils.list import swap_tuples, wrap_in_list
@@ -61,6 +60,13 @@ class AddHolidayFeatures(Transformation):
         self.name = f"AddHolidayFeatures-{self.country_codes}"
         self.type = LabelingMethod.from_str(labeling)
         self.label_encode = label_encode
+        from holidays import country_holidays, list_supported_countries
+
+        all_supported_countries = list_supported_countries()
+
+        assert all(
+            [country_code in all_supported_countries for country_code in country_codes]
+        ), f"Country code not supported: {country_codes}"
 
         self.holiday_to_int_maps = [
             dict(
@@ -69,7 +75,7 @@ class AddHolidayFeatures(Transformation):
                         sorted(
                             list(
                                 set(
-                                    holidays.country_holidays(
+                                    country_holidays(
                                         country_code,
                                         years=list(range(1900, date.today().year)),
                                         language="en_US",
@@ -134,9 +140,11 @@ def _get_holidays(
     holiday_to_int_maps: List[dict],
     encode: bool = False,
 ) -> pd.DataFrame:
+    from holidays import country_holidays
+
     series = [
         pd.Series(
-            holidays.country_holidays(
+            country_holidays(
                 country_code,
                 years=dates.year.unique().to_list(),
                 language="en_US",
