@@ -9,10 +9,11 @@ from xgboost import XGBRegressor
 
 from fold.composites.target import TransformTarget
 from fold.loop import backtest, train
-from fold.models.baseline import BaselineNaive, BaselineNaiveSeasonal
+from fold.models import Naive, NaiveSeasonal
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.difference import Difference
 from fold.transformations.lags import AddLagsX
+from fold.transformations.window import AddWindowFeatures
 
 df = (
     pd.read_csv(
@@ -20,12 +21,12 @@ df = (
         index_col=0,
         parse_dates=True,
     )
-    .resample("1D")
-    .last()
+    # .resample("1D")
+    # .last()
 )
 
 # %%
-plot_acf(df.temperature, lags=500)
+plot_acf(df.temperature, lags=50)
 
 # %%
 
@@ -35,8 +36,7 @@ X = df[:-1]
 splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.1)
 scorecards = []
 
-pipeline = [BaselineNaive()]
-transformations_over_time = train(pipeline, None, y, splitter)
+transformations_over_time = train(Naive(), None, y, splitter)
 pred = backtest(transformations_over_time, None, y, splitter)
 
 sc = score(y[pred.index], pred.squeeze())
@@ -45,13 +45,11 @@ scorecards.append(sc)
 
 
 # %%
-pipeline = [BaselineNaiveSeasonal(seasonal_length=365)]
-transformations_over_time = train(pipeline, None, y, splitter)
+transformations_over_time = train(NaiveSeasonal(seasonal_length=24), None, y, splitter)
 pred = backtest(transformations_over_time, None, y, splitter)
 
 sc = score(y[pred.index], pred.squeeze())
 sc.print_summary(extended=False)
-sc.save()
 scorecards.append(sc)
 
 
@@ -99,6 +97,7 @@ from fold.composites.ensemble import Ensemble
 
 splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.1)
 tabular_pipeline = [
+    AddWindowFeatures([("temperature", 14, "mean")]),
     AddLagsX(columns_and_lags=[("temperature", list(range(1, 5)))]),
     WrapXGB.from_model(XGBRegressor(max_depth=20)),
     # PerColumnTransform(lambda X: X.rolling(14).mean()),
@@ -116,31 +115,14 @@ arima_pipeline = [
 ]
 ensemble = Ensemble([tabular_pipeline, arima_pipeline])
 
-transformations_over_time = train(ensemble, X, y, splitter)
+transformations_over_time = train(tabular_pipeline, X, y, splitter)
 pred = backtest(transformations_over_time, X, y, splitter)
 sc = score(y[pred.index], pred.squeeze())
 sc.print_summary(extended=False)
 scorecards.append(sc)
 
 
-#%%
-from fold.loop import infer, train_for_deployment, update
-
-deployable_pipeline = train_for_deployment(ensemble, X, y, splitter)
-infer(deployable_pipeline, X)
-update(deployable_pipeline, X, y)
-
-
 # %% XGB with lags and extra features
-for col in X.columns:
-    X[f"{col}_14_mean"] = X[col].rolling(14).mean()
-
-X = X.dropna()
-y = y.loc[X.index]
-
-X["month"] = X.index.month
-X["day"] = X.index.day
-
 splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.1)
 pipeline = TransformTarget(
     [
@@ -158,16 +140,6 @@ sc = score(y[pred.index], pred.squeeze())
 sc.print_summary(extended=False)
 scorecards.append(sc)
 
-
-# %%
-
-# splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.1)
-# pipeline1 = TransformTarget([WrapXGB.from_model(XGBRegressor())], Difference())
-# pipeline2 = WrapXGB.from_model(XGBRegressor())
-# ensemble = Ensemble([pipeline1, pipeline2])
-# transformations_over_time = train(ensemble, None, y, splitter)
-# pred = backtest(transformations_over_time, None, y, splitter)
-# score(y[pred.index], pred.squeeze()).print_summary(extended=False)
 
 # %%
 # continue with exogenous data
