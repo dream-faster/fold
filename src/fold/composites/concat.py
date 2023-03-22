@@ -8,7 +8,13 @@ import pandas as pd
 from ..transformations.base import Pipelines, Transformations
 from ..transformations.columns import SelectColumns
 from ..transformations.dev import Identity
-from ..utils.list import flatten, has_intersection, keep_only_duplicates, wrap_in_list
+from ..utils.list import (
+    flatten,
+    has_intersection,
+    keep_only_duplicates,
+    wrap_in_double_list_if_needed,
+    wrap_in_list,
+)
 from .base import Composite
 from .common import get_concatenated_names
 
@@ -92,7 +98,7 @@ class Pipeline(Composite):
         self,
         pipeline: "Pipeline",
     ) -> None:
-        self.pipeline = pipeline
+        self.pipeline = wrap_in_double_list_if_needed(pipeline)
         self.name = "Pipeline-" + get_concatenated_names(pipeline)
 
     def postprocess_result_primary(
@@ -101,7 +107,7 @@ class Pipeline(Composite):
         return results[0]
 
     def get_child_transformations_primary(self) -> Pipelines:
-        return [self.pipeline]
+        return self.pipeline
 
     def clone(self, clone_child_transformations: Callable) -> Pipeline:
         return Pipeline(pipeline=clone_child_transformations(self.pipeline))
