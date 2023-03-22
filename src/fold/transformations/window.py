@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Callable, List, Optional, Tuple, Union
+from typing import Callable, List, Tuple, Union
 
 import pandas as pd
 
@@ -10,7 +10,7 @@ from .base import Transformation, fit_noop
 
 
 class PredefinedFunction(Enum):
-    mean = "second"
+    mean = "mean"
     sum = "sum"
     median = "median"
     std = "std"
@@ -40,12 +40,20 @@ ColumnWindowFunction = Tuple[ColumnOrColumns, int, FunctionOrPredefined]
 
 
 class AddWindowFeatures(Transformation):
+    name = "AddWindowFeatures"
+
     def __init__(
         self,
         column_window_func: Union[ColumnWindowFunction, List[ColumnWindowFunction]],
     ) -> None:
         self.column_window_func = [
-            (wrap_in_list(column), window, function)
+            (
+                wrap_in_list(column),
+                window,
+                function
+                if function is Callable
+                else PredefinedFunction.from_str(function),
+            )
             for column, window, function in wrap_in_list(column_window_func)
         ]
         max_memory = max([window for _, window, _ in self.column_window_func])
@@ -57,9 +65,10 @@ class AddWindowFeatures(Transformation):
             for col in columns:
                 if isinstance(function, PredefinedFunction):
                     function = getattr(pd.core.window.rolling.Rolling, function.value)
-                X[f"{col}_window_{window}_{function.__name__}"] = (
-                    X[col].rolling(window).apply(function)
+                X[f"{col}_{window}_{function.__name__}"] = function(
+                    X[col].rolling(window)
                 )
+        return X
 
     fit = fit_noop
     update = fit
