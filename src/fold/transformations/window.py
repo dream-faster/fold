@@ -57,7 +57,7 @@ class AddWindowFeatures(Transformation):
             for column, window, function in wrap_in_list(column_window_func)
         ]
         max_memory = max([window for _, window, _ in self.column_window_func])
-        self.properties = Transformation.Properties(memory=max_memory)
+        self.properties = Transformation.Properties(memory_size=max_memory)
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         X = X.copy()
