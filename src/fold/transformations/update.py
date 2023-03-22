@@ -41,7 +41,7 @@ class InjectPastDataAtInference(Transformation):
         self.transformation = transformation
         self.name = f"InjectPastDataAtInference-{transformation.name}"
         self.properties = Transformation.Properties(
-            memory=0 if window_size is None else window_size,
+            memory_size=0 if window_size is None else window_size,
             mode=transformation.properties.mode,
         )
 

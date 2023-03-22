@@ -244,7 +244,7 @@ def deepcopy_transformations(transformation: Transformations) -> Transformations
 def _preprocess_X_y_with_memory(
     transformation: Transformation, X: pd.DataFrame, y: Optional[pd.Series]
 ) -> Tuple[pd.DataFrame, pd.Series]:
-    if transformation._state is None or transformation.properties.memory is None:
+    if transformation._state is None or transformation.properties.memory_size is None:
         return X, y
     memory_X, memory_y = transformation._state.memory_X, transformation._state.memory_y
     non_overlapping_indices = ~memory_X.index.isin(X.index)
@@ -271,13 +271,13 @@ def _postprocess_X_y_into_memory(
     in_sample: bool,
 ) -> None:
     # don't update the transformation if we're in inference mode (y is None)
-    if transformation.properties.memory is None or y is None:
+    if transformation.properties.memory_size is None or y is None:
         return
 
     window_size = (
         len(X)
-        if transformation.properties.memory == 0
-        else transformation.properties.memory
+        if transformation.properties.memory_size == 0
+        else transformation.properties.memory_size
     )
     if in_sample:
         # store the whole training X and y
@@ -285,7 +285,7 @@ def _postprocess_X_y_into_memory(
             memory_X=X,
             memory_y=y,
         )
-    elif transformation.properties.memory < len(X):
+    elif transformation.properties.memory_size < len(X):
         memory_X, memory_y = (
             transformation._state.memory_X,
             transformation._state.memory_y,

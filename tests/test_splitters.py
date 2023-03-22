@@ -7,7 +7,7 @@ from fold.utils.tests import generate_sine_wave_data
 
 
 def test_expanding_window_splitter():
-    X, _ = generate_sine_wave_data(resolution=1000)
+    X, _ = generate_sine_wave_data(length=1000)
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
 
     splits = splitter.splits(len(X))
@@ -21,7 +21,7 @@ def test_expanding_window_splitter():
 
 
 def test_expanding_window_splitter_embargo():
-    X, _ = generate_sine_wave_data(resolution=1000)
+    X, _ = generate_sine_wave_data(length=1000)
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400, embargo=10)
 
     splits = splitter.splits(len(X))
@@ -37,7 +37,7 @@ def test_expanding_window_splitter_embargo():
 
 
 def test_sliding_window_splitter():
-    X, _ = generate_sine_wave_data(resolution=1000)
+    X, _ = generate_sine_wave_data(length=1000)
     splitter = SlidingWindowSplitter(initial_train_window=400, step=400)
 
     splits = splitter.splits(len(X))
@@ -52,7 +52,7 @@ def test_sliding_window_splitter():
 
 
 def test_sliding_window_splitter_embargo():
-    X, _ = generate_sine_wave_data(resolution=1000)
+    X, _ = generate_sine_wave_data(length=1000)
     splitter = SlidingWindowSplitter(initial_train_window=400, step=400, embargo=10)
 
     splits = splitter.splits(len(X))
@@ -68,7 +68,7 @@ def test_sliding_window_splitter_embargo():
 
 
 def test_single_window_splitter():
-    X, _ = generate_sine_wave_data(resolution=1000)
+    X, _ = generate_sine_wave_data(length=1000)
     splitter = SingleWindowSplitter(train_window=0.4)
 
     splits = splitter.splits(len(X))
@@ -83,7 +83,7 @@ def test_single_window_splitter():
 
 
 def test_single_window_splitter_embargo():
-    X, _ = generate_sine_wave_data(resolution=1000)
+    X, _ = generate_sine_wave_data(length=1000)
     splitter = SingleWindowSplitter(train_window=0.4, embargo=10)
 
     splits = splitter.splits(len(X))
