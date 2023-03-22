@@ -76,7 +76,8 @@ class AddHolidayFeatures(Transformation):
                                     ).values()
                                 )
                             )
-                        )
+                        ),
+                        start=1,
                     )
                 )
             )
@@ -142,20 +143,18 @@ def _get_holidays(
             ),
             index=dates.date,
             name=f"{country_code}_holiday",
-        ).reset_index(drop=True)
+        )
         for country_code in country_codes
     ]
-    for serie in series:
-        serie.index = dates
+    for s in series:
+        s.index = dates
 
     df = pd.concat(series, axis="columns").fillna(0)
 
     if encode:
-        # Turn individual holiday names into category than shift holidays by 1 to make room for weekends
         for country_code, holiday_to_int_map in zip(country_codes, holiday_to_int_maps):
             df[f"{country_code}_holiday"] = df[f"{country_code}_holiday"].map(
                 holiday_to_int_map
             )
-        df[df != 0] = df[df != 0].add(1)
 
     return df
