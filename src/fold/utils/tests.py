@@ -8,7 +8,7 @@ from fold.transformations.base import Transformation
 
 
 def generate_sine_wave_data(
-    cycles: int = 2, resolution: int = 1000
+    cycles: int = 2, resolution: int = 1000, freq: str = "min"
 ) -> Tuple[pd.DataFrame, pd.Series]:
     resolution += 1
     length = np.pi * 2 * cycles
@@ -16,7 +16,7 @@ def generate_sine_wave_data(
     series = pd.Series(
         my_wave,
         name="sine",
-        index=pd.date_range(end="2022", periods=len(my_wave), freq="min"),
+        index=pd.date_range(end="2022", periods=len(my_wave), freq=freq),
     )
     X = series.to_frame()
     y = series.shift(-1)[:-1]

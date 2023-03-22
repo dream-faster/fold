@@ -10,6 +10,7 @@ from fold.transformations.columns import SelectColumns
 from fold.transformations.date import AddDateTimeFeatures, DateTimeFeature
 from fold.transformations.dev import Identity
 from fold.transformations.difference import Difference
+from fold.transformations.holidays import LabelingMethod
 from fold.transformations.lags import AddLagsX, AddLagsY
 from fold.utils.tests import generate_all_zeros, generate_sine_wave_data
 
@@ -120,66 +121,83 @@ def test_difference():
     ).all()
 
 
-def test_holiday_daily_transformation() -> None:
+def test_holiday_features_daily() -> None:
     X, y = generate_sine_wave_data()
     new_index = pd.date_range(start="1/1/2018", periods=len(X))
     X.index = new_index
     y.index = new_index
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    transformations = [AddHolidayFeatures(["US", "DE"], type="holiday_binary")]
-
-    transformations_over_time = train(transformations, X, y, splitter)
+    transformations_over_time = train(
+        AddHolidayFeatures(["US", "DE"], labeling="holiday_binary"), X, y, splitter
+    )
     pred = backtest(transformations_over_time, X, y, splitter)
 
     assert (np.isclose((X.squeeze()[pred.index]), (pred["sine"]))).all()
     assert (
-        pred["US_holiday_binary"]["2019-12-25"] == 1.0
+        pred["US_holiday"]["2019-12-25"] == 1
     ), "Christmas should be a holiday for US."
     assert (
-        pred["DE_holiday_binary"]["2019-12-25"] == 1.0
+        pred["DE_holiday"]["2019-12-25"] == 1
     ), "Christmas should be a holiday for DE."
-    assert (
-        pred["DE_holiday_binary"]["2019-12-29"] == 0.0
-    ), "2019-12-29 is not a holiday in DE"
+    assert pred["DE_holiday"]["2019-12-29"] == 0, "2019-12-29 is not a holiday in DE"
 
 
-def test_holiday_minute_transformation() -> None:
+def test_holiday_features_minute() -> None:
     X, y = generate_sine_wave_data()
     new_index = pd.date_range(start="2021-12-06", freq="H", periods=len(X))
     X.index = new_index
     y.index = new_index
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    transformations = [
-        AddHolidayFeatures(["US", "DE"], type="holiday_binary"),
-        AddHolidayFeatures(["DE"], type="weekday_weekend_holiday"),
-        AddHolidayFeatures(["US"], type="weekday_weekend_uniqueholiday"),
-        AddHolidayFeatures(
-            ["US", "DE"], type="weekday_weekend_uniqueholiday", encode_holidays=True
-        ),
-    ]
-
-    transformations_over_time = train(transformations, X, y, splitter)
+    transformations_over_time = train(
+        AddHolidayFeatures(["US", "DE"], labeling="holiday_binary"), X, y, splitter
+    )
     pred = backtest(transformations_over_time, X, y, splitter)
 
     assert (np.isclose((X.squeeze()[pred.index]), (pred["sine"]))).all()
     assert (
-        pred["US_holiday_binary"]["2021-12-25"].mean() == 1.0
+        pred["US_holiday"]["2021-12-25"].mean() == 1
     ), "Christmas should be a holiday for US."
     assert (
-        pred["DE_holiday_binary"]["2021-12-25"].mean() == 1.0
+        pred["DE_holiday"]["2021-12-25"].mean() == 1
     ), "Christmas should be a holiday for DE."
+
+    transformations_over_time = train(
+        AddHolidayFeatures(["DE"], labeling="weekday_weekend_holiday"), X, y, splitter
+    )
+    pred = backtest(transformations_over_time, X, y, splitter)
     assert (
-        pred["DE_weekday_weekend_holiday"]["2021-12-25"].mean() == 3.0
-    ), "2021-12-25 should be both a holiday and a weekend."
+        pred["DE_holiday"]["2021-12-25"].mean() == 2
+    ), "2021-12-25 should be both a holiday and a weekend (holiday taking precedence)."
+
+    transformations_over_time = train(
+        AddHolidayFeatures(
+            ["US"],
+            labeling=LabelingMethod.weekday_weekend_uniqueholiday,
+            label_encode=False,
+        ),
+        X,
+        y,
+        splitter,
+    )
+    pred = backtest(transformations_over_time, X, y, splitter)
     assert (
-        pred["US_weekday_weekend_uniqueholiday_encode"]["2021-12-31"].mean() == 5.0
-    ), "2021-12-31 should be a holiday with a special id."
-    assert (
-        pred["US_weekday_weekend_uniqueholiday"]["2021-12-25"].iloc[0]
-        == "Christmas Day"
+        pred["US_holiday"]["2021-12-25"].iloc[0] == "Christmas Day"
     ), "2021-12-25 should be a holiday string."
+
+    transformations_over_time = train(
+        AddHolidayFeatures(
+            ["US", "DE"], labeling="weekday_weekend_uniqueholiday", label_encode=True
+        ),
+        X,
+        y,
+        splitter,
+    )
+    pred = backtest(transformations_over_time, X, y, splitter)
+    assert (
+        pred["US_holiday"]["2021-12-31"].mean() == 14.0
+    ), "2021-12-31 should be a holiday with a special id."
 
 
 def test_datetime_features():
