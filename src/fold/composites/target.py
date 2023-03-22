@@ -6,6 +6,7 @@ import pandas as pd
 
 from fold.composites.common import get_concatenated_names
 from fold.utils.checks import get_prediction_column_name
+from fold.utils.list import wrap_in_double_list_if_needed
 
 from ..transformations.base import InvertibleTransformation, Pipelines, Transformations
 from .base import Composite, T
@@ -33,7 +34,7 @@ class TransformTarget(Composite):
         X_pipeline: Transformations,
         y_transformation: InvertibleTransformation,
     ) -> None:
-        self.X_pipeline = [X_pipeline]
+        self.X_pipeline = wrap_in_double_list_if_needed(X_pipeline)
         self.y_transformation = y_transformation
         self.name = "TransformTarget-" + get_concatenated_names(
             self.X_pipeline + [self.y_transformation]

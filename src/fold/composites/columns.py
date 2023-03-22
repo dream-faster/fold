@@ -7,7 +7,7 @@ import pandas as pd
 
 from ..transformations.base import Pipeline, Pipelines
 from ..utils.checks import all_have_probabilities
-from ..utils.list import unique, wrap_in_list
+from ..utils.list import unique, wrap_in_double_list_if_needed
 from .base import Composite, T
 from .common import get_concatenated_names
 
@@ -22,7 +22,7 @@ class PerColumnEnsemble(Composite):
     models_already_cloned = False
 
     def __init__(self, pipeline: Pipeline, models_already_cloned=False) -> None:
-        self.models: Pipelines = wrap_in_list(pipeline)
+        self.models: Pipelines = wrap_in_double_list_if_needed(pipeline)
         self.name = "PerColumnEnsemble-" + get_concatenated_names(self.models)
         self.models_already_cloned = models_already_cloned
 
@@ -62,7 +62,7 @@ class SkipNA(Composite):
     properties = Composite.Properties()
 
     def __init__(self, pipeline: Pipeline) -> None:
-        self.pipeline = [pipeline]
+        self.pipeline = wrap_in_double_list_if_needed(pipeline)
         self.name = "SkipNA-" + get_concatenated_names(self.pipeline)
 
     def preprocess_primary(
@@ -95,7 +95,7 @@ class PerColumnTransform(Composite):
     properties = Composite.Properties()
 
     def __init__(self, pipeline: Pipeline, pipeline_already_cloned=False) -> None:
-        self.pipeline = wrap_in_list(pipeline)
+        self.pipeline = wrap_in_double_list_if_needed(pipeline)
         self.name = "PerColumnTransform-" + get_concatenated_names(self.pipeline)
         self.pipeline_already_cloned = pipeline_already_cloned
 

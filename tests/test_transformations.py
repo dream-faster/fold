@@ -154,7 +154,7 @@ def test_datetime_features():
 
 
 def test_window_features():
-    X, y = generate_sine_wave_data(resolution=600)
+    X, y = generate_sine_wave_data(length=600)
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
     transformations = AddWindowFeatures(("sine", 14, "mean"))
     transformations_over_time = train(transformations, X, y, splitter)
