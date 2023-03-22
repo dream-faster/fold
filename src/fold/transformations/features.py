@@ -37,8 +37,9 @@ def get_multi_holidays(
     df = pd.concat(series, axis="columns").fillna(0.0)
 
     if encode:
-        # Turn individual holiday names into category than reindex with the original dates
-        df = df.apply(encode_series).add(1).reindex(dates)
+        # Turn individual holiday names into category than shift holidays by 1 to make room for weekends
+        df = df.apply(encode_series)
+        df[df != 0.0] = df[df != 0.0].add(1)
 
     return df
 
@@ -73,6 +74,7 @@ class AddHolidayFeatures(Transformation):
         - weekday_weekend_uniqueholiday: Non-special days = 0.0 | Weekends = 1.0 |
                 - encode_holidays = True: seperate int (>1.0) for each holiday
                 - encode_holidays = False: unlabeled, raw holiday name strings returned
+                - holiday + weekends: no unique labeling, holidays take advantage
 
     Returns
     ----------
@@ -94,37 +96,35 @@ class AddHolidayFeatures(Transformation):
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         if self.type is LabelingMethod.holiday_binary:
-            extra_holiday_features = get_multi_holidays(X.index, self.country_codes)
-            extra_holiday_features[extra_holiday_features != 0.0] = 1.0
+            holiday_df = get_multi_holidays(X.index, self.country_codes)
+            holiday_df[holiday_df != 0.0] = 1.0
 
         elif self.type is LabelingMethod.weekday_weekend_holiday:
-            extra_holiday_features = get_multi_holidays(X.index, self.country_codes)
+            holiday_df = get_multi_holidays(X.index, self.country_codes)
 
-            # All values that are bigger than 0 are holidays, but we don't want to differentiate between them
-            extra_holiday_features[extra_holiday_features != 0.0] = 1.0
+            # All values that are (bigger than 0 or a string) are holidays, but we don't want to differentiate between them
+            holiday_df[holiday_df != 0.0] = 1.0
 
-            extra_holiday_features = extra_holiday_features.mul(2).add(
-                get_weekends(X.index), axis="index"
-            )
+            holiday_df = holiday_df.mul(2).add(get_weekends(X.index), axis="index")
 
         elif self.type is LabelingMethod.weekday_weekend_uniqueholiday:
-            extra_holiday_features = get_multi_holidays(
+            holiday_df = get_multi_holidays(
                 X.index, self.country_codes, encode=self.encode_holidays
             )
 
-            extra_holiday_features.apply(
-                lambda x: x[x == 0.0].add(get_weekends(X.index), axis="index")
-            )
-            # Pandas can only add to integer values, filter for non-holidays and add 1
-            extra_holiday_features[
-                extra_holiday_features.str.isnumeric()
-                # type(extra_holiday_features) == (int, float)
-            ] = extra_holiday_features[extra_holiday_features.str.isnumeric()].add(
-                get_weekends(X.index), axis="index"
-            )
+            # Pandas can only add to integer values, filter for non-holidays and add 1.0
+            weekends = get_weekends(X.index)
+            for column in holiday_df.columns:
+                ds = holiday_df[column]
+                ds[ds == 0.0] = ds[ds == 0.0].add(weekends, axis="index")
 
         return pd.concat(
-            [X, extra_holiday_features.add_suffix(f"_{self.type.value}")],
+            [
+                X,
+                holiday_df.add_suffix(
+                    f"_{self.type.value}" + ("_encode" if self.encode_holidays else "")
+                ),
+            ],
             axis="columns",
         )
 

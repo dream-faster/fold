@@ -146,7 +146,7 @@ def test_holiday_daily_transformation() -> None:
 
 def test_holiday_minute_transformation() -> None:
     X, y = generate_sine_wave_data()
-    new_index = pd.date_range(start="2021-12-25", freq="H", periods=len(X))
+    new_index = pd.date_range(start="2021-12-06", freq="H", periods=len(X))
     X.index = new_index
     y.index = new_index
 
@@ -155,6 +155,9 @@ def test_holiday_minute_transformation() -> None:
         AddHolidayFeatures(["US", "DE"], type="holiday_binary"),
         AddHolidayFeatures(["DE"], type="weekday_weekend_holiday"),
         AddHolidayFeatures(["US"], type="weekday_weekend_uniqueholiday"),
+        AddHolidayFeatures(
+            ["US", "DE"], type="weekday_weekend_uniqueholiday", encode_holidays=True
+        ),
     ]
 
     transformations_over_time = train(transformations, X, y, splitter)
@@ -171,8 +174,12 @@ def test_holiday_minute_transformation() -> None:
         pred["DE_weekday_weekend_holiday"]["2021-12-25"].mean() == 3.0
     ), "2021-12-25 should be both a holiday and a weekend."
     assert (
-        pred["US_weekday_weekend_uniqueholiday"]["2021-12-31"].mean() == 12.0
+        pred["US_weekday_weekend_uniqueholiday_encode"]["2021-12-31"].mean() == 5.0
     ), "2021-12-31 should be a holiday with a special id."
+    assert (
+        pred["US_weekday_weekend_uniqueholiday"]["2021-12-25"].iloc[0]
+        == "Christmas Day"
+    ), "2021-12-25 should be a holiday string."
 
 
 def test_datetime_features():
