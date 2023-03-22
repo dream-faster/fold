@@ -1,6 +1,6 @@
 import collections
 from collections.abc import Iterable
-from typing import List, TypeVar, Union
+from typing import List, Tuple, TypeVar, Union
 
 from iteration_utilities import unique_everseen
 
@@ -45,3 +45,7 @@ def has_intersection(lhs: List, rhs: List) -> bool:
 
 def unique(input: List) -> List:
     return unique_everseen(input)
+
+
+def swap_tuples(input: List[Tuple]) -> List[Tuple]:
+    return [(b, a) for a, b in input]

@@ -50,6 +50,7 @@ tests = [
   "pytest~=7.1.2",
   "pytest-cov>=4.0",
   "imbalanced-learn",
+  "holidays"
 ]
 docs = [
   "mkdocs-material",
@@ -58,6 +59,9 @@ docs = [
   "mkdocs-autorefs"
 ]
 ray = ["ray"]
+extended_transformations =[
+  "holidays"
+]
 
 [tool.hatch.envs.quality]
 dependencies = [
