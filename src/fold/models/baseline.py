@@ -8,12 +8,12 @@ from ..transformations.base import Transformation, fit_noop
 from .base import Model
 
 
-class BaselineNaive(Model):
+class Naive(Model):
     """
     A model that predicts the last value seen.
     """
 
-    name = "BaselineNaive"
+    name = "Naive"
     properties = Model.Properties(
         mode=Transformation.Properties.Mode.online, memory_size=1
     )
@@ -31,12 +31,12 @@ class BaselineNaive(Model):
     update = fit
 
 
-class BaselineNaiveSeasonal(Model):
+class NaiveSeasonal(Model):
     """
     A model that predicts the last value seen in the same season.
     """
 
-    name = "BaselineNaiveSeasonal"
+    name = "NaiveSeasonal"
 
     def __init__(self, seasonal_length: int) -> None:
         assert seasonal_length > 1, "seasonal_length must be greater than 1"
@@ -59,12 +59,12 @@ class BaselineNaiveSeasonal(Model):
     update = fit
 
 
-class BaselineMean(Model):
+class RollingMean(Model):
     """
     A model that predicts the mean of the last values seen.
     """
 
-    name = "BaselineMean"
+    name = "RollingMean"
 
     def __init__(self, window_size: int) -> None:
         self.window_size = window_size

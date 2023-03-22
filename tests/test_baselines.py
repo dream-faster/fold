@@ -1,7 +1,7 @@
 import numpy as np
 
 from fold.loop import backtest, train
-from fold.models.baseline import BaselineMean, BaselineNaiveSeasonal
+from fold.models.baseline import NaiveSeasonal, RollingMean
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.columns import OnlyPredictions
 from fold.transformations.dev import Test
@@ -18,7 +18,7 @@ def test_baseline_naive_seasonal() -> None:
 
     splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.1)
     transformations = [
-        BaselineNaiveSeasonal(seasonal_length=12),
+        NaiveSeasonal(seasonal_length=12),
         Test(fit_func=check_if_not_nan, transform_func=lambda X: X),
         OnlyPredictions(),
     ]
@@ -33,14 +33,14 @@ def test_baseline_naive_seasonal() -> None:
 
 
 def test_baseline_mean() -> None:
-    X, y = generate_sine_wave_data(cycles=10, length=1200)
+    X, y = generate_sine_wave_data(cycles=10, length=400)
 
     def check_if_not_nan(x):
         assert not x.isna().squeeze().any()
 
     splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.1)
     transformations = [
-        BaselineMean(window_size=12),
+        RollingMean(window_size=12),
         Test(fit_func=check_if_not_nan, transform_func=lambda X: X),
         OnlyPredictions(),
     ]
@@ -50,5 +50,5 @@ def test_baseline_mean() -> None:
         y.shift(1).rolling(12).mean()[pred.index], pred.squeeze(), atol=0.01
     ).all()
     assert (
-        len(pred) == 1200 * 0.8
+        len(pred) == 400 * 0.8
     )  # should return non-NaN predictions for the all out-of-sample sets
