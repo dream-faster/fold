@@ -17,6 +17,7 @@ def train_transformations(
     splits: List[Fold],
     never_update: bool,
     backend: Backend,
+    silent: bool,
 ):
     import ray
 

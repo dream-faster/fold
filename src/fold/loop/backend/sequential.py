@@ -18,10 +18,11 @@ def train_transformations(
     splits: List[Fold],
     never_update: bool,
     backend: Backend,
+    silent: bool,
 ):
     return [
         func(X, y, sample_weights, transformations, split, never_update, backend)
-        for split in tqdm(splits)
+        for split in tqdm(splits, disable=silent)
     ]
 
 

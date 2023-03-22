@@ -18,6 +18,7 @@ def backtest(
     splitter: Splitter,
     backend: Backend = Backend.no,
     sample_weights: Optional[pd.Series] = None,
+    silent: bool = False,
     mutate: bool = False,
 ) -> OutOfSamplePredictions:
     """
@@ -37,7 +38,7 @@ def backtest(
             backend,
             mutate=mutate,
         )
-        for split in tqdm(splitter.splits(length=len(X)))
+        for split in tqdm(splitter.splits(length=len(X)), disable=silent)
     ]
     return trim_initial_nans_single(pd.concat(results, axis="index"))
 
