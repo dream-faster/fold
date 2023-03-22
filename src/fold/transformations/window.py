@@ -51,7 +51,7 @@ class AddWindowFeatures(Transformation):
                 wrap_in_list(column),
                 window,
                 function
-                if function is Callable
+                if isinstance(function, Callable)
                 else PredefinedFunction.from_str(function),
             )
             for column, window, function in wrap_in_list(column_window_func)
@@ -65,9 +65,12 @@ class AddWindowFeatures(Transformation):
             for col in columns:
                 if isinstance(function, PredefinedFunction):
                     function = getattr(pd.core.window.rolling.Rolling, function.value)
-                X[f"{col}_{window}_{function.__name__}"] = function(
-                    X[col].rolling(window)
+                function_name = (
+                    function.__name__
+                    if function.__name__ != "<lambda>"
+                    else "transformed"
                 )
+                X[f"{col}_{window}_{function_name}"] = function(X[col].rolling(window))
         return X
 
     fit = fit_noop

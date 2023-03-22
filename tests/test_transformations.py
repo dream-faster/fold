@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 from fold.composites.columns import PerColumnTransform
 from fold.composites.concat import TransformColumn
@@ -160,13 +161,34 @@ def test_window_features():
     pred = backtest(transformations_over_time, X, y, splitter)
     assert pred["sine_14_mean"].equals(X["sine"].rolling(14).mean()[pred.index])
 
+    # check if it works when passing a list of tuples
     transformations = AddWindowFeatures([("sine", 14, "mean")])
     transformations_over_time = train(transformations, X, y, splitter)
     pred = backtest(transformations_over_time, X, y, splitter)
     assert pred["sine_14_mean"].equals(X["sine"].rolling(14).mean()[pred.index])
 
+    # check if it works with multiple transformations
     transformations = AddWindowFeatures([("sine", 14, "mean"), ("sine", 5, "max")])
     transformations_over_time = train(transformations, X, y, splitter)
     pred = backtest(transformations_over_time, X, y, splitter)
     assert pred["sine_14_mean"].equals(X["sine"].rolling(14).mean()[pred.index])
     assert pred["sine_5_max"].equals(X["sine"].rolling(5).max()[pred.index])
+
+    transformations = AddWindowFeatures(
+        [("sine", 14, lambda X: X.mean()), ("sine", 5, lambda X: X.max())]
+    )
+    transformations_over_time = train(transformations, X, y, splitter)
+    pred = backtest(transformations_over_time, X, y, splitter)
+    # if the Callable is lambda, then use the generic "transformed" name
+    assert pred["sine_14_transformed"].equals(X["sine"].rolling(14).mean()[pred.index])
+    assert pred["sine_5_transformed"].equals(X["sine"].rolling(5).max()[pred.index])
+
+    transformations = AddWindowFeatures(
+        [
+            ("sine", 14, pd.core.window.rolling.Rolling.mean),
+        ]
+    )
+    transformations_over_time = train(transformations, X, y, splitter)
+    pred = backtest(transformations_over_time, X, y, splitter)
+    # it should pick up the name of the function
+    assert pred["sine_14_mean"].equals(X["sine"].rolling(14).mean()[pred.index])
