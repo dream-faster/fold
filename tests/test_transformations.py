@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 from fold.composites.columns import PerColumnTransform
 from fold.composites.concat import TransformColumn
@@ -9,6 +10,7 @@ from fold.transformations.date import AddDateTimeFeatures, DateTimeFeature
 from fold.transformations.dev import Identity
 from fold.transformations.difference import Difference
 from fold.transformations.lags import AddLagsX, AddLagsY
+from fold.transformations.window import AddWindowFeatures
 from fold.utils.tests import generate_all_zeros, generate_sine_wave_data
 
 
@@ -149,3 +151,44 @@ def test_datetime_features():
     assert (pred["month"] == X.loc[pred.index].index.month).all()
     assert (pred["quarter"] == X.loc[pred.index].index.quarter).all()
     assert (pred["year"] == X.loc[pred.index].index.year).all()
+
+
+def test_window_features():
+    X, y = generate_sine_wave_data(resolution=600)
+    splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
+    transformations = AddWindowFeatures(("sine", 14, "mean"))
+    transformations_over_time = train(transformations, X, y, splitter)
+    pred = backtest(transformations_over_time, X, y, splitter)
+    assert pred["sine_14_mean"].equals(X["sine"].rolling(14).mean()[pred.index])
+
+    # check if it works when passing a list of tuples
+    transformations = AddWindowFeatures([("sine", 14, "mean")])
+    transformations_over_time = train(transformations, X, y, splitter)
+    pred = backtest(transformations_over_time, X, y, splitter)
+    assert pred["sine_14_mean"].equals(X["sine"].rolling(14).mean()[pred.index])
+
+    # check if it works with multiple transformations
+    transformations = AddWindowFeatures([("sine", 14, "mean"), ("sine", 5, "max")])
+    transformations_over_time = train(transformations, X, y, splitter)
+    pred = backtest(transformations_over_time, X, y, splitter)
+    assert pred["sine_14_mean"].equals(X["sine"].rolling(14).mean()[pred.index])
+    assert pred["sine_5_max"].equals(X["sine"].rolling(5).max()[pred.index])
+
+    transformations = AddWindowFeatures(
+        [("sine", 14, lambda X: X.mean()), ("sine", 5, lambda X: X.max())]
+    )
+    transformations_over_time = train(transformations, X, y, splitter)
+    pred = backtest(transformations_over_time, X, y, splitter)
+    # if the Callable is lambda, then use the generic "transformed" name
+    assert pred["sine_14_transformed"].equals(X["sine"].rolling(14).mean()[pred.index])
+    assert pred["sine_5_transformed"].equals(X["sine"].rolling(5).max()[pred.index])
+
+    transformations = AddWindowFeatures(
+        [
+            ("sine", 14, pd.core.window.rolling.Rolling.mean),
+        ]
+    )
+    transformations_over_time = train(transformations, X, y, splitter)
+    pred = backtest(transformations_over_time, X, y, splitter)
+    # it should pick up the name of the function
+    assert pred["sine_14_mean"].equals(X["sine"].rolling(14).mean()[pred.index])
