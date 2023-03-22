@@ -146,7 +146,7 @@ def test_holiday_daily_transformation() -> None:
 
 def test_holiday_minute_transformation() -> None:
     X, y = generate_sine_wave_data()
-    new_index = pd.date_range(start="2021-12-06", freq="H", periods=len(X))
+    new_index = pd.date_range(start="2021-12-25", freq="H", periods=len(X))
     X.index = new_index
     y.index = new_index
 
