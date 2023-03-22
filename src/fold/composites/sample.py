@@ -5,6 +5,7 @@ from typing import Any, Callable, List, Optional, Tuple
 import pandas as pd
 
 from fold.composites.common import get_concatenated_names
+from fold.utils.list import wrap_in_double_list_if_needed
 
 from ..transformations.base import BlocksOrWrappable, Pipelines
 from .base import Composite, T
@@ -26,7 +27,7 @@ class Sample(Composite):
         pipeline: BlocksOrWrappable,
     ) -> None:
         self.sampler = sampler
-        self.pipeline = [pipeline]
+        self.pipeline = wrap_in_double_list_if_needed(pipeline)
         self.name = f"Sample-{sampler.__class__.__name__}-{get_concatenated_names(self.pipeline)}"
 
     def preprocess_primary(

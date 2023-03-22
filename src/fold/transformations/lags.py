@@ -15,7 +15,7 @@ class AddLagsY(Transformation):
         self.lags = wrap_in_list(lags)
         self.name = f"AddLagsY-{self.lags}"
         self.properties = Transformation.Properties(
-            mode=Transformation.Properties.Mode.online, memory=max(self.lags)
+            mode=Transformation.Properties.Mode.online, memory_size=max(self.lags)
         )
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
@@ -47,7 +47,7 @@ class AddLagsX(Transformation):
         self.columns_and_lags = wrap_in_list(columns_and_lags)
         self.name = f"AddLagsX-{self.columns_and_lags}"
         self.properties = Transformation.Properties(
-            memory=max(flatten([l for _, l in self.columns_and_lags]))
+            memory_size=max(flatten([l for _, l in self.columns_and_lags]))
         )
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:

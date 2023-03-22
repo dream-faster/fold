@@ -1,7 +1,7 @@
 import numpy as np
 
 from fold.loop import infer, train_for_deployment, update
-from fold.models.baseline import BaselineNaive
+from fold.models.baseline import Naive
 from fold.utils.tests import generate_sine_wave_data
 
 
@@ -13,7 +13,7 @@ def test_deployment() -> None:
     y_train = y[:900]
     y_test = y[900:]
 
-    transformations = [BaselineNaive()]
+    transformations = [Naive()]
     deployable_transformations = train_for_deployment(transformations, X_train, y_train)
 
     first_prediction = infer(

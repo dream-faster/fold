@@ -32,6 +32,7 @@ def train(
     sample_weights: Optional[pd.Series] = None,
     train_method: TrainMethod = TrainMethod.parallel,
     backend: Backend = Backend.no,
+    silent: bool = False,
 ) -> TransformationsOverTime:
     X, y = check_types(X, y)
 
@@ -71,6 +72,7 @@ def train(
                 splits[1:],
                 False,
                 backend,
+                silent,
             )
         )
         processed_idx = [first_batch_index] + list(rest_idx)
@@ -90,6 +92,7 @@ def train(
                 splits,
                 True,
                 backend,
+                silent,
             )
         )
 

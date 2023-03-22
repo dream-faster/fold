@@ -11,6 +11,22 @@ def wrap_in_list(input: Union[T, List[T]]) -> List[T]:
     return input if isinstance(input, List) else [input]
 
 
+def wrap_in_double_list_if_needed(
+    input: Union[T, List[T]]
+) -> Union[List[List[T]], List[T]]:
+    """
+    If input is a single item, wrap it in a list.
+    If input is a single list, wrap it in another list.
+    If input is a list of lists, return it as is.
+    """
+    if not isinstance(input, List):
+        return [input]
+    if isinstance(input[0], List):
+        return input
+    else:
+        return [input]
+
+
 def flatten(input: Union[List[List], List]) -> Iterable:
     for x in input:
         if isinstance(x, list):

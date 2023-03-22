@@ -6,6 +6,7 @@ import pandas as pd
 
 from fold.composites.common import get_concatenated_names
 from fold.utils.checks import get_prediction_column
+from fold.utils.list import wrap_in_double_list_if_needed
 
 from ..transformations.base import BlocksOrWrappable, Pipelines
 from .base import Composite, T
@@ -39,8 +40,8 @@ class Hybrid(Composite):
         meta: BlocksOrWrappable,
         primary_output_included: bool = False,
     ) -> None:
-        self.primary = [primary]
-        self.meta = [meta]
+        self.primary = wrap_in_double_list_if_needed(primary)
+        self.meta = wrap_in_double_list_if_needed(meta)
         self.primary_output_included = primary_output_included
         self.name = "Hybrid-" + get_concatenated_names(self.primary + self.meta)
 
