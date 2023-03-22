@@ -1,7 +1,7 @@
 from fold.loop import train
 from fold.loop.backtest import backtest
 from fold.loop.types import Backend, TrainMethod
-from fold.models.baseline import BaselineNaive
+from fold.models.baseline import Naive
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.base import Transformations
 from fold.transformations.dev import Test
@@ -26,7 +26,7 @@ def test_loop_sequential():
     run_loop(
         TrainMethod.sequential,
         Backend.no,
-        BaselineNaive(),
+        Naive(),
     )
 
 
@@ -34,7 +34,7 @@ def test_loop_parallel():
     run_loop(
         TrainMethod.parallel,
         Backend.no,
-        BaselineNaive(),
+        Naive(),
     )
 
 
@@ -42,7 +42,7 @@ def test_loop_with_online_transformation():
     run_loop(
         TrainMethod.parallel,
         Backend.no,
-        BaselineNaive(),
+        Naive(),
     )
 
 
