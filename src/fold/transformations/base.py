@@ -28,6 +28,7 @@ class Transformation(ABC):
             int
         ] = None  # if not `None`, will inject past window with size of `memory` to update() & transformation(). if `0`, it'll remember all data. during the in_sample period, it'll contain all data.
         model_type: Optional[ModelType] = None
+        _internal_supports_minibatch_backtesting: bool = False  # internal, during backtesting, calls predict_in_sample() instead of predict()
 
     @dataclass
     class State:

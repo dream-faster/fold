@@ -46,10 +46,20 @@ def recursively_transform(
         if (
             transformations.properties.mode == Transformation.Properties.Mode.online
             and stage in [Stage.update, Stage.update_online_only]
+            and not transformations.properties._internal_supports_minibatch_backtesting
         ):
             return process_with_inner_loop(transformations, X, y, sample_weights)
+        # If the transformation is "online" but also supports our internal "mini-batch"-style updating
+        elif (
+            transformations.properties.mode == Transformation.Properties.Mode.online
+            and stage in [Stage.update, Stage.update_online_only]
+            and transformations.properties._internal_supports_minibatch_backtesting
+        ):
+            return process_internal_online_model_minibatch_inference_and_update(
+                transformations, X, y, sample_weights
+            )
 
-        # or the model is "mini-batch" updating or we're in initial_fit stage
+        # or perform "mini-batch" updating OR the initial fit.
         else:
             return process_minibatch_transformation(
                 transformations, X, y, sample_weights, stage
@@ -76,7 +86,7 @@ def process_composite(
     primary_transformations = composite.get_child_transformations_primary()
 
     results_primary = backend_functions.process_primary_child_transformations(
-        process_primary_child_transform,
+        __process_primary_child_transform,
         enumerate(primary_transformations),
         composite,
         X,
@@ -102,7 +112,7 @@ def process_composite(
         return composite.postprocess_result_primary(results_primary, y)
 
     results_secondary = backend_functions.process_secondary_child_transformations(
-        process_secondary_child_transform,
+        __process_secondary_child_transform,
         enumerate(secondary_transformations),
         composite,
         X,
@@ -142,7 +152,7 @@ def process_with_inner_loop(
     def transform_row(
         X_row: pd.DataFrame, y_row: Optional[pd.Series], sample_weights_row
     ):
-        X_row_with_memory, y_row_with_memory = _preprocess_X_y_with_memory(
+        X_row_with_memory, y_row_with_memory = __preprocess_X_y_with_memory(
             transformation, X_row, y_row
         )
         result = transformation.transform(X_row_with_memory, in_sample=False)
@@ -150,7 +160,7 @@ def process_with_inner_loop(
             transformation.update(
                 X_row_with_memory, y_row_with_memory, sample_weights_row
             )
-            _postprocess_X_y_into_memory(
+            __postprocess_X_y_into_memory(
                 transformation, X_row_with_memory, y_row_with_memory, False
             )
         return result.loc[X_row.index]
@@ -168,6 +178,22 @@ def process_with_inner_loop(
     )
 
 
+def process_internal_online_model_minibatch_inference_and_update(
+    transformation: Transformation,
+    X: pd.DataFrame,
+    y: Optional[pd.Series],
+    sample_weights: Optional[pd.Series],
+) -> pd.DataFrame:
+    X, y = trim_initial_nans(X, y)
+    X_with_memory, y_with_memory = __preprocess_X_y_with_memory(transformation, X, y)
+    __postprocess_X_y_into_memory(transformation, X_with_memory, y_with_memory, True)
+    return_value = transformation.transform(X_with_memory, in_sample=True)
+
+    transformation.update(X_with_memory, y_with_memory, sample_weights)
+    __postprocess_X_y_into_memory(transformation, X, y, False)
+    return return_value.loc[X.index]
+
+
 def process_minibatch_transformation(
     transformation: Transformation,
     X: pd.DataFrame,
@@ -176,30 +202,30 @@ def process_minibatch_transformation(
     stage: Stage,
 ) -> pd.DataFrame:
     X, y = trim_initial_nans(X, y)
-    X_with_memory, y_with_memory = _preprocess_X_y_with_memory(transformation, X, y)
+    X_with_memory, y_with_memory = __preprocess_X_y_with_memory(transformation, X, y)
     # The order is:
     # 1. fit (if we're in the initial_fit stage)
     if stage == Stage.inital_fit:
         transformation.fit(X_with_memory, y_with_memory, sample_weights)
-        _postprocess_X_y_into_memory(
+        __postprocess_X_y_into_memory(
             transformation,
             X_with_memory,
             y_with_memory,
             in_sample=stage == Stage.inital_fit,
         )
     # 2. transform (inference)
-    X_with_memory, y_with_memory = _preprocess_X_y_with_memory(transformation, X, y)
+    X_with_memory, y_with_memory = __preprocess_X_y_with_memory(transformation, X, y)
     return_value = transformation.transform(
         X_with_memory, in_sample=stage == Stage.inital_fit
     )
     # 3. update (if we're in the update stage)
     if stage == Stage.update:
         transformation.update(X_with_memory, y_with_memory, sample_weights)
-        _postprocess_X_y_into_memory(transformation, X, y, False)
+        __postprocess_X_y_into_memory(transformation, X, y, False)
     return return_value.loc[X.index]
 
 
-def process_primary_child_transform(
+def __process_primary_child_transform(
     composite: Composite,
     index: int,
     child_transform: Transformations,
@@ -213,7 +239,7 @@ def process_primary_child_transform(
     return recursively_transform(X, y, sample_weights, child_transform, stage, backend)
 
 
-def process_secondary_child_transform(
+def __process_secondary_child_transform(
     composite: Composite,
     index: int,
     child_transform: Transformations,
@@ -239,7 +265,7 @@ def deepcopy_transformations(transformation: Transformations) -> Transformations
         return deepcopy(transformation)
 
 
-def _preprocess_X_y_with_memory(
+def __preprocess_X_y_with_memory(
     transformation: Transformation, X: pd.DataFrame, y: Optional[pd.Series]
 ) -> Tuple[pd.DataFrame, pd.Series]:
     if transformation._state is None or transformation.properties.memory_size is None:
@@ -262,7 +288,7 @@ def _preprocess_X_y_with_memory(
         )
 
 
-def _postprocess_X_y_into_memory(
+def __postprocess_X_y_into_memory(
     transformation: Transformation,
     X: pd.DataFrame,
     y: Optional[pd.Series],

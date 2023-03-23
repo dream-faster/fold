@@ -42,7 +42,9 @@ class NaiveSeasonal(Model):
         assert seasonal_length > 1, "seasonal_length must be greater than 1"
         self.seasonal_length = seasonal_length
         self.properties = Model.Properties(
-            mode=Transformation.Properties.Mode.online, memory_size=seasonal_length
+            mode=Transformation.Properties.Mode.online,
+            memory_size=seasonal_length,
+            _internal_supports_minibatch_backtesting=True,
         )
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:

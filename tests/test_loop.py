@@ -12,21 +12,28 @@ def run_loop(
     train_method: TrainMethod, backend: Backend, transformations: Transformations
 ) -> None:
     # the naive model returns X as prediction, so y.shift(1) should be == pred
-    X, y = generate_sine_wave_data()
+    X, y = generate_sine_wave_data(length=1000)
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     transformations_over_time = train(
-        transformations, None, y, splitter, train_method=train_method, backend=backend
+        transformations,
+        None,
+        y,
+        splitter,
+        train_method=train_method,
+        backend=backend,
+        silent=False,
     )
     pred = backtest(transformations_over_time, X, y, splitter)
     assert (X.squeeze()[pred.index] == pred.squeeze()).all()
 
 
 def test_loop_sequential():
+    naive = Naive()
     run_loop(
         TrainMethod.sequential,
         Backend.no,
-        Naive(),
+        naive,
     )
 
 
@@ -38,11 +45,14 @@ def test_loop_parallel():
     )
 
 
-def test_loop_with_online_transformation():
+def test_loop_online_model_no_minibatching_backtest():
+    # _internal_supports_minibatch_backtesting is True by default for Naive model, but backtesting should work even if it's False
+    naive = Naive()
+    naive.properties._internal_supports_minibatch_backtesting = False
     run_loop(
         TrainMethod.parallel,
         Backend.no,
-        Naive(),
+        naive,
     )
 
 
