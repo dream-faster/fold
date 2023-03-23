@@ -2,7 +2,7 @@ import pandas as pd
 from sklearn.ensemble import HistGradientBoostingRegressor
 
 from fold.loop import train
-from fold.loop.backtest import backtest
+from fold.loop.backtesting import backtest
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.lags import AddLagsX, AddLagsY
 
