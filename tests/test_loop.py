@@ -1,7 +1,7 @@
 from fold.loop import train
 from fold.loop.backtest import backtest
 from fold.loop.types import Backend, TrainMethod
-from fold.models.baseline import Naive, Transformation
+from fold.models.baseline import Naive
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.base import Transformations
 from fold.transformations.dev import Test
@@ -30,7 +30,6 @@ def run_loop(
 
 def test_loop_sequential():
     naive = Naive()
-    naive.properties.mode = Transformation.Properties.Mode.online
     run_loop(
         TrainMethod.sequential,
         Backend.no,
@@ -46,11 +45,14 @@ def test_loop_parallel():
     )
 
 
-def test_loop_with_online_transformation():
+def test_loop_online_model_no_minibatching_backtest():
+    # _internal_supports_minibatch_backtesting is True by default for Naive model, but backtesting should work even if it's False
+    naive = Naive()
+    naive.properties._internal_supports_minibatch_backtesting = False
     run_loop(
         TrainMethod.parallel,
         Backend.no,
-        Naive(),
+        naive,
     )
 
 

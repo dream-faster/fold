@@ -44,6 +44,7 @@ class NaiveSeasonal(Model):
         self.properties = Model.Properties(
             mode=Transformation.Properties.Mode.online,
             memory_size=seasonal_length,
+            _internal_supports_minibatch_backtesting=True,
         )
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
