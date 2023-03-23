@@ -22,6 +22,7 @@ class Transformation(ABC):
         class Mode(enum.Enum):
             minibatch = "minibatch"
             online = "online"
+            internal_both = "internal_both"
 
         mode: Mode = Mode.minibatch
         memory_size: Optional[

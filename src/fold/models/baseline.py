@@ -15,7 +15,7 @@ class Naive(Model):
 
     name = "Naive"
     properties = Model.Properties(
-        mode=Transformation.Properties.Mode.online, memory_size=1
+        mode=Transformation.Properties.Mode.internal_both, memory_size=1
     )
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
@@ -42,7 +42,8 @@ class NaiveSeasonal(Model):
         assert seasonal_length > 1, "seasonal_length must be greater than 1"
         self.seasonal_length = seasonal_length
         self.properties = Model.Properties(
-            mode=Transformation.Properties.Mode.online, memory_size=seasonal_length
+            mode=Transformation.Properties.Mode.internal_both,
+            memory_size=seasonal_length,
         )
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
@@ -69,7 +70,7 @@ class RollingMean(Model):
     def __init__(self, window_size: int) -> None:
         self.window_size = window_size
         self.properties = Model.Properties(
-            mode=Transformation.Properties.Mode.online, memory_size=window_size
+            mode=Transformation.Properties.Mode.internal_both, memory_size=window_size
         )
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
