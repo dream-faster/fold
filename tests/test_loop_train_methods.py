@@ -3,7 +3,7 @@ from typing import Optional, Union
 import pandas as pd
 
 from fold.loop import train
-from fold.loop.backtest import backtest
+from fold.loop.backtesting import backtest
 from fold.loop.types import TrainMethod
 from fold.models.base import Model
 from fold.splitters import ExpandingWindowSplitter

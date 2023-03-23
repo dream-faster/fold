@@ -1,5 +1,5 @@
 from fold.loop import train
-from fold.loop.backtest import backtest
+from fold.loop.backtesting import backtest
 from fold.loop.types import Backend, TrainMethod
 from fold.models.baseline import Naive
 from fold.splitters import ExpandingWindowSplitter
