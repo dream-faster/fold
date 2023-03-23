@@ -1,6 +1,7 @@
 from typing import Callable, List, Optional
 
 import pandas as pd
+import ray
 
 from ...composites.base import Composite
 from ...splitters import Fold
@@ -19,8 +20,6 @@ def train_transformations(
     backend: Backend,
     silent: bool,
 ):
-    import ray
-
     func = ray.remote(func)
     X = ray.put(X)
     y = ray.put(y)
@@ -44,8 +43,6 @@ def process_primary_child_transformations(
     stage: Stage,
     backend: Backend,
 ):
-    import ray
-
     func = ray.remote(func)
     X = ray.put(X)
     y = ray.put(y)
@@ -77,8 +74,6 @@ def process_secondary_child_transformations(
     stage: Stage,
     backend: Backend,
 ):
-    import ray
-
     func = ray.remote(func)
     X = ray.put(X)
     y = ray.put(y)
