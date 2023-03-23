@@ -46,19 +46,20 @@ def recursively_transform(
         if (
             transformations.properties.mode == Transformation.Properties.Mode.online
             and stage in [Stage.update, Stage.update_online_only]
+            and not transformations.properties._internal_supports_minibatch_backtesting
         ):
             return process_with_inner_loop(transformations, X, y, sample_weights)
         # If the transformation is "online" but also supports our internal "mini-batch"-style updating
         elif (
-            transformations.properties.mode
-            == Transformation.Properties.Mode.internal_both
-            and stage == Stage.update_online_only
+            transformations.properties.mode == Transformation.Properties.Mode.online
+            and stage in [Stage.update, Stage.update_online_only]
+            and transformations.properties._internal_supports_minibatch_backtesting
         ):
-            return process_internal_online_model_minibatch_inference(
-                transformations, X, y
+            return process_internal_online_model_minibatch_inference_and_update(
+                transformations, X, y, sample_weights
             )
 
-        # or the model is "mini-batch" updating or we're in initial_fit stage
+        # or perform "mini-batch" updating OR the initial fit.
         else:
             return process_minibatch_transformation(
                 transformations, X, y, sample_weights, stage
@@ -177,15 +178,19 @@ def process_with_inner_loop(
     )
 
 
-def process_internal_online_model_minibatch_inference(
+def process_internal_online_model_minibatch_inference_and_update(
     transformation: Transformation,
     X: pd.DataFrame,
     y: Optional[pd.Series],
+    sample_weights: Optional[pd.Series],
 ) -> pd.DataFrame:
     X, y = trim_initial_nans(X, y)
     X_with_memory, y_with_memory = __preprocess_X_y_with_memory(transformation, X, y)
     __postprocess_X_y_into_memory(transformation, X_with_memory, y_with_memory, True)
     return_value = transformation.transform(X_with_memory, in_sample=True)
+
+    transformation.update(X_with_memory, y_with_memory, sample_weights)
+    __postprocess_X_y_into_memory(transformation, X, y, False)
     return return_value.loc[X.index]
 
 

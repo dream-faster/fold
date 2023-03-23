@@ -1,7 +1,7 @@
 from fold.loop import train
 from fold.loop.backtest import backtest
 from fold.loop.types import Backend, TrainMethod
-from fold.models.baseline import Naive
+from fold.models.baseline import Naive, Transformation
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.base import Transformations
 from fold.transformations.dev import Test
@@ -12,21 +12,29 @@ def run_loop(
     train_method: TrainMethod, backend: Backend, transformations: Transformations
 ) -> None:
     # the naive model returns X as prediction, so y.shift(1) should be == pred
-    X, y = generate_sine_wave_data()
+    X, y = generate_sine_wave_data(length=1000)
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     transformations_over_time = train(
-        transformations, None, y, splitter, train_method=train_method, backend=backend
+        transformations,
+        None,
+        y,
+        splitter,
+        train_method=train_method,
+        backend=backend,
+        silent=False,
     )
     pred = backtest(transformations_over_time, X, y, splitter)
     assert (X.squeeze()[pred.index] == pred.squeeze()).all()
 
 
 def test_loop_sequential():
+    naive = Naive()
+    naive.properties.mode = Transformation.Properties.Mode.online
     run_loop(
         TrainMethod.sequential,
         Backend.no,
-        Naive(),
+        naive,
     )
 
 
