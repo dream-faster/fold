@@ -27,8 +27,12 @@ df = (
 
 # %%
 plot_acf(df.temperature, lags=50)
+# We see two things:
+# 1. There is a strong daily seasonality
+# 2. There
 
 # %%
+# Let's start by training the simplest possible model: one that repeats the last value.
 
 y = df["temperature"].shift(-1)[:-1]
 X = df[:-1]
@@ -42,7 +46,6 @@ pred = backtest(transformations_over_time, None, y, splitter)
 sc = score(y[pred.index], pred.squeeze())
 sc.print_summary(extended=False)
 scorecards.append(sc)
-
 
 # %%
 transformations_over_time = train(NaiveSeasonal(seasonal_length=24), None, y, splitter)
