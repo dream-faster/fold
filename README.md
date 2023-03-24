@@ -57,7 +57,7 @@ Continuous validation prevents you from accidentally using information that woul
 You can quickly train your chosen models and get predictions by running:
 
 ```python
-from fold.loop import train, backtest
+from fold import train, backtest
 X
 y = X.squeeze()
 
@@ -68,6 +68,22 @@ transformations = [
 ]
 transformations_over_time = train(transformations, X, y, splitter)
 pred = backtest(transformations_over_time, X, y, splitter)
+```
+
+With the `train_evaluate` and `evaluate` helper function (requires [krisi](https://github.com/dream-faster/krisi)):
+
+```python
+from fold import train_evaluate
+X
+y = X.squeeze()
+
+splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
+transformations = [
+  DummyRegressor(strategy="constant", constant=0),
+  OnlyPredictions(),
+]
+scorecard, prediction, trained_transformations =  train_evaluate(transformations, X, y, splitter)
+
 ```
 
 
