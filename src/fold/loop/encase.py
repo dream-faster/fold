@@ -23,7 +23,6 @@ def backtest_score(
     backend: Backend = Backend.no,
     sample_weights: Optional[pd.Series] = None,
     silent: bool = False,
-    mutate: bool = False,
     krisi_args: Optional[Dict[str, Any]] = None,
     evaluation_func: Callable = mean_squared_error,
 ) -> Tuple[Union["ScoreCard", Dict[str, float]], OutOfSamplePredictions]:
@@ -35,7 +34,7 @@ def backtest_score(
         backend,
         sample_weights,
         silent,
-        mutate,
+        mutate=False,
     )
 
     if importlib.util.find_spec("krisi") is not None:
@@ -62,7 +61,6 @@ def train_backtest_score(
     sample_weights: Optional[pd.Series] = None,
     train_method: TrainMethod = TrainMethod.parallel,
     silent: bool = False,
-    mutate: bool = False,
     krisi_args: Optional[Dict[str, Any]] = None,
     evaluation_func: Callable = mean_squared_error,
 ) -> Tuple[
@@ -82,7 +80,6 @@ def train_backtest_score(
         backend,
         sample_weights,
         silent,
-        mutate,
         krisi_args,
         evaluation_func,
     )

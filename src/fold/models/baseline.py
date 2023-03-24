@@ -15,7 +15,9 @@ class Naive(Model):
 
     name = "Naive"
     properties = Model.Properties(
-        mode=Transformation.Properties.Mode.online, memory_size=1
+        mode=Transformation.Properties.Mode.online,
+        memory_size=1,
+        _internal_supports_minibatch_backtesting=False,
     )
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
