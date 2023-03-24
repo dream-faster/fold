@@ -58,8 +58,8 @@ You can quickly train your chosen models and get predictions by running:
 
 ```python
 from fold import train, backtest
-X
-y = X.squeeze()
+X = pd.read_csv("tests/data/weather.csv", index_col=0, parse_dates=True)
+y = X.pop("temperature")
 
 splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
 transformations = [
@@ -74,8 +74,9 @@ With the `train_evaluate` and `evaluate` helper function (requires [krisi](https
 
 ```python
 from fold import train_evaluate
-X
-y = X.squeeze()
+X = pd.read_csv("tests/data/weather.csv", index_col=0, parse_dates=True)
+y = X.pop("temperature")
+
 
 splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
 transformations = [
