@@ -57,7 +57,8 @@ Continuous validation prevents you from accidentally using information that woul
 You can quickly train your chosen models and get predictions by running:
 
 ```python
-from fold import train, backtest, ExpandingWindowSplitter
+import pandas as pd
+from fold import train_evaluate
 from fold.transformations import OnlyPredictions
 from fold.models.dummy import DummyRegressor
 
@@ -68,39 +69,22 @@ X = pd.read_csv(
 )[:1000]
 y = X.pop("temperature")
 
-splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=20)
-transformations = [
-    DummyRegressor(0.0),
-    OnlyPredictions(),
-]
-transformations_over_time = train(transformations, X, y, splitter)
-pred = backtest(transformations_over_time, X, y, splitter)
-```
-
-With the `train_evaluate` and `evaluate` helper function (requires [krisi](https://github.com/dream-faster/krisi)):
-
-```python
-from fold import train_evaluate
-from fold.transformations import OnlyPredictions
-from fold.models.dummy import DummyRegressor
-import pandas as pd
-
-X = pd.read_csv(
-    "https://raw.githubusercontent.com/dream-faster/datasets/main/datasets/weather/historical_hourly_la.csv",
-    index_col=0,
-    parse_dates=True,
-)[:100]
-y = X.pop("temperature")
-
 transformations = [
     DummyRegressor(0),
     OnlyPredictions(),
 ]
 scorecard, prediction, trained_transformations = train_evaluate(
     transformations, X, y
-)  # splitter [optional, defaults to ExpandingWindowSplitter(initial_train_window=0.2, step=0.2)]
-
+)  
 ```
+
+You can further set in `train_evaluate`:
+
+- splitter [Optional, Default = `ExpandingWindowSplitter(initial_train_window=0.2, step=0.2)`]
+- with_krisi [Optional, Default = `False`], set it to True to get a full report. Requires krisi to be installed (`pip install krisi`)
+- evaluation_func = [Optional, Default = `sklearn.metric.mean_squared error`]. Function to evaluate predictions with if `with_krisi = False`
+
+
 
 
 ## Fold is different

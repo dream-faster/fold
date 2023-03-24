@@ -1,6 +1,7 @@
-from typing import TYPE_CHECKING, Tuple
+from typing import TYPE_CHECKING, Callable, Dict, Tuple, Union
 
 import pandas as pd
+from sklearn.metrics import mean_squared_error
 
 from ..all_types import OutOfSamplePredictions, TransformationsOverTime
 from ..splitters import ExpandingWindowSplitter, Splitter
@@ -17,12 +18,18 @@ def backtest_score(
     X: pd.DataFrame,
     y: pd.Series,
     splitter: Splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.2),
-) -> Tuple["ScoreCard", OutOfSamplePredictions]:
-    from krisi import score
-
+    with_krisi: bool = False,
+    evaluation_func: Callable = mean_squared_error,
+) -> Tuple[Union["ScoreCard", Dict[str, float]], OutOfSamplePredictions]:
     pred = backtest(transformations_over_time, X, y, splitter)
-    scorecard = score(y[pred.index], pred.squeeze())
+    if with_krisi:
+        from krisi import score
 
+        scorecard = score(y[pred.index], pred.squeeze())
+    else:
+        scorecard = {
+            "mean_squared_error": evaluation_func(y[pred.index], pred.squeeze())
+        }
     return scorecard, pred
 
 
@@ -31,9 +38,16 @@ def train_backtest_score(
     X: pd.DataFrame,
     y: pd.Series,
     splitter: Splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.2),
-) -> Tuple["ScoreCard", OutOfSamplePredictions, TransformationsOverTime]:
+    with_krisi: bool = False,
+) -> Tuple[
+    Union["ScoreCard", Dict[str, float]],
+    OutOfSamplePredictions,
+    TransformationsOverTime,
+]:
     transformations_over_time = train(transformations, X, y, splitter)
 
-    scorecard, pred = backtest_score(transformations_over_time, X, y, splitter)
+    scorecard, pred = backtest_score(
+        transformations_over_time, X, y, splitter, with_krisi
+    )
 
     return scorecard, pred, transformations_over_time
