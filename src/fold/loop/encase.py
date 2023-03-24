@@ -17,7 +17,7 @@ def backtest_score(
     transformations_over_time: TransformationsOverTime,
     X: pd.DataFrame,
     y: pd.Series,
-    splitter: Splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.2),
+    splitter: Splitter,
     with_krisi: bool = False,
     evaluation_func: Callable = mean_squared_error,
 ) -> Tuple[Union["ScoreCard", Dict[str, float]], OutOfSamplePredictions]:

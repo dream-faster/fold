@@ -73,16 +73,14 @@ transformations = [
     DummyRegressor(0),
     OnlyPredictions(),
 ]
+splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.2)
 scorecard, prediction, trained_transformations = train_evaluate(
-    transformations, X, y
+    transformations, X, y, splitter, with_krisi = False
 )  
 ```
 
-You can further set in `train_evaluate`:
+You can further set `with_krisi` [Optional, Default = `False`], to True to get a full report. Requires krisi to be installed (`pip install krisi`)
 
-- splitter [Optional, Default = `ExpandingWindowSplitter(initial_train_window=0.2, step=0.2)`]
-- with_krisi [Optional, Default = `False`], set it to True to get a full report. Requires krisi to be installed (`pip install krisi`)
-- evaluation_func = [Optional, Default = `sklearn.metric.mean_squared error`]. Function to evaluate predictions with if `with_krisi = False`
 
 
 
