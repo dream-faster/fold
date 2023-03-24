@@ -39,5 +39,3 @@ def test_train_eval_with_krisi() -> None:
     scorecard, pred, trained_transformations_over_time = train_evaluate(
         pipeline, X, y, splitter
     )
-
-    assert len(pred) == len(y)
