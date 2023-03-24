@@ -75,11 +75,11 @@ transformations = [
 ]
 splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.2)
 scorecard, prediction, trained_transformations = train_evaluate(
-    transformations, X, y, splitter, with_krisi = False
+    transformations, X, y, splitter
 )  
 ```
 
-You can further set `with_krisi` [Optional, Default = `False`], to True to get a full report. Requires krisi to be installed (`pip install krisi`)
+If you install `krisi` by running `pip install krisi` you get an extended report back, rather than a single metric.
 
 
 

@@ -1,3 +1,4 @@
+import importlib.util
 from typing import TYPE_CHECKING, Any, Callable, Dict, Optional, Tuple, Union
 
 import pandas as pd
@@ -23,7 +24,6 @@ def backtest_score(
     sample_weights: Optional[pd.Series] = None,
     silent: bool = False,
     mutate: bool = False,
-    with_krisi: bool = False,
     krisi_args: Optional[Dict[str, Any]] = None,
     evaluation_func: Callable = mean_squared_error,
 ) -> Tuple[Union["ScoreCard", Dict[str, float]], OutOfSamplePredictions]:
@@ -37,7 +37,8 @@ def backtest_score(
         silent,
         mutate,
     )
-    if with_krisi:
+
+    if importlib.util.find_spec("krisi") is not None:
         from krisi import score
 
         scorecard = score(
@@ -62,7 +63,6 @@ def train_backtest_score(
     train_method: TrainMethod = TrainMethod.parallel,
     silent: bool = False,
     mutate: bool = False,
-    with_krisi: bool = False,
     krisi_args: Optional[Dict[str, Any]] = None,
     evaluation_func: Callable = mean_squared_error,
 ) -> Tuple[
@@ -83,7 +83,6 @@ def train_backtest_score(
         sample_weights,
         silent,
         mutate,
-        with_krisi,
         krisi_args,
         evaluation_func,
     )
