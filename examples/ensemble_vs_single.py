@@ -46,7 +46,7 @@ scorecards = []
 pipeline_arima_1 = WrapStatsForecast(ARIMA, {"order": (1, 1, 0)}, use_exogenous=False)
 
 ## Training the model
-transformations_over_time = train(pipeline_arima_1.clone(), X, y, splitter)
+transformations_over_time = train(pipeline_arima_1, None, y, splitter)
 
 ## Evaluating the model
 pred = backtest(transformations_over_time, X, y, splitter)
@@ -63,7 +63,7 @@ scorecards.append(sc)
 pipeline_arima_2 = WrapStatsForecast(ARIMA, {"order": (2, 1, 1)}, use_exogenous=False)
 
 ## Training the model
-transformations_over_time = train(pipeline_arima_2.clone(), X, y, splitter)
+transformations_over_time = train(pipeline_arima_2, None, y, splitter)
 
 ## Evaluating the model
 pred = backtest(transformations_over_time, X, y, splitter)
