@@ -10,12 +10,12 @@ from fold_models.statsforecast import WrapStatsForecast
 from krisi import compare, score
 from statsforecast.models import ARIMA
 
+# %%
+from utils import get_preprocessed_dataset
+
 from fold.composites.ensemble import Ensemble
 from fold.loop import backtest, train
 from fold.splitters import ExpandingWindowSplitter
-
-# %%
-from .utils import get_preprocessed_dataset
 
 # %% [markdown]
 # Let's load in the data.
