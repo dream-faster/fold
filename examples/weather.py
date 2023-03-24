@@ -1,6 +1,6 @@
 #%%
 import pandas as pd
-from fold_models import WrapStatsModels, WrapXGB
+from fold_models import Naive, NaiveSeasonal, WrapStatsModels, WrapXGB
 from krisi import score
 from sklearn.feature_selection import SelectKBest, f_regression
 from statsmodels.graphics.tsaplots import plot_acf
@@ -9,7 +9,7 @@ from xgboost import XGBRegressor
 
 from fold.composites.target import TransformTarget
 from fold.loop import backtest, train
-from fold.models import Naive, NaiveSeasonal
+from fold.loop.types import Backend
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.difference import Difference
 from fold.transformations.lags import AddLagsX
@@ -56,22 +56,23 @@ sc.print_summary(extended=False)
 scorecards.append(sc)
 
 
-# %% A simple ARIMA model without differencing
+# %% A simple AR1 model
 
-pipeline = [
+transformations_over_time = train(
     WrapStatsModels(
         model_class=ARIMA,
         init_args=dict(order=(1, 0, 0)),
         use_exogenous=False,
-        online_mode=True,
-    )
-]
-transformations_over_time = train(pipeline, None, y, splitter)
+        online_mode=False,
+    ),
+    None,
+    y,
+    splitter,
+)
 pred = backtest(transformations_over_time, None, y, splitter)
 sc = score(y[pred.index], pred.squeeze())
 sc.print_summary(extended=False)
 scorecards.append(sc)
-
 
 # %% A simple ARIMA model with our own differencing
 
@@ -101,8 +102,29 @@ from fold.composites.ensemble import Ensemble
 splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.1)
 tabular_pipeline = [
     AddWindowFeatures([("temperature", 14, "mean")]),
-    AddLagsX(columns_and_lags=[("temperature", list(range(1, 5)))]),
-    WrapXGB.from_model(XGBRegressor(max_depth=20)),
+    AddLagsX([("temperature", list(range(1, 5)))]),
+    AddLagsY([1,2,3]),
+    RFE(XGBRegressor(), n_features_to_select=10),
+    SelectBest([
+        WrapXGB.from_model(XGBRegressor(max_depth=20)),
+        [
+            StandardScaler(),
+            WrapXGB.from_model(XGBRegressor(max_depth=20)),
+        ], score_func=sklearn.metrics.root_mean_squared_error
+    ])
+    Ensemble([
+        [
+            StandardScaler(),
+            WrapStatsModels(
+            model_class=ARIMA,
+            init_args=dict(order=(1, 0, 0)),
+            use_exogenous=False,
+            online_mode=False,
+            ),
+        ]
+        [WrapXGB.from_model(XGBRegressor(max_depth=20))],
+    ])
+
     # PerColumnTransform(lambda X: X.rolling(14).mean()),
     # AddWindowFeature(window = 14, [("temperature", lambda X: X.mean()]),
     # lambda X: X["temperature"].rolling(14).mean(),
@@ -118,7 +140,8 @@ arima_pipeline = [
 ]
 ensemble = Ensemble([tabular_pipeline, arima_pipeline])
 
-transformations_over_time = train(tabular_pipeline, X, y, splitter)
+ExpandingWindowSplitter(0.2, step=0.2) # -> 5 folds
+transformations_over_time = train(tabular_pipeline, X, y, splitter, backend =Backend.ray)
 pred = backtest(transformations_over_time, X, y, splitter)
 sc = score(y[pred.index], pred.squeeze())
 sc.print_summary(extended=False)
