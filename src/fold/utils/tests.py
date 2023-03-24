@@ -50,9 +50,7 @@ def generate_zeros_and_ones_skewed(
 
 
 def generate_monotonous_data(length: int = 1000) -> Tuple[pd.DataFrame, pd.Series]:
-    length += 1
-    increment = 1 / length
-    values = np.arange(0, 1, increment)
+    values = np.linspace(0, 1, num=length + 1)
     series = pd.Series(
         values,
         name="linear",
