@@ -36,6 +36,11 @@ def test_train_eval_with_krisi() -> None:
         HistGradientBoostingRegressor(),
     ]
 
+    # Without splitter
+    scorecard, pred, trained_transformations_over_time = train_evaluate(pipeline, X, y)
+
+    # With splitter
+    splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.2)
     scorecard, pred, trained_transformations_over_time = train_evaluate(
         pipeline, X, y, splitter
     )
