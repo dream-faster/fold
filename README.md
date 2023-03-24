@@ -57,18 +57,32 @@ Continuous validation prevents you from accidentally using information that woul
 You can quickly train your chosen models and get predictions by running:
 
 ```python
-from fold.loop import train, backtest
-X
-y = X.squeeze()
+import pandas as pd
+from fold import train_evaluate, ExpandingWindowSplitter
+from fold.transformations import OnlyPredictions
+from fold.models.dummy import DummyRegressor
 
-splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
+X = pd.read_csv(
+    "https://raw.githubusercontent.com/dream-faster/datasets/main/datasets/weather/historical_hourly_la.csv",
+    index_col=0,
+    parse_dates=True,
+)[:1000]
+y = X.pop("temperature")
+
 transformations = [
-  DummyRegressor(strategy="constant", constant=0),
-  OnlyPredictions(),
+    DummyRegressor(0),
+    OnlyPredictions(),
 ]
-transformations_over_time = train(transformations, X, y, splitter)
-pred = backtest(transformations_over_time, X, y, splitter)
+splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.2)
+scorecard, prediction, trained_transformations = train_evaluate(
+    transformations, X, y, splitter
+)  
 ```
+
+If you install `krisi` by running `pip install krisi` you get an extended report back, rather than a single metric.
+
+
+
 
 
 ## Fold is different
