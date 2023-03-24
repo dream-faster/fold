@@ -114,10 +114,17 @@ If you install `krisi` by running `pip install krisi` you get an extended report
 
 ## Examples and Walkthroughs
 <table width='100%'>
-| Link                                                                           | Dataset Type |
-| ------------------------------------------------------------------------------ | ------------ |
-| [⚡️ Energy Demand Walkthrough](https://github.com/dream-faster/fold/blob/main/examples/ensemble_vs_single.py)    | Energy       |
-<table>
+  <tr>
+    <th>Link</th>
+    <th>Dataset Type</th>
+  </tr>
+  <tr>
+    <td> <a href='https://github.com/dream-faster/fold/blob/main/examples/ensemble_vs_single.py' target="_blank">⚡️ Energy Demand Walkthrough</a></td>
+    <td>Energy</td>
+  </tr>
+</table>
+
+
 
 <br/>
 
