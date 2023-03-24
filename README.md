@@ -113,7 +113,7 @@ If you install `krisi` by running `pip install krisi` you get an extended report
 <!-- GETTING STARTED -->
 
 ## Examples and Walkthroughs
-<table width='100%'>
+<table width='100vw'>
   <tr  width='100%'>
     <th  width='100%'>Link</th>
     <th  width='100%'>Dataset Type</th>
@@ -140,6 +140,10 @@ If you install `krisi` by running `pip install krisi` you get an extended report
 - Super easy syntax!
 - Probabilistic foreacasts (currently, for Classification, soon for Regression as well).
 - Hyperparemeter optimization / Model selection. (coming in early April!)
+
+![Continous Validation](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/technical_diagrams/continous_validation.svg) 
+![Continous Online Inference](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/technical_diagrams/continous_online_inference.svg) 
+
 
 ## Our open source Time Series toolkit
 
