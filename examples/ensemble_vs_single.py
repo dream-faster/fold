@@ -10,12 +10,12 @@ from fold_models.statsforecast import WrapStatsForecast
 from krisi import compare, score
 from statsforecast.models import ARIMA
 
-# %%
-from utils import load_dataset
-
 from fold.composites.ensemble import Ensemble
 from fold.loop import backtest, train
 from fold.splitters import ExpandingWindowSplitter
+
+# %%
+from .utils import get_preprocessed_dataset
 
 # %% [markdown]
 # Let's load in the data.
@@ -24,10 +24,12 @@ from fold.splitters import ExpandingWindowSplitter
 # 2. Then we take out our target column (`y`) and pop it from our Exogenous DataFrame (`X`)
 
 # %%
-target = "residual_load"
-X = load_dataset("energy/industrial_pv_load").set_index("time", drop=True)
-X = X[~X.index.duplicated(keep="first")]
-y = X.pop(target)
+X, y = get_preprocessed_dataset(
+    "energy/industrial_pv_load",
+    target_col="residual_load",
+    index_col="time",
+    deduplicate_strategy="first",
+)
 
 
 # %% [markdown]
@@ -77,7 +79,7 @@ scorecards.append(sc)
 # Let's create another simple ARIMA model with Statforecast wrapped with fold-models
 
 # %%
-pipeline_ensemble = Ensemble([pipeline_arima_1.clone(), pipeline_arima_2.clone()])
+pipeline_ensemble = Ensemble([pipeline_arima_1, pipeline_arima_2])
 
 ## Training the model
 transformations_over_time = train(pipeline_ensemble, X, y, splitter)
