@@ -51,7 +51,7 @@ tests = [
   "pytest-cov>=4.0",
   "imbalanced-learn",
   "holidays",
-  "krisi"
+  "krisi>=0.0.8"
 ]
 docs = [
   "mkdocs-material",
