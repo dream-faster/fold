@@ -17,10 +17,10 @@ def process_dataset(
     index_col: Optional[str] = None,
     shorten: Optional[int] = None,
 ) -> Tuple[pd.DataFrame, pd.Series]:
-    if deduplicate_strategy is not None:
-        df = df[~df.index.duplicated(keep=deduplicate_strategy)]
     if index_col is not None:
         df = df.set_index("time", drop=True)
+    if deduplicate_strategy is not None:
+        df = df[~df.index.duplicated(keep=deduplicate_strategy)]
     if shorten is not None:
         df = df[:shorten]
     y = df[target_col].shift(-1)[:-1]
