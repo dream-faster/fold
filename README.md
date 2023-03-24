@@ -24,7 +24,7 @@
 
 <!-- INTRO -->
 
-![Fold's main features](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/main_features.svg) 
+![Fold's main features](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/main_features.svg) 
 
 - Composite Pipelines with Continuous Validation (Cross Validation) - [What does that mean?](#Fold-is-different)
 - Distributed computing - [Why is this important?](#Fold-is-different)
@@ -35,7 +35,9 @@ Continuous validation prevents you from accidentally using information that woul
 
 <br/>
 
-![Fold works with many third party libraries](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/third_party.svg)
+![Fold works with many third party libraries](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/third_party.svg)
+
+<img src="https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/third_party.svg" onerror="this.onerror=null; this.src='docs/images/overview_diagrams/third_party.svg'">
 
 
 <!-- GETTING STARTED -->
@@ -111,11 +113,15 @@ If you install `krisi` by running `pip install krisi` you get an extended report
 <!-- GETTING STARTED -->
 
 ## Examples and Walkthroughs
-
+<style>
+    table {
+        width: 100%;
+    }
+</style>
 | Link                                                                           | Dataset Type |
 | ------------------------------------------------------------------------------ | ------------ |
-| [⚡️ Energy Demand Walkthrough](github.com/dream-faster/fold/examples/energy)    | Energy       |
-| [🚋 Basic end-to-end walkthrough](github.com/dream-faster/fold/examples/energy) | Energy       |
+| [⚡️ Energy Demand Walkthrough](https://github.com/dream-faster/fold/blob/main/examples/ensemble_vs_single.py)    | Energy       |
+
 
 <br/>
 
@@ -133,9 +139,10 @@ If you install `krisi` by running `pip install krisi` you get an extended report
 
 ## Our open source Time Series toolkit
 
-[![Krisi](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/dream_faster_suite_krisi.svg)](https://github.com/dream-faster/krisi)
-[![Fold](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/dream_faster_suite_fold.svg)](https://github.com/dream-faster/fold)
-[![Fold/Models](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/dream_faster_suite_fold_models.svg)](https://github.com/dream-faster/fold-models)
+[![Krisi](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/dream_faster_suite_krisi.svg)](https://github.com/dream-faster/krisi)
+[![Fold](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/dream_faster_suite_fold.svg)](https://github.com/dream-faster/fold)
+[![Fold/Models](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/dream_faster_suite_fold_models.svg)](https://github.com/dream-faster/fold-models)
+
 
 
 ## Contribution
@@ -152,3 +159,4 @@ Submit an issue or reach out to us on info at dream-faster.ai for any inquiries.
 - No intermittent time series support, very limited support for non-continuous time series.
 - No multi-step ahead forecasts. If you want to forecast multiple steps ahead, transform `y` to aggregate the change over the forecasting horizon you're interested in.
 - No hierarchical time series support.
+
