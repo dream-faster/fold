@@ -62,12 +62,12 @@ from fold import train_evaluate, ExpandingWindowSplitter
 from fold.transformations import OnlyPredictions
 from fold.models.dummy import DummyRegressor
 
-X = pd.read_csv(
-    "https://raw.githubusercontent.com/dream-faster/datasets/main/datasets/weather/historical_hourly_la.csv",
-    index_col=0,
-    parse_dates=True,
-)[:1000]
-y = X.pop("temperature")
+X, y = get_preprocessed_dataset(
+    "weather/historical_hourly_la",
+    target_col="temperature",
+    index_col="datetime",
+    shorten=1000
+)
 
 transformations = [
     DummyRegressor(0),
