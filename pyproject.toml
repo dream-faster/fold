@@ -59,7 +59,7 @@ docs = [
   "mkdocs-include-markdown-plugin",
   "mkdocs-autorefs",
   "mkdocs-jupyter",
-  "https://github.com/dream-faster/fold-models/archive/main.zip",
+  "fold_models @ https://github.com/dream-faster/fold-models/archive/main.zip",
   "krisi~=0.0.8",
   "statsforecast", 
   "xgboost",
