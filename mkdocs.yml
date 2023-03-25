@@ -22,7 +22,7 @@ plugins:
   - search
   - include-markdown
   - autorefs
-  - mkdocs-jupyter
+  - mkdocs-jupyter:
       execute: false
   - mkdocstrings:
       handlers:
