@@ -59,11 +59,6 @@ docs = [
   "mkdocs-include-markdown-plugin",
   "mkdocs-autorefs",
   "mkdocs-jupyter",
-  "fold_models @ https://github.com/dream-faster/fold-models/archive/main.zip",
-  "krisi~=0.0.8",
-  "statsforecast", 
-  "xgboost",
-  "holidays",
 ]
 ray = ["ray"]
 extended_transformations =[

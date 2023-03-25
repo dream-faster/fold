@@ -23,8 +23,7 @@ plugins:
   - include-markdown
   - autorefs
   - mkdocs-jupyter
-      execute: true
-      allow_errors: false
+      execute: false
   - mkdocstrings:
       handlers:
         python:
