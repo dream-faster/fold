@@ -22,6 +22,8 @@ plugins:
   - search
   - include-markdown
   - autorefs
+  - mkdocs-jupyter:
+      execute: false
   - mkdocstrings:
       handlers:
         python:
