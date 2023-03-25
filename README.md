@@ -65,7 +65,6 @@ from fold.models.dummy import DummyRegressor
 X, y = get_preprocessed_dataset(
     "weather/historical_hourly_la",
     target_col="temperature",
-    index_col="datetime",
     shorten=1000
 )
 

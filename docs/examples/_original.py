@@ -27,7 +27,6 @@ from fold.splitters import ExpandingWindowSplitter
 X, y = get_preprocessed_dataset(
     "energy/industrial_pv_load",
     target_col="residual_load",
-    index_col="time",
     deduplicate_strategy="first",
 )
 
