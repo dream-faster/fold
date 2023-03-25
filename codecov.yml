@@ -1,5 +1,5 @@
 coverage:
   status:
     patch: off
-  ignore:
-    - "docs/examples"
+ignore:
+  - "docs/examples"
