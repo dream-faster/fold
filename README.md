@@ -30,16 +30,8 @@
 - Distributed computing - [Why is this important?](#Fold-is-different)
 - Update deployed models (coming in April) - [why is this important?](#Fold-is-different)
 
-<br/>
-
 ![Fold works with many third party libraries](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/third_party.svg)
-
-<img src="https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/third_party.svg" onerror="this.onerror=null; this.src='docs/images/overview_diagrams/third_party.svg'">
-
-
 <!-- GETTING STARTED -->
-<br/>
-
 ## Installation
 
 - Prerequisites: `python >= 3.7` and `pip`
@@ -48,8 +40,6 @@
   ```
   pip install https://github.com/dream-faster/fold/archive/main.zip
   ```
-
-<br/>
 
 ## Quickstart
 
@@ -78,10 +68,9 @@ scorecard, prediction, trained_transformations = train_evaluate(
 )  
 ```
 
-If you install `krisi` by running `pip install krisi` you get an extended report back, rather than a single metric.
+Thinking of using `fold`? We'd love to hear about your use case and help, [please book a free 30-min call with us](https://calendly.com/mark-szulyovszky/consultation)!
 
-
-
+(If you install `krisi` by running `pip install krisi` you get an extended report back, rather than a single metric.)
 
 
 ## Fold is different
@@ -148,15 +137,20 @@ If you install `krisi` by running `pip install krisi` you get an extended report
 [![Fold](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/dream_faster_suite_fold.svg)](https://github.com/dream-faster/fold)
 [![Fold/Models](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/dream_faster_suite_fold_models.svg)](https://github.com/dream-faster/fold-models)
 
-
+If you want to try them out, we'd love to hear about your use case and help, [please book a free 30-min call with us](https://calendly.com/mark-szulyovszky/consultation)!
 
 ## Contribution
 
 Join our [Discord](https://discord.gg/EKJQgfuBpE) for live discussion!
 
-The project uses `isort` and `black` for formatting.
-
 Submit an issue or reach out to us on info at dream-faster.ai for any inquiries.
+
+## Licence & Usage
+
+Fold is our open-core Time Series engine. It's available under the MIT + Common Clause licence.
+We want to **bring much-needed transparency, speed and rigour** to the process of building Time Series ML models. We're building multiple products with and on top of it.
+
+It will be always free for research useage, but we are charging a fee for production use, and for extra features that are results of our own resource-intensive R&D.
 
 
 ## Limitations
