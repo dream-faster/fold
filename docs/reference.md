@@ -1,6 +1,5 @@
 ::: fold.loop.train
 ::: fold.loop.backtest
-::: fold.loop.infer
 
 ::: fold.models.baseline
 ::: fold.models.dummy
