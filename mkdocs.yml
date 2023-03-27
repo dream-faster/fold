@@ -13,9 +13,14 @@ nav:
       - Design: 'design.md'
       - Models: 'models.md'
       - Splitters: 'splitters.md'
-    - Getting started:
-      - Quick Start: 'quickstart.md'
-      - Deployment: 'deployment.md'
+    - Examples:
+      - Simple ARIMA model: 'arima.py'
+      - Date-time and Holiday features: 'datetime.py'
+      - Ensembling models: 'ensembling.md'
+      - Preprocess your data: 'preprocess.md'
+      - Stacking models: 'stacking.md'
+      - Tabular ML models: 'tabular.md'
+      - Transform your target variable: 'transform-target.md'
     - 'reference.md'
 
 plugins:
