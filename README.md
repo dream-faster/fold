@@ -26,12 +26,9 @@
 
 ![Fold's main features](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/main_features.svg) 
 
-- Composite Pipelines with Continuous Validation (Cross Validation) - [What does that mean?](#Fold-is-different)
+- Composite Pipelines with Cross-Validation - [What does that mean?](#Fold-is-different)
 - Distributed computing - [Why is this important?](#Fold-is-different)
-- Update deployed models - [why is this importan?](#Fold-is-different)
-
-Continuous validation prevents you from accidentally using information that wouldn't otherwise be available at the time of training/evaluation (lookahead bias).
-
+- Update deployed models (coming in April) - [why is this important?](#Fold-is-different)
 
 <br/>
 
@@ -63,6 +60,7 @@ import pandas as pd
 from fold import train_evaluate, ExpandingWindowSplitter
 from fold.transformations import OnlyPredictions
 from fold.models.dummy import DummyRegressor
+from fold.utils.dataset import get_preprocessed_dataset
 
 X, y = get_preprocessed_dataset(
     "weather/historical_hourly_la",
@@ -88,7 +86,7 @@ If you install `krisi` by running `pip install krisi` you get an extended report
 
 ## Fold is different
 
-- Continuous Validation (Time Series cross-validation) at lightning speed.<br/>
+- Time Series Cross-Validation at lightning speed.<br/>
   <span style="color:orange;">**→ fold allows to simulate and evaluate your models like they would have performed, in reality/when deployed, with clever use of paralellization and design.**</span>
 
 - Create composite models: ensembles, hybrids, stacking pipelines, easily.<br/>
@@ -96,7 +94,7 @@ If you install `krisi` by running `pip install krisi` you get an extended report
   </span>
 
 - Built with Distributed Computing in mind.<br/>
-  <span style="color:orange;">**→ Deploy your pipelines to a cluster with `ray`, and use `modin` to handle huge, out-of-memory datasets.**</span>
+  <span style="color:orange;">**→ Deploy your research and development pipelines to a cluster with `ray`, and use `modin` to handle out-of-memory datasets (full support for modin is coming in April).**</span>
 
 - Bridging the gap between Online and Mini-Batch learning.<br/>
   <span style="color:orange;">**→ Mix and match `xgboost` with ARIMA, in a single pipeline, update your models, preprocessing steps on every timestamp, if that's desired.**</span>
@@ -137,7 +135,7 @@ If you install `krisi` by running `pip install krisi` you get an extended report
 - Use any univariate or sequence models (wrappers provided in [fold-models](https://github.com/dream-faster/fold-models)).
 - Use any Deep Learning Time Series models (wrappers provided in [fold-models](https://github.com/dream-faster/fold-models)).
 - Super easy syntax!
-- Probabilistic foreacasts (currently, for Classification, soon for Regression as well).
+- Probabilistic foreacasts (currently, for Classification, full support coming in April).
 - Hyperparemeter optimization / Model selection. (coming in early April!)
 
 ![Continous Validation](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/technical_diagrams/continous_validation.svg) 
@@ -163,7 +161,8 @@ Submit an issue or reach out to us on info at dream-faster.ai for any inquiries.
 
 ## Limitations
 
-- No intermittent time series support, very limited support for non-continuous time series.
+- No intermittent time series support, very limited support for non-
+time series.
 - No multi-step ahead forecasts. If you want to forecast multiple steps ahead, transform `y` to aggregate the change over the forecasting horizon you're interested in.
 - No hierarchical time series support.
 
