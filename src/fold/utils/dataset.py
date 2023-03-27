@@ -37,7 +37,7 @@ def process_dataset(
     if deduplication_strategy is not None:
         df = df[
             ~df.index.duplicated(
-                keep=DeduplicationStrategy.from_str(deduplication_strategy)
+                keep=DeduplicationStrategy.from_str(deduplication_strategy).value
             )
         ]
     if shorten is not None:
