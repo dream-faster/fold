@@ -1,18 +1,11 @@
-from typing import Callable, List, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 import pandas as pd
-from sklearn.base import BaseEstimator
 
 from ..all_types import TransformationsOverTime
 from ..composites.base import Composite
-from ..models.base import Model
 from ..splitters import Fold, SlidingWindowSplitter, Splitter
-from ..transformations.base import (
-    BlocksOrWrappable,
-    DeployableTransformations,
-    Transformation,
-    Transformations,
-)
+from ..transformations.base import BlocksOrWrappable, Transformation
 from ..utils.list import wrap_in_list
 from .backend import get_backend_dependent_functions
 from .checks import check_types
@@ -115,41 +108,6 @@ def train(
         )
         for transformation_over_time in zip(*processed_transformations)
     ]
-
-
-def train_for_deployment(
-    transformations: List[
-        Union[Transformation, Composite, Model, Callable, BaseEstimator]
-    ],
-    X: pd.DataFrame,
-    y: pd.Series,
-    sample_weights: Optional[pd.Series] = None,
-) -> DeployableTransformations:
-    X, y = check_types(X, y)
-
-    transformations = wrap_in_list(transformations)
-    transformations: Transformations = replace_transformation_if_not_fold_native(
-        transformations
-    )
-    _, transformations = process_transformations_window(
-        X,
-        y,
-        sample_weights,
-        transformations,
-        Fold(
-            order=0,
-            model_index=0,
-            train_window_start=0,
-            train_window_end=None,
-            update_window_start=0,
-            update_window_end=0,
-            test_window_start=0,
-            test_window_end=None,
-        ),
-        True,
-        backend=Backend.no,
-    )
-    return transformations
 
 
 def process_transformations_window(
