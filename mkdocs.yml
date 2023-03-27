@@ -9,7 +9,7 @@ theme:
 nav:
     - Home: 'index.md'
     - Concepts:
-      - Continuous Validation: 'continuous-validation.md'
+      - Time Series Cross Validation: 'cross-validation.md'
       - Design: 'design.md'
       - Models: 'models.md'
       - Splitters: 'splitters.md'

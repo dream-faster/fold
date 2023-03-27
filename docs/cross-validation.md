@@ -4,7 +4,7 @@ A single train/test split is an inadquate way to evaluate Time Series models.
 
 # What?
 
-With Continuous Validation, you take an existing time series, and:
+With Time Series Cross Validation, you take an existing time series, and:
 - Train a model
 - Evaluate the model on the next `n` steps
 - Continue updating the model with the new data you just used for inference
@@ -22,10 +22,11 @@ Instead of only looking at the last 1 year, 1 month of out-of-sample predictions
 - Time Series Cross Validation
 - Rolling Origin Backtest
 - Rolling Out-of-sample Evaluation
+- Rolling Origin Evaluation
 - Continuous Evaluation
 - "Backtesting" (not to be confused with evaluation of static trading models)
 
-Continuous Validation is implemented with [Splitters](splitters.md) in `fold`.
+Time Series Cross-Validation is implemented with [Splitters](splitters.md) in `fold`.
 
 
 # Research papers
