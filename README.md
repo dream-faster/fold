@@ -5,6 +5,7 @@
   <a href="https://codecov.io/gh/dream-faster/fold" ><img src="https://codecov.io/gh/dream-faster/fold/branch/main/graph/badge.svg?token=Z7I2XSF188"/></a>
   <a href="https://github.com/dream-faster/fold/actions/workflows/tests.yaml"><img alt="Tests" src="https://github.com/dream-faster/fold/actions/workflows/tests.yaml/badge.svg"/></a>
   <a href="https://discord.gg/EKJQgfuBpE"><img alt="Discord Community" src="https://img.shields.io/badge/Discord-%235865F2.svg?logo=discord&logoColor=white"></a>
+  <a href="https://calendly.com/mark-szulyovszky/consultation"><img alt="Discord Community" src="https://shields.io/badge/-Speak%20with%20us-orange?logo=minutemailer&logoColor=white"></a>
 </p>
 
 <!-- PROJECT LOGO -->
@@ -106,7 +107,7 @@ Thinking of using `fold`? We'd love to hear about your use case and help, [pleas
   </tr>
   <tr>
     <td> 
-      <a href='https://github.com/dream-faster/fold/blob/main/examples/ensemble_vs_single.py' target="_blank">⚡️ Energy Demand Walkthrough</a></td>
+      <a href='https://github.com/dream-faster/fold/blob/main/docs/examples/original.py' target="_blank">⚡️ Energy Demand Walkthrough</a></td>
     <td>Energy</td>
   </tr>
 </table>
