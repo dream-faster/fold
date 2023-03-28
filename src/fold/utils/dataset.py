@@ -28,9 +28,10 @@ class DeduplicationStrategy(Enum):
             raise ValueError(f"Unknown DeduplicationStrategy: {value}")
 
 
-def process_dataset(
+def __process_dataset(
     df: pd.DataFrame,
     target_col: str,
+    resample: Optional[str] = None,
     deduplication_strategy: Optional[Union[DeduplicationStrategy, str]] = None,
     shorten: Optional[int] = None,
 ) -> Tuple[pd.DataFrame, pd.Series]:
@@ -40,6 +41,8 @@ def process_dataset(
                 keep=DeduplicationStrategy.from_str(deduplication_strategy).value
             )
         ]
+    if resample is not None:
+        df = df.resample(resample).last()
     if shorten is not None:
         df = df[:shorten]
     y = df[target_col].shift(-1)[:-1]
@@ -52,12 +55,14 @@ def get_preprocessed_dataset(
     dataset_name: str,
     target_col: str,
     base_path: str = "https://raw.githubusercontent.com/dream-faster/datasets/main/datasets",
+    resample: Optional[str] = None,
     deduplication_strategy: Optional[Union[DeduplicationStrategy, str]] = None,
     shorten: Optional[int] = None,
 ) -> Tuple[pd.DataFrame, pd.Series]:
-    return process_dataset(
+    return __process_dataset(
         load_dataset(dataset_name, base_path),
         target_col=target_col,
+        resample=resample,
         deduplication_strategy=deduplication_strategy,
         shorten=shorten,
     )
