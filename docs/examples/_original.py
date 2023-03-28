@@ -47,10 +47,10 @@
 # pipeline_arima_1 = WrapStatsForecast(ARIMA, {"order": (1, 1, 0)}, use_exogenous=False)
 
 # ## Training the model
-# transformations_over_time = train(pipeline_arima_1, None, y, splitter)
+# trained_pipelines = train(pipeline_arima_1, None, y, splitter)
 
 # ## Evaluating the model
-# pred = backtest(transformations_over_time, X, y, splitter)
+# pred = backtest(trained_pipelines, X, y, splitter)
 
 # sc = score(y[pred.index], pred.squeeze(), "Pipeline_ARIMA_1")
 # sc.print_summary(extended=False)
@@ -64,10 +64,10 @@
 # pipeline_arima_2 = WrapStatsForecast(ARIMA, {"order": (2, 1, 1)}, use_exogenous=False)
 
 # ## Training the model
-# transformations_over_time = train(pipeline_arima_2, None, y, splitter)
+# trained_pipelines = train(pipeline_arima_2, None, y, splitter)
 
 # ## Evaluating the model
-# pred = backtest(transformations_over_time, X, y, splitter)
+# pred = backtest(trained_pipelines, X, y, splitter)
 
 # sc = score(y[pred.index], pred.squeeze(), "Pipeline_ARIMA_2")
 # sc.print_summary(extended=False)
@@ -81,10 +81,10 @@
 # pipeline_ensemble = Ensemble([pipeline_arima_1, pipeline_arima_2])
 
 # ## Training the model
-# transformations_over_time = train(pipeline_ensemble, X, y, splitter)
+# trained_pipelines = train(pipeline_ensemble, X, y, splitter)
 
 # ## Evaluating the model
-# pred = backtest(transformations_over_time, X, y, splitter)
+# pred = backtest(trained_pipelines, X, y, splitter)
 
 # sc = score(y[pred.index], pred.squeeze(), "Pipeline_Ensemble")
 # sc.print_summary(extended=False)

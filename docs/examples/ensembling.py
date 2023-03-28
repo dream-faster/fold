@@ -25,6 +25,4 @@ pipeline_tabular = [
 pipeline_arima = WrapStatsForecast(ARIMA, {"order": (1, 1, 0)}, use_exogenous=False)
 ensemble = Ensemble([pipeline_tabular, pipeline_arima])
 
-scorecard, prediction, trained_transformations = train_evaluate(
-    ensemble, X, y, splitter
-)
+scorecard, prediction, trained_pipelines = train_evaluate(ensemble, X, y, splitter)

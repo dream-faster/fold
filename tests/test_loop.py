@@ -15,7 +15,7 @@ def run_loop(
     X, y = generate_sine_wave_data(length=1000)
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    transformations_over_time = train(
+    trained_pipelines = train(
         transformations,
         None,
         y,
@@ -24,7 +24,7 @@ def run_loop(
         backend=backend,
         silent=False,
     )
-    pred = backtest(transformations_over_time, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
     assert (X.squeeze()[pred.index] == pred.squeeze()).all()
 
 

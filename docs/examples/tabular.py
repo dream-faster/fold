@@ -20,6 +20,4 @@ pipeline = [
     WrapXGB.from_model(XGBRegressor()),
 ]
 
-scorecard, prediction, trained_transformations = train_evaluate(
-    pipeline, X, y, splitter
-)
+scorecard, prediction, trained_pipelines = train_evaluate(pipeline, X, y, splitter)

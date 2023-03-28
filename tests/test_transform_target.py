@@ -39,8 +39,8 @@ def test_target_transformation_dummy() -> None:
         ),
     ]
 
-    transformations_over_time = train(transformations, X, y, splitter)
-    pred = backtest(transformations_over_time, X, y, splitter)
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
     assert ((X.squeeze()[pred.index] - 1.0) == pred.squeeze()).all()
 
 
@@ -63,6 +63,6 @@ def test_target_transformation_difference() -> None:
         ),
     ]
 
-    transformations_over_time = train(transformations, X, y, splitter)
-    pred = backtest(transformations_over_time, X, y, splitter)
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
     assert np.isclose(y[pred.index], pred.squeeze(), atol=0.0001).all()

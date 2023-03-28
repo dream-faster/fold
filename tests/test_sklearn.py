@@ -20,8 +20,8 @@ def test_sklearn_classifier() -> None:
         DummyClassifier(strategy="constant", constant=0),
         OnlyPredictions(),
     ]
-    transformations_over_time = train(transformations, X, y, splitter)
-    pred = backtest(transformations_over_time, X, y, splitter)
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
     assert (pred.squeeze() == y[pred.index]).all()
 
 
@@ -33,8 +33,8 @@ def test_sklearn_regressor() -> None:
         DummyRegressor(strategy="constant", constant=0),
         OnlyPredictions(),
     ]
-    transformations_over_time = train(transformations, X, y, splitter)
-    pred = backtest(transformations_over_time, X, y, splitter)
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
     assert (pred.squeeze() == y[pred.index]).all()
 
 
@@ -51,8 +51,8 @@ def test_sklearn_pipeline() -> None:
         ),
         OnlyPredictions(),
     ]
-    transformations_over_time = train(transformations, X, y, splitter)
-    pred = backtest(transformations_over_time, X, y, splitter)
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
     assert (pred.squeeze() == y[pred.index]).all()
 
 
@@ -76,12 +76,10 @@ def test_sklearn_partial_fit() -> None:
     transformations = [
         TestEstimator(),
     ]
-    transformations_over_time = train(transformations, X, y, splitter)
-    _ = backtest(transformations_over_time, X, y, splitter)
-    assert transformations_over_time[0].iloc[0].transformation.fit_called is False
-    assert (
-        transformations_over_time[0].iloc[0].transformation.partial_fit_called is True
-    )
+    trained_pipelines = train(transformations, X, y, splitter)
+    _ = backtest(trained_pipelines, X, y, splitter)
+    assert trained_pipelines[0].iloc[0].transformation.fit_called is False
+    assert trained_pipelines[0].iloc[0].transformation.partial_fit_called is True
 
 
 def test_nested_transformations_with_feature_selection() -> None:
@@ -99,7 +97,7 @@ def test_nested_transformations_with_feature_selection() -> None:
         SelectColumns("pred"),
     ]
 
-    transformations_over_time = train(transformations, X, y, splitter)
-    pred = backtest(transformations_over_time, X, y, splitter)
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
     assert (np.isclose((X["sine"][pred.index]), pred.squeeze())).all()
     assert pred.squeeze().name == "pred"

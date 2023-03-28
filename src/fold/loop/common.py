@@ -256,11 +256,11 @@ def __process_secondary_child_transform(
     return recursively_transform(X, y, sample_weights, child_transform, stage, backend)
 
 
-def deepcopy_transformations(transformation: Transformations) -> Transformations:
+def deepcopy_pipelines(transformation: Transformations) -> Transformations:
     if isinstance(transformation, List):
-        return [deepcopy_transformations(t) for t in transformation]
+        return [deepcopy_pipelines(t) for t in transformation]
     elif isinstance(transformation, Composite):
-        return transformation.clone(deepcopy_transformations)
+        return transformation.clone(deepcopy_pipelines)
     else:
         return deepcopy(transformation)
 

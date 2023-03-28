@@ -7,3 +7,4 @@ from .holidays import AddHolidayFeatures
 from .lags import AddLagsX, AddLagsY
 from .sklearn import SKLearnFeatureSelector, SKLearnTransformation
 from .update import DontUpdate, InjectPastDataAtInference
+from .window import AddWindowFeatures

@@ -32,6 +32,6 @@ def test_selectbest() -> None:
         ),
     ]
 
-    transformations_over_time = train(transformations, X, y, splitter)
-    pred = backtest(transformations_over_time, X, y, splitter)
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
     assert (pred.squeeze() == 0.2).all()

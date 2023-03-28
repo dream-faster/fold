@@ -10,6 +10,6 @@ def test_random_classifier() -> None:
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     transformations = [RandomClassifier(all_classes=[0, 1]), OnlyPredictions()]
-    transformations_over_time = train(transformations, X, y, splitter)
-    pred = backtest(transformations_over_time, X, y, splitter)
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
     assert pred.squeeze().sum() > 1

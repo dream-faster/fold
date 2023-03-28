@@ -23,8 +23,8 @@ def test_no_transformation() -> None:
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     transformations = [Identity()]
 
-    transformations_over_time = train(transformations, X, y, splitter)
-    pred = backtest(transformations_over_time, X, y, splitter)
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
     assert (X.squeeze()[pred.index] == pred.squeeze()).all()
 
 
@@ -38,8 +38,8 @@ def test_nested_transformations() -> None:
         SelectColumns("sine_2"),
     ]
 
-    transformations_over_time = train(transformations, X, y, splitter)
-    pred = backtest(transformations_over_time, X, y, splitter)
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
     assert (
         np.isclose((X["sine_2"][pred.index]).values, (pred.squeeze() - 3.0).values)
     ).all()
@@ -53,8 +53,8 @@ def test_column_select_single_column_transformation() -> None:
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     transformations = [SelectColumns(columns=["sine_2"])]
 
-    transformations_over_time = train(transformations, X, y, splitter)
-    pred = backtest(transformations_over_time, X, y, splitter)
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
     assert (X["sine_2"][pred.index] == pred.squeeze()).all()
 
 
@@ -65,8 +65,8 @@ def test_function_transformation() -> None:
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     transformations = [lambda x: x - 1.0]
 
-    transformations_over_time = train(transformations, X, y, splitter)
-    pred = backtest(transformations_over_time, X, y, splitter)
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
     assert (np.isclose((X.squeeze()[pred.index]), (pred.squeeze() + 1.0))).all()
 
 
@@ -82,8 +82,8 @@ def test_per_column_transform() -> None:
         lambda x: x.sum(axis=1).to_frame(),
     ]
 
-    transformations_over_time = train(transformations, X, y, splitter)
-    pred = backtest(transformations_over_time, X, y, splitter)
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
     assert (np.isclose((X.loc[pred.index].sum(axis=1) + 4.0), pred.squeeze())).all()
 
 
@@ -91,8 +91,8 @@ def test_add_lags_y():
     X, y = generate_sine_wave_data(length=6000)
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
     transformations = AddLagsY(lags=[1, 2, 3])
-    transformations_over_time = train(transformations, X, y, splitter)
-    pred = backtest(transformations_over_time, X, y, splitter)
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
     assert (pred["y_lag_1"] == y.shift(1)[pred.index]).all()
     assert (pred["y_lag_2"] == y.shift(2)[pred.index]).all()
     assert (pred["y_lag_3"] == y.shift(3)[pred.index]).all()
@@ -102,8 +102,8 @@ def test_add_lags_X():
     X, y = generate_sine_wave_data(length=6000)
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
     transformations = AddLagsX(columns_and_lags=[("sine", [1, 2, 3])])
-    transformations_over_time = train(transformations, X, y, splitter)
-    pred = backtest(transformations_over_time, X, y, splitter)
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
     assert (pred["sine_lag_1"] == X["sine"].shift(1)[pred.index]).all()
     assert (pred["sine_lag_2"] == X["sine"].shift(2)[pred.index]).all()
     assert (pred["sine_lag_3"] == X["sine"].shift(3)[pred.index]).all()
@@ -113,11 +113,11 @@ def test_difference():
     X, y = generate_sine_wave_data(length=600)
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
     transformations = Difference()
-    transformations_over_time = train(transformations, X, y, splitter)
-    pred = backtest(transformations_over_time, X, y, splitter)
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
     assert np.isclose(
         X.squeeze()[pred.index],
-        transformations_over_time[0].iloc[0].inverse_transform(pred).squeeze(),
+        trained_pipelines[0].iloc[0].inverse_transform(pred).squeeze(),
         atol=1e-3,
     ).all()
 
@@ -129,10 +129,10 @@ def test_holiday_features_daily() -> None:
     y.index = new_index
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    transformations_over_time = train(
+    trained_pipelines = train(
         AddHolidayFeatures(["US", "DE"], labeling="holiday_binary"), X, y, splitter
     )
-    pred = backtest(transformations_over_time, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
 
     assert (np.isclose((X.squeeze()[pred.index]), (pred["sine"]))).all()
     assert (
@@ -151,10 +151,10 @@ def test_holiday_features_minute() -> None:
     y.index = new_index
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    transformations_over_time = train(
+    trained_pipelines = train(
         AddHolidayFeatures(["US", "DE"], labeling="holiday_binary"), X, y, splitter
     )
-    pred = backtest(transformations_over_time, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
 
     assert (np.isclose((X.squeeze()[pred.index]), (pred["sine"]))).all()
     assert (
@@ -164,15 +164,15 @@ def test_holiday_features_minute() -> None:
         pred["DE_holiday"]["2021-12-25"].mean() == 1
     ), "Christmas should be a holiday for DE."
 
-    transformations_over_time = train(
+    trained_pipelines = train(
         AddHolidayFeatures(["DE"], labeling="weekday_weekend_holiday"), X, y, splitter
     )
-    pred = backtest(transformations_over_time, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
     assert (
         pred["DE_holiday"]["2021-12-25"].mean() == 2
     ), "2021-12-25 should be both a holiday and a weekend (holiday taking precedence)."
 
-    transformations_over_time = train(
+    trained_pipelines = train(
         AddHolidayFeatures(
             ["US"],
             labeling=LabelingMethod.weekday_weekend_uniqueholiday,
@@ -182,12 +182,12 @@ def test_holiday_features_minute() -> None:
         y,
         splitter,
     )
-    pred = backtest(transformations_over_time, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
     assert (
         pred["US_holiday"]["2021-12-25"].iloc[0] == "Christmas Day"
     ), "2021-12-25 should be a holiday string."
 
-    transformations_over_time = train(
+    trained_pipelines = train(
         AddHolidayFeatures(
             ["US", "DE"], labeling="weekday_weekend_uniqueholiday", label_encode=True
         ),
@@ -195,7 +195,7 @@ def test_holiday_features_minute() -> None:
         y,
         splitter,
     )
-    pred = backtest(transformations_over_time, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
     assert (
         pred["US_holiday"]["2021-12-31"].mean() == 14.0
     ), "2021-12-31 should be a holiday with a special id."
@@ -219,8 +219,8 @@ def test_datetime_features():
             DateTimeFeature.year,
         ]
     )
-    transformations_over_time = train(transformations, X, y, splitter)
-    pred = backtest(transformations_over_time, X, y, splitter)
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
     assert (pred["second"] == X.loc[pred.index].index.second).all()
     assert (pred["minute"] == X.loc[pred.index].index.minute).all()
     assert (pred["hour"] == X.loc[pred.index].index.hour).all()
@@ -238,28 +238,28 @@ def test_window_features():
     X, y = generate_sine_wave_data(length=600)
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
     transformations = AddWindowFeatures(("sine", 14, "mean"))
-    transformations_over_time = train(transformations, X, y, splitter)
-    pred = backtest(transformations_over_time, X, y, splitter)
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
     assert pred["sine_14_mean"].equals(X["sine"].rolling(14).mean()[pred.index])
 
     # check if it works when passing a list of tuples
     transformations = AddWindowFeatures([("sine", 14, "mean")])
-    transformations_over_time = train(transformations, X, y, splitter)
-    pred = backtest(transformations_over_time, X, y, splitter)
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
     assert pred["sine_14_mean"].equals(X["sine"].rolling(14).mean()[pred.index])
 
     # check if it works with multiple transformations
     transformations = AddWindowFeatures([("sine", 14, "mean"), ("sine", 5, "max")])
-    transformations_over_time = train(transformations, X, y, splitter)
-    pred = backtest(transformations_over_time, X, y, splitter)
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
     assert pred["sine_14_mean"].equals(X["sine"].rolling(14).mean()[pred.index])
     assert pred["sine_5_max"].equals(X["sine"].rolling(5).max()[pred.index])
 
     transformations = AddWindowFeatures(
         [("sine", 14, lambda X: X.mean()), ("sine", 5, lambda X: X.max())]
     )
-    transformations_over_time = train(transformations, X, y, splitter)
-    pred = backtest(transformations_over_time, X, y, splitter)
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
     # if the Callable is lambda, then use the generic "transformed" name
     assert pred["sine_14_transformed"].equals(X["sine"].rolling(14).mean()[pred.index])
     assert pred["sine_5_transformed"].equals(X["sine"].rolling(5).max()[pred.index])
@@ -269,7 +269,7 @@ def test_window_features():
             ("sine", 14, pd.core.window.rolling.Rolling.mean),
         ]
     )
-    transformations_over_time = train(transformations, X, y, splitter)
-    pred = backtest(transformations_over_time, X, y, splitter)
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
     # it should pick up the name of the function
     assert pred["sine_14_mean"].equals(X["sine"].rolling(14).mean()[pred.index])
