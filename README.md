@@ -59,13 +59,13 @@ X, y = get_preprocessed_dataset(
     shorten=1000
 )
 
-transformations = [
+pipeline = [
     DummyRegressor(0),
     OnlyPredictions(),
 ]
 splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.2)
-scorecard, prediction, trained_transformations = train_evaluate(
-    transformations, X, y, splitter
+scorecard, prediction, trained_pipelines = train_evaluate(
+    pipeline, X, y, splitter
 )  
 ```
 

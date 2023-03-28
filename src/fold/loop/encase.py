@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, Optional, Tuple, Union
 import pandas as pd
 from sklearn.metrics import mean_squared_error
 
-from ..all_types import OutOfSamplePredictions, TransformationsOverTime
+from ..all_types import OutOfSamplePredictions, TrainedPipelines
 from ..splitters import ExpandingWindowSplitter, Splitter
 from ..transformations.base import BlocksOrWrappable
 from .backtesting import backtest
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 
 def backtest_score(
-    transformations_over_time: TransformationsOverTime,
+    trained_pipelines: TrainedPipelines,
     X: pd.DataFrame,
     y: pd.Series,
     splitter: Splitter,
@@ -27,7 +27,7 @@ def backtest_score(
     evaluation_func: Callable = mean_squared_error,
 ) -> Tuple[Union["ScoreCard", Dict[str, float]], OutOfSamplePredictions]:
     pred = backtest(
-        transformations_over_time,
+        trained_pipelines,
         X,
         y,
         splitter,
@@ -66,14 +66,14 @@ def train_backtest_score(
 ) -> Tuple[
     Union["ScoreCard", Dict[str, float]],
     OutOfSamplePredictions,
-    TransformationsOverTime,
+    TrainedPipelines,
 ]:
-    transformations_over_time = train(
+    trained_pipelines = train(
         transformations, X, y, splitter, sample_weights, train_method, backend, silent
     )
 
     scorecard, pred = backtest_score(
-        transformations_over_time,
+        trained_pipelines,
         X,
         y,
         splitter,
@@ -84,4 +84,4 @@ def train_backtest_score(
         evaluation_func,
     )
 
-    return scorecard, pred, transformations_over_time
+    return scorecard, pred, trained_pipelines

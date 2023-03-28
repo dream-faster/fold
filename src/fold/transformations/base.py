@@ -85,7 +85,9 @@ Transformations = Union[
 ]
 DeployableTransformations = Transformations
 
-Pipeline = List[Union[Transformation, "Composite"]]
+Pipeline = Union[
+    Union[Transformation, "Composite"], List[Union[Transformation, "Composite"]]
+]
 Pipelines = List[Pipeline]
 
 BlockOrWrappable = Union[Transformation, "Composite", Callable, BaseEstimator]

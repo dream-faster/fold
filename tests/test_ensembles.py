@@ -15,7 +15,7 @@ def test_ensemble_regression() -> None:
     X, y = generate_sine_wave_data()
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    transformations = [
+    pipeline = [
         Ensemble(
             [
                 lambda x: (x - 1.0).rename({"sine": "predictions_1"}, axis=1),
@@ -25,8 +25,8 @@ def test_ensemble_regression() -> None:
         ),
     ]
 
-    transformations_over_time = train(transformations, X, y, splitter)
-    pred = backtest(transformations_over_time, X, y, splitter)
+    trained_pipelines = train(pipeline, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
     assert (np.isclose((X.squeeze()[pred.index]), (pred.squeeze() + 2.0))).all()
 
 
@@ -34,7 +34,7 @@ def test_ensemble_classification() -> None:
     X, y = generate_all_zeros(1000)
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    transformations = [
+    pipeline = [
         Ensemble(
             [
                 DummyClassifier(
@@ -56,8 +56,8 @@ def test_ensemble_classification() -> None:
         ),
     ]
 
-    transformations_over_time = train(transformations, X, y, splitter)
-    pred = backtest(transformations_over_time, X, y, splitter)
+    trained_pipelines = train(pipeline, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
     assert (
         pred["probabilities_Ensemble-DummyClassifier-DummyClassifier-DummyClassifier_1"]
         == 0.5
@@ -75,7 +75,7 @@ def test_per_column_transform_predictions() -> None:
     X["sine_4"] = X["sine"] + 3.0
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    transformations = [
+    pipeline = [
         PerColumnEnsemble(
             lambda x: (x + 1.0)
             .squeeze()
@@ -84,8 +84,8 @@ def test_per_column_transform_predictions() -> None:
         ),
     ]
 
-    transformations_over_time = train(transformations, X, y, splitter)
-    pred = backtest(transformations_over_time, X, y, splitter)
+    trained_pipelines = train(pipeline, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
     expected = X.mean(axis=1) + 1.0
     assert (np.isclose(expected[pred.index].squeeze(), pred.squeeze())).all()
 
@@ -94,7 +94,7 @@ def test_dummy_pipeline_classification() -> None:
     X, y = generate_all_zeros(1000)
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    transformations = Pipeline(
+    pipeline = Pipeline(
         [
             DummyClassifier(
                 predicted_value=1,
@@ -114,10 +114,10 @@ def test_dummy_pipeline_classification() -> None:
         ]
     )
 
-    transformations_over_time = train(transformations, X, y, splitter)
-    pred = backtest(transformations_over_time, X, y, splitter)
+    trained_pipelines = train(pipeline, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
 
-    transformations_baseline = [
+    pipeline_baseline = [
         DummyClassifier(
             predicted_value=1,
             all_classes=[1, 0],
@@ -135,7 +135,7 @@ def test_dummy_pipeline_classification() -> None:
         ),
     ]
 
-    transformations_over_time_baseline = train(transformations_baseline, X, y, splitter)
-    pred_baseline = backtest(transformations_over_time_baseline, X, y, splitter)
+    trained_pipelines_baseline = train(pipeline_baseline, X, y, splitter)
+    pred_baseline = backtest(trained_pipelines_baseline, X, y, splitter)
 
     assert (pred == pred_baseline).all(axis=0).all()

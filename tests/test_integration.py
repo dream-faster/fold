@@ -21,8 +21,8 @@ def test_on_weather_data() -> None:
         HistGradientBoostingRegressor(),
     ]
 
-    transformations_over_time = train(pipeline, X, y, splitter)
-    backtest(transformations_over_time, X, y, splitter)
+    trained_pipelines = train(pipeline, X, y, splitter)
+    backtest(trained_pipelines, X, y, splitter)
 
 
 def test_train_eval_with_krisi() -> None:
@@ -40,10 +40,10 @@ def test_train_eval_with_krisi() -> None:
     ]
 
     # Without splitter
-    scorecard, pred, trained_transformations_over_time = train_evaluate(pipeline, X, y)
+    scorecard, pred, trained_trained_pipelines = train_evaluate(pipeline, X, y)
 
     # With splitter
     splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.2)
-    scorecard, pred, trained_transformations_over_time = train_evaluate(
+    scorecard, pred, trained_trained_pipelines = train_evaluate(
         pipeline, X, y, splitter
     )
