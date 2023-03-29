@@ -44,7 +44,7 @@ def __process_dataset(
     if resample is not None:
         df = df.resample(resample).last()
     if shorten is not None:
-        df = df[:shorten]
+        df = df[: shorten + 1]
     y = df[target_col].shift(-1)[:-1]
     X = df[:-1]
 
