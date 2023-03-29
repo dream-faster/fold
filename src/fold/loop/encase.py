@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 def backtest_score(
     trained_pipelines: TrainedPipelines,
-    X: pd.DataFrame,
+    X: Optional[pd.DataFrame],
     y: pd.Series,
     splitter: Splitter,
     backend: Backend = Backend.no,
@@ -54,7 +54,7 @@ def backtest_score(
 
 def train_backtest_score(
     transformations: BlocksOrWrappable,
-    X: pd.DataFrame,
+    X: Optional[pd.DataFrame],
     y: pd.Series,
     splitter: Splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.2),
     backend: Backend = Backend.no,
