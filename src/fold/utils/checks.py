@@ -45,4 +45,4 @@ def is_X_available(X: pd.DataFrame) -> bool:
     """
     Check if X is available, or the input is univariate, without exogenous variables.
     """
-    return X.shape[1] == 1 and X.columns[0] == "X_not_available"
+    return not (X.shape[1] == 1 and X.columns[0] == "X_not_available")
