@@ -89,7 +89,6 @@ class AddHolidayFeatures(Transformation):
             )
             for country_code in self.country_codes
         ]
-        print(self.holiday_to_int_maps)
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         if self.type is LabelingMethod.holiday_binary:
