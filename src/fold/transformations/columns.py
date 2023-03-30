@@ -4,19 +4,9 @@ from typing import List, Union
 
 import pandas as pd
 
+from ..utils.checks import check_get_columns
 from ..utils.list import wrap_in_list
 from .base import Transformation, fit_noop
-
-
-def is_all_columns(columns: List[str]):
-    return columns[0] == "all"
-
-
-def check_get_columns(columns: List[str], X: pd.DataFrame) -> List[str]:
-    if is_all_columns(columns):
-        return X.columns
-    else:
-        return columns
 
 
 class SelectColumns(Transformation):

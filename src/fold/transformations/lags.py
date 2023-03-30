@@ -2,6 +2,7 @@ from typing import List, Tuple, Union
 
 import pandas as pd
 
+from ..utils.checks import is_columns_all
 from ..utils.list import flatten, wrap_in_list
 from .base import Transformation, fit_noop
 
@@ -55,7 +56,7 @@ class AddLagsX(Transformation):
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         X = X.copy()
 
-        if self.columns_and_lags[0][0] == "all":
+        if is_columns_all([self.columns_and_lags[0][0]]):
             lags = wrap_in_list(self.columns_and_lags[0][1])
             X = pd.concat(
                 [X]
