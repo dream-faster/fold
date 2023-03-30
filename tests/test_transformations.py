@@ -109,6 +109,29 @@ def test_add_lags_X():
     assert (pred["sine_lag_3"] == X["sine"].shift(3)[pred.index]).all()
 
 
+def test_add_lags_X_all():
+    X, y = generate_sine_wave_data(length=6000)
+    X["sine_shifted"] = generate_sine_wave_data(length=6000)[0].squeeze() * -1.0
+    splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
+    transformations = AddLagsX(
+        columns_and_lags=[("sine", [1, 2, 3]), ("all", [5, 8, 11])]
+    )
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
+    assert (pred["sine_lag_1"] == X["sine"].shift(1)[pred.index]).all()
+    assert (pred["sine_lag_2"] == X["sine"].shift(2)[pred.index]).all()
+    assert (pred["sine_lag_3"] == X["sine"].shift(3)[pred.index]).all()
+    assert (pred["sine_lag_5"] == X["sine"].shift(5)[pred.index]).all()
+    assert (pred["sine_lag_8"] == X["sine"].shift(8)[pred.index]).all()
+    assert (pred["sine_lag_11"] == X["sine"].shift(11)[pred.index]).all()
+    assert (pred["sine_shifted_lag_5"] == X["sine_shifted"].shift(5)[pred.index]).all()
+    assert (pred["sine_shifted_lag_8"] == X["sine_shifted"].shift(8)[pred.index]).all()
+    assert (
+        pred["sine_shifted_lag_11"] == X["sine_shifted"].shift(11)[pred.index]
+    ).all()
+    assert len(pred.columns) == 11
+
+
 def test_difference():
     X, y = generate_sine_wave_data(length=600)
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
