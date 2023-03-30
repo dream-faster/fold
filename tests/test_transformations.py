@@ -6,7 +6,7 @@ from fold.composites.concat import TransformColumn
 from fold.loop import backtest, train
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations import AddHolidayFeatures
-from fold.transformations.columns import SelectColumns
+from fold.transformations.columns import DropColumns, SelectColumns
 from fold.transformations.date import AddDateTimeFeatures, DateTimeFeature
 from fold.transformations.dev import Identity
 from fold.transformations.difference import Difference
@@ -309,3 +309,19 @@ def test_window_features():
         X["sine_inverted"].rolling(5).mean()[pred.index]
     )
     assert len(pred.columns) == 5
+
+
+def test_drop_columns():
+    X, y = generate_sine_wave_data(length=600)
+    X["sine_inverted"] = generate_sine_wave_data(length=6000)[0].squeeze() * -1.0
+    X["sine_inverted_double"] = generate_sine_wave_data(length=6000)[0].squeeze() * -2.0
+    splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
+    transformations = DropColumns(["sine_inverted", "sine"])
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
+    assert len(pred.columns) == 1
+
+    transformations = DropColumns("all")
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
+    assert len(pred.columns) == 0
