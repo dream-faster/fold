@@ -56,13 +56,17 @@ class AddLagsX(Transformation):
         X = X.copy()
 
         if self.columns_and_lags[0][0] == "all":
-            self.columns_and_lags = [
-                (column, self.columns_and_lags[0][1]) for column in X.columns
-            ]
-        for column, lags in self.columns_and_lags:
-            lags = wrap_in_list(lags)
-            for lag in lags:
-                X[f"{column}_lag_{lag}"] = X[column].shift(lag)[-len(X) :]
+            lags = wrap_in_list(self.columns_and_lags[0][1])
+            X = pd.concat(
+                [X]
+                + [X.shift(lag)[-len(X) :].add_suffix(f"_lag_{lag}") for lag in lags],
+                axis="columns",
+            )
+        else:
+            for column, lags in self.columns_and_lags:
+                lags = wrap_in_list(lags)
+                for lag in lags:
+                    X[f"{column}_lag_{lag}"] = X[column].shift(lag)[-len(X) :]
         return X
 
     fit = fit_noop
