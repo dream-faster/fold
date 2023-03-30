@@ -2,7 +2,6 @@ from typing import List, Tuple, Union
 
 import pandas as pd
 
-from ..utils.checks import is_columns_all
 from ..utils.list import flatten, wrap_in_list
 from .base import Transformation, fit_noop
 
@@ -56,19 +55,18 @@ class AddLagsX(Transformation):
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         X = X.copy()
 
-        if is_columns_all([self.columns_and_lags[0][0]]):
-            lags = wrap_in_list(self.columns_and_lags[0][1])
-            X = pd.concat(
-                [X]
-                + [X.shift(lag)[-len(X) :].add_suffix(f"_lag_{lag}") for lag in lags],
-                axis="columns",
-            )
-        else:
-            for column, lags in self.columns_and_lags:
-                lags = wrap_in_list(lags)
-                for lag in lags:
-                    X[f"{column}_lag_{lag}"] = X[column].shift(lag)[-len(X) :]
-        return X
+        X_lagged = pd.DataFrame([])
+        for column, lags in self.columns_and_lags:
+            lags = wrap_in_list(lags)
+            for lag in lags:
+                if column == "all":
+                    X_lagged = pd.concat(
+                        [X_lagged, X.shift(lag)[-len(X) :].add_suffix(f"_lag_{lag}")],
+                        axis="columns",
+                    )
+                else:
+                    X_lagged[f"{column}_lag_{lag}"] = X[column].shift(lag)[-len(X) :]
+        return pd.concat([X, X_lagged], axis="columns")
 
     fit = fit_noop
     update = fit_noop
