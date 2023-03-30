@@ -61,17 +61,29 @@ class AddWindowFeatures(Transformation):
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         X = X.copy()
+        X_function_applied = pd.DataFrame([])
         for columns, window, function in self.column_window_func:
-            for col in columns:
-                if isinstance(function, PredefinedFunction):
-                    function = getattr(pd.core.window.rolling.Rolling, function.value)
-                function_name = (
-                    function.__name__
-                    if function.__name__ != "<lambda>"
-                    else "transformed"
+            if isinstance(function, PredefinedFunction):
+                function = getattr(pd.core.window.rolling.Rolling, function.value)
+            function_name = (
+                function.__name__ if function.__name__ != "<lambda>" else "transformed"
+            )
+            if columns[0] == "all":
+                X_function_applied = pd.concat(
+                    [
+                        X_function_applied,
+                        function(X.rolling(window)).add_suffix(
+                            f"_{window}_{function_name}"
+                        ),
+                    ],
+                    axis="columns",
                 )
-                X[f"{col}_{window}_{function_name}"] = function(X[col].rolling(window))
-        return X
+            else:
+                for col in columns:
+                    X_function_applied[f"{col}_{window}_{function_name}"] = function(
+                        X[col].rolling(window)
+                    )
+        return pd.concat([X, X_function_applied], axis="columns")
 
     fit = fit_noop
     update = fit

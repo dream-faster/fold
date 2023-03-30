@@ -4,6 +4,7 @@ from typing import List, Union
 
 import pandas as pd
 
+from ..utils.checks import check_get_columns
 from ..utils.list import wrap_in_list
 from .base import Transformation, fit_noop
 
@@ -16,7 +17,7 @@ class SelectColumns(Transformation):
     properties = Transformation.Properties()
 
     def __init__(self, columns: Union[List[str], str]) -> None:
-        self.columns = wrap_in_list(columns)
+        self.columns: List[str] = wrap_in_list(columns)
         self.name = f"SelectColumns-{columns}"
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
@@ -38,7 +39,7 @@ class DropColumns(Transformation):
         self.name = f"DropColumns-{columns}"
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
-        return X.drop(columns=self.columns)
+        return X.drop(columns=check_get_columns(self.columns, X))
 
     fit = fit_noop
     update = fit

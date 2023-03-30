@@ -46,3 +46,14 @@ def is_X_available(X: pd.DataFrame) -> bool:
     Check if X is available, or the input is univariate, without exogenous variables.
     """
     return not (X.shape[1] == 1 and X.columns[0] == "X_not_available")
+
+
+def is_columns_all(columns: List[str]):
+    return columns[0] == "all"
+
+
+def check_get_columns(columns: List[str], X: pd.DataFrame) -> List[str]:
+    if is_columns_all(columns):
+        return X.columns
+    else:
+        return columns

@@ -6,7 +6,7 @@ from fold.composites.concat import TransformColumn
 from fold.loop import backtest, train
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations import AddHolidayFeatures
-from fold.transformations.columns import SelectColumns
+from fold.transformations.columns import DropColumns, SelectColumns
 from fold.transformations.date import AddDateTimeFeatures, DateTimeFeature
 from fold.transformations.dev import Identity
 from fold.transformations.difference import Difference
@@ -107,6 +107,30 @@ def test_add_lags_X():
     assert (pred["sine_lag_1"] == X["sine"].shift(1)[pred.index]).all()
     assert (pred["sine_lag_2"] == X["sine"].shift(2)[pred.index]).all()
     assert (pred["sine_lag_3"] == X["sine"].shift(3)[pred.index]).all()
+
+    X["sine_inverted"] = generate_sine_wave_data(length=6000)[0].squeeze() * -1.0
+    splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
+    transformations = AddLagsX(
+        columns_and_lags=[("sine", [1, 2, 3]), ("all", [5, 8, 11])]
+    )
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
+    assert (pred["sine_lag_1"] == X["sine"].shift(1)[pred.index]).all()
+    assert (pred["sine_lag_2"] == X["sine"].shift(2)[pred.index]).all()
+    assert (pred["sine_lag_3"] == X["sine"].shift(3)[pred.index]).all()
+    assert (pred["sine_lag_5"] == X["sine"].shift(5)[pred.index]).all()
+    assert (pred["sine_lag_8"] == X["sine"].shift(8)[pred.index]).all()
+    assert (pred["sine_lag_11"] == X["sine"].shift(11)[pred.index]).all()
+    assert (
+        pred["sine_inverted_lag_5"] == X["sine_inverted"].shift(5)[pred.index]
+    ).all()
+    assert (
+        pred["sine_inverted_lag_8"] == X["sine_inverted"].shift(8)[pred.index]
+    ).all()
+    assert (
+        pred["sine_inverted_lag_11"] == X["sine_inverted"].shift(11)[pred.index]
+    ).all()
+    assert len(pred.columns) == 11
 
 
 def test_difference():
@@ -273,3 +297,31 @@ def test_window_features():
     pred = backtest(trained_pipelines, X, y, splitter)
     # it should pick up the name of the function
     assert pred["sine_14_mean"].equals(X["sine"].rolling(14).mean()[pred.index])
+
+    X["sine_inverted"] = generate_sine_wave_data(length=6000)[0].squeeze() * -1.0
+    transformations = AddWindowFeatures([("sine", 14, "mean"), ("all", 5, "mean")])
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
+    # it should pick up the name of the function
+    assert pred["sine_14_mean"].equals(X["sine"].rolling(14).mean()[pred.index])
+    assert pred["sine_5_mean"].equals(X["sine"].rolling(5).mean()[pred.index])
+    assert pred["sine_inverted_5_mean"].equals(
+        X["sine_inverted"].rolling(5).mean()[pred.index]
+    )
+    assert len(pred.columns) == 5
+
+
+def test_drop_columns():
+    X, y = generate_sine_wave_data(length=600)
+    X["sine_inverted"] = generate_sine_wave_data(length=6000)[0].squeeze() * -1.0
+    X["sine_inverted_double"] = generate_sine_wave_data(length=6000)[0].squeeze() * -2.0
+    splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
+    transformations = DropColumns(["sine_inverted", "sine"])
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
+    assert len(pred.columns) == 1
+
+    transformations = DropColumns("all")
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
+    assert len(pred.columns) == 0
