@@ -21,7 +21,7 @@ class SelectColumns(Transformation):
         self.name = f"SelectColumns-{columns}"
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
-        return X[check_get_columns(self.columns, X)]
+        return X[self.columns]
 
     fit = fit_noop
     update = fit
