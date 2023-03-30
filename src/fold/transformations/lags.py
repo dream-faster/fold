@@ -54,6 +54,11 @@ class AddLagsX(Transformation):
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         X = X.copy()
+
+        if self.columns_and_lags[0][0] == "all":
+            self.columns_and_lags = [
+                (column, self.columns_and_lags[0][1]) for column in X.columns
+            ]
         for column, lags in self.columns_and_lags:
             lags = wrap_in_list(lags)
             for lag in lags:
