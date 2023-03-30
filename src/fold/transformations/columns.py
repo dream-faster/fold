@@ -8,6 +8,17 @@ from ..utils.list import wrap_in_list
 from .base import Transformation, fit_noop
 
 
+def is_all_columns(columns: List[str]):
+    return columns[0] == "all"
+
+
+def check_get_columns(columns: List[str], X: pd.DataFrame) -> List[str]:
+    if is_all_columns(columns):
+        return X.columns
+    else:
+        return columns
+
+
 class SelectColumns(Transformation):
     """
     Select a single or multiple columns.
@@ -16,11 +27,11 @@ class SelectColumns(Transformation):
     properties = Transformation.Properties()
 
     def __init__(self, columns: Union[List[str], str]) -> None:
-        self.columns = wrap_in_list(columns)
+        self.columns: List[str] = wrap_in_list(columns)
         self.name = f"SelectColumns-{columns}"
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
-        return X[self.columns]
+        return X[check_get_columns(self.columns, X)]
 
     fit = fit_noop
     update = fit
@@ -38,7 +49,7 @@ class DropColumns(Transformation):
         self.name = f"DropColumns-{columns}"
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
-        return X.drop(columns=self.columns)
+        return X.drop(columns=check_get_columns(self.columns, X))
 
     fit = fit_noop
     update = fit
