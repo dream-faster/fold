@@ -80,7 +80,7 @@ def test_trim_na() -> None:
 
     splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.1)
     transformations = [
-        AddLagsY(1),
+        AddLagsY([1]),
         Test(fit_func=check_if_not_nan, transform_func=lambda X: X),
     ]
     transformations_over_time = train(transformations, None, y, splitter)
