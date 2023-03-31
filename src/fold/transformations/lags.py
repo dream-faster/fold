@@ -2,7 +2,7 @@ from typing import List, Tuple, Union
 
 import pandas as pd
 
-from ..utils.list import flatten, wrap_in_list
+from ..utils.list import flatten, transform_range_to_list, wrap_in_list
 from .base import Transformation, fit_noop
 
 
@@ -11,8 +11,10 @@ class AddLagsY(Transformation):
     Adds past values of `y`.
     """
 
-    def __init__(self, lags: Union[List[int], int]) -> None:
-        self.lags = wrap_in_list(lags)
+    def __init__(self, lags: Union[List[int], range]) -> None:
+        if not isinstance(lags, range) and not isinstance(lags, List):
+            raise ValueError("lags must be a range or a List")
+        self.lags = sorted(transform_range_to_list(lags))
         self.name = f"AddLagsY-{self.lags}"
         self.properties = Transformation.Properties(
             requires_X=False,
@@ -48,6 +50,25 @@ class AddLagsX(Transformation):
         self, columns_and_lags: Union[List[ColumnAndLag], ColumnAndLag]
     ) -> None:
         self.columns_and_lags = wrap_in_list(columns_and_lags)
+
+        def check_and_transform_if_needed(
+            column_and_lag: AddLagsX.ColumnAndLag,
+        ) -> AddLagsX.ColumnAndLag:
+            column, lags = column_and_lag
+            if (
+                not isinstance(lags, int)
+                and not isinstance(lags, List)
+                and not isinstance(lags, range)
+            ):
+                raise ValueError("lags must be an int or a List or a range")
+            lags = sorted(
+                transform_range_to_list([lags] if isinstance(lags, int) else lags)
+            )
+            return column, lags
+
+        self.columns_and_lags = list(
+            map(check_and_transform_if_needed, self.columns_and_lags)
+        )
         self.name = f"AddLagsX-{self.columns_and_lags}"
         self.properties = Transformation.Properties(
             requires_X=True,
@@ -59,7 +80,6 @@ class AddLagsX(Transformation):
 
         X_lagged = pd.DataFrame([])
         for column, lags in self.columns_and_lags:
-            lags = wrap_in_list(lags)
             for lag in lags:
                 if column == "all":
                     X_lagged = pd.concat(

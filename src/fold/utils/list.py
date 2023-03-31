@@ -11,6 +11,10 @@ def wrap_in_list(input: Union[T, List[T]]) -> List[T]:
     return input if isinstance(input, List) else [input]
 
 
+def transform_range_to_list(input: Union[range, List[T]]) -> List[T]:
+    return list(input) if isinstance(input, range) else input
+
+
 def wrap_in_double_list_if_needed(
     input: Union[T, List[T]]
 ) -> Union[List[List[T]], List[T]]:
