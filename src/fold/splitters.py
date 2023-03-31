@@ -20,9 +20,9 @@ class Splitter:
 
 
 def translate_float_if_needed(window_size: Union[int, float], length: int) -> int:
-    if window_size >= 1 and type(window_size) is int:
+    if window_size >= 1 and isinstance(window_size, int):
         return window_size
-    elif window_size < 1 and type(window_size) is float:
+    elif window_size < 1 and isinstance(window_size, float):
         return int(window_size * length)
     else:
         raise ValueError(

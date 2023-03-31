@@ -7,6 +7,7 @@ from fold.models.baseline import Naive
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.base import Transformations
 from fold.transformations.dev import Test
+from fold.transformations.lags import AddLagsY
 from fold.utils.tests import generate_all_zeros, generate_sine_wave_data
 
 
@@ -69,6 +70,21 @@ def test_loop_raises_error_if_requires_X_not_satified():
             Backend.no,
             naive,
         )
+
+
+def test_trim_na() -> None:
+    _, y = generate_sine_wave_data(cycles=10, length=120, freq="M")
+
+    def check_if_not_nan(x):
+        assert not x.isna().any().any()
+
+    splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.1)
+    transformations = [
+        AddLagsY(1),
+        Test(fit_func=check_if_not_nan, transform_func=lambda X: X),
+    ]
+    transformations_over_time = train(transformations, None, y, splitter)
+    _ = backtest(transformations_over_time, None, y, splitter)
 
 
 def test_sameple_weights() -> None:

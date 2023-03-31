@@ -9,6 +9,6 @@ def check_types(
     if X is None:
         X = pd.DataFrame(0, index=y.index, columns=["X_not_available"])
     else:
-        assert type(X) is pd.DataFrame, "X must be a pandas DataFrame."
-    assert type(y) is pd.Series, "y must be a pandas Series."
+        assert isinstance(X, pd.DataFrame), "X must be a pandas DataFrame."
+    assert isinstance(y, pd.Series), "y must be a pandas Series."
     return X, y
