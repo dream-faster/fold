@@ -13,6 +13,7 @@ from sklearn.linear_model import LinearRegression
 
 model = LinearRegression()
 pipeline = [model]
+
 from fold import ExpandingWindowSplitter
 
 splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.1)
