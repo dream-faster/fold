@@ -46,7 +46,7 @@ class AddDateTimeFeatures(Transformation):
 
     """
 
-    properties = Transformation.Properties()
+    properties = Transformation.Properties(requires_X=False)
     name = "AddDateTimeFeatures"
 
     def __init__(

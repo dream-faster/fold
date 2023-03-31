@@ -23,6 +23,7 @@ class Transformation(ABC):
             minibatch = "minibatch"
             online = "online"
 
+        requires_X: bool
         mode: Mode = Mode.minibatch
         memory_size: Optional[
             int

@@ -11,7 +11,7 @@ class Breakpoint(Transformation):
     A transformation that stops execution at the specified point.
     """
 
-    properties = Transformation.Properties()
+    properties = Transformation.Properties(requires_X=False)
 
     def __init__(
         self,
@@ -49,7 +49,7 @@ class Breakpoint(Transformation):
 
 
 class Identity(Transformation):
-    properties = Transformation.Properties()
+    properties = Transformation.Properties(requires_X=False)
 
     name = "Identity"
 
@@ -61,7 +61,7 @@ class Identity(Transformation):
 
 
 class Test(InvertibleTransformation):
-    properties = InvertibleTransformation.Properties()
+    properties = InvertibleTransformation.Properties(requires_X=False)
     __test__ = False
     no_of_calls_fit = 0
     no_of_calls_update = 0

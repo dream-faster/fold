@@ -13,7 +13,7 @@ from fold.utils.tests import generate_sine_wave_data
 
 
 class TestNoOverlap(Model):
-    properties = Model.Properties()
+    properties = Model.Properties(requires_X=False)
     name = "TestNoOverlap"
 
     def fit(

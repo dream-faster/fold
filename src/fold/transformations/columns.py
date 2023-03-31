@@ -14,7 +14,7 @@ class SelectColumns(Transformation):
     Select a single or multiple columns.
     """
 
-    properties = Transformation.Properties()
+    properties = Transformation.Properties(requires_X=True)
 
     def __init__(self, columns: Union[List[str], str]) -> None:
         self.columns: List[str] = wrap_in_list(columns)
@@ -32,7 +32,7 @@ class DropColumns(Transformation):
     Drops a single or multiple columns.
     """
 
-    properties = Transformation.Properties()
+    properties = Transformation.Properties(requires_X=True)
 
     def __init__(self, columns: Union[List[str], str]) -> None:
         self.columns = wrap_in_list(columns)
@@ -50,7 +50,7 @@ class RenameColumns(Transformation):
     Renames columns.
     """
 
-    properties = Transformation.Properties()
+    properties = Transformation.Properties(requires_X=True)
 
     def __init__(self, columns_mapper: dict) -> None:
         self.columns_mapper = columns_mapper
@@ -68,7 +68,7 @@ class OnlyPredictions(Transformation):
     Drops all columns except the output model(s)' predictions.
     """
 
-    properties = Transformation.Properties()
+    properties = Transformation.Properties(requires_X=True)
 
     def __init__(self) -> None:
         self.name = "OnlyPredictions"
@@ -87,7 +87,7 @@ class OnlyProbabilities(Transformation):
     Drops all columns except the output model(s)' probabilities.
     """
 
-    properties = Transformation.Properties()
+    properties = Transformation.Properties(requires_X=True)
 
     def __init__(self) -> None:
         self.name = "OnlyProbabilities"
