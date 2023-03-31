@@ -204,7 +204,9 @@ def process_minibatch_transformation(
     X, y = trim_initial_nans(X, y)
 
     if not is_X_available(X) and transformation.properties.requires_X:
-        raise ValueError(f"X is None, but transformation {transformation} requires it.")
+        raise ValueError(
+            f"X is None, but transformation {transformation.__class__.__name__} requires it."
+        )
 
     X_with_memory, y_with_memory = __preprocess_X_y_with_memory(transformation, X, y)
     # The order is:
