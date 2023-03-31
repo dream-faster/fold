@@ -56,7 +56,9 @@ class AddHolidayFeatures(Transformation):
         labeling: Union[str, LabelingMethod] = LabelingMethod.weekday_weekend_holiday,
         label_encode: bool = True,
     ) -> None:
-        self.country_codes = wrap_in_list(country_codes)
+        self.country_codes = [
+            country_code.upper() for country_code in wrap_in_list(country_codes)
+        ]
         self.name = f"AddHolidayFeatures-{self.country_codes}"
         self.type = LabelingMethod.from_str(labeling)
         self.label_encode = label_encode
