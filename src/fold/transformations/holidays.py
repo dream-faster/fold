@@ -65,7 +65,10 @@ class AddHolidayFeatures(Transformation):
         all_supported_countries = list_supported_countries()
 
         assert all(
-            [country_code in all_supported_countries for country_code in country_codes]
+            [
+                country_code in all_supported_countries
+                for country_code in self.country_codes
+            ]
         ), f"Country code not supported: {country_codes}"
 
         self.holiday_to_int_maps = [
