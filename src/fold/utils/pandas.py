@@ -10,6 +10,8 @@ def trim_initial_nans(X: pd.DataFrame, y: pd.Series) -> Tuple[pd.DataFrame, pd.S
         return X, y
     first_valid_index_X = get_first_valid_index(X)
     first_valid_index_y = get_first_valid_index(y)
+    if first_valid_index_X is None or first_valid_index_y is None:
+        return pd.DataFrame(), pd.Series()
     first_valid_index = max(first_valid_index_X, first_valid_index_y)
     return X.iloc[first_valid_index:], y.iloc[first_valid_index:]
 
@@ -23,10 +25,19 @@ def trim_initial_nans_single(X: pd.DataFrame) -> pd.DataFrame:
 
 
 def get_first_valid_index(series: Union[pd.Series, pd.DataFrame]) -> int:
-    double_nested_results = np.where(np.logical_not(pd.isna(series)))
-    if len(double_nested_results) == 0:
+    if series.empty:
         return 0
-    nested_result = double_nested_results[0]
-    if len(nested_result) == 0:
-        return 0
-    return nested_result[0]
+    if type(series) is pd.DataFrame:
+        return next(
+            (
+                idx
+                for idx, (_, x) in enumerate(series.iterrows())
+                if not pd.isna(x).any()
+            ),
+            None,
+        )
+    elif type(series) is pd.Series:
+        return next(
+            (idx for idx, (_, x) in enumerate(series.iteritems()) if not pd.isna(x)),
+            None,
+        )
