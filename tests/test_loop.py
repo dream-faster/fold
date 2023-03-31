@@ -1,3 +1,5 @@
+import pytest
+
 from fold.loop import train
 from fold.loop.backtesting import backtest
 from fold.loop.types import Backend, TrainMethod
@@ -54,6 +56,19 @@ def test_loop_online_model_no_minibatching_backtest():
         Backend.no,
         naive,
     )
+
+
+def test_loop_raises_error_if_requires_X_not_satified():
+    naive = Naive()
+    naive.properties.requires_X = True
+    with pytest.raises(
+        ValueError, match="X is None, but transformation Naive requires it."
+    ):
+        run_loop(
+            TrainMethod.parallel,
+            Backend.no,
+            naive,
+        )
 
 
 def test_sameple_weights() -> None:

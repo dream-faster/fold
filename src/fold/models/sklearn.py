@@ -11,7 +11,9 @@ class SKLearnClassifier(Model):
     Wraps an SKLearn Classifier model.
     """
 
-    properties = Model.Properties(model_type=Model.Properties.ModelType.classifier)
+    properties = Model.Properties(
+        requires_X=True, model_type=Model.Properties.ModelType.classifier
+    )
 
     def __init__(self, model) -> None:
         self.model = model
@@ -58,7 +60,9 @@ class SKLearnRegressor(Model):
     Wraps an SKLearn regressor model.
     """
 
-    properties = Model.Properties(model_type=Model.Properties.ModelType.regressor)
+    properties = Model.Properties(
+        requires_X=True, model_type=Model.Properties.ModelType.regressor
+    )
 
     def __init__(self, model) -> None:
         self.model = model
@@ -99,7 +103,7 @@ class SKLearnPipeline(Model):
     Fold has all the primitives that scikit-learn Pipelines provide, just wrap your Transformations into an array.
     """
 
-    properties = Transformation.Properties()
+    properties = Transformation.Properties(requires_X=True)
 
     def __init__(self, pipeline) -> None:
         self.pipeline = pipeline

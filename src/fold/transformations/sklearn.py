@@ -11,7 +11,7 @@ class SKLearnTransformation(Transformation):
     Wraps an SKLearn Transformation.
     """
 
-    properties = Transformation.Properties()
+    properties = Transformation.Properties(requires_X=True)
 
     def __init__(self, transformation) -> None:
         if hasattr(transformation, "set_output"):
@@ -68,7 +68,7 @@ class SKLearnFeatureSelector(FeatureSelector):
     Wraps an SKLearn Feature Selector class, stores the selected columns in `selected_features` property
     """
 
-    properties = Transformation.Properties()
+    properties = Transformation.Properties(requires_X=True)
     selected_features: Optional[str] = None
 
     def __init__(self, transformation) -> None:

@@ -48,7 +48,7 @@ class AddHolidayFeatures(Transformation):
 
     """
 
-    properties = Transformation.Properties()
+    properties = Transformation.Properties(requires_X=False)
 
     def __init__(
         self,

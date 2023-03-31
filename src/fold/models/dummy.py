@@ -11,7 +11,7 @@ class DummyClassifier(Model):
     A model that predicts a single class and probabilities.
     """
 
-    properties = Transformation.Properties()
+    properties = Transformation.Properties(requires_X=False)
     name = "DummyClassifier"
 
     def __init__(self, predicted_value, all_classes, predicted_probabilities) -> None:
@@ -48,7 +48,7 @@ class DummyRegressor(Model):
     A model that predicts a single value.
     """
 
-    properties = Transformation.Properties()
+    properties = Transformation.Properties(requires_X=False)
     name = "DummyRegressor"
 
     def __init__(self, predicted_value: float) -> None:

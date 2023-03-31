@@ -13,7 +13,7 @@ class RandomClassifier(Model):
     A model that predicts random classes and probabilities.
     """
 
-    properties = Transformation.Properties()
+    properties = Transformation.Properties(requires_X=False)
     name = "RandomClassifier"
 
     def __init__(self, all_classes: List[int], probability_mean: float = 0.5) -> None:

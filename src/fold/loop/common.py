@@ -8,7 +8,7 @@ import pandas as pd
 from ..composites.base import Composite
 from ..models.base import Model
 from ..transformations.base import Transformation, Transformations
-from ..utils.checks import is_prediction
+from ..utils.checks import is_prediction, is_X_available
 from ..utils.pandas import trim_initial_nans
 from .backend import get_backend_dependent_functions
 from .types import Backend, Stage
@@ -202,6 +202,12 @@ def process_minibatch_transformation(
     stage: Stage,
 ) -> pd.DataFrame:
     X, y = trim_initial_nans(X, y)
+
+    if not is_X_available(X) and transformation.properties.requires_X:
+        raise ValueError(
+            f"X is None, but transformation {transformation.__class__.__name__} requires it."
+        )
+
     X_with_memory, y_with_memory = __preprocess_X_y_with_memory(transformation, X, y)
     # The order is:
     # 1. fit (if we're in the initial_fit stage)

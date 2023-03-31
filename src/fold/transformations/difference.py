@@ -10,7 +10,7 @@ class Difference(InvertibleTransformation):
     Performs differencing.
     """
 
-    properties = InvertibleTransformation.Properties()
+    properties = InvertibleTransformation.Properties(requires_X=False)
     name = "Difference"
 
     def __init__(self, lag: int = 1) -> None:

@@ -10,7 +10,7 @@ class DontUpdate(Transformation):
     Don't update the wrapped Transformation
     """
 
-    properties = Transformation.Properties()
+    properties = Transformation.Properties(requires_X=False)
 
     def __init__(self, transformation: Transformation) -> None:
         self.transformation = transformation
@@ -41,6 +41,7 @@ class InjectPastDataAtInference(Transformation):
         self.transformation = transformation
         self.name = f"InjectPastDataAtInference-{transformation.name}"
         self.properties = Transformation.Properties(
+            requires_X=False,
             memory_size=0 if window_size is None else window_size,
             mode=transformation.properties.mode,
         )

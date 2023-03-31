@@ -49,12 +49,14 @@ def generate_zeros_and_ones_skewed(
     return X, y
 
 
-def generate_monotonous_data(length: int = 1000) -> Tuple[pd.DataFrame, pd.Series]:
+def generate_monotonous_data(
+    length: int = 1000, freq: str = "m"
+) -> Tuple[pd.DataFrame, pd.Series]:
     values = np.linspace(0, 1, num=length + 1)
     series = pd.Series(
         values,
         name="linear",
-        index=pd.date_range(end="2022", periods=len(values), freq="m"),
+        index=pd.date_range(end="2022", periods=len(values), freq=freq),
     )
     X = series.to_frame()
     y = series.shift(-1)[:-1]
