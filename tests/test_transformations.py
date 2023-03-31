@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import pytest
 
 from fold.composites.columns import PerColumnTransform
 from fold.composites.concat import TransformColumn
@@ -97,11 +98,29 @@ def test_add_lags_y():
     assert (pred["y_lag_2"] == y.shift(2)[pred.index]).all()
     assert (pred["y_lag_3"] == y.shift(3)[pred.index]).all()
 
+    transformations = AddLagsY(lags=range(1, 4))
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
+    assert (pred["y_lag_1"] == y.shift(1)[pred.index]).all()
+    assert (pred["y_lag_2"] == y.shift(2)[pred.index]).all()
+    assert (pred["y_lag_3"] == y.shift(3)[pred.index]).all()
+
+    with pytest.raises(ValueError, match="lags must be a range or a List"):
+        transformations = AddLagsY(lags=0)  # type: ignore
+        trained_pipelines = train(transformations, X, y, splitter)
+
 
 def test_add_lags_X():
     X, y = generate_sine_wave_data(length=6000)
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
     transformations = AddLagsX(columns_and_lags=[("sine", [1, 2, 3])])
+    trained_pipelines = train(transformations, X, y, splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
+    assert (pred["sine_lag_1"] == X["sine"].shift(1)[pred.index]).all()
+    assert (pred["sine_lag_2"] == X["sine"].shift(2)[pred.index]).all()
+    assert (pred["sine_lag_3"] == X["sine"].shift(3)[pred.index]).all()
+
+    transformations = AddLagsX(columns_and_lags=[("sine", range(1, 4))])
     trained_pipelines = train(transformations, X, y, splitter)
     pred = backtest(trained_pipelines, X, y, splitter)
     assert (pred["sine_lag_1"] == X["sine"].shift(1)[pred.index]).all()
