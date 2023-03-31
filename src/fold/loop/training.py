@@ -26,7 +26,7 @@ def train(
 ) -> TrainedPipelines:
     X, y = check_types(X, y)
 
-    if type(splitter) is SlidingWindowSplitter:
+    if isinstance(splitter, SlidingWindowSplitter):
         assert train_method == TrainMethod.parallel, (
             "SlidingWindowSplitter is conceptually incompatible with"
             " TrainMethod.sequential"

@@ -27,7 +27,7 @@ def trim_initial_nans_single(X: pd.DataFrame) -> pd.DataFrame:
 def get_first_valid_index(series: Union[pd.Series, pd.DataFrame]) -> int:
     if series.empty:
         return 0
-    if type(series) is pd.DataFrame:
+    if isinstance(series, pd.DataFrame):
         return next(
             (
                 idx
@@ -36,7 +36,7 @@ def get_first_valid_index(series: Union[pd.Series, pd.DataFrame]) -> int:
             ),
             None,
         )
-    elif type(series) is pd.Series:
+    elif isinstance(series, pd.Series):
         return next(
             (idx for idx, (_, x) in enumerate(series.iteritems()) if not pd.isna(x)),
             None,
