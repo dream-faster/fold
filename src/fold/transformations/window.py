@@ -62,7 +62,6 @@ class AddWindowFeatures(Transformation):
         )
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
-        X = X.copy()
         X_function_applied = pd.DataFrame([])
         for columns, window, function in self.column_window_func:
             if isinstance(function, PredefinedFunction):

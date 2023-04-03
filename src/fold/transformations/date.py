@@ -56,33 +56,33 @@ class AddDateTimeFeatures(Transformation):
         self.features = [DateTimeFeature(f) for f in features]
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
-        X = X.copy()
+        X_holidays = pd.DataFrame([])
         for feature in self.features:
             if feature == DateTimeFeature.second:
-                X[feature.value] = X.index.second
+                X_holidays[feature.value] = X.index.second
             elif feature == DateTimeFeature.minute:
-                X[feature.value] = X.index.minute
+                X_holidays[feature.value] = X.index.minute
             elif feature == DateTimeFeature.hour:
-                X[feature.value] = X.index.hour
+                X_holidays[feature.value] = X.index.hour
             elif feature == DateTimeFeature.day_of_week:
-                X[feature.value] = X.index.dayofweek
+                X_holidays[feature.value] = X.index.dayofweek
             elif feature == DateTimeFeature.day_of_month:
-                X[feature.value] = X.index.day
+                X_holidays[feature.value] = X.index.day
             elif feature == DateTimeFeature.day_of_year:
-                X[feature.value] = X.index.dayofyear
+                X_holidays[feature.value] = X.index.dayofyear
             elif feature == DateTimeFeature.week:
-                X[feature.value] = X.index.week
+                X_holidays[feature.value] = X.index.week
             elif feature == DateTimeFeature.week_of_year:
-                X[feature.value] = X.index.weekofyear
+                X_holidays[feature.value] = X.index.weekofyear
             elif feature == DateTimeFeature.month:
-                X[feature.value] = X.index.month
+                X_holidays[feature.value] = X.index.month
             elif feature == DateTimeFeature.quarter:
-                X[feature.value] = X.index.quarter
+                X_holidays[feature.value] = X.index.quarter
             elif feature == DateTimeFeature.year:
-                X[feature.value] = X.index.year
+                X_holidays[feature.value] = X.index.year
             else:
                 raise ValueError(f"Unsupported feature: {feature}")
-        return X
+        return pd.concat([X, X_holidays], axis="columns")
 
     fit = fit_noop
     update = fit_noop
