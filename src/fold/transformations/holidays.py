@@ -12,6 +12,7 @@ class LabelingMethod(Enum):
     holiday_binary = "holiday_binary"
     weekday_weekend_holiday = "weekday_weekend_holiday"
     weekday_weekend_uniqueholiday = "weekday_weekend_uniqueholiday"
+    weekday_weekend_uniqueholiday_string = "weekday_weekend_uniqueholiday_string"
 
     @staticmethod
     def from_str(value: Union[str, "LabelingMethod"]) -> "LabelingMethod":
@@ -27,6 +28,7 @@ class LabelingMethod(Enum):
 class AddHolidayFeatures(Transformation):
     """
     Adds holiday features for given region(s) as new column(s).
+    It uses the pattern "holiday_{country_code}" for naming the columns.
 
 
     Parameters
@@ -39,12 +41,8 @@ class AddHolidayFeatures(Transformation):
         How to label the holidays. Possible values:
         - holiday_binary: Workdays = 0 | National Holidays = 1
         - weekday_weekend_holiday: Workdays = 0 | Weekends = 1 | National Holidays == 2
-        - weekday_weekend_uniqueholiday: Workdays = 0 | Weekends = 1 |
-                - if `label_encode` == True: seperate int (>1) for each holiday
-                - if `label_encode` == False: raw holiday names (as string)
-
-    label_encode: bool (default=True)
-        If True, national holidays are encoded as integers as well. If False, national holidays are returned as strings.
+        - weekday_weekend_uniqueholiday: Workdays = 0 | Weekends = 1 | National Holidays == Unique int (>1)
+        - weekday_weekend_uniqueholiday_string: Workdays = 0 | Weekends = 1 | National Holidays == string
 
     """
 
@@ -54,14 +52,12 @@ class AddHolidayFeatures(Transformation):
         self,
         country_codes: Union[List[str], str],
         labeling: Union[str, LabelingMethod] = LabelingMethod.weekday_weekend_holiday,
-        label_encode: bool = True,
     ) -> None:
         self.country_codes = [
             country_code.upper() for country_code in wrap_in_list(country_codes)
         ]
         self.name = f"AddHolidayFeatures-{self.country_codes}"
         self.type = LabelingMethod.from_str(labeling)
-        self.label_encode = label_encode
         from holidays import country_holidays, list_supported_countries
 
         all_supported_countries = list_supported_countries()
@@ -78,14 +74,12 @@ class AddHolidayFeatures(Transformation):
                 swap_tuples(
                     enumerate(
                         sorted(
-                            list(
-                                set(
-                                    country_holidays(
-                                        country_code,
-                                        years=list(range(1900, date.today().year)),
-                                        language="en_US",
-                                    ).values()
-                                )
+                            set(
+                                country_holidays(
+                                    country_code,
+                                    years=list(range(1900, date.today().year)),
+                                    language="en_US",
+                                ).values()
                             )
                         ),
                         start=1,
@@ -96,15 +90,16 @@ class AddHolidayFeatures(Transformation):
         ]
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
-        if self.type is LabelingMethod.holiday_binary:
+        if self.type == LabelingMethod.holiday_binary:
             holidays = _get_holidays(
-                X.index, self.country_codes, self.holiday_to_int_maps
+                X.index, self.country_codes, self.holiday_to_int_maps, encode=True
             )
             holidays[holidays != 0] = 1
+
             return pd.concat([X, holidays], axis="columns")
-        elif self.type is LabelingMethod.weekday_weekend_holiday:
+        elif self.type == LabelingMethod.weekday_weekend_holiday:
             holidays = _get_holidays(
-                X.index, self.country_codes, self.holiday_to_int_maps
+                X.index, self.country_codes, self.holiday_to_int_maps, encode=True
             )
 
             # All values that are (bigger than 0 or a string) are holidays, but we don't want to differentiate between them
@@ -114,12 +109,15 @@ class AddHolidayFeatures(Transformation):
                 _get_weekends(X.index), axis="index"
             )
             return pd.concat([X, holidays], axis="columns")
-        elif self.type is LabelingMethod.weekday_weekend_uniqueholiday:
+        elif (
+            self.type == LabelingMethod.weekday_weekend_uniqueholiday
+            or self.type == LabelingMethod.weekday_weekend_uniqueholiday_string
+        ):
             holidays = _get_holidays(
                 X.index,
                 self.country_codes,
                 self.holiday_to_int_maps,
-                encode=self.label_encode,
+                encode=self.type == LabelingMethod.weekday_weekend_uniqueholiday,
             )
 
             weekends = _get_weekends(X.index)
@@ -142,7 +140,7 @@ def _get_holidays(
     dates: pd.DatetimeIndex,
     country_codes: List[str],
     holiday_to_int_maps: List[dict],
-    encode: bool = False,
+    encode: bool,
 ) -> pd.DataFrame:
     from holidays import country_holidays
 
@@ -154,19 +152,20 @@ def _get_holidays(
                 language="en_US",
             ),
             index=dates.date,
-            name=f"{country_code}_holiday",
-        )
+            name=f"holiday_{country_code}",
+        ).set_axis(dates)
         for country_code in country_codes
     ]
-    for s in series:
-        s.index = dates
 
     df = pd.concat(series, axis="columns").fillna(0)
 
     if encode:
         for country_code, holiday_to_int_map in zip(country_codes, holiday_to_int_maps):
-            df[f"{country_code}_holiday"] = df[f"{country_code}_holiday"].map(
-                holiday_to_int_map
+            col = df[f"holiday_{country_code}"]
+            if not col.dtype == "object":
+                continue  # we don't use strings, there's nothing to encode
+            df[f"holiday_{country_code}"] = (
+                col.map(holiday_to_int_map).fillna(0).astype(int)
             )
 
     return df
