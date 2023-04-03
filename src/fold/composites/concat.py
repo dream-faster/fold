@@ -5,7 +5,7 @@ from typing import Callable, List, Optional, Union
 
 import pandas as pd
 
-from ..transformations.base import Pipelines, Transformations
+from ..base import Composite, Pipelines, Transformations
 from ..transformations.columns import SelectColumns
 from ..transformations.dev import Identity
 from ..utils.list import (
@@ -15,7 +15,6 @@ from ..utils.list import (
     wrap_in_double_list_if_needed,
     wrap_in_list,
 )
-from .base import Composite
 from .common import get_concatenated_names
 
 

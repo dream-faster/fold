@@ -1,11 +1,11 @@
 import pytest
 
+from fold.base import Transformations
 from fold.loop import train
 from fold.loop.backtesting import backtest
 from fold.loop.types import Backend, TrainMethod
 from fold.models.baseline import Naive
 from fold.splitters import ExpandingWindowSplitter
-from fold.transformations.base import Transformations
 from fold.transformations.dev import Test
 from fold.transformations.lags import AddLagsY
 from fold.utils.tests import generate_all_zeros, generate_sine_wave_data

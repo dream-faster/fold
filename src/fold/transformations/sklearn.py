@@ -3,7 +3,7 @@ from typing import Optional
 
 import pandas as pd
 
-from .base import FeatureSelector, Transformation, fit_noop
+from ..base import FeatureSelector, Transformation, fit_noop
 
 
 class SKLearnTransformation(Transformation):

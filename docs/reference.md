@@ -1,6 +1,8 @@
 ::: fold.loop.train
 ::: fold.loop.backtest
 
+::: fold.base
+
 ::: fold.models.baseline
 ::: fold.models.dummy
 ::: fold.models.random
@@ -15,7 +17,6 @@
 ::: fold.composites.select
 ::: fold.composites.target
 
-::: fold.transformations.base
 ::: fold.transformations.columns
 ::: fold.transformations.date
 ::: fold.transformations.difference

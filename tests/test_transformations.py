@@ -6,15 +6,14 @@ from fold.composites.columns import PerColumnTransform
 from fold.composites.concat import TransformColumn
 from fold.loop import backtest, train
 from fold.splitters import ExpandingWindowSplitter
-from fold.transformations import AddHolidayFeatures
 from fold.transformations.columns import DropColumns, SelectColumns
 from fold.transformations.date import AddDateTimeFeatures, DateTimeFeature
 from fold.transformations.dev import Identity
 from fold.transformations.difference import Difference
-from fold.transformations.holidays import LabelingMethod
+from fold.transformations.holidays import AddHolidayFeatures, LabelingMethod
 from fold.transformations.lags import AddLagsX, AddLagsY
 from fold.transformations.window import AddWindowFeatures
-from fold.utils.tests import generate_all_zeros, generate_sine_wave_data
+from fold.utils.tests import generate_sine_wave_data
 
 
 def test_no_transformation() -> None:
@@ -245,8 +244,8 @@ def test_holiday_features_minute() -> None:
 
 
 def test_datetime_features():
-    X, y = generate_all_zeros(length=600)
-    splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
+    X, y = generate_sine_wave_data(length=6000, freq="1min")
+    splitter = ExpandingWindowSplitter(initial_train_window=0.5, step=0.15)
     transformations = AddDateTimeFeatures(
         [
             DateTimeFeature.second,

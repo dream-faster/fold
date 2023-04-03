@@ -4,9 +4,9 @@ from typing import List, Union
 
 import pandas as pd
 
+from ..base import Transformation, fit_noop
 from ..utils.checks import check_get_columns
 from ..utils.list import wrap_in_list
-from .base import Transformation, fit_noop
 
 
 class SelectColumns(Transformation):

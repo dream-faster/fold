@@ -5,10 +5,9 @@ from typing import Callable, List, Optional, Tuple
 
 import pandas as pd
 
-from ..transformations.base import Pipeline, Pipelines
+from ..base import Composite, Pipeline, Pipelines, T
 from ..utils.checks import all_have_probabilities
 from ..utils.list import unique, wrap_in_double_list_if_needed
-from .base import Composite, T
 from .common import get_concatenated_names
 
 

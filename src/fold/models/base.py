@@ -3,7 +3,7 @@ from typing import Union
 
 import pandas as pd
 
-from ..transformations.base import Transformation
+from ..base import Transformation
 
 
 class Model(Transformation):

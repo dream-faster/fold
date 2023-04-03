@@ -4,8 +4,7 @@ from typing import Callable, List, Optional
 
 import pandas as pd
 
-from ..transformations.base import Pipelines
-from .base import Composite
+from ..base import Composite, Pipelines
 from .columns import postprocess_results
 from .common import get_concatenated_names
 

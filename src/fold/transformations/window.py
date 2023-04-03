@@ -5,8 +5,8 @@ from typing import Callable, List, Tuple, Union
 
 import pandas as pd
 
+from ..base import Transformation, fit_noop
 from ..utils.list import wrap_in_list
-from .base import Transformation, fit_noop
 
 
 class PredefinedFunction(Enum):
@@ -62,8 +62,7 @@ class AddWindowFeatures(Transformation):
         )
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
-        X = X.copy()
-        X_function_applied = pd.DataFrame([])
+        X_function_applied = pd.DataFrame([], index=X.index)
         for columns, window, function in self.column_window_func:
             if isinstance(function, PredefinedFunction):
                 function = getattr(pd.core.window.rolling.Rolling, function.value)
