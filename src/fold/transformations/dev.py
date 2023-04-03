@@ -3,7 +3,7 @@ from typing import Callable, Optional
 
 import pandas as pd
 
-from .base import InvertibleTransformation, Transformation, fit_noop
+from ..base import InvertibleTransformation, Transformation, fit_noop
 
 
 class Breakpoint(Transformation):

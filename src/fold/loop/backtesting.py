@@ -3,7 +3,7 @@ from typing import Optional
 import pandas as pd
 from tqdm import tqdm
 
-from ..all_types import OutOfSamplePredictions, TrainedPipelines
+from ..base import OutOfSamplePredictions, TrainedPipelines
 from ..splitters import Fold, Splitter
 from ..utils.pandas import trim_initial_nans_single
 from .checks import check_types

@@ -7,8 +7,7 @@ import pandas as pd
 from fold.composites.common import get_concatenated_names
 from fold.utils.list import wrap_in_double_list_if_needed
 
-from ..transformations.base import BlocksOrWrappable, Pipelines
-from .base import Composite, T
+from ..base import BlocksOrWrappable, Composite, Pipelines, T
 
 
 class Sample(Composite):

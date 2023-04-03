@@ -1,8 +1,7 @@
 from typing import List
 
-from ..transformations.base import Pipelines, Transformations
+from ..base import Composite, Pipelines, Transformations
 from ..utils.list import flatten, wrap_in_list
-from .base import Composite
 
 
 def get_flat_list_of_transformations(

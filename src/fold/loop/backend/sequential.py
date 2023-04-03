@@ -3,9 +3,8 @@ from typing import Callable, List, Optional
 import pandas as pd
 from tqdm import tqdm
 
-from ...composites.base import Composite
+from ...base import Composite, Transformations
 from ...splitters import Fold
-from ...transformations.base import Transformations
 from ..types import Backend, Stage
 
 

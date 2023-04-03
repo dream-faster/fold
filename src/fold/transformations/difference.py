@@ -2,7 +2,7 @@ from typing import Optional
 
 import pandas as pd
 
-from .base import InvertibleTransformation
+from ..base import InvertibleTransformation
 
 
 class Difference(InvertibleTransformation):

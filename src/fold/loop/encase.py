@@ -4,9 +4,8 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, Optional, Tuple, Union
 import pandas as pd
 from sklearn.metrics import mean_squared_error
 
-from ..all_types import OutOfSamplePredictions, TrainedPipelines
+from ..base import BlocksOrWrappable, OutOfSamplePredictions, TrainedPipelines
 from ..splitters import ExpandingWindowSplitter, Splitter
-from ..transformations.base import BlocksOrWrappable
 from .backtesting import backtest
 from .training import train
 from .types import Backend, TrainMethod

@@ -2,7 +2,7 @@ from typing import Callable, Optional
 
 import pandas as pd
 
-from .base import Transformation, fit_noop
+from ..base import Transformation, fit_noop
 
 
 class WrapFunction(Transformation):

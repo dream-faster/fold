@@ -2,12 +2,12 @@ from typing import Optional, Union
 
 import pandas as pd
 
+from fold.base import Transformation
 from fold.loop import train
 from fold.loop.backtesting import backtest
 from fold.loop.types import TrainMethod
 from fold.models.base import Model
 from fold.splitters import ExpandingWindowSplitter
-from fold.transformations.base import Transformation
 from fold.transformations.dev import Test
 from fold.utils.tests import generate_sine_wave_data
 

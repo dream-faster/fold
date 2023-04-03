@@ -2,8 +2,8 @@ from typing import Optional, Union
 
 import pandas as pd
 
-from fold.models.base import Model
-from fold.transformations.base import Transformation, fit_noop
+from ..base import Transformation, fit_noop
+from .base import Model
 
 
 class SKLearnClassifier(Model):

@@ -5,9 +5,8 @@ from typing import List, Optional, Tuple
 
 import pandas as pd
 
-from ..composites.base import Composite
+from ..base import Composite, Transformation, Transformations
 from ..models.base import Model
-from ..transformations.base import Transformation, Transformations
 from ..utils.checks import is_prediction, is_X_available
 from ..utils.pandas import trim_initial_nans
 from .backend import get_backend_dependent_functions

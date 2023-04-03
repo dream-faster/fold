@@ -4,8 +4,8 @@ from typing import List, Union
 
 import pandas as pd
 
+from ..base import Transformation, fit_noop
 from ..utils.list import swap_tuples, wrap_in_list
-from .base import Transformation, fit_noop
 
 
 class LabelingMethod(Enum):

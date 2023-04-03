@@ -2,7 +2,7 @@ from typing import Union
 
 import pandas as pd
 
-from ..transformations.base import Transformation, fit_noop
+from ..base import Transformation, fit_noop
 from .base import Model
 
 

@@ -2,10 +2,8 @@ from typing import List, Optional, Tuple, Union
 
 import pandas as pd
 
-from ..all_types import TrainedPipelines
-from ..composites.base import Composite
+from ..base import BlocksOrWrappable, Composite, TrainedPipelines, Transformation
 from ..splitters import Fold, SlidingWindowSplitter, Splitter
-from ..transformations.base import BlocksOrWrappable, Transformation
 from ..utils.list import wrap_in_list
 from .backend import get_backend_dependent_functions
 from .checks import check_types

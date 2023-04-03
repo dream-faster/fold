@@ -4,7 +4,7 @@ from typing import List, Tuple
 import numpy as np
 import pandas as pd
 
-from fold.transformations.base import Transformation
+from fold.base import Transformation
 
 
 def generate_sine_wave_data(

@@ -4,8 +4,8 @@ import pandas as pd
 
 from fold.utils.checks import is_X_available
 
+from ..base import Transformation, fit_noop
 from ..utils.list import flatten, transform_range_to_list, wrap_in_list
-from .base import Transformation, fit_noop
 
 
 class AddLagsY(Transformation):
@@ -26,7 +26,7 @@ class AddLagsY(Transformation):
         )
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
-        lags = pd.DataFrame([])
+        lags = pd.DataFrame([], index=X.index)
 
         if in_sample:
             for lag in self.lags:
@@ -83,7 +83,7 @@ class AddLagsX(Transformation):
         )
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
-        X_lagged = pd.DataFrame([])
+        X_lagged = pd.DataFrame([], index=X.index)
         for column, lags in self.columns_and_lags:
             for lag in lags:
                 if column == "all":

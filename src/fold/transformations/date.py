@@ -5,7 +5,7 @@ from typing import List, Union
 
 import pandas as pd
 
-from .base import Transformation, fit_noop
+from ..base import Transformation, fit_noop
 
 
 class DateTimeFeature(Enum):
@@ -56,7 +56,7 @@ class AddDateTimeFeatures(Transformation):
         self.features = [DateTimeFeature(f) for f in features]
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
-        X_holidays = pd.DataFrame([])
+        X_holidays = pd.DataFrame([], index=X.index)
         for feature in self.features:
             if feature == DateTimeFeature.second:
                 X_holidays[feature.value] = X.index.second

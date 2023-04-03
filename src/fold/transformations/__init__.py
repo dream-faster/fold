@@ -1,4 +1,5 @@
-from .base import Transformation
+from ..base import Transformation
+from ..composites.concat import TransformColumn
 from .columns import OnlyPredictions, OnlyProbabilities, SelectColumns
 from .date import AddDateTimeFeatures
 from .difference import Difference

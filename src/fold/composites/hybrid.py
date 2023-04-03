@@ -8,8 +8,7 @@ from fold.composites.common import get_concatenated_names
 from fold.utils.checks import get_prediction_column
 from fold.utils.list import wrap_in_double_list_if_needed
 
-from ..transformations.base import BlocksOrWrappable, Pipelines
-from .base import Composite, T
+from ..base import BlocksOrWrappable, Composite, Pipelines, T
 
 
 class Hybrid(Composite):
