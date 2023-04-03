@@ -36,13 +36,13 @@ class AddDateTimeFeatures(Transformation):
     """
     Adds (potentially multiple) date/time features to the input, as additional columns.
     The name of the new column will be the name of the DateTimeFeature passed in.
-    Currently, we don't encode the values.
+    Values are returned as integers, so the 59th minute of the hour will be `59`, and year 2022 will be `2022`.
 
     Parameters
     ----------
 
     features: List[Union[DateTimeFeature, str]]
-        The features to add to the input.
+        The features to add to the input. Options: `second`, `minute`, `hour`, `day_of_week`, `day_of_month`, `day_of_year`, `week`, `week_of_year`, `month`, `quarter`, `year`.
 
     """
 
@@ -70,10 +70,13 @@ class AddDateTimeFeatures(Transformation):
                 X_holidays[feature.value] = X.index.day
             elif feature == DateTimeFeature.day_of_year:
                 X_holidays[feature.value] = X.index.dayofyear
-            elif feature == DateTimeFeature.week:
-                X_holidays[feature.value] = X.index.week
-            elif feature == DateTimeFeature.week_of_year:
-                X_holidays[feature.value] = X.index.weekofyear
+            elif (
+                feature == DateTimeFeature.week
+                or feature == DateTimeFeature.week_of_year
+            ):
+                X_holidays[feature.value] = pd.Index(
+                    X.index.isocalendar().week, dtype="int"
+                )
             elif feature == DateTimeFeature.month:
                 X_holidays[feature.value] = X.index.month
             elif feature == DateTimeFeature.quarter:

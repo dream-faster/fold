@@ -246,7 +246,7 @@ def test_holiday_features_minute() -> None:
 def test_datetime_features():
     X, y = generate_sine_wave_data(length=6000, freq="1min")
     splitter = ExpandingWindowSplitter(initial_train_window=0.5, step=0.15)
-    transformations = AddDateTimeFeatures(
+    pipeline = AddDateTimeFeatures(
         [
             DateTimeFeature.second,
             DateTimeFeature.minute,
@@ -261,7 +261,7 @@ def test_datetime_features():
             DateTimeFeature.year,
         ]
     )
-    trained_pipelines = train(transformations, X, y, splitter)
+    trained_pipelines = train(pipeline, X, y, splitter)
     pred = backtest(trained_pipelines, X, y, splitter)
     assert (pred["second"] == X.loc[pred.index].index.second).all()
     assert (pred["minute"] == X.loc[pred.index].index.minute).all()
@@ -270,7 +270,10 @@ def test_datetime_features():
     assert (pred["day_of_month"] == X.loc[pred.index].index.day).all()
     assert (pred["day_of_year"] == X.loc[pred.index].index.dayofyear).all()
     assert (pred["week"] == X.loc[pred.index].index.week).all()
-    assert (pred["week_of_year"] == X.loc[pred.index].index.weekofyear).all()
+    assert (
+        pred["week_of_year"]
+        == pd.Index(X.loc[pred.index].index.isocalendar().week, dtype="int")
+    ).all()
     assert (pred["month"] == X.loc[pred.index].index.month).all()
     assert (pred["quarter"] == X.loc[pred.index].index.quarter).all()
     assert (pred["year"] == X.loc[pred.index].index.year).all()
