@@ -36,13 +36,13 @@ class AddDateTimeFeatures(Transformation):
     """
     Adds (potentially multiple) date/time features to the input, as additional columns.
     The name of the new column will be the name of the DateTimeFeature passed in.
-    Currently, we don't encode the values.
+    Values are returned as integers, so the 59th minute of the hour will be `59`, and year 2022 will be `2022`.
 
     Parameters
     ----------
 
     features: List[Union[DateTimeFeature, str]]
-        The features to add to the input.
+        The features to add to the input. Options: `second`, `minute`, `hour`, `day_of_week`, `day_of_month`, `day_of_year`, `week`, `week_of_year`, `month`, `quarter`, `year`.
 
     """
 
@@ -56,33 +56,36 @@ class AddDateTimeFeatures(Transformation):
         self.features = [DateTimeFeature(f) for f in features]
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
-        X_holidays = pd.DataFrame([], index=X.index)
+        X_datetime = pd.DataFrame([], index=X.index)
         for feature in self.features:
             if feature == DateTimeFeature.second:
-                X_holidays[feature.value] = X.index.second
+                X_datetime[feature.value] = X.index.second
             elif feature == DateTimeFeature.minute:
-                X_holidays[feature.value] = X.index.minute
+                X_datetime[feature.value] = X.index.minute
             elif feature == DateTimeFeature.hour:
-                X_holidays[feature.value] = X.index.hour
+                X_datetime[feature.value] = X.index.hour
             elif feature == DateTimeFeature.day_of_week:
-                X_holidays[feature.value] = X.index.dayofweek
+                X_datetime[feature.value] = X.index.dayofweek
             elif feature == DateTimeFeature.day_of_month:
-                X_holidays[feature.value] = X.index.day
+                X_datetime[feature.value] = X.index.day
             elif feature == DateTimeFeature.day_of_year:
-                X_holidays[feature.value] = X.index.dayofyear
-            elif feature == DateTimeFeature.week:
-                X_holidays[feature.value] = X.index.isocalendar().week
-            elif feature == DateTimeFeature.week_of_year:
-                X_holidays[feature.value] = X.index.isocalendar().week
+                X_datetime[feature.value] = X.index.dayofyear
+            elif (
+                feature == DateTimeFeature.week
+                or feature == DateTimeFeature.week_of_year
+            ):
+                X_datetime[feature.value] = pd.Index(
+                    X.index.isocalendar().week, dtype="int"
+                )
             elif feature == DateTimeFeature.month:
-                X_holidays[feature.value] = X.index.month
+                X_datetime[feature.value] = X.index.month
             elif feature == DateTimeFeature.quarter:
-                X_holidays[feature.value] = X.index.quarter
+                X_datetime[feature.value] = X.index.quarter
             elif feature == DateTimeFeature.year:
-                X_holidays[feature.value] = X.index.year
+                X_datetime[feature.value] = X.index.year
             else:
                 raise ValueError(f"Unsupported feature: {feature}")
-        return pd.concat([X, X_holidays], axis="columns")
+        return pd.concat([X, X_datetime], axis="columns")
 
     fit = fit_noop
     update = fit_noop
