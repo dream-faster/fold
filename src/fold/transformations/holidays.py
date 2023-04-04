@@ -44,6 +44,15 @@ class AddHolidayFeatures(Transformation):
         - weekday_weekend_uniqueholiday: Workdays = 0 | Weekends = 1 | National Holidays == Unique int (>1)
         - weekday_weekend_uniqueholiday_string: Workdays = 0 | Weekends = 1 | National Holidays == string
 
+    Examples
+    ----------
+    ```python
+    import pandas as pd
+    assert 1+2 == 3
+    print(pd.DataFrame([])
+    ```
+
+
     """
 
     properties = Transformation.Properties(requires_X=False)
