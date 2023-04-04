@@ -45,7 +45,7 @@ class Concat(Composite):
     def __init__(
         self,
         pipelines: Pipelines,
-        if_duplicate_keep: Union[ResolutionStrategy, str] = ResolutionStrategy.both,
+        if_duplicate_keep: Union[ResolutionStrategy, str] = ResolutionStrategy.left,
     ) -> None:
         self.pipelines = pipelines
         self.if_duplicate_keep = ResolutionStrategy.from_str(if_duplicate_keep)
@@ -56,6 +56,8 @@ class Concat(Composite):
     ) -> pd.DataFrame:
         columns = flatten([result.columns.to_list() for result in results])
         duplicates = keep_only_duplicates(columns)
+        if len(duplicates) == 0:
+            return pd.concat(results, axis="columns")
 
         if len(duplicates) > 0 or self.if_duplicate_keep != ResolutionStrategy.both:
             duplicate_columns = [
@@ -68,6 +70,8 @@ class Concat(Composite):
                 return pd.concat(results + [duplicate_columns[0]], axis="columns")
             elif self.if_duplicate_keep == ResolutionStrategy.right:
                 return pd.concat(results + [duplicate_columns[-1]], axis="columns")
+            elif self.if_duplicate_keep == ResolutionStrategy.both:
+                return pd.concat(results + duplicate_columns, axis="columns")
             else:
                 raise ValueError(
                     f"ResolutionStrategy is not valid: {self.if_duplicate_keep}"
