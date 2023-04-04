@@ -71,9 +71,9 @@ class AddDateTimeFeatures(Transformation):
             elif feature == DateTimeFeature.day_of_year:
                 X_holidays[feature.value] = X.index.dayofyear
             elif feature == DateTimeFeature.week:
-                X_holidays[feature.value] = X.index.week
+                X_holidays[feature.value] = X.index.isocalendar().week
             elif feature == DateTimeFeature.week_of_year:
-                X_holidays[feature.value] = X.index.weekofyear
+                X_holidays[feature.value] = X.index.isocalendar().week
             elif feature == DateTimeFeature.month:
                 X_holidays[feature.value] = X.index.month
             elif feature == DateTimeFeature.quarter:
