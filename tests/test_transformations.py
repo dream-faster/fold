@@ -205,8 +205,8 @@ def test_holiday_features_minute() -> None:
     assert (
         pred["holiday_DE"]["2021-12-25"].mean() == 1
     ), "Christmas should be a holiday for DE."
-    assert pred["holiday_US"].dtype == "int"
-    assert pred["holiday_DE"].dtype == "int"
+    assert pd.api.types.is_integer_dtype(pred["holiday_US"].dtype)
+    assert pd.api.types.is_integer_dtype(pred["holiday_DE"].dtype)
 
     trained_pipelines = train(
         AddHolidayFeatures(["DE"], labeling="weekday_weekend_holiday"), X, y, splitter
@@ -215,7 +215,7 @@ def test_holiday_features_minute() -> None:
     assert (
         pred["holiday_DE"]["2021-12-25"].mean() == 2
     ), "2021-12-25 should be both a holiday and a weekend (holiday taking precedence)."
-    assert pred["holiday_DE"].dtype == "int"
+    assert pd.api.types.is_integer_dtype(pred["holiday_DE"].dtype)
 
     trained_pipelines = train(
         AddHolidayFeatures(
@@ -242,8 +242,8 @@ def test_holiday_features_minute() -> None:
     assert (
         pred["holiday_US"]["2021-12-31"].mean() == 14.0
     ), "2021-12-31 should be a holiday with a special id."
-    assert pred["holiday_US"].dtype == "int"
-    assert pred["holiday_DE"].dtype == "int"
+    assert pd.api.types.is_integer_dtype(pred["holiday_US"].dtype)
+    assert pd.api.types.is_integer_dtype(pred["holiday_DE"].dtype)
 
 
 def test_datetime_features():
