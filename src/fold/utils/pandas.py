@@ -38,6 +38,6 @@ def get_first_valid_index(series: Union[pd.Series, pd.DataFrame]) -> int:
         )
     elif isinstance(series, pd.Series):
         return next(
-            (idx for idx, (_, x) in enumerate(series.iteritems()) if not pd.isna(x)),
+            (idx for idx, (_, x) in enumerate(series.items()) if not pd.isna(x)),
             None,
         )
