@@ -272,7 +272,7 @@ def test_datetime_features():
     assert (pred["day_of_week"] == X.loc[pred.index].index.dayofweek).all()
     assert (pred["day_of_month"] == X.loc[pred.index].index.day).all()
     assert (pred["day_of_year"] == X.loc[pred.index].index.dayofyear).all()
-    assert (pred["week"] == X.loc[pred.index].index.week).all()
+    assert (pred["week"] == X.loc[pred.index].index.isocalendar().week).all()
     assert (
         pred["week_of_year"]
         == pd.Index(X.loc[pred.index].index.isocalendar().week, dtype="int")
