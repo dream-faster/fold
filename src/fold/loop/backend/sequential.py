@@ -1,7 +1,7 @@
 from typing import Callable, List, Optional
 
 import pandas as pd
-from tqdm import tqdm
+from tqdm.auto import tqdm
 
 from ...base import Composite, Transformations
 from ...splitters import Fold

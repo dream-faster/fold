@@ -1,7 +1,7 @@
 from typing import Optional
 
 import pandas as pd
-from tqdm import tqdm
+from tqdm.auto import tqdm
 
 from ..base import OutOfSamplePredictions, TrainedPipelines
 from ..splitters import Fold, Splitter
