@@ -14,17 +14,17 @@ class TakeLog(InvertibleTransformation):
         self,
         base: Union[int, str] = "e",
     ) -> None:
-        if base not in ["e", "10", 10, np.e, "2", 2]:
-            raise ValueError("base should be either 'e', '10', 10, '2', 2.")
+        if base not in ["e", np.e, "10", 10, "2", 2]:
+            raise ValueError("base should be either 'e', np.e, '10', 10, '2', 2.")
         self.base = base
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         if self.base == "e" or self.base == np.e:
-            return pd.DataFrame(np.log(X.values), columns=X.columns)
+            return pd.DataFrame(np.log(X.values), columns=X.columns, index=X.index)
         elif self.base == "10" or self.base == 10:
-            return pd.DataFrame(np.log10(X.values), columns=X.columns)
+            return pd.DataFrame(np.log10(X.values), columns=X.columns, index=X.index)
         elif self.base == "2" or self.base == 2:
-            return pd.DataFrame(np.log2(X.values), columns=X.columns)
+            return pd.DataFrame(np.log2(X.values), columns=X.columns, index=X.index)
         else:
             raise ValueError(f"Invalid base: {self.base}")
 
@@ -57,10 +57,10 @@ class AddConstant(InvertibleTransformation):
 
         self.constant = constant
 
-    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         return X + self.constant
 
-    def inverse_transform(self, X: pd.DataFrame) -> pd.DataFrame:
+    def inverse_transform(self, X: pd.Series) -> pd.Series:
         return X - self.constant
 
     fit = fit_noop
@@ -71,13 +71,18 @@ class TurnPositive(InvertibleTransformation):
     name = "TurnPositive"
     properties = InvertibleTransformation.Properties(requires_X=True)
 
-    def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None):
+    def fit(
+        self,
+        X: pd.DataFrame,
+        y: Optional[pd.Series],
+        sample_weights: Optional[pd.Series] = None,
+    ) -> None:
         self.constant = dict(X.min(axis=0).abs() + 1)
 
-    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         return X + self.constant
 
-    def inverse_transform(self, X: pd.DataFrame) -> pd.DataFrame:
+    def inverse_transform(self, X: pd.Series) -> pd.Series:
         return X - self.constant
 
     update = fit_noop

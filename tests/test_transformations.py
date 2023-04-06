@@ -13,7 +13,7 @@ from fold.transformations.dev import Identity
 from fold.transformations.difference import Difference
 from fold.transformations.holidays import AddHolidayFeatures, LabelingMethod
 from fold.transformations.lags import AddLagsX, AddLagsY
-from fold.transformations.math import TakeLog
+from fold.transformations.math import AddConstant, TakeLog, TurnPositive
 from fold.transformations.window import AddWindowFeatures
 from fold.utils.tests import generate_sine_wave_data
 
@@ -337,6 +337,38 @@ def test_drop_columns():
 
 def test_log_transformation():
     X, y = generate_sine_wave_data(length=600)
+    X, y = X + 2.0, y + 2.0
     splitter = SingleWindowSplitter(train_window=400)
     pred, _ = train_backtest(TakeLog(), X, y, splitter)
     assert pred["sine"].equals(np.log(X["sine"][pred.index]))
+
+    pred = TakeLog().inverse_transform(np.log(X["sine"]))
+    assert np.isclose(pred, X["sine"][pred.index], atol=0.01).all()
+
+    log = TakeLog(base=10)
+    pred, _ = train_backtest(log, X, y, splitter)
+    assert pred["sine"].equals(np.log10(X["sine"][pred.index]))
+
+    pred = log.inverse_transform(np.log10(X["sine"]))
+    assert np.isclose(pred, X["sine"][pred.index], atol=0.01).all()
+
+
+def test_turn_positive():
+    X, y = generate_sine_wave_data(length=600)
+    X, y = X - 2.0, y - 2.0
+    splitter = SingleWindowSplitter(train_window=400)
+    pred, _ = train_backtest(TurnPositive(), X, y, splitter)
+    assert pred["sine"].equals(X["sine"][pred.index] + 2.0)
+
+    pred = TurnPositive().inverse_transform(X["sine"] + 2.0)
+    assert np.isclose(pred, X["sine"][pred.index], atol=0.01).all()
+
+
+def test_add_constant():
+    X, y = generate_sine_wave_data(length=600)
+    splitter = SingleWindowSplitter(train_window=400)
+    pred, _ = train_backtest(AddConstant(2.0), X, y, splitter)
+    assert pred["sine"].equals(X["sine"][pred.index] + 2.0)
+
+    pred = AddConstant(2.0).inverse_transform(X["sine"] + 2.0)
+    assert np.isclose(pred, X["sine"][pred.index], atol=0.01).all()
