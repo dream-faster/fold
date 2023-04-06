@@ -1,21 +1,20 @@
 from __future__ import annotations
 
-from typing import Callable, List, Optional, Tuple
+from typing import Callable, List, Optional, Tuple, Union
 
 import pandas as pd
 
-from fold.composites.common import get_concatenated_names
-from fold.utils.checks import get_prediction_column_name
-from fold.utils.list import wrap_in_double_list_if_needed
-
 from ..base import Composite, InvertibleTransformation, Pipelines, T, Transformations
+from ..utils.checks import get_prediction_column, get_prediction_column_name
+from ..utils.list import wrap_in_double_list_if_needed, wrap_in_list
+from .common import get_concatenated_names
 
 
 class TransformTarget(Composite):
     """
-    Transform the target column.
+    Transforms the column.
     `X_pipeline` will be applied to the input data.
-    `y_transformation` will be applied to the target column.
+    `y_pipeline` will be applied to the target column.
 
     The inverse of `y_transformation` will be applied to the predictions of the primary pipeline.
 
@@ -31,12 +30,12 @@ class TransformTarget(Composite):
     def __init__(
         self,
         X_pipeline: Transformations,
-        y_transformation: InvertibleTransformation,
+        y_pipeline: Union[List[InvertibleTransformation], InvertibleTransformation],
     ) -> None:
         self.X_pipeline = wrap_in_double_list_if_needed(X_pipeline)
-        self.y_transformation = y_transformation
+        self.y_pipeline = wrap_in_list(y_pipeline)
         self.name = "TransformTarget-" + get_concatenated_names(
-            self.X_pipeline + [self.y_transformation]
+            self.X_pipeline + self.y_pipeline
         )
 
     def preprocess_primary(
@@ -72,16 +71,17 @@ class TransformTarget(Composite):
         secondary_results: List[pd.DataFrame],
         y: Optional[pd.Series],
     ) -> pd.DataFrame:
-        predictions = secondary_results[0]
-        predictions[
-            get_prediction_column_name(predictions)
-        ] = self.y_transformation.inverse_transform(
-            predictions[get_prediction_column_name(predictions)]
-        )
-        return predictions
+        predictions = get_prediction_column(secondary_results[0])
+        for transformation in reversed(self.y_pipeline):
+            predictions = transformation.inverse_transform(predictions).to_frame()
+        orignal_results = secondary_results[0]
+        orignal_results[
+            get_prediction_column_name(orignal_results)
+        ] = predictions.squeeze()
+        return orignal_results
 
     def get_child_transformations_primary(self) -> Pipelines:
-        return [self.y_transformation]
+        return self.y_pipeline
 
     def get_child_transformations_secondary(
         self,
@@ -91,5 +91,5 @@ class TransformTarget(Composite):
     def clone(self, clone_child_transformations: Callable) -> TransformTarget:
         return TransformTarget(
             X_pipeline=clone_child_transformations(self.X_pipeline),
-            y_transformation=clone_child_transformations(self.y_transformation),
+            y_pipeline=clone_child_transformations(self.y_pipeline),
         )

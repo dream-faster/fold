@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import List, Union
+from typing import Callable, List, Union
 
 import pandas as pd
 
-from ..base import Transformation, fit_noop
+from ..base import SingleFunctionTransformation, Transformation, fit_noop
 
 
 class DateTimeFeature(Enum):
@@ -89,3 +89,80 @@ class AddDateTimeFeatures(Transformation):
 
     fit = fit_noop
     update = fit_noop
+
+
+class AddSecond(SingleFunctionTransformation):
+    name = "AddSecond"
+
+    def get_function(self) -> Callable:
+        return lambda X: X.index.second
+
+
+class AddMinute(SingleFunctionTransformation):
+    name = "AddMinute"
+
+    def get_function(self) -> Callable:
+        return lambda X: X.index.second
+
+
+class AddHour(SingleFunctionTransformation):
+    name = "AddHour"
+
+    def get_function(self) -> Callable:
+        return lambda X: X.index.hour
+
+
+class AddDayOfWeek(SingleFunctionTransformation):
+    name = "AddDayOfWeek"
+
+    def get_function(self) -> Callable:
+        return lambda X: X.index.dayofweek
+
+
+class AddDayOfMonth(SingleFunctionTransformation):
+    name = "AddDayOfMonth"
+
+    def get_function(self) -> Callable:
+        return lambda X: X.index.day
+
+
+class AddDayOfYear(SingleFunctionTransformation):
+    name = "AddDayOfYear"
+
+    def get_function(self) -> Callable:
+        return lambda X: X.index.dayofyear
+
+
+class AddWeek(SingleFunctionTransformation):
+    name = "AddWeek"
+
+    def get_function(self) -> Callable:
+        return lambda X: pd.Index(X.index.isocalendar().week, dtype="int")
+
+
+class AddWeekOfYear(SingleFunctionTransformation):
+    name = "AddWeekOfYear"
+
+    def get_function(self) -> Callable:
+        return lambda X: pd.Index(X.index.isocalendar().week, dtype="int")
+
+
+class AddMonth(SingleFunctionTransformation):
+    name = "AddMonth"
+
+    def get_function(self) -> Callable:
+        return lambda X: X.index.month
+
+
+class AddQuarter(SingleFunctionTransformation):
+    name = "AddQuarter"
+
+    def get_function(self) -> Callable:
+        return lambda X: X.index.quarter
+
+
+class AddYear(SingleFunctionTransformation):
+    name = "AddYear"
+
+    def get_function(self) -> Callable:
+        return lambda X: X.index.year

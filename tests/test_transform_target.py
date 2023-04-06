@@ -35,7 +35,7 @@ def test_target_transformation_dummy() -> None:
     transformations = [
         TransformTarget(
             [lambda x: x + 1, test_all_y_values_above_1],
-            y_transformation=test_transform_plus_2,
+            y_pipeline=test_transform_plus_2,
         ),
     ]
 
@@ -59,7 +59,7 @@ def test_target_transformation_difference() -> None:
                 Test(fit_func=assert_y_not_nan, transform_func=lambda x: x),
                 DummyRegressor(0.000999),
             ],
-            y_transformation=Difference(),
+            y_pipeline=Difference(),
         ),
     ]
 
