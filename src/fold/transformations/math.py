@@ -7,9 +7,12 @@ from fold.base import InvertibleTransformation, fit_noop
 
 
 class TakeLog(InvertibleTransformation):
+    name = "TakeLog"
+    properties = InvertibleTransformation.Properties(requires_X=True)
+
     def __init__(
         self,
-        base: Union[int, str],
+        base: Union[int, str] = "e",
     ) -> None:
         if base not in ["e", "10", 10, np.e, "2", 2]:
             raise ValueError("base should be either 'e', '10', 10, '2', 2.")
@@ -40,12 +43,17 @@ class TakeLog(InvertibleTransformation):
 
 
 class AddConstant(InvertibleTransformation):
+    name = "AddConstant"
+    properties = InvertibleTransformation.Properties(requires_X=True)
+
     def __init__(
         self,
         constant: Union[int, float, Dict[str, Union[float, int]]],
     ) -> None:
-        if not isinstance(constant, (int, float, dict)) and not constant == "auto":
-            raise ValueError("C can take only 'auto', integers or floats")
+        if not isinstance(constant, (int, float, dict)):
+            raise ValueError(
+                "constant can be only integer, float or a dictionary of integers or floats"
+            )
 
         self.constant = constant
 
@@ -60,6 +68,9 @@ class AddConstant(InvertibleTransformation):
 
 
 class TurnPositive(InvertibleTransformation):
+    name = "TurnPositive"
+    properties = InvertibleTransformation.Properties(requires_X=True)
+
     def fit(self, X: pd.DataFrame, y: Optional[pd.Series] = None):
         self.constant = dict(X.min(axis=0).abs() + 1)
 
