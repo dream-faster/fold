@@ -1,4 +1,4 @@
-from fold.loop import train_evaluate
+from fold import train
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.difference import Difference
 from fold.transformations.lags import AddLagsX, AddLagsY
@@ -19,4 +19,4 @@ pipeline = [
 ]
 
 
-scorecard, prediction, trained_pipelines = train_evaluate(pipeline, X, y, splitter)
+trained_pipelines = train(pipeline, X, y, splitter)
