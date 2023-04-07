@@ -5,6 +5,23 @@ site_author: Dream Faster
 copyright: Dream Faster 2023
 theme:
   name: material
+  logo: images/logo_white.svg
+  features:
+    - navigation.tab
+  favicon: images/logo.svg
+  palette:
+  - scheme: default
+    toggle:
+      icon: material/brightness-7 
+      name: Switch to dark mode
+    primary: amber
+    accent: deep orange
+  - scheme: slate
+    toggle:
+      icon: material/brightness-4
+      name: Switch to light mode
+    primary: amber
+    accent: deep orange
 
 nav:
     - Home: 'index.md'
@@ -28,7 +45,7 @@ plugins:
   - include-markdown
   - autorefs
   - mkdocs-jupyter:
-      execute: true
+      execute: false
   - mkdocstrings:
       handlers:
         python:
