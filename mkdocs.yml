@@ -31,7 +31,7 @@ nav:
     - Concepts:
       - Time Series Cross Validation: 'cross-validation.md'
       - Design: 'design.md'
-      - Models: 'models.md'
+      - Models: 'models_explainer.md'
       - Splitters: 'splitters.md'
     - Examples:
       - Date-time and Holiday features: 'examples/date'
