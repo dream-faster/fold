@@ -14,13 +14,13 @@ nav:
       - Models: 'models.md'
       - Splitters: 'splitters.md'
     - Examples:
-      - Simple ARIMA model: 'arima.py'
-      - Date-time and Holiday features: 'datetime.py'
-      - Ensembling models: 'ensembling.md'
-      - Preprocess your data: 'preprocess.md'
-      - Stacking models: 'stacking.md'
-      - Tabular ML models: 'tabular.md'
-      - Transform your target variable: 'transform-target.md'
+      # - Simple ARIMA model: 'examples/arima'
+      - Date-time and Holiday features: 'examples/date'
+      - Ensembling models: 'examples/ensembling'
+      - Preprocess your data: 'examples/preprocess'
+      # - Stacking models: 'examples/stacking'
+      - Tabular ML models: 'examples/tabular'
+      - Transform your target variable: 'examples/transform-target'
     - 'reference.md'
 
 plugins:
