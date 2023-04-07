@@ -1,8 +1,8 @@
-# API
+# Examples
 
-This is the reference guide for `fold`.
+Get Started with snippets
 
-The main modules of fold are the following:
+Check Technical Walkthrough
 
 | Module                                | Description                                               |
 | ------------------------------------- | --------------------------------------------------------- |
@@ -10,3 +10,4 @@ The main modules of fold are the following:
 | [Models](models.md)                   | Naive and Baseline model classes                          |
 | [Composites](composites.md)           | Composite classes that let's your create Composite Models |
 | [Transformations](transformations.md) | Transformations                                           |
+

@@ -34,13 +34,26 @@ nav:
       - Models: 'models_explainer.md'
       - Splitters: 'splitters.md'
     - Examples:
-      - Date-time and Holiday features: 'examples/date'
-      - Ensembling models: 'examples/ensembling'
-      - Preprocess your data: 'examples/preprocess'
-      - Tabular ML models: 'examples/tabular'
-      - Transform your target variable: 'examples/transform-target'
-    - 'reference.md'
-
+      - Examples: 'examples.md'
+      - Technical Walkthroughs: technical.md
+      - Example Cookbook: 
+        - Date-time and Holiday features: 'examples/date'
+        - Ensembling models: 'examples/ensembling'
+        - Preprocess your data: 'examples/preprocess'
+        - Tabular ML models: 'examples/tabular'
+        - Transform your target variable: 'examples/transform-target'
+    - API: 
+      - API: 'reference.md'
+      - Loop and Base Classes: 'loop.md'
+      - Models: 'models.md'
+      - Composites: 'composites.md'
+      - Transformations: 'transformations.md'
+markdown_extensions:
+  - tables
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
 plugins:
   - search
   - include-markdown
