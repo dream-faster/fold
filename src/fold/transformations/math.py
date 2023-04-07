@@ -90,7 +90,7 @@ class TurnPositive(InvertibleTransformation):
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         min_values = X.min(axis=0)
-        self.constant = dict(min_values[min_values < 0].abs() + 1)
+        self.constant = dict(min_values[min_values <= 0].abs() + 1)
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         transformed_columns = X[list(self.constant.keys())] + pd.Series(self.constant)

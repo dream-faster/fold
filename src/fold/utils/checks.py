@@ -38,7 +38,13 @@ def get_prediction_column(input: pd.DataFrame) -> pd.Series:
 
 
 def get_prediction_column_name(input: pd.DataFrame) -> str:
-    return [col for col in input.columns if col.startswith("predictions_")][0]
+    candidates = [col for col in input.columns if col.startswith("predictions_")]
+    if len(candidates) == 0:
+        if len(input.columns) == 1:
+            return input.columns[0]
+        else:
+            raise ValueError(f"Could not find a predictions column in {input.columns}.")
+    return candidates[0]
 
 
 def is_X_available(X: pd.DataFrame) -> bool:

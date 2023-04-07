@@ -6,7 +6,7 @@ import pandas as pd
 
 from ..base import Composite, InvertibleTransformation, Pipelines, T, Transformations
 from ..utils.checks import get_prediction_column, get_prediction_column_name
-from ..utils.list import wrap_in_double_list_if_needed, wrap_in_list
+from ..utils.list import wrap_in_double_list_if_needed
 from .common import get_concatenated_names
 
 
@@ -24,7 +24,6 @@ class TransformTarget(Composite):
     properties = Composite.Properties(
         primary_only_single_pipeline=True,
         secondary_only_single_pipeline=True,
-        secondary_requires_predictions=True,
     )
 
     def __init__(
@@ -33,7 +32,7 @@ class TransformTarget(Composite):
         y_pipeline: Union[List[InvertibleTransformation], InvertibleTransformation],
     ) -> None:
         self.X_pipeline = wrap_in_double_list_if_needed(X_pipeline)
-        self.y_pipeline = wrap_in_list(y_pipeline)
+        self.y_pipeline = wrap_in_double_list_if_needed(y_pipeline)
         self.name = "TransformTarget-" + get_concatenated_names(
             self.X_pipeline + self.y_pipeline
         )
@@ -72,8 +71,8 @@ class TransformTarget(Composite):
         y: Optional[pd.Series],
     ) -> pd.DataFrame:
         predictions = get_prediction_column(secondary_results[0])
-        for transformation in reversed(self.y_pipeline):
-            predictions = transformation.inverse_transform(predictions).to_frame()
+        for transformation in reversed(self.y_pipeline[0]):
+            predictions = transformation.inverse_transform(predictions)
         orignal_results = secondary_results[0]
         orignal_results[
             get_prediction_column_name(orignal_results)
