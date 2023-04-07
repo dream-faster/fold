@@ -184,4 +184,4 @@ class SingleFunctionTransformation(Transformation):
     update = fit_noop
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
-        return self.get_function()(X)
+        return pd.concat([X, self.get_function()(X)], axis="columns")

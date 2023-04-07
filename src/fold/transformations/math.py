@@ -58,10 +58,22 @@ class AddConstant(InvertibleTransformation):
         self.constant = constant
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
-        return X + self.constant
+        if isinstance(self.constant, dict):
+            transformed_columns = X[list(self.constant.keys())] + pd.Series(
+                self.constant
+            )
+            return pd.concat(
+                [X.drop(columns=self.constant.keys()), transformed_columns],
+                axis="columns",
+            )
+        else:
+            return X + self.constant
 
     def inverse_transform(self, X: pd.Series) -> pd.Series:
-        return X - self.constant
+        constant = self.constant
+        if constant is dict:
+            constant = next(iter(constant.values()))
+        return X - constant
 
     fit = fit_noop
     update = fit_noop
@@ -77,12 +89,17 @@ class TurnPositive(InvertibleTransformation):
         y: Optional[pd.Series],
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
-        self.constant = dict(X.min(axis=0).abs() + 1)
+        min_values = X.min(axis=0)
+        self.constant = dict(min_values[min_values < 0].abs() + 1)
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
-        return X + self.constant
+        transformed_columns = X[list(self.constant.keys())] + pd.Series(self.constant)
+        return pd.concat(
+            [X.drop(columns=self.constant.keys()), transformed_columns],
+            axis="columns",
+        )
 
     def inverse_transform(self, X: pd.Series) -> pd.Series:
-        return X - self.constant
+        return X - next(iter(self.constant.values()))
 
     update = fit_noop

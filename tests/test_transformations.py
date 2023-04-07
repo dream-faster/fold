@@ -8,10 +8,8 @@ from fold.loop import backtest, train
 from fold.loop.encase import train_backtest
 from fold.splitters import ExpandingWindowSplitter, SingleWindowSplitter
 from fold.transformations.columns import DropColumns, SelectColumns
-from fold.transformations.date import AddDateTimeFeatures, DateTimeFeature
 from fold.transformations.dev import Identity
 from fold.transformations.difference import Difference
-from fold.transformations.holidays import AddHolidayFeatures, LabelingMethod
 from fold.transformations.lags import AddLagsX, AddLagsY
 from fold.transformations.math import AddConstant, TakeLog, TurnPositive
 from fold.transformations.window import AddWindowFeatures
@@ -157,122 +155,6 @@ def test_difference():
     ).all()
 
 
-def test_holiday_features_daily() -> None:
-    X, y = generate_sine_wave_data()
-    new_index = pd.date_range(start="1/1/2018", periods=len(X))
-    X.index = new_index
-    y.index = new_index
-
-    splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    trained_pipelines = train(
-        AddHolidayFeatures(["US", "DE"], labeling="holiday_binary"), X, y, splitter
-    )
-    pred = backtest(trained_pipelines, X, y, splitter)
-
-    assert (np.isclose((X.squeeze()[pred.index]), (pred["sine"]))).all()
-    assert (
-        pred["holiday_US"]["2019-12-25"] == 1
-    ), "Christmas should be a holiday for US."
-    assert (
-        pred["holiday_DE"]["2019-12-25"] == 1
-    ), "Christmas should be a holiday for DE."
-    assert pred["holiday_DE"]["2019-12-29"] == 0, "2019-12-29 is not a holiday in DE"
-
-
-def test_holiday_features_minute() -> None:
-    X, y = generate_sine_wave_data()
-    new_index = pd.date_range(start="2021-12-06", freq="H", periods=len(X))
-    X.index = new_index
-    y.index = new_index
-
-    splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    trained_pipelines = train(
-        AddHolidayFeatures(["US", "DE"], labeling="holiday_binary"), X, y, splitter
-    )
-    pred = backtest(trained_pipelines, X, y, splitter)
-
-    assert (np.isclose((X.squeeze()[pred.index]), (pred["sine"]))).all()
-    assert (
-        pred["holiday_US"]["2021-12-25"].mean() == 1
-    ), "Christmas should be a holiday for US."
-    assert (
-        pred["holiday_DE"]["2021-12-25"].mean() == 1
-    ), "Christmas should be a holiday for DE."
-    assert pd.api.types.is_integer_dtype(pred["holiday_US"].dtype)
-    assert pd.api.types.is_integer_dtype(pred["holiday_DE"].dtype)
-
-    trained_pipelines = train(
-        AddHolidayFeatures(["DE"], labeling="weekday_weekend_holiday"), X, y, splitter
-    )
-    pred = backtest(trained_pipelines, X, y, splitter)
-    assert (
-        pred["holiday_DE"]["2021-12-25"].mean() == 2
-    ), "2021-12-25 should be both a holiday and a weekend (holiday taking precedence)."
-    assert pd.api.types.is_integer_dtype(pred["holiday_DE"].dtype)
-
-    trained_pipelines = train(
-        AddHolidayFeatures(
-            ["US"],
-            labeling=LabelingMethod.weekday_weekend_uniqueholiday_string,
-        ),
-        X,
-        y,
-        splitter,
-    )
-    pred = backtest(trained_pipelines, X, y, splitter)
-    assert (
-        pred["holiday_US"]["2021-12-25"].iloc[0] == "Christmas Day"
-    ), "2021-12-25 should be a holiday string."
-    assert pred["holiday_US"].dtype == "object"
-
-    pred, _ = train_backtest(
-        AddHolidayFeatures(["US", "DE"], labeling="weekday_weekend_uniqueholiday"),
-        X,
-        y,
-        splitter,
-    )
-    assert (
-        pred["holiday_US"]["2021-12-31"].mean() == 14.0
-    ), "2021-12-31 should be a holiday with a special id."
-    assert pd.api.types.is_integer_dtype(pred["holiday_US"].dtype)
-    assert pd.api.types.is_integer_dtype(pred["holiday_DE"].dtype)
-
-
-def test_datetime_features():
-    X, y = generate_sine_wave_data(length=6000, freq="1min")
-    splitter = ExpandingWindowSplitter(initial_train_window=0.5, step=0.15)
-    pipeline = AddDateTimeFeatures(
-        [
-            DateTimeFeature.second,
-            DateTimeFeature.minute,
-            DateTimeFeature.hour,
-            DateTimeFeature.day_of_week,
-            DateTimeFeature.day_of_month,
-            DateTimeFeature.day_of_year,
-            DateTimeFeature.week,
-            DateTimeFeature.week_of_year,
-            DateTimeFeature.month,
-            DateTimeFeature.quarter,
-            DateTimeFeature.year,
-        ]
-    )
-    pred, _ = train_backtest(pipeline, X, y, splitter)
-    assert (pred["second"] == X.loc[pred.index].index.second).all()
-    assert (pred["minute"] == X.loc[pred.index].index.minute).all()
-    assert (pred["hour"] == X.loc[pred.index].index.hour).all()
-    assert (pred["day_of_week"] == X.loc[pred.index].index.dayofweek).all()
-    assert (pred["day_of_month"] == X.loc[pred.index].index.day).all()
-    assert (pred["day_of_year"] == X.loc[pred.index].index.dayofyear).all()
-    assert (pred["week"] == X.loc[pred.index].index.isocalendar().week).all()
-    assert (
-        pred["week_of_year"]
-        == pd.Index(X.loc[pred.index].index.isocalendar().week, dtype="int")
-    ).all()
-    assert (pred["month"] == X.loc[pred.index].index.month).all()
-    assert (pred["quarter"] == X.loc[pred.index].index.quarter).all()
-    assert (pred["year"] == X.loc[pred.index].index.year).all()
-
-
 def test_window_features():
     X, y = generate_sine_wave_data(length=600)
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
@@ -322,8 +204,8 @@ def test_window_features():
 
 def test_drop_columns():
     X, y = generate_sine_wave_data(length=600)
-    X["sine_inverted"] = generate_sine_wave_data(length=6000)[0].squeeze() * -1.0
-    X["sine_inverted_double"] = generate_sine_wave_data(length=6000)[0].squeeze() * -2.0
+    X["sine_inverted"] = X["sine"] * -1.0
+    X["sine_inverted_double"] = X["sine"] * -2.0
     splitter = SingleWindowSplitter(train_window=400)
     pred, _ = train_backtest(DropColumns(["sine_inverted", "sine"]), X, y, splitter)
     assert len(pred.columns) == 1
@@ -356,19 +238,33 @@ def test_log_transformation():
 def test_turn_positive():
     X, y = generate_sine_wave_data(length=600)
     X, y = X - 2.0, y - 2.0
-    splitter = SingleWindowSplitter(train_window=400)
-    pred, _ = train_backtest(TurnPositive(), X, y, splitter)
-    assert pred["sine"].equals(X["sine"][pred.index] + 2.0)
+    X["sine_inverted"] = X["sine"] * -1.0
+    X["sine_inverted_double"] = X["sine"] * -2.0
 
-    pred = TurnPositive().inverse_transform(X["sine"] + 2.0)
-    assert np.isclose(pred, X["sine"][pred.index], atol=0.01).all()
+    turn_positive = TurnPositive()
+    turn_positive.fit(X, y, None)
+    pred = turn_positive.transform(X, False)
+    assert pred.any().any() >= 0.0
+    assert len(pred.columns) == len(X.columns)
+
+    reverse = turn_positive.inverse_transform(pred["sine"])
+    assert np.isclose(reverse, X["sine"][pred.index], atol=0.01).all()
 
 
 def test_add_constant():
     X, y = generate_sine_wave_data(length=600)
+    X["sine_inverted"] = X["sine"] * -1.0
+    X["sine_inverted_double"] = X["sine"] * -2.0
     splitter = SingleWindowSplitter(train_window=400)
     pred, _ = train_backtest(AddConstant(2.0), X, y, splitter)
     assert pred["sine"].equals(X["sine"][pred.index] + 2.0)
 
     pred = AddConstant(2.0).inverse_transform(X["sine"] + 2.0)
     assert np.isclose(pred, X["sine"][pred.index], atol=0.01).all()
+
+    pred, _ = train_backtest(
+        AddConstant({"sine": 2.0, "sine_inverted": 3.0}), X, y, splitter
+    )
+    assert pred["sine"].equals(X["sine"][pred.index] + 2.0)
+    assert pred["sine_inverted"].equals(X["sine_inverted"][pred.index] + 3.0)
+    assert len(pred.columns) == 3

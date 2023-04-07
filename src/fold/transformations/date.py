@@ -95,74 +95,94 @@ class AddSecond(SingleFunctionTransformation):
     name = "AddSecond"
 
     def get_function(self) -> Callable:
-        return lambda X: X.index.second
+        return lambda X: X.index.second.to_series().rename("second").set_axis(X.index)
 
 
 class AddMinute(SingleFunctionTransformation):
     name = "AddMinute"
 
     def get_function(self) -> Callable:
-        return lambda X: X.index.second
+        return lambda X: X.index.minute.to_series().rename("minute").set_axis(X.index)
 
 
 class AddHour(SingleFunctionTransformation):
     name = "AddHour"
 
     def get_function(self) -> Callable:
-        return lambda X: X.index.hour
+        return lambda X: X.index.hour.to_series().rename("hour").set_axis(X.index)
 
 
 class AddDayOfWeek(SingleFunctionTransformation):
     name = "AddDayOfWeek"
 
     def get_function(self) -> Callable:
-        return lambda X: X.index.dayofweek
+        return (
+            lambda X: X.index.dayofweek.to_series()
+            .rename("day_of_week")
+            .set_axis(X.index)
+        )
 
 
 class AddDayOfMonth(SingleFunctionTransformation):
     name = "AddDayOfMonth"
 
     def get_function(self) -> Callable:
-        return lambda X: X.index.day
+        return (
+            lambda X: X.index.day.to_series().rename("day_of_month").set_axis(X.index)
+        )
 
 
 class AddDayOfYear(SingleFunctionTransformation):
     name = "AddDayOfYear"
 
     def get_function(self) -> Callable:
-        return lambda X: X.index.dayofyear
+        return (
+            lambda X: X.index.dayofyear.to_series()
+            .rename("day_of_year")
+            .set_axis(X.index)
+        )
 
 
 class AddWeek(SingleFunctionTransformation):
     name = "AddWeek"
 
     def get_function(self) -> Callable:
-        return lambda X: pd.Index(X.index.isocalendar().week, dtype="int")
+        return (
+            lambda X: pd.Index(X.index.isocalendar().week, dtype="int")
+            .to_series()
+            .set_axis(X.index)
+            .rename("week")
+        )
 
 
 class AddWeekOfYear(SingleFunctionTransformation):
     name = "AddWeekOfYear"
 
     def get_function(self) -> Callable:
-        return lambda X: pd.Index(X.index.isocalendar().week, dtype="int")
+        return (
+            lambda X: pd.Index(X.index.isocalendar().week, dtype="int")
+            .to_series()
+            .set_axis(X.index)
+            .rename("week_of_year")
+        )
 
 
 class AddMonth(SingleFunctionTransformation):
     name = "AddMonth"
 
     def get_function(self) -> Callable:
-        return lambda X: X.index.month
+        return lambda X: X.index.month.to_series().rename("month").set_axis(X.index)
 
 
 class AddQuarter(SingleFunctionTransformation):
     name = "AddQuarter"
 
     def get_function(self) -> Callable:
-        return lambda X: X.index.quarter
+        return lambda X: X.index.quarter.to_series().rename("quarter").set_axis(X.index)
 
 
 class AddYear(SingleFunctionTransformation):
     name = "AddYear"
 
     def get_function(self) -> Callable:
-        return lambda X: X.index.year
+        return lambda X: X.index.year.to_series().rename("year").set_axis(X.index)
