@@ -5,24 +5,55 @@ site_author: Dream Faster
 copyright: Dream Faster 2023
 theme:
   name: material
+  logo: images/logo_white.svg
+  favicon: images/logo.svg
+  features:
+    - navigation.tabs
+    - search.suggest
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to dark mode
+      primary: amber
+      accent: deep orange
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to light mode
+      primary: amber
+      accent: deep orange
 
 nav:
     - Home: 'index.md'
     - Concepts:
       - Time Series Cross Validation: 'cross-validation.md'
       - Design: 'design.md'
-      - Models: 'models.md'
+      - Models: 'models_explainer.md'
       - Splitters: 'splitters.md'
     - Examples:
-      - Simple ARIMA model: 'arima.py'
-      - Date-time and Holiday features: 'datetime.py'
-      - Ensembling models: 'ensembling.md'
-      - Preprocess your data: 'preprocess.md'
-      - Stacking models: 'stacking.md'
-      - Tabular ML models: 'tabular.md'
-      - Transform your target variable: 'transform-target.md'
-    - 'reference.md'
-
+      - Examples: 'examples.md'
+      - Technical Walkthroughs: technical.md
+      - Example Cookbook: 
+        - Date-time and Holiday features: 'examples/date'
+        - Ensembling models: 'examples/ensembling'
+        - Preprocess your data: 'examples/preprocess'
+        - Tabular ML models: 'examples/tabular'
+        - Transform your target variable: 'examples/transform-target'
+    - API: 
+      - API: 'reference.md'
+      - Loop and Base Classes: 'loop.md'
+      - Models: 'models.md'
+      - Composites: 'composites.md'
+      - Transformations: 'transformations.md'
+markdown_extensions:
+  - tables
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
 plugins:
   - search
   - include-markdown
@@ -40,3 +71,30 @@ plugins:
             show_signature_annotations: true
           import:
           - https://docs.python-requests.org/en/master/objects.inv
+
+
+extra:
+  analytics: 
+    provider: google
+    property: G-FBLB9N9026
+    feedback:
+      title: Was this page helpful?
+      ratings:
+        - icon: material/emoticon-happy-outline
+          name: This page was helpful
+          data: 1
+          note: >-
+            Thanks for your feedback!
+        - icon: material/emoticon-sad-outline
+          name: This page could be improved
+          data: 0
+          note: >- 
+            Thanks for your feedback! Help us improve this page by
+            using our <a href="..." target="_blank" rel="noopener">feedback form</a>.
+  consent:
+    title: Cookie consent
+    description: >- 
+      We use cookies to recognize your repeated visits and preferences, as well
+      as to measure the effectiveness of our documentation and whether users
+      find what they're searching for. With your consent, you're helping us to
+      make our documentation better.
