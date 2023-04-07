@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 import pandas as pd
 
@@ -10,6 +10,7 @@ from ..models.base import Model
 from ..utils.checks import is_prediction, is_X_available
 from ..utils.pandas import trim_initial_nans
 from .backend import get_backend_dependent_functions
+from .memory import postprocess_X_y_into_memory, preprocess_X_y_with_memory
 from .types import Backend, Stage
 
 
@@ -151,7 +152,7 @@ def process_with_inner_loop(
     def transform_row(
         X_row: pd.DataFrame, y_row: Optional[pd.Series], sample_weights_row
     ):
-        X_row_with_memory, y_row_with_memory = __preprocess_X_y_with_memory(
+        X_row_with_memory, y_row_with_memory = preprocess_X_y_with_memory(
             transformation, X_row, y_row
         )
         result = transformation.transform(X_row_with_memory, in_sample=False)
@@ -159,7 +160,7 @@ def process_with_inner_loop(
             transformation.update(
                 X_row_with_memory, y_row_with_memory, sample_weights_row
             )
-            __postprocess_X_y_into_memory(
+            postprocess_X_y_into_memory(
                 transformation, X_row_with_memory, y_row_with_memory, False
             )
         return result.loc[X_row.index]
@@ -184,12 +185,12 @@ def process_internal_online_model_minibatch_inference_and_update(
     sample_weights: Optional[pd.Series],
 ) -> pd.DataFrame:
     X, y = trim_initial_nans(X, y)
-    X_with_memory, y_with_memory = __preprocess_X_y_with_memory(transformation, X, y)
-    __postprocess_X_y_into_memory(transformation, X_with_memory, y_with_memory, True)
+    X_with_memory, y_with_memory = preprocess_X_y_with_memory(transformation, X, y)
+    postprocess_X_y_into_memory(transformation, X_with_memory, y_with_memory, True)
     return_value = transformation.transform(X_with_memory, in_sample=True)
 
     transformation.update(X_with_memory, y_with_memory, sample_weights)
-    __postprocess_X_y_into_memory(transformation, X, y, False)
+    postprocess_X_y_into_memory(transformation, X, y, False)
     return return_value.loc[X.index]
 
 
@@ -204,29 +205,30 @@ def process_minibatch_transformation(
 
     if not is_X_available(X) and transformation.properties.requires_X:
         raise ValueError(
-            f"X is None, but transformation {transformation.__class__.__name__} requires it."
+            "X is None, but transformation"
+            f" {transformation.__class__.__name__} requires it."
         )
 
-    X_with_memory, y_with_memory = __preprocess_X_y_with_memory(transformation, X, y)
+    X_with_memory, y_with_memory = preprocess_X_y_with_memory(transformation, X, y)
     # The order is:
     # 1. fit (if we're in the initial_fit stage)
     if stage == Stage.inital_fit:
         transformation.fit(X_with_memory, y_with_memory, sample_weights)
-        __postprocess_X_y_into_memory(
+        postprocess_X_y_into_memory(
             transformation,
             X_with_memory,
             y_with_memory,
             in_sample=stage == Stage.inital_fit,
         )
     # 2. transform (inference)
-    X_with_memory, y_with_memory = __preprocess_X_y_with_memory(transformation, X, y)
+    X_with_memory, y_with_memory = preprocess_X_y_with_memory(transformation, X, y)
     return_value = transformation.transform(
         X_with_memory, in_sample=stage == Stage.inital_fit
     )
     # 3. update (if we're in the update stage)
     if stage == Stage.update:
         transformation.update(X_with_memory, y_with_memory, sample_weights)
-        __postprocess_X_y_into_memory(transformation, X, y, False)
+        postprocess_X_y_into_memory(transformation, X, y, False)
     return return_value.loc[X.index]
 
 
@@ -268,65 +270,3 @@ def deepcopy_pipelines(transformation: Transformations) -> Transformations:
         return transformation.clone(deepcopy_pipelines)
     else:
         return deepcopy(transformation)
-
-
-def __preprocess_X_y_with_memory(
-    transformation: Transformation, X: pd.DataFrame, y: Optional[pd.Series]
-) -> Tuple[pd.DataFrame, pd.Series]:
-    if transformation._state is None or transformation.properties.memory_size is None:
-        return X, y
-    memory_X, memory_y = transformation._state.memory_X, transformation._state.memory_y
-    non_overlapping_indices = ~memory_X.index.isin(X.index)
-    memory_X, memory_y = (
-        memory_X[non_overlapping_indices],
-        memory_y[non_overlapping_indices],
-    )
-    if len(memory_X) == 0:
-        return X, y
-    assert len(memory_X) == len(memory_y)
-    if y is None:
-        return pd.concat([memory_X, X], axis="index"), y
-    else:
-        memory_y.name = y.name
-        return pd.concat([memory_X, X], axis="index"), pd.concat(
-            [memory_y, y], axis="index"
-        )
-
-
-def __postprocess_X_y_into_memory(
-    transformation: Transformation,
-    X: pd.DataFrame,
-    y: Optional[pd.Series],
-    in_sample: bool,
-) -> None:
-    # don't update the transformation if we're in inference mode (y is None)
-    if transformation.properties.memory_size is None or y is None:
-        return
-
-    window_size = (
-        len(X)
-        if transformation.properties.memory_size == 0
-        else transformation.properties.memory_size
-    )
-    if in_sample:
-        # store the whole training X and y
-        transformation._state = Transformation.State(
-            memory_X=X,
-            memory_y=y,
-        )
-    elif transformation.properties.memory_size < len(X):
-        memory_X, memory_y = (
-            transformation._state.memory_X,
-            transformation._state.memory_y,
-        )
-        memory_y.name = y.name
-        #  memory requirement is greater than the current batch, so we use the previous memory as well
-        transformation._state = Transformation.State(
-            memory_X=pd.concat([memory_X, X], axis="index").iloc[-window_size:],
-            memory_y=pd.concat([memory_y, y], axis="index").iloc[-window_size:],
-        )
-    else:
-        transformation._state = Transformation.State(
-            memory_X=X.iloc[-window_size:],
-            memory_y=y.iloc[-window_size:],
-        )

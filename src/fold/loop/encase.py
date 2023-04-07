@@ -51,6 +51,33 @@ def backtest_score(
     return scorecard, pred
 
 
+def train_backtest(
+    transformations: BlocksOrWrappable,
+    X: Optional[pd.DataFrame],
+    y: pd.Series,
+    splitter: Splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.2),
+    backend: Backend = Backend.no,
+    sample_weights: Optional[pd.Series] = None,
+    train_method: TrainMethod = TrainMethod.parallel,
+    silent: bool = False,
+) -> Tuple[OutOfSamplePredictions, TrainedPipelines]:
+    trained_pipelines = train(
+        transformations, X, y, splitter, sample_weights, train_method, backend, silent
+    )
+
+    pred = backtest(
+        trained_pipelines,
+        X,
+        y,
+        splitter,
+        backend,
+        sample_weights,
+        silent,
+    )
+
+    return pred, trained_pipelines
+
+
 def train_backtest_score(
     transformations: BlocksOrWrappable,
     X: Optional[pd.DataFrame],

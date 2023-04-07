@@ -172,3 +172,16 @@ def fit_noop(
     sample_weights: Optional[pd.Series] = None,
 ) -> None:
     pass
+
+
+class SingleFunctionTransformation(Transformation):
+    properties = Transformation.Properties(requires_X=True)
+
+    def get_function(self) -> Callable:
+        raise NotImplementedError
+
+    fit = fit_noop
+    update = fit_noop
+
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
+        return pd.concat([X, self.get_function()(X)], axis="columns")

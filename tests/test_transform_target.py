@@ -1,12 +1,17 @@
 import numpy as np
 
 from fold.composites.target import TransformTarget
-from fold.loop import backtest, train
+from fold.loop.encase import train_backtest
 from fold.models.dummy import DummyRegressor
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.dev import Test
 from fold.transformations.difference import Difference
-from fold.utils.tests import generate_monotonous_data, generate_zeros_and_ones_skewed
+from fold.transformations.math import TakeLog
+from fold.utils.tests import (
+    generate_monotonous_data,
+    generate_sine_wave_data,
+    generate_zeros_and_ones_skewed,
+)
 
 
 def all_y_values_above_1(X, y):
@@ -32,15 +37,11 @@ def test_target_transformation_dummy() -> None:
     X.columns = ["predictions_woo"]
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
 
-    transformations = [
-        TransformTarget(
-            [lambda x: x + 1, test_all_y_values_above_1],
-            y_transformation=test_transform_plus_2,
-        ),
-    ]
-
-    trained_pipelines = train(transformations, X, y, splitter)
-    pred = backtest(trained_pipelines, X, y, splitter)
+    pipeline = TransformTarget(
+        [lambda x: x + 1, test_all_y_values_above_1],
+        y_pipeline=test_transform_plus_2,
+    )
+    pred, _ = train_backtest(pipeline, X, y, splitter)
     assert ((X.squeeze()[pred.index] - 1.0) == pred.squeeze()).all()
 
 
@@ -53,16 +54,51 @@ def test_target_transformation_difference() -> None:
         # When differencing is applied to `y`, the first value will be NaN, and it is then dropped.
         assert (len(X) - 99) % 100 == 0
 
-    transformations = [
-        TransformTarget(
-            [
-                Test(fit_func=assert_y_not_nan, transform_func=lambda x: x),
-                DummyRegressor(0.000999),
-            ],
-            y_transformation=Difference(),
-        ),
-    ]
+    pipeline = TransformTarget(
+        [
+            Test(fit_func=assert_y_not_nan, transform_func=lambda x: x),
+            DummyRegressor(0.000999),
+        ],
+        y_pipeline=Difference(),
+    )
 
-    trained_pipelines = train(transformations, X, y, splitter)
-    pred = backtest(trained_pipelines, X, y, splitter)
+    pred, _ = train_backtest(pipeline, X, y, splitter)
     assert np.isclose(y[pred.index], pred.squeeze(), atol=0.0001).all()
+
+
+def test_target_transformation_log() -> None:
+    X, y = generate_sine_wave_data()
+    X, y = X + 2, y + 2
+    splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
+
+    def assert_y_not_nan(X, y):
+        assert np.isclose(np.log(X.squeeze())[1:], y.shift(1)[1:], atol=0.001).all()
+
+    pipeline = TransformTarget(
+        [
+            Test(fit_func=assert_y_not_nan, transform_func=lambda x: x),
+        ],
+        y_pipeline=TakeLog(),
+    )
+
+    _, _ = train_backtest(pipeline, X, y, splitter)
+
+
+def test_target_transformation_log_difference() -> None:
+    X, y = generate_sine_wave_data()
+    X, y = X + 2, y + 2
+    splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
+
+    def assert_y_not_nan(X, y):
+        assert np.isclose(
+            np.diff(np.log(X.squeeze()), 1), y.shift(1)[1:], atol=0.001
+        ).all()
+
+    pipeline = TransformTarget(
+        [
+            Test(fit_func=assert_y_not_nan, transform_func=lambda x: x),
+        ],
+        y_pipeline=[TakeLog(), Difference()],
+    )
+
+    _, _ = train_backtest(pipeline, X, y, splitter)
