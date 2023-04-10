@@ -61,6 +61,7 @@ docs = [
 ]
 ray = ["ray"]
 extras =[
+  "ray",
   "holidays",
   "krisi~=0.0.8"
 ]
