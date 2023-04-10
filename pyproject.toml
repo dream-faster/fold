@@ -110,6 +110,10 @@ pythonpath = [
   "src"
 ]
 testpaths = ["tests"]
+addopts = [
+  "--doctest-modules",
+  "--durations=0",
+]
 
 [tool.hatch.metadata]
 allow-direct-references = true

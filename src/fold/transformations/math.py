@@ -52,7 +52,8 @@ class AddConstant(InvertibleTransformation):
     ) -> None:
         if not isinstance(constant, (int, float, dict)):
             raise ValueError(
-                "constant can be only integer, float or a dictionary of integers or floats"
+                "constant can be only integer, float or a dictionary of integers or"
+                " floats"
             )
 
         self.constant = constant

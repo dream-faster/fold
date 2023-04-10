@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from fold.utils.pandas import (
+from fold.utils.trim import (
     get_first_valid_index,
     trim_initial_nans,
     trim_initial_nans_single,
