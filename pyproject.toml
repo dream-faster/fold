@@ -51,7 +51,6 @@ tests = [
   "pytest-cov>=4.0",
   "imbalanced-learn",
   "holidays",
-  "krisi~=0.0.8"
 ]
 docs = [
   "mkdocs-material",
@@ -61,8 +60,9 @@ docs = [
   "mkdocs-jupyter",
 ]
 ray = ["ray"]
-extended_transformations =[
-  "holidays"
+extras =[
+  "holidays",
+  "krisi~=0.0.8"
 ]
 
 [tool.hatch.envs.quality]

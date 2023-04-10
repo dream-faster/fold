@@ -55,7 +55,7 @@ def train_backtest(
     transformations: BlocksOrWrappable,
     X: Optional[pd.DataFrame],
     y: pd.Series,
-    splitter: Splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.2),
+    splitter: Splitter,
     backend: Backend = Backend.no,
     sample_weights: Optional[pd.Series] = None,
     train_method: TrainMethod = TrainMethod.parallel,
