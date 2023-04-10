@@ -74,4 +74,26 @@ jobs:
           pip install ".[extras]"
 
       - name: run-tests
-        run: pytest tests/integration -s --cov --durations 0
+        run: pytest tests/integration -s --durations 0
+
+
+
+  doc-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: setup-python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: install-dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ".[tests]"
+
+      - name: run-tests
+        run: pytest src/ -s --durations 0
