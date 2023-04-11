@@ -21,9 +21,22 @@ class Hybrid(Composite):
 
     Also known as:
     - Residual chasing
-    - ?
+    - Residual boosting
 
     It's only applicable for regression tasks.
+
+    Parameters
+    ----------
+
+    primary : BlocksOrWrappable
+        A pipeline to be applied to the data.
+
+    meta : BlocksOrWrappable
+        A pipeline to be applied to the data.
+
+    primary_output_included : bool, optional
+        Whether the primary pipeline's output is included in the meta pipeline's input, by default False.
+
     """
 
     properties = Composite.Properties(
@@ -39,6 +52,17 @@ class Hybrid(Composite):
         meta: BlocksOrWrappable,
         primary_output_included: bool = False,
     ) -> None:
+        """_summary_
+
+        Parameters
+        ----------
+        primary : BlocksOrWrappable
+            _description_
+        meta : BlocksOrWrappable
+            _description_
+        primary_output_included : bool, optional
+            _description_, by default False
+        """
         self.primary = wrap_in_double_list_if_needed(primary)
         self.meta = wrap_in_double_list_if_needed(meta)
         self.primary_output_included = primary_output_included

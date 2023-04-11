@@ -12,7 +12,22 @@ from ..base import BlocksOrWrappable, Composite, Pipelines, T
 
 class Sample(Composite):
     """
-    Sample data with an imbalanced-learn sampler instance.
+    Sample data with an imbalanced-learn sampler instance during training.
+    No sampling is done during inference or backtesting.
+
+    Parameters
+    ----------
+    sampler : Any
+        An imbalanced-learn sampler instance (subclass of `BaseSampler`).
+
+    pipeline : BlocksOrWrappable
+        A pipeline to be applied to the sampled data.
+
+
+    References
+    ----------
+
+    [imbalanced-learn](https://imbalanced-learn.org/)
     """
 
     properties = Composite.Properties(

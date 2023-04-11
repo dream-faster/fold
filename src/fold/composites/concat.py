@@ -37,6 +37,15 @@ class ResolutionStrategy(Enum):
 class Concat(Composite):
     """
     Concatenates the results of multiple pipelines.
+
+    Parameters
+    ----------
+
+    pipelines : Pipelines
+        A list of pipelines to be applied to the data, independently of each other.
+
+    if_duplicate_keep : Union[ResolutionStrategy, str], optional
+        How to handle duplicate columns, by default ResolutionStrategy.left
     """
 
     ResolutionStrategy = ResolutionStrategy

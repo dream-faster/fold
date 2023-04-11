@@ -12,16 +12,31 @@ from ..base import BlocksOrWrappable, Composite, Pipelines, T
 
 
 class MetaLabeling(Composite):
-
     """
     MetaLabeling takes a primary pipeline and a meta pipeline.
     The primary pipeline is used to predict the target variable.
     The meta pipeline is used to predict whether the primary model's prediction's are correct.
     It multiplies the probabilities from the meta pipeline with the predictions of the primary pipeline.
 
-    It's only applicable for binary classification problems, where the labels either have opposite sign or one of them are zero.
+    It's only applicable for binary classification problems, where the labels are either `1`, `-1` or one of them are zero.
 
-    Output:
+    Parameters
+    ----------
+
+    primary : BlocksOrWrappable
+        A pipeline to be applied to the data.
+
+    meta : BlocksOrWrappable
+        A pipeline to be applied to the data.
+
+    positive_class : Union[int, float]
+        The positive class of the primary pipeline.
+
+    primary_output_included :  bool, optional
+        Whether the primary pipeline's output is included in the meta pipeline's input, by default False.
+
+    Outputs
+    -------
         A prediction is a float between 0 and 1.
         It does not output probabilities, as the prediction already includes the probabilities.
 
