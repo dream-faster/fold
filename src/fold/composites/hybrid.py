@@ -52,17 +52,6 @@ class Hybrid(Composite):
         meta: BlocksOrWrappable,
         primary_output_included: bool = False,
     ) -> None:
-        """
-
-        Parameters
-        ----------
-        primary : BlocksOrWrappable
-            _description_
-        meta : BlocksOrWrappable
-            _description_
-        primary_output_included : bool, optional
-            _description_, by default False
-        """
         self.primary = wrap_in_double_list_if_needed(primary)
         self.meta = wrap_in_double_list_if_needed(meta)
         self.primary_output_included = primary_output_included
