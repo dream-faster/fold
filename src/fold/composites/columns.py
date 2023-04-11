@@ -15,12 +15,24 @@ class PerColumnEnsemble(Composite):
     """
     Train a pipeline for each column in the data.
     Ensemble their results.
+
+    Parameters
+    ----------
+    pipeline: Pipeline
+        Pipelines to ensemble
+
+    models_already_cloned: bool
+        For internal use. It determines if the pipeline has been copied or not.
+
+    Outputs
+    ----------
+    Ensemble of outputs of passed in pipelines.
     """
 
     properties = Composite.Properties()
     models_already_cloned = False
 
-    def __init__(self, pipeline: Pipeline, models_already_cloned=False) -> None:
+    def __init__(self, pipeline: Pipeline, models_already_cloned: bool = False) -> None:
         self.models: Pipelines = wrap_in_double_list_if_needed(pipeline)
         self.name = "PerColumnEnsemble-" + get_concatenated_names(self.models)
         self.models_already_cloned = models_already_cloned

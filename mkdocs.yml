@@ -69,9 +69,9 @@ plugins:
             separate_signature: true
             show_submodules: true
             show_signature_annotations: true
+            docstring_style: 'numpy'
           import:
           - https://docs.python-requests.org/en/master/objects.inv
-
 
 extra:
   analytics: 
