@@ -8,7 +8,7 @@ import pandas as pd
 from ..base import Composite, Transformation, Transformations
 from ..models.base import Model
 from ..utils.checks import is_prediction, is_X_available
-from ..utils.pandas import trim_initial_nans
+from ..utils.trim import trim_initial_nans
 from .backend import get_backend_dependent_functions
 from .memory import postprocess_X_y_into_memory, preprocess_X_y_with_memory
 from .types import Backend, Stage

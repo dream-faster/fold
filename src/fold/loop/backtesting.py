@@ -5,7 +5,7 @@ from tqdm.auto import tqdm
 
 from ..base import OutOfSamplePredictions, TrainedPipelines
 from ..splitters import Fold, Splitter
-from ..utils.pandas import trim_initial_nans_single
+from ..utils.trim import trim_initial_nans_single
 from .checks import check_types
 from .common import deepcopy_pipelines, recursively_transform
 from .types import Backend, Stage
