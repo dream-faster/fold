@@ -16,7 +16,7 @@ class Hybrid(Composite):
     """
     This is a composite transformation that takes a primary pipeline and a meta pipeline.
     The primary pipeline is used to predict the target variable.
-    The meta pipeline is used to predict the primary pipeline's residual.
+    The meta pipeline is used to predict the primary pipeline's residual (or, error).
     It adds together the primary pipeline's output with the predicted residual.
 
     Also known as:
@@ -29,10 +29,10 @@ class Hybrid(Composite):
     ----------
 
     primary : BlocksOrWrappable
-        A pipeline to be applied to the data.
+        A pipeline to be applied to the data. The target (`y`) is unchanged.
 
     meta : BlocksOrWrappable
-        A pipeline to be applied to the data.
+        A pipeline to predict the primary pipeline's residual. The target (`y`) is the primary pipeline's residual (or, error).
 
     primary_output_included : bool, optional
         Whether the primary pipeline's output is included in the meta pipeline's input, by default False.

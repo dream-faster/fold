@@ -15,7 +15,7 @@ class MetaLabeling(Composite):
     """
     MetaLabeling takes a primary pipeline and a meta pipeline.
     The primary pipeline is used to predict the target variable.
-    The meta pipeline is used to predict whether the primary model's prediction's are correct.
+    The meta pipeline is used to predict whether the primary model's prediction's are correct (a binary classification problem).
     It multiplies the probabilities from the meta pipeline with the predictions of the primary pipeline.
 
     It's only applicable for binary classification problems, where the labels are either `1`, `-1` or one of them are zero.
@@ -24,10 +24,10 @@ class MetaLabeling(Composite):
     ----------
 
     primary : BlocksOrWrappable
-        A pipeline to be applied to the data.
+        A pipeline to be applied to the data. Target (`y`) is unchanged.
 
     meta : BlocksOrWrappable
-        A pipeline to be applied to the data.
+        A pipeline to be applied to predict whether the primary pipeline's predictions are correct. Target (`y`) is `preds == y`.
 
     positive_class : Union[int, float]
         The positive class of the primary pipeline.
