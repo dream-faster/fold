@@ -8,7 +8,6 @@ theme:
   logo: images/logo_white.svg
   favicon: images/logo.svg
   features:
-    - navigation.tabs
     - navigation.indexes
     - search.suggest
     - toc.follow
@@ -32,13 +31,12 @@ theme:
 nav:
     - Home: 'index.md'
     - Concepts:
-      - Time Series Cross Validation: 'cross-validation.md'
-      - Design: 'design.md'
-      - Models: 'models_explainer.md'
-      - Splitters: 'splitters.md'
+      - Time Series Cross Validation: 'concepts/cross-validation.md'
+      - Design: 'concepts/design.md'
+      - Models: 'concepts/models_explainer.md'
+      - Splitters: 'concepts/splitters.md'
     - Examples:
-      - Examples: 'examples.md'
-      - Technical Walkthroughs: technical.md
+      - Technical Walkthroughs: 'examples/technical.md'
       - Example Cookbook: 
         - Date-time and Holiday features: 'examples/date'
         - Ensembling models: 'examples/ensembling'
@@ -46,11 +44,11 @@ nav:
         - Tabular ML models: 'examples/tabular'
         - Transform your target variable: 'examples/transform-target'
     - API: 
-      - API: 'reference.md'
-      - Loop and Base Classes: 'loop.md'
-      - Models: 'models.md'
-      - Composites: 'composites.md'
-      - Transformations: 'transformations.md'
+      - API: 'api/reference.md'
+      - Loop and Base Classes: 'api/loop.md'
+      - Models: 'api/models.md'
+      - Composites: 'api/composites.md'
+      - Transformations: 'api/transformations.md'
 markdown_extensions:
   - tables
   - attr_list
