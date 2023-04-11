@@ -21,12 +21,6 @@ class PerColumnEnsemble(Composite):
     pipeline: Pipeline
         Pipeline (list of Pipeline) to ensemble
 
-    Returns
-    ----------
-    X: pd.DataFrame
-        Ensemble of outputs of passed in pipelines.
-    y: pd.Series
-        Target passed along.
     """
 
     properties = Composite.Properties()
@@ -81,12 +75,6 @@ class SkipNA(Composite):
     pipeline: Pipeline
         Pipeline (list of Pipeline) to ensemble
 
-    Returns
-    -------
-    X: pd.DataFrame
-        Original X that it has received.
-    y: pd.Series
-        Target passed along.
     """
 
     properties = Composite.Properties()
@@ -126,12 +114,6 @@ class PerColumnTransform(Composite):
     pipeline: Pipeline
         Pipeline that gets applied to each column
 
-    Returns
-    -------
-    X: pd.DataFrame
-        X with the pipeline applied to each column seperately.
-    y: pd.Series
-        Target passed along.
     """
 
     properties = Composite.Properties()
