@@ -19,7 +19,7 @@ class PerColumnEnsemble(Composite):
     Parameters
     ----------
     pipeline: Pipeline
-        Pipeline (list of Pipeline) to ensemble
+        Pipeline that get applied to every column, independently, their results then averaged.
 
     """
 
@@ -73,7 +73,7 @@ class SkipNA(Composite):
     Parameters
     ----------
     pipeline: Pipeline
-        Pipeline (list of Pipeline) to ensemble
+        Pipeline to run without NA values.
 
     """
 
