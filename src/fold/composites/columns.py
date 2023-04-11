@@ -19,14 +19,16 @@ class PerColumnEnsemble(Composite):
     Parameters
     ----------
     pipeline: Pipeline
-        Pipelines to ensemble
-
+        Pipeline (list of Pipeline) to ensemble
     models_already_cloned: bool
         For internal use. It determines if the pipeline has been copied or not.
 
-    Outputs
+    Returns
     ----------
-    Ensemble of outputs of passed in pipelines.
+    X: pd.DataFrame
+        Ensemble of outputs of passed in pipelines.
+    y: pd.Series
+        Target passed along.
     """
 
     properties = Composite.Properties()
@@ -68,6 +70,18 @@ class SkipNA(Composite):
     Skips rows with NaN values in the input data.
     Adds back the rows with NaN values after the transformations are applied.
     Enables transformations to be applied to data with missing values, without imputation.
+
+    Parameters
+    ----------
+    pipeline: Pipeline
+        Pipeline (list of Pipeline) to ensemble
+
+    Returns
+    -------
+    X: pd.DataFrame
+        Original X that it has received.
+    y: pd.Series
+        Target passed along.
     """
 
     properties = Composite.Properties()
@@ -100,7 +114,19 @@ class SkipNA(Composite):
 
 class PerColumnTransform(Composite):
     """
-    Apply a single pipeline for each column, separatelu.
+    Apply a single pipeline for each column, separately.
+
+    Parameters
+    ----------
+    pipeline: Pipeline
+        Pipeline that gets applied to each column
+
+    Returns
+    -------
+    X: pd.DataFrame
+        X with the pipeline applied to each column seperately.
+    y: pd.Series
+        Target passed along.
     """
 
     properties = Composite.Properties()
