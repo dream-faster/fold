@@ -71,7 +71,10 @@ plugins:
             show_submodules: true
             show_signature_annotations: true
             docstring_style: 'numpy'
-            # show_category_heading: true
+            show_root_toc_entry: false
+            group_by_category: true
+            # show_root_heading: true
+            show_category_heading: false
           import:
           - https://docs.python-requests.org/en/master/objects.inv
 
