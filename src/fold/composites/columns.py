@@ -15,12 +15,26 @@ class PerColumnEnsemble(Composite):
     """
     Train a pipeline for each column in the data.
     Ensemble their results.
+
+    Parameters
+    ----------
+    pipeline: Pipeline
+        Pipeline (list of Pipeline) to ensemble
+    models_already_cloned: bool
+        For internal use. It determines if the pipeline has been copied or not.
+
+    Returns
+    ----------
+    X: pd.DataFrame
+        Ensemble of outputs of passed in pipelines.
+    y: pd.Series
+        Target passed along.
     """
 
     properties = Composite.Properties()
     models_already_cloned = False
 
-    def __init__(self, pipeline: Pipeline, models_already_cloned=False) -> None:
+    def __init__(self, pipeline: Pipeline, models_already_cloned: bool = False) -> None:
         self.models: Pipelines = wrap_in_double_list_if_needed(pipeline)
         self.name = "PerColumnEnsemble-" + get_concatenated_names(self.models)
         self.models_already_cloned = models_already_cloned
@@ -56,6 +70,18 @@ class SkipNA(Composite):
     Skips rows with NaN values in the input data.
     Adds back the rows with NaN values after the transformations are applied.
     Enables transformations to be applied to data with missing values, without imputation.
+
+    Parameters
+    ----------
+    pipeline: Pipeline
+        Pipeline (list of Pipeline) to ensemble
+
+    Returns
+    -------
+    X: pd.DataFrame
+        Original X that it has received.
+    y: pd.Series
+        Target passed along.
     """
 
     properties = Composite.Properties()
@@ -88,7 +114,19 @@ class SkipNA(Composite):
 
 class PerColumnTransform(Composite):
     """
-    Apply a single pipeline for each column, separatelu.
+    Apply a single pipeline for each column, separately.
+
+    Parameters
+    ----------
+    pipeline: Pipeline
+        Pipeline that gets applied to each column
+
+    Returns
+    -------
+    X: pd.DataFrame
+        X with the pipeline applied to each column seperately.
+    y: pd.Series
+        Target passed along.
     """
 
     properties = Composite.Properties()
