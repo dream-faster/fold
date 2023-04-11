@@ -52,7 +52,7 @@ class Hybrid(Composite):
         meta: BlocksOrWrappable,
         primary_output_included: bool = False,
     ) -> None:
-        """_summary_
+        """
 
         Parameters
         ----------
