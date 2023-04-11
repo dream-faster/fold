@@ -16,7 +16,7 @@
   </a>
 <h3 align="center"><b>FOLD</b><br> <i>(/fold/)</i></h3>
   <p align="center">
-    <b>A Time Series Cross-Validation library that lets you build, deploy and update composite models easily. An order of magnitude speed-up, combined with flexibility and rigour.</b><br>
+    <b>A Time Series Cross-Validation library that lets you build, deploy and update Composite Models easily. An order of magnitude speed-up, combined with flexibility and rigour.</b><br>
     <br/>
     <a href="https://dream-faster.github.io/fold/"><strong>Explore the docs »</strong></a>
   </p>
@@ -27,7 +27,7 @@
 
 ![Fold's main features](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/main_features.svg) 
 
-- Composite Pipelines with Cross-Validation - [What does that mean?](#Fold-is-different)
+- Composite Models with Cross-Validation - [What does that mean?](#Fold-is-different)
 - Distributed computing - [Why is this important?](#Fold-is-different)
 - Update deployed models (coming in April) - [why is this important?](#Fold-is-different)
 
