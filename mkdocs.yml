@@ -9,7 +9,10 @@ theme:
   favicon: images/logo.svg
   features:
     - navigation.tabs
+    - navigation.indexes
     - search.suggest
+    - toc.follow
+    - navigation.top
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
@@ -70,6 +73,7 @@ plugins:
             show_submodules: true
             show_signature_annotations: true
             docstring_style: 'numpy'
+            # show_category_heading: true
           import:
           - https://docs.python-requests.org/en/master/objects.inv
 
