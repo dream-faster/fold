@@ -86,30 +86,24 @@ class OnlyProbabilities(Transformation):
     """
     Drops all columns except the output model(s)' probabilities.
 
-    Returns
-    -------
-    pd.DataFrame
-        DataFrame with only columns which names are starting with "probabilities_".
-
-
     Examples
     --------
-    >>> from fold.loop import train_backtest
-    >>> from fold.splitters import SlidingWindowSplitter
-    >>> from fold.transformations.columns import OnlyProbabilities
-    >>> from fold.models.dummy import DummyClassifier
-    >>> from fold.utils.tests import generate_sine_wave_data
-    >>> X, y  = generate_sine_wave_data()
-    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
-    >>> pipeline = [DummyClassifier(1, [0, 1], [0.5, 0.5]), OnlyProbabilities()]
-    >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
-    >>> preds.head()
-                         probabilities_DummyClassifier_0  probabilities_DummyClassifier_1
-    2021-12-31 15:40:00                              0.5                              0.5
-    2021-12-31 15:41:00                              0.5                              0.5
-    2021-12-31 15:42:00                              0.5                              0.5
-    2021-12-31 15:43:00                              0.5                              0.5
-    2021-12-31 15:44:00                              0.5                              0.5
+        >>> from fold.loop import train_backtest
+        >>> from fold.splitters import SlidingWindowSplitter
+        >>> from fold.transformations.columns import OnlyProbabilities
+        >>> from fold.models.dummy import DummyClassifier
+        >>> from fold.utils.tests import generate_sine_wave_data
+        >>> X, y  = generate_sine_wave_data()
+        >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+        >>> pipeline = [DummyClassifier(1, [0, 1], [0.5, 0.5]), OnlyProbabilities()]
+        >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+        >>> preds.head()
+                             probabilities_DummyClassifier_0  probabilities_DummyClassifier_1
+        2021-12-31 15:40:00                              0.5                              0.5
+        2021-12-31 15:41:00                              0.5                              0.5
+        2021-12-31 15:42:00                              0.5                              0.5
+        2021-12-31 15:43:00                              0.5                              0.5
+        2021-12-31 15:44:00                              0.5                              0.5
 
     """
 

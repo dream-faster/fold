@@ -19,25 +19,24 @@ class PerColumnEnsemble(Composite):
     Parameters
     ----------
     pipeline: Pipeline
-        Pipeline (list of Pipeline) to ensemble
-    models_already_cloned: bool
-        For internal use. It determines if the pipeline has been copied or not.
+        Pipeline that get applied to every column, independently, their results then averaged.
 
-    Returns
-    ----------
-    X: pd.DataFrame
-        Ensemble of outputs of passed in pipelines.
-    y: pd.Series
-        Target passed along.
     """
 
     properties = Composite.Properties()
     models_already_cloned = False
 
-    def __init__(self, pipeline: Pipeline, models_already_cloned: bool = False) -> None:
+    def __init__(self, pipeline: Pipeline) -> None:
         self.models: Pipelines = wrap_in_double_list_if_needed(pipeline)
         self.name = "PerColumnEnsemble-" + get_concatenated_names(self.models)
-        self.models_already_cloned = models_already_cloned
+
+    @classmethod
+    def from_cloned_instance(
+        cls, pipeline: Pipeline, models_already_cloned: bool
+    ) -> PerColumnEnsemble:
+        instance = cls(pipeline=pipeline)
+        instance.models_already_cloned = models_already_cloned
+        return instance
 
     def before_fit(self, X: pd.DataFrame) -> None:
         if not self.models_already_cloned:
@@ -59,7 +58,7 @@ class PerColumnEnsemble(Composite):
         return self.models
 
     def clone(self, clone_child_transformations: Callable) -> PerColumnEnsemble:
-        return PerColumnEnsemble(
+        return PerColumnEnsemble.from_cloned_instance(
             pipeline=clone_child_transformations(self.models),
             models_already_cloned=self.models_already_cloned,
         )
@@ -74,14 +73,8 @@ class SkipNA(Composite):
     Parameters
     ----------
     pipeline: Pipeline
-        Pipeline (list of Pipeline) to ensemble
+        Pipeline to run without NA values.
 
-    Returns
-    -------
-    X: pd.DataFrame
-        Original X that it has received.
-    y: pd.Series
-        Target passed along.
     """
 
     properties = Composite.Properties()
@@ -121,20 +114,22 @@ class PerColumnTransform(Composite):
     pipeline: Pipeline
         Pipeline that gets applied to each column
 
-    Returns
-    -------
-    X: pd.DataFrame
-        X with the pipeline applied to each column seperately.
-    y: pd.Series
-        Target passed along.
     """
 
     properties = Composite.Properties()
+    pipeline_already_cloned = False
 
-    def __init__(self, pipeline: Pipeline, pipeline_already_cloned=False) -> None:
+    def __init__(self, pipeline: Pipeline) -> None:
         self.pipeline = wrap_in_double_list_if_needed(pipeline)
         self.name = "PerColumnTransform-" + get_concatenated_names(self.pipeline)
-        self.pipeline_already_cloned = pipeline_already_cloned
+
+    @classmethod
+    def from_cloned_instance(
+        cls, pipeline: Pipeline, pipeline_already_cloned: bool
+    ) -> PerColumnTransform:
+        instance = cls(pipeline=pipeline)
+        instance.pipeline_already_cloned = pipeline_already_cloned
+        return instance
 
     def before_fit(self, X: pd.DataFrame) -> None:
         if not self.pipeline_already_cloned:
@@ -155,7 +150,7 @@ class PerColumnTransform(Composite):
         return self.pipeline
 
     def clone(self, clone_child_transformations: Callable) -> PerColumnTransform:
-        return PerColumnTransform(
+        return PerColumnTransform.from_cloned_instance(
             pipeline=clone_child_transformations(self.pipeline),
             pipeline_already_cloned=self.pipeline_already_cloned,
         )
