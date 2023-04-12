@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, Optional, Tuple, Union
 import pandas as pd
 from sklearn.metrics import mean_squared_error
 
-from ..base import BlocksOrWrappable, OutOfSamplePredictions, TrainedPipelines
+from ..base import OutOfSamplePredictions, Pipeline, TrainedPipelines
 from ..splitters import ExpandingWindowSplitter, Splitter
 from .backtesting import backtest
 from .training import train
@@ -87,7 +87,7 @@ def backtest_score(
 
 
 def train_backtest(
-    transformations: BlocksOrWrappable,
+    pipeline: Pipeline,
     X: Optional[pd.DataFrame],
     y: pd.Series,
     splitter: Splitter,
@@ -97,7 +97,7 @@ def train_backtest(
     silent: bool = False,
 ) -> Tuple[OutOfSamplePredictions, TrainedPipelines]:
     trained_pipelines = train(
-        transformations, X, y, splitter, sample_weights, train_method, backend, silent
+        pipeline, X, y, splitter, sample_weights, train_method, backend, silent
     )
 
     pred = backtest(
@@ -114,7 +114,7 @@ def train_backtest(
 
 
 def train_evaluate(
-    transformations: BlocksOrWrappable,
+    pipeline: Pipeline,
     X: Optional[pd.DataFrame],
     y: pd.Series,
     splitter: Splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.2),
@@ -136,7 +136,7 @@ def train_evaluate(
 
     Parameters
     ----------
-    trained_pipelines: BlocksOrWrappable
+    pipeline: Pipeline
         The pipeline to be fitted.
     X: Optional[pd.DataFrame]
         Exogenous Data.
@@ -165,7 +165,7 @@ def train_evaluate(
         The fitted pipeline
     """
     trained_pipelines = train(
-        transformations, X, y, splitter, sample_weights, train_method, backend, silent
+        pipeline, X, y, splitter, sample_weights, train_method, backend, silent
     )
 
     scorecard, pred = backtest_score(

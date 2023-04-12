@@ -6,7 +6,7 @@ from ..base import Transformation, fit_noop
 from .base import Model
 
 
-class SKLearnClassifier(Model):
+class WrapSKLearnClassifier(Model):
     """
     Wraps an SKLearn Classifier model.
     There's no need to use it directly, `fold` automatically wraps all sklearn classifiers into this class.
@@ -56,7 +56,7 @@ class SKLearnClassifier(Model):
     predict_in_sample = predict
 
 
-class SKLearnRegressor(Model):
+class WrapSKLearnRegressor(Model):
     """
     Wraps an SKLearn regressor model.
     There's no need to use it directly, `fold` automatically wraps all sklearn regressors into this class.
@@ -98,7 +98,7 @@ class SKLearnRegressor(Model):
     predict_in_sample = predict
 
 
-class SKLearnPipeline(Model):
+class WrapSKLearnPipeline(Model):
     """
     Wraps an scikit-learn Pipeline.
     It's usage is discouraged, as it's not possible to update an scikit-learn Pipeline with new data.

@@ -7,7 +7,7 @@ import pandas as pd
 from fold.composites.common import get_concatenated_names
 from fold.utils.list import wrap_in_double_list_if_needed
 
-from ..base import BlocksOrWrappable, Composite, Pipelines, T
+from ..base import Composite, Pipeline, Pipelines, T
 
 
 class Sample(Composite):
@@ -19,7 +19,7 @@ class Sample(Composite):
     ----------
     sampler : Any
         An imbalanced-learn sampler instance (subclass of `BaseSampler`).
-    pipeline : BlocksOrWrappable
+    pipeline : Pipeline
         A pipeline to be applied to the sampled data.
 
     References
@@ -35,7 +35,7 @@ class Sample(Composite):
     def __init__(
         self,
         sampler: Any,
-        pipeline: BlocksOrWrappable,
+        pipeline: Pipeline,
     ) -> None:
         self.sampler = sampler
         self.pipeline = wrap_in_double_list_if_needed(pipeline)
