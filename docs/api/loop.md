@@ -1,7 +1,3 @@
-# train_evaluate
-::: fold.train_evaluate
-# evaluate
-::: fold.evaluate
-::: fold.splitters
+::: fold.loop.encase
 ::: fold.loop.training
 ::: fold.loop.backtesting
