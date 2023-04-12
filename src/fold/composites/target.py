@@ -38,7 +38,7 @@ class TransformTarget(Composite):
         wrapped_pipeline: Pipelines,
         y_pipeline: Union[List[InvertibleTransformation], InvertibleTransformation],
     ) -> None:
-        self.X_pipeline = wrap_in_double_list_if_needed(wrapped_pipeline)
+        self.wrapped_pipeline = wrap_in_double_list_if_needed(wrapped_pipeline)
         self.y_pipeline = wrap_in_double_list_if_needed(y_pipeline)
         self.name = "TransformTarget-" + get_concatenated_names(
             self.wrapped_pipeline + self.y_pipeline

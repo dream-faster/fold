@@ -17,7 +17,7 @@ Inside a test window, and during deployment, `fold` provides a way for a model t
 This way, `fold` blends:
 1. the speed of mini-batch Machine learning.
 2. with the accuracy of online Machine learning.
-
+    
 
 ## More
 
