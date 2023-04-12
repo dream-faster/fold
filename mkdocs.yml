@@ -31,7 +31,7 @@ theme:
 nav:
     - Home: 'index.md'
     - Concepts:
-      - Time Series Cross Validation: 'concepts/cross-validation.md'
+      - Continuous Validation: 'concepts/continuous-validation.md'
       - Design: 'concepts/design.md'
       - Models: 'concepts/models_explainer.md'
       - Splitters: 'concepts/splitters.md'

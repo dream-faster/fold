@@ -27,7 +27,7 @@
 
 ![Fold's main features](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/main_features.svg) 
 
-- Composite Models with Cross-Validation - [What does that mean?](#Fold-is-different)
+- Composite Models with Continuous Validation - [What does that mean?](#Fold-is-different)
 - Distributed computing - [Why is this important?](#Fold-is-different)
 - Update deployed models (coming in April) - [why is this important?](#Fold-is-different)
 
@@ -87,7 +87,7 @@ Thinking of using `fold`? We'd love to hear about your use case and help, [pleas
   <span style="color:orange;">**→ Deploy your research and development pipelines to a cluster with `ray`, and use `modin` to handle out-of-memory datasets (full support for modin is coming in April).**</span>
 
 - Bridging the gap between Online and Mini-Batch learning.<br/>
-  <span style="color:orange;">**→ Mix and match `xgboost` with ARIMA, in a single pipeline, update your models, preprocessing steps on every timestamp, if that's desired.**</span>
+  <span style="color:orange;">**→ Mix and match `xgboost` with ARIMA, in a single pipeline. Boost your model's accuracy by updating them on every timestamp, if desired.**</span>
 
 - Update your deployed models, easily, as new data flows in.<br/>
   <span style="color:orange;">**→ Real world is not static. Let your models adapt, without the need to re-train from scratch.**</span>
