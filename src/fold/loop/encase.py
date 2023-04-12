@@ -113,7 +113,7 @@ def train_backtest(
     return pred, trained_pipelines
 
 
-def train_backtest_score(
+def train_evaluate(
     pipeline: Pipeline,
     X: Optional[pd.DataFrame],
     y: pd.Series,
@@ -161,7 +161,7 @@ def train_backtest_score(
         A ScoreCard if `krisi` is available, else the result of the `evaluation_func` in a dict
     pred: OutOfSamplePredictions
         Predictions made with the pipeline
-    TrainedPipelines
+    trained_pipelines: TrainedPipelines
         The fitted pipeline
     """
     trained_pipelines = train(

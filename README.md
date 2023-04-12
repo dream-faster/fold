@@ -46,7 +46,7 @@
 
 You can quickly train your chosen models and get predictions by running:
 
-```python
+``` py
 import pandas as pd
 from fold import train_evaluate, ExpandingWindowSplitter
 from fold.transformations import OnlyPredictions

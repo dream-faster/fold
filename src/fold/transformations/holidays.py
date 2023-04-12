@@ -9,14 +9,30 @@ from ..utils.list import swap_tuples, wrap_in_list
 
 
 class LabelingMethod(Enum):
+    """
+    Parameters
+    ----------
+    holiday_binary: string
+        * Workdays = 0
+        * National Holidays = 1
+    weekday_weekend_holiday: string
+        * Workdays = 0
+        * Weekends = 1
+        * National Holidays == 2
+    weekday_weekend_uniqueholiday: string
+        * Workdays = 0
+        * Weekends = 1
+        * National Holidays == Unique int (>1)
+    weekday_weekend_uniqueholiday_string: string
+        * Workdays = 0
+        * Weekends = 1
+        * National Holidays == string
+    """
+
     holiday_binary = "holiday_binary"
-    """Workdays = 0 | National Holidays = 1"""
     weekday_weekend_holiday = "weekday_weekend_holiday"
-    """Workdays = 0 | Weekends = 1 | National Holidays == 2"""
     weekday_weekend_uniqueholiday = "weekday_weekend_uniqueholiday"
-    """Workdays = 0 | Weekends = 1 | National Holidays == Unique int (>1)"""
     weekday_weekend_uniqueholiday_string = "weekday_weekend_uniqueholiday_string"
-    """Workdays = 0 | Weekends = 1 | National Holidays == string)"""
 
     @staticmethod
     def from_str(value: Union[str, "LabelingMethod"]) -> "LabelingMethod":
@@ -40,13 +56,11 @@ class AddHolidayFeatures(Transformation):
 
     country_codes: List[str]
         List of country codes  (eg.: `US`, `DE`) for which to add holiday features.
-
     labeling: LabelingMethod
-        How to label the holidays. Possible values:
-        - holiday_binary: Workdays = 0 | National Holidays = 1
-        - weekday_weekend_holiday: Workdays = 0 | Weekends = 1 | National Holidays == 2
-        - weekday_weekend_uniqueholiday: Workdays = 0 | Weekends = 1 | National Holidays == Unique int (>1)
-        - weekday_weekend_uniqueholiday_string: Workdays = 0 | Weekends = 1 | National Holidays == string
+        * holiday_binary: Workdays = 0 | National Holidays = 1
+        * weekday_weekend_holiday: Workdays = 0 | Weekends = 1 | National Holidays == 2
+        * weekday_weekend_uniqueholiday: Workdays = 0 | Weekends = 1 | National Holidays == Unique int (>1)
+        * weekday_weekend_uniqueholiday_string: Workdays = 0 | Weekends = 1 | National Holidays == string
 
     """
 
