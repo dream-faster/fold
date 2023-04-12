@@ -8,7 +8,7 @@ from fold.composites.common import get_concatenated_names
 from fold.utils.checks import get_prediction_column
 from fold.utils.list import wrap_in_double_list_if_needed
 
-from ..base import BlocksOrWrappable, Composite, Pipelines, T
+from ..base import Composite, Pipeline, Pipelines, T
 
 
 class MetaLabeling(Composite):
@@ -23,9 +23,9 @@ class MetaLabeling(Composite):
     Parameters
     ----------
 
-    primary : BlocksOrWrappable
+    primary : Pipeline
         A pipeline to be applied to the data. Target (`y`) is unchanged.
-    meta : BlocksOrWrappable
+    meta : Pipeline
         A pipeline to be applied to predict whether the primary pipeline's predictions are correct. Target (`y`) is `preds == y`.
     positive_class : Union[int, float]
         The positive class of the primary pipeline.
@@ -48,8 +48,8 @@ class MetaLabeling(Composite):
 
     def __init__(
         self,
-        primary: BlocksOrWrappable,
-        meta: BlocksOrWrappable,
+        primary: Pipeline,
+        meta: Pipeline,
         positive_class: Union[int, float],
         primary_output_included: bool = False,
     ) -> None:

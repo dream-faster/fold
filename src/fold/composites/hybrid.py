@@ -8,7 +8,7 @@ from fold.composites.common import get_concatenated_names
 from fold.utils.checks import get_prediction_column
 from fold.utils.list import wrap_in_double_list_if_needed
 
-from ..base import BlocksOrWrappable, Composite, Pipelines, T
+from ..base import Composite, Pipeline, Pipelines, T
 
 
 class Hybrid(Composite):
@@ -28,9 +28,9 @@ class Hybrid(Composite):
     Parameters
     ----------
 
-    primary : BlocksOrWrappable
+    primary : Pipeline
         A pipeline to be applied to the data. The target (`y`) is unchanged.
-    meta : BlocksOrWrappable
+    meta : Pipeline
         A pipeline to predict the primary pipeline's residual. The target (`y`) is the primary pipeline's residual (or, error).
     primary_output_included : bool, optional
         Whether the primary pipeline's output is included in the meta pipeline's input, by default False.
@@ -46,8 +46,8 @@ class Hybrid(Composite):
 
     def __init__(
         self,
-        primary: BlocksOrWrappable,
-        meta: BlocksOrWrappable,
+        primary: Pipeline,
+        meta: Pipeline,
         primary_output_included: bool = False,
     ) -> None:
         self.primary = wrap_in_double_list_if_needed(primary)

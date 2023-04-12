@@ -6,7 +6,7 @@ import pandas as pd
 from ..base import FeatureSelector, Transformation, fit_noop
 
 
-class SKLearnTransformation(Transformation):
+class WrapSKLearnTransformation(Transformation):
     """
     Wraps an SKLearn Transformation.
     There's no need to use it directly, `fold` automatically wraps all sklearn transformations into this class.
@@ -64,7 +64,7 @@ class SKLearnTransformation(Transformation):
         )
 
 
-class SKLearnFeatureSelector(FeatureSelector):
+class WrapSKLearnFeatureSelector(FeatureSelector):
     """
     Wraps an SKLearn Feature Selector class, stores the selected columns in `selected_features` property.
     There's no need to use it directly, `fold` automatically wraps all sklearn feature selectors into this class.

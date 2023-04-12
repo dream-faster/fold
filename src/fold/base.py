@@ -6,7 +6,6 @@ from dataclasses import dataclass
 from typing import Callable, List, Optional, Tuple, TypeVar, Union
 
 import pandas as pd
-from sklearn.base import BaseEstimator
 
 T = TypeVar("T", Optional[pd.Series], pd.Series)
 
@@ -157,9 +156,6 @@ Pipeline = Union[
     Union[Transformation, "Composite"], List[Union[Transformation, "Composite"]]
 ]
 Pipelines = List[Pipeline]
-
-BlockOrWrappable = Union[Transformation, "Composite", Callable, BaseEstimator]
-BlocksOrWrappable = Union[BlockOrWrappable, List[BlockOrWrappable]]
 
 TrainedPipelines = List[pd.Series]
 OutOfSamplePredictions = pd.DataFrame
