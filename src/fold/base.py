@@ -150,7 +150,6 @@ Transformations = Union[
     "Composite",
     List[Union[Transformation, "Composite"]],
 ]
-DeployableTransformations = Transformations
 
 Pipeline = Union[
     Union[Transformation, "Composite"], List[Union[Transformation, "Composite"]]
