@@ -43,7 +43,6 @@ class Concat(Composite):
 
     pipelines : Pipelines
         A list of pipelines to be applied to the data, independently of each other.
-
     if_duplicate_keep : Union[ResolutionStrategy, str], optional
         How to handle duplicate columns, by default ResolutionStrategy.left
     """
@@ -101,7 +100,14 @@ class Concat(Composite):
 class Pipeline(Composite):
     """
     An optional wrapper that is equivalent to using a single array for the transformations.
-    It executes the transformations in the order they are provided.
+    It executes the transformations sequentially, in the order they are provided.
+
+    Parameters
+    ----------
+
+    pipelines : Pipelines
+        A list of pipelines to be applied to the data, independently of each other.
+
     """
 
     properties = Composite.Properties(primary_only_single_pipeline=True)

@@ -22,6 +22,32 @@ def train(
     backend: Backend = Backend.no,
     silent: bool = False,
 ) -> TrainedPipelines:
+    """_summary_
+
+    Parameters
+    ----------
+    pipeline : BlocksOrWrappable
+        _description_
+    X : Optional[pd.DataFrame]
+        _description_
+    y : pd.Series
+        _description_
+    splitter : Splitter
+        _description_
+    sample_weights : Optional[pd.Series], optional
+        _description_, by default None
+    train_method : TrainMethod, optional
+        _description_, by default TrainMethod.parallel
+    backend : Backend, optional
+        _description_, by default Backend.no
+    silent : bool, optional
+        _description_, by default False
+
+    Returns
+    -------
+    TrainedPipelines
+        _description_
+    """
     X, y = check_types(X, y)
 
     if isinstance(splitter, SlidingWindowSplitter):

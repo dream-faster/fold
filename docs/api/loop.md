@@ -1,5 +1,4 @@
-::: fold.base
-::: fold.loop.train
-::: fold.loop.backtest
+::: fold.loop.training
+::: fold.loop.backtesting
 ::: fold.splitters
 ::: fold.train_evaluate

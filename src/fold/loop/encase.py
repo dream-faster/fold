@@ -19,12 +19,49 @@ def backtest_score(
     X: Optional[pd.DataFrame],
     y: pd.Series,
     splitter: Splitter,
-    backend: Backend = Backend.no,
+    backend: Union[str, Backend] = Backend.no,
     sample_weights: Optional[pd.Series] = None,
     silent: bool = False,
     krisi_args: Optional[Dict[str, Any]] = None,
     evaluation_func: Callable = mean_squared_error,
 ) -> Tuple[Union["ScoreCard", Dict[str, float]], OutOfSamplePredictions]:
+    """
+    Convenience wrapper to run backtest then scoring.
+    If [`krisi`](https://github.com/dream-faster/krisi) is installed it will use it to generate a ScoreCard,
+    otherwise it will run the `evaluation_func` passed in.
+
+    Parameters
+    ----------
+    trained_pipelines: TrainedPipelines
+        The pipeline that was already fitted
+    X: Optional[pd.DataFrame]
+        Exogenous Data
+    y: pd.Series
+        Endogenous Data (Target)
+    splitter: Splitter
+        A Splitter that cuts the data into folds.
+    backend: Union[str, Backend] = Backend.no
+        For parallelization purposes.
+        -   "ray"
+        -   "no"
+    sample_weights: Optional[pd.Series] = None
+
+    silent: bool = False
+        Wether the pipeline should print to the console.
+    krisi_args: Optional[Dict[str, Any]] = None
+        Arguments that will be passed into `krisi` score function.
+    evaluation_func: Callable = mean_squared_error
+        Function to evaluate with if `krisi` is not available.
+
+
+
+    Returns
+    -------
+    _type_
+        _description_
+    """
+    backend = Backend.from_str(backend)
+
     pred = backtest(
         trained_pipelines,
         X,
