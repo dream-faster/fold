@@ -33,19 +33,19 @@ def backtest_score(
     Parameters
     ----------
     trained_pipelines: TrainedPipelines
-        The pipeline that was already fitted
+        The pipeline that was already fitted.
     X: Optional[pd.DataFrame]
-        Exogenous Data
+        Exogenous Data.
     y: pd.Series
-        Endogenous Data (Target)
+        Endogenous Data (Target).
     splitter: Splitter
         A Splitter that cuts the data into folds.
     backend: Union[str, Backend] = Backend.no
-        For parallelization purposes.
+        For parallelization purposes. Defines the library/service to parallelize with.
         -   "ray"
         -   "no"
     sample_weights: Optional[pd.Series] = None
-
+        Weights assigned to each sample/timestamp, that are passed into models that support it.
     silent: bool = False
         Wether the pipeline should print to the console.
     krisi_args: Optional[Dict[str, Any]] = None
@@ -57,8 +57,10 @@ def backtest_score(
 
     Returns
     -------
-    _type_
-        _description_
+    scorecard: Union["ScoreCard", Dict[str, float]]
+        A ScoreCard if `krisi` is available, else the result of the `evaluation_func` in a dict
+    pred: OutOfSamplePredictions
+        Predictions made with the pipeline
     """
     backend = Backend.from_str(backend)
 
@@ -131,6 +133,43 @@ def train_backtest_score(
     OutOfSamplePredictions,
     TrainedPipelines,
 ]:
+    """
+    Convenience wrapper to train, backtest then run scoring.
+    If [`krisi`](https://github.com/dream-faster/krisi) is installed it will use it to generate a ScoreCard,
+    otherwise it will run the `evaluation_func` passed in.
+
+    Parameters
+    ----------
+    trained_pipelines: BlocksOrWrappable
+        The pipeline to be fitted.
+    X: Optional[pd.DataFrame]
+        Exogenous Data.
+    y: pd.Series
+        Endogenous Data (Target).
+    splitter: Splitter
+        A Splitter that cuts the data into folds.
+    backend: Union[str, Backend] = Backend.no
+        For parallelization purposes. Defines the library/service to parallelize with.
+        -   "ray"
+        -   "no"
+    sample_weights: Optional[pd.Series] = None
+        Weights assigned to each sample/timestamp, that are passed into models that support it.
+    silent: bool = False
+        Wether the pipeline should print to the console.
+    krisi_args: Optional[Dict[str, Any]] = None
+        Arguments that will be passed into `krisi` score function.
+    evaluation_func: Callable = mean_squared_error
+        Function to evaluate with if `krisi` is not available.
+
+    Returns
+    -------
+    scorecard: Union["ScoreCard", Dict[str, float]]
+        A ScoreCard if `krisi` is available, else the result of the `evaluation_func` in a dict
+    pred: OutOfSamplePredictions
+        Predictions made with the pipeline
+    TrainedPipelines
+        The fitted pipeline
+    """
     trained_pipelines = train(
         transformations, X, y, splitter, sample_weights, train_method, backend, silent
     )

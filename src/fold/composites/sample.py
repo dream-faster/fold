@@ -24,7 +24,6 @@ class Sample(Composite):
 
     References
     ----------
-
     [imbalanced-learn](https://imbalanced-learn.org/)
     """
 
