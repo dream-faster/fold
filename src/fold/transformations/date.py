@@ -6,6 +6,7 @@ from typing import Callable, List, Union
 import pandas as pd
 
 from ..base import SingleFunctionTransformation, Transformation, fit_noop
+from ..utils.list import wrap_in_list
 
 
 class DateTimeFeature(Enum):
@@ -44,6 +45,24 @@ class AddDateTimeFeatures(Transformation):
     features: List[Union[DateTimeFeature, str]]
         The features to add to the input. Options: `second`, `minute`, `hour`, `day_of_week`, `day_of_month`, `day_of_year`, `week`, `week_of_year`, `month`, `quarter`, `year`.
 
+    Examples
+    --------
+        >>> from fold.loop import train_backtest
+        >>> from fold.splitters import SlidingWindowSplitter
+        >>> from fold.transformations import AddDateTimeFeatures
+        >>> from fold.utils.tests import generate_sine_wave_data
+        >>> X, y  = generate_sine_wave_data(freq="min")
+        >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+        >>> pipeline = AddDateTimeFeatures(["minute"])
+        >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+        >>> preds.head()
+                               sine  minute
+        2021-12-31 15:40:00 -0.0000      40
+        2021-12-31 15:41:00  0.0126      41
+        2021-12-31 15:42:00  0.0251      42
+        2021-12-31 15:43:00  0.0377      43
+        2021-12-31 15:44:00  0.0502      44
+
     """
 
     properties = Transformation.Properties(requires_X=False)
@@ -53,7 +72,7 @@ class AddDateTimeFeatures(Transformation):
         self,
         features: List[Union[DateTimeFeature, str]],
     ) -> None:
-        self.features = [DateTimeFeature(f) for f in features]
+        self.features = [DateTimeFeature(f) for f in wrap_in_list(features)]
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         X_datetime = pd.DataFrame([], index=X.index)

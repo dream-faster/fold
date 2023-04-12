@@ -12,6 +12,13 @@ from .common import get_concatenated_names
 class Ensemble(Composite):
     """
     Ensemble (average) the results of multiple pipelines.
+
+    Parameters
+    ----------
+
+    pipelines : Pipelines
+        A list of pipelines to be applied to the data, independently of each other.
+
     """
 
     properties = Composite.Properties()
