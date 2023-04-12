@@ -11,6 +11,29 @@ from ..utils.list import flatten, transform_range_to_list, wrap_in_list
 class AddLagsY(Transformation):
     """
     Adds past values of `y`.
+
+    Parameters
+    ----------
+    lags : Union[List[int], range]
+        A list of lags (of the target) to add as features.
+
+    Examples
+    --------
+        >>> from fold.loop import train_backtest
+        >>> from fold.splitters import SlidingWindowSplitter
+        >>> from fold.transformations import AddLagsY
+        >>> from fold.utils.tests import generate_sine_wave_data
+        >>> _, y  = generate_sine_wave_data()
+        >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+        >>> pipeline = AddLagsY([1,2,3])
+        >>> preds, trained_pipeline = train_backtest(pipeline, None, y, splitter)
+        >>> preds.head()
+                             y_lag_1  y_lag_2  y_lag_3
+        2021-12-31 15:40:00  -0.0000  -0.0126  -0.0251
+        2021-12-31 15:41:00   0.0126  -0.0000  -0.0126
+        2021-12-31 15:42:00   0.0251   0.0126  -0.0000
+        2021-12-31 15:43:00   0.0377   0.0251   0.0126
+        2021-12-31 15:44:00   0.0502   0.0377   0.0251
     """
 
     def __init__(self, lags: Union[List[int], range]) -> None:
@@ -49,6 +72,29 @@ class AddLagsY(Transformation):
 class AddLagsX(Transformation):
     """
     Adds past values of `X` for the desired column(s).
+
+    Parameters
+    ----------
+    columns_and_lags : Union[List[ColumnAndLag], ColumnAndLag]
+        A tuple (or a list of tuples) of the column name and a single or a list of lags to add as features.
+
+    Examples
+    --------
+        >>> from fold.loop import train_backtest
+        >>> from fold.splitters import SlidingWindowSplitter
+        >>> from fold.transformations import AddLagsX
+        >>> from fold.utils.tests import generate_sine_wave_data
+        >>> X, y  = generate_sine_wave_data()
+        >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+        >>> pipeline = AddLagsX([("sine", 1), ("sine", [2,3])])
+        >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+        >>> preds.head()
+                               sine  sine_lag_1  sine_lag_2  sine_lag_3
+        2021-12-31 15:40:00 -0.0000     -0.0126     -0.0251     -0.0377
+        2021-12-31 15:41:00  0.0126     -0.0000     -0.0126     -0.0251
+        2021-12-31 15:42:00  0.0251      0.0126     -0.0000     -0.0126
+        2021-12-31 15:43:00  0.0377      0.0251      0.0126     -0.0000
+        2021-12-31 15:44:00  0.0502      0.0377      0.0251      0.0126
     """
 
     ColumnAndLag = Tuple[str, Union[int, List[int]]]

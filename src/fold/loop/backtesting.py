@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 
 import pandas as pd
 from tqdm.auto import tqdm
@@ -16,7 +16,7 @@ def backtest(
     X: Optional[pd.DataFrame],
     y: pd.Series,
     splitter: Splitter,
-    backend: Backend = Backend.no,
+    backend: Union[Backend, str] = Backend.no,
     sample_weights: Optional[pd.Series] = None,
     silent: bool = False,
     mutate: bool = False,
@@ -26,6 +26,7 @@ def backtest(
     Run backtest on a set of TrainedPipelines and given data.
     Only mutates the data when `mutate` is True, but its usage is discouraged.
     """
+    backend = Backend.from_str(backend)
     X, y = check_types(X, y)
 
     results = [

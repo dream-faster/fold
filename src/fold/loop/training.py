@@ -18,11 +18,13 @@ def train(
     y: pd.Series,
     splitter: Splitter,
     sample_weights: Optional[pd.Series] = None,
-    train_method: TrainMethod = TrainMethod.parallel,
-    backend: Backend = Backend.no,
+    train_method: Union[TrainMethod, str] = TrainMethod.parallel,
+    backend: Union[Backend, str] = Backend.no,
     silent: bool = False,
 ) -> TrainedPipelines:
     X, y = check_types(X, y)
+    train_method = TrainMethod.from_str(train_method)
+    backend = Backend.from_str(backend)
 
     if isinstance(splitter, SlidingWindowSplitter):
         assert train_method == TrainMethod.parallel, (

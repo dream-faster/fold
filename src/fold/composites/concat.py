@@ -105,8 +105,8 @@ class Pipeline(Composite):
     Parameters
     ----------
 
-    pipelines : Pipelines
-        A list of pipelines to be applied to the data, independently of each other.
+    pipeline : Pipeline
+        A list of transformations or models to be applied to the data.
 
     """
 

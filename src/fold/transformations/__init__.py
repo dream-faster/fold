@@ -1,6 +1,12 @@
 from ..base import Transformation
 from ..composites.concat import TransformColumn
-from .columns import OnlyPredictions, OnlyProbabilities, SelectColumns
+from .columns import (
+    DropColumns,
+    OnlyPredictions,
+    OnlyProbabilities,
+    RenameColumns,
+    SelectColumns,
+)
 from .date import (
     AddDateTimeFeatures,
     AddDayOfWeek,

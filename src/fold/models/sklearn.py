@@ -9,6 +9,7 @@ from .base import Model
 class SKLearnClassifier(Model):
     """
     Wraps an SKLearn Classifier model.
+    There's no need to use it directly, `fold` automatically wraps all sklearn classifiers into this class.
     """
 
     properties = Model.Properties(
@@ -58,6 +59,7 @@ class SKLearnClassifier(Model):
 class SKLearnRegressor(Model):
     """
     Wraps an SKLearn regressor model.
+    There's no need to use it directly, `fold` automatically wraps all sklearn regressors into this class.
     """
 
     properties = Model.Properties(

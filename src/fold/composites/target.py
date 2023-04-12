@@ -13,7 +13,7 @@ from .common import get_concatenated_names
 class TransformTarget(Composite):
     """
     Transforms the column.
-    `X_pipeline` will be applied to the input data.
+    `wrapped_pipeline` will be applied to the input data.
     `y_pipeline` will be applied to the target column.
 
     The inverse of `y_transformation` will be applied to the predictions of the primary pipeline.
@@ -22,10 +22,10 @@ class TransformTarget(Composite):
 
     Parameters
     ----------
-    X_pipeline: Pipelines
-        Pipelines, which will be applied to the input data.
+    wrapped_pipeline: Pipeline
+        Pipeline, which will be applied to the input data, where the target (`y`) is already transformed.
     y_pipeline: Union[List[InvertibleTransformation], InvertibleTransformation]
-        InvertibleTransformation, which will be applied to the target column
+        InvertibleTransformations, which will be applied to the target (`y`)
     """
 
     properties = Composite.Properties(
@@ -35,13 +35,13 @@ class TransformTarget(Composite):
 
     def __init__(
         self,
-        X_pipeline: Pipelines,
+        wrapped_pipeline: Pipelines,
         y_pipeline: Union[List[InvertibleTransformation], InvertibleTransformation],
     ) -> None:
-        self.X_pipeline = wrap_in_double_list_if_needed(X_pipeline)
+        self.X_pipeline = wrap_in_double_list_if_needed(wrapped_pipeline)
         self.y_pipeline = wrap_in_double_list_if_needed(y_pipeline)
         self.name = "TransformTarget-" + get_concatenated_names(
-            self.X_pipeline + self.y_pipeline
+            self.wrapped_pipeline + self.y_pipeline
         )
 
     def preprocess_primary(
@@ -92,10 +92,10 @@ class TransformTarget(Composite):
     def get_child_transformations_secondary(
         self,
     ) -> Optional[Pipelines]:
-        return self.X_pipeline
+        return self.wrapped_pipeline
 
     def clone(self, clone_child_transformations: Callable) -> TransformTarget:
         return TransformTarget(
-            X_pipeline=clone_child_transformations(self.X_pipeline),
+            wrapped_pipeline=clone_child_transformations(self.wrapped_pipeline),
             y_pipeline=clone_child_transformations(self.y_pipeline),
         )
