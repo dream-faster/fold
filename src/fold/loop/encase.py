@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from krisi import ScoreCard
 
 
-def backtest_score(
+def evaluate(
     trained_pipelines: TrainedPipelines,
     X: Optional[pd.DataFrame],
     y: pd.Series,
@@ -113,7 +113,7 @@ def train_backtest(
     return pred, trained_pipelines
 
 
-def train_backtest_score(
+def train_evaluate(
     transformations: BlocksOrWrappable,
     X: Optional[pd.DataFrame],
     y: pd.Series,
@@ -168,7 +168,7 @@ def train_backtest_score(
         transformations, X, y, splitter, sample_weights, train_method, backend, silent
     )
 
-    scorecard, pred = backtest_score(
+    scorecard, pred = evaluate(
         trained_pipelines,
         X,
         y,
