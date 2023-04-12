@@ -1,3 +1,4 @@
+from importlib.util import find_spec
 from typing import Callable, List
 
 from sklearn.base import ClassifierMixin, RegressorMixin, TransformerMixin
@@ -31,9 +32,11 @@ def replace_transformation_if_not_fold_native(
         return SKLearnPipeline(transformation)
     elif isinstance(transformation, Composite):
         return transformation.clone(replace_transformation_if_not_fold_native)
-    elif isinstance(transformation, Transformation) or isinstance(
-        transformation, Model
-    ):
+    elif find_spec("fold_models") is not None and isinstance(transformation, Model):
+        from fold_models.convenience import wrap_transformation_if_possible
+
+        return wrap_transformation_if_possible(transformation)
+    elif isinstance(transformation, Transformation):
         return transformation
     else:
         raise ValueError(f"Transformation {transformation} is not supported")
