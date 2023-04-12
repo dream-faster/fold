@@ -47,22 +47,25 @@ class AddDateTimeFeatures(Transformation):
 
     Examples
     --------
-        >>> from fold.loop import train_backtest
-        >>> from fold.splitters import SlidingWindowSplitter
-        >>> from fold.transformations import AddDateTimeFeatures
-        >>> from fold.utils.tests import generate_sine_wave_data
-        >>> X, y  = generate_sine_wave_data(freq="min")
-        >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
-        >>> pipeline = AddDateTimeFeatures(["minute"])
-        >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
-        >>> preds.head()
-                               sine  minute
-        2021-12-31 15:40:00 -0.0000      40
-        2021-12-31 15:41:00  0.0126      41
-        2021-12-31 15:42:00  0.0251      42
-        2021-12-31 15:43:00  0.0377      43
-        2021-12-31 15:44:00  0.0502      44
-
+    ``` py
+    from fold.loop import train_backtest
+    from fold.splitters import SlidingWindowSplitter
+    from fold.transformations import AddDateTimeFeatures
+    from fold.utils.tests import generate_sine_wave_data
+    X, y  = generate_sine_wave_data(freq="min")
+    splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    pipeline = AddDateTimeFeatures(["minute"])
+    preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+    preds.head()
+    ```
+    ``` py
+                            sine  minute
+    2021-12-31 15:40:00 -0.0000      40
+    2021-12-31 15:41:00  0.0126      41
+    2021-12-31 15:42:00  0.0251      42
+    2021-12-31 15:43:00  0.0377      43
+    2021-12-31 15:44:00  0.0502      44
+    ```
     """
 
     properties = Transformation.Properties(requires_X=False)
