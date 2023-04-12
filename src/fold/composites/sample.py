@@ -19,14 +19,11 @@ class Sample(Composite):
     ----------
     sampler : Any
         An imbalanced-learn sampler instance (subclass of `BaseSampler`).
-
     pipeline : BlocksOrWrappable
         A pipeline to be applied to the sampled data.
 
-
     References
     ----------
-
     [imbalanced-learn](https://imbalanced-learn.org/)
     """
 

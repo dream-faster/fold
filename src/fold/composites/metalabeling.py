@@ -25,13 +25,10 @@ class MetaLabeling(Composite):
 
     primary : BlocksOrWrappable
         A pipeline to be applied to the data. Target (`y`) is unchanged.
-
     meta : BlocksOrWrappable
         A pipeline to be applied to predict whether the primary pipeline's predictions are correct. Target (`y`) is `preds == y`.
-
     positive_class : Union[int, float]
         The positive class of the primary pipeline.
-
     primary_output_included :  bool, optional
         Whether the primary pipeline's output is included in the meta pipeline's input, by default False.
 

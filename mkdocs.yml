@@ -45,7 +45,8 @@ nav:
         - Transform your target variable: 'examples/transform-target'
     - API: 
       - API: 'api/reference.md'
-      - Loop and Base Classes: 'api/loop.md'
+      - Main Loops: 'api/loop.md'
+      - Base Classes: 'api/base.md'
       - Models: 'api/models.md'
       - Composites: 'api/composites.md'
       - Transformations: 'api/transformations.md'

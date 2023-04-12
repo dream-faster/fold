@@ -4,7 +4,7 @@ from typing import Callable, List, Optional, Tuple, Union
 
 import pandas as pd
 
-from ..base import Composite, InvertibleTransformation, Pipelines, T, Transformations
+from ..base import Composite, InvertibleTransformation, Pipelines, T
 from ..utils.checks import get_prediction_column, get_prediction_column_name
 from ..utils.list import wrap_in_double_list_if_needed
 from .common import get_concatenated_names
@@ -19,6 +19,13 @@ class TransformTarget(Composite):
     The inverse of `y_transformation` will be applied to the predictions of the primary pipeline.
 
     Eg.: Log or Difference transformation.
+
+    Parameters
+    ----------
+    X_pipeline: Pipelines
+        Pipelines, which will be applied to the input data.
+    y_pipeline: Union[List[InvertibleTransformation], InvertibleTransformation]
+        InvertibleTransformation, which will be applied to the target column
     """
 
     properties = Composite.Properties(
@@ -28,7 +35,7 @@ class TransformTarget(Composite):
 
     def __init__(
         self,
-        X_pipeline: Transformations,
+        X_pipeline: Pipelines,
         y_pipeline: Union[List[InvertibleTransformation], InvertibleTransformation],
     ) -> None:
         self.X_pipeline = wrap_in_double_list_if_needed(X_pipeline)
