@@ -2,7 +2,7 @@ from typing import List, Optional, Tuple, Union
 
 import pandas as pd
 
-from ..base import BlocksOrWrappable, Composite, TrainedPipelines, Transformation
+from ..base import Composite, Pipeline, TrainedPipelines, Transformation
 from ..splitters import Fold, SlidingWindowSplitter, Splitter
 from ..utils.list import wrap_in_list
 from .backend import get_backend_dependent_functions
@@ -13,7 +13,7 @@ from .types import Backend, Stage, TrainMethod
 
 
 def train(
-    pipeline: BlocksOrWrappable,
+    pipeline: Pipeline,
     X: Optional[pd.DataFrame],
     y: pd.Series,
     splitter: Splitter,
