@@ -36,7 +36,9 @@ nav:
       - Models: 'concepts/models_explainer.md'
       - Splitters: 'concepts/splitters.md'
     - Examples:
-      - Technical Walkthroughs: 'examples/technical.md'
+      - Walkthroughs: 
+        - 'examples/walkthroughs/index.md'
+        - Core Walkthrough: 'examples/walkthroughs/Core_Walkthrough.md'
       - Example Cookbook: 
         - Date-time and Holiday features: 'examples/date'
         - Ensembling models: 'examples/ensembling'
@@ -44,7 +46,7 @@ nav:
         - Tabular ML models: 'examples/tabular'
         - Transform your target variable: 'examples/transform-target'
     - API: 
-      - API: 'api/reference.md'
+      - 'api/index.md'
       - Main Loops: 'api/loop.md'
       - Base Classes: 'api/base.md'
       - Models: 'api/models.md'
