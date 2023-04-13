@@ -38,7 +38,7 @@ nav:
     - My Gallery: generated/gallery
     - Examples:
       - Walkthroughs: 
-        - Core Walkthrough: 'examples/walkthroughs/core_walkthrough'
+        - Core Walkthrough: 'examples/walkthroughs/core_walkthrough.py'
       - Example Cookbook: 
         - Date-time and Holiday features: 'examples/date.py'
         - Ensembling models: 'examples/ensembling.py'
