@@ -117,3 +117,7 @@ venv.bak/
 .hatch
 .hatch/
 .hatch/*
+
+# MKdocs Gallery Generated
+docs/generated/*
+archive/*

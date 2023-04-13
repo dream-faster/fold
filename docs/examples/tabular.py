@@ -1,3 +1,8 @@
+"""
+Example demonstrating Tabular Models
+===========================
+"""
+
 from fold_models import WrapXGB
 from xgboost import XGBRegressor
 

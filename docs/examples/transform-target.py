@@ -1,3 +1,8 @@
+"""
+Example demonstrating Target Transformation
+===========================
+"""
+
 from fold_models import WrapXGB
 from xgboost import XGBRegressor
 
