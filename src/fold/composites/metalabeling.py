@@ -36,13 +36,13 @@ class MetaLabeling(Composite):
     Examples
     --------
         >>> from fold.loop import train_backtest
-        >>> from fold.splitters import SlidingWindowSplitter
+        >>> from fold.splitters import SingleWindowSplitter
         >>> from fold.composites import MetaLabeling
         >>> from sklearn.ensemble import RandomForestClassifier
         >>> from sklearn.linear_model import LogisticRegression
-        >>> from fold.utils.tests import generate_zeros_and_ones_skewed
-        >>> X, y  = generate_zeros_and_ones_skewed()
-        >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+        >>> from fold.utils.tests import generate_zeros_and_ones
+        >>> X, y  = generate_zeros_and_ones()
+        >>> splitter = SingleWindowSplitter(train_window=0.5)
         >>> pipeline = MetaLabeling(
         ...     primary=LogisticRegression(),
         ...     meta=RandomForestClassifier(),
