@@ -62,7 +62,11 @@ markdown_extensions:
 plugins:
   - search
   - include-markdown
-  # - mkdocs-glightbox
+  - glightbox:
+      touchNavigation: true
+      loop: true
+      zoomable: true
+      auto_caption: true
   - autorefs
   - gallery:
       examples_dirs: docs/examples/cookbook          # path to your example scripts
