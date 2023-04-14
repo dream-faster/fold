@@ -52,6 +52,7 @@ from fold import train_evaluate, ExpandingWindowSplitter
 from fold.transformations import OnlyPredictions
 from fold.models.dummy import DummyRegressor
 from fold.utils.dataset import get_preprocessed_dataset
+from statsforecast.models import ARIMA
 
 X, y = get_preprocessed_dataset(
     "weather/historical_hourly_la",
@@ -60,7 +61,10 @@ X, y = get_preprocessed_dataset(
 )
 
 pipeline = [
-    DummyRegressor(0),
+    Ensemble([
+      RandomForestRegressor(),
+      ARIMA(order=(1,1,0)),
+    ]),
     OnlyPredictions(),
 ]
 splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.2)
