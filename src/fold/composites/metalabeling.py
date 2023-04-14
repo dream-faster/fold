@@ -42,6 +42,7 @@ class MetaLabeling(Composite):
         >>> from sklearn.linear_model import LogisticRegression
         >>> from fold.utils.tests import generate_zeros_and_ones
         >>> X, y  = generate_zeros_and_ones()
+        >>> y = y.astype(float)
         >>> splitter = SingleWindowSplitter(train_window=0.5)
         >>> pipeline = MetaLabeling(
         ...     primary=LogisticRegression(),
