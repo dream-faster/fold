@@ -47,30 +47,30 @@
 You can quickly train your chosen models and get predictions by running:
 
 ``` py
-import pandas as pd
-from fold import train_evaluate, ExpandingWindowSplitter
-from fold.transformations import OnlyPredictions
-from fold.models.dummy import DummyRegressor
-from fold.utils.dataset import get_preprocessed_dataset
+from sklearn.ensemble import RandomForestRegressor
 from statsforecast.models import ARIMA
+from fold import ExpandingWindowSplitter, train_evaluate
+from fold.composites import Ensemble
+from fold.transformations import OnlyPredictions
+from fold.utils.dataset import get_preprocessed_dataset
 
 X, y = get_preprocessed_dataset(
-    "weather/historical_hourly_la",
-    target_col="temperature",
-    shorten=1000
+    "weather/historical_hourly_la", target_col="temperature", shorten=1000
 )
 
 pipeline = [
-    Ensemble([
-      RandomForestRegressor(),
-      ARIMA(order=(1,1,0)),
-    ]),
+    Ensemble(
+        [
+            RandomForestRegressor(),
+            ARIMA(order=(1, 1, 0)),
+        ]
+    ),
     OnlyPredictions(),
 ]
 splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.2)
-scorecard, prediction, trained_pipelines = train_evaluate(
-    pipeline, X, y, splitter
-)  
+scorecard, prediction, trained_pipelines = train_evaluate(pipeline, X, y, splitter)
+scorecard.print("minimal")
+ 
 ```
 
 Thinking of using `fold`? We'd love to hear about your use case and help, [please book a free 30-min call with us](https://calendly.com/mark-szulyovszky/consultation)!
