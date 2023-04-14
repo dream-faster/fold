@@ -1,3 +1,8 @@
+"""
+Preprocessing
+===========================
+"""
+
 from fold import train
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.difference import Difference

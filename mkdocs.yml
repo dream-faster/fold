@@ -36,16 +36,12 @@ nav:
       - Design: 'concepts/design.md'
       - Models: 'concepts/models_explainer.md'
       - Splitters: 'concepts/splitters.md'
-    - Examples:
-      - Technical Walkthroughs: 'examples/technical.md'
-      - Example Cookbook: 
-        - Date-time and Holiday features: 'examples/date'
-        - Ensembling models: 'examples/ensembling'
-        - Preprocess your data: 'examples/preprocess'
-        - Tabular ML models: 'examples/tabular'
-        - Transform your target variable: 'examples/transform-target'
+    - Walkthroughs: 
+      - Core Walkthrough: 'examples/walkthroughs/core_walkthrough.md'
+      - Benchmarking Sktime-Fold: 'examples/walkthroughs/benchmarking_sktime_fold.md'
+    - Examples: generated/gallery
     - API: 
-      - API: 'api/reference.md'
+      - 'api/index.md'
       - Main Loops: 'api/loop.md'
       - Base Classes: 'api/base.md'
       - Models: 'api/models.md'
@@ -67,9 +63,16 @@ markdown_extensions:
 plugins:
   - search
   - include-markdown
+  - glightbox:
+      touchNavigation: true
+      loop: true
+      zoomable: true
+      auto_caption: true
   - autorefs
-  - mkdocs-jupyter:
-      execute: false
+  - gallery:
+      examples_dirs: docs/examples/cookbook          # path to your example scripts
+      gallery_dirs: docs/generated/gallery  # where to save generated gallery
+      ignore_pattern: 'load_data.py'
   - mkdocstrings:
       handlers:
         python:
