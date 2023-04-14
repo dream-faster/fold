@@ -11,6 +11,27 @@ from .base import Model
 class RandomClassifier(Model):
     """
     A model that predicts random classes and probabilities.
+
+    Parameters
+    ----------
+    all_classes : List[int]
+        All possible classes.
+    probability_mean : float
+        The mean of the normal distribution used to generate the probabilities.
+
+
+    Examples
+    --------
+        >>> import numpy as np
+        >>> from fold.loop import train_backtest
+        >>> from fold.splitters import SlidingWindowSplitter
+        >>> from fold.models import RandomClassifier
+        >>> from fold.utils.tests import generate_sine_wave_data
+        >>> X, y  = generate_sine_wave_data()
+        >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+        >>> np.random.seed(42)
+        >>> pipeline = RandomClassifier([0,1], 0.5)
+        >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
     """
 
     properties = Transformation.Properties(requires_X=False)
