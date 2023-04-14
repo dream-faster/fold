@@ -79,7 +79,9 @@ class MetaLabeling(Composite):
     ) -> None:
         self.primary = wrap_in_double_list_if_needed(primary)
         self.meta = wrap_in_double_list_if_needed(meta)
-        self.positive_class = int(positive_class)
+        self.positive_class = (
+            int(positive_class) if isinstance(positive_class, float) else positive_class
+        )
         self.primary_output_included = primary_output_included
         self.name = "MetaLabeling-" + get_concatenated_names(self.primary + self.meta)
 
