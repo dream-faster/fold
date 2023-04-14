@@ -26,6 +26,23 @@ class Sample(Composite):
     pipeline : Pipeline
         A pipeline to be applied to the sampled data.
 
+    Examples
+    --------
+        >>> from fold.loop import train_backtest
+        >>> from fold.splitters import SlidingWindowSplitter
+        >>> from fold.composites import ModelResiduals
+        >>> from sklearn.ensemble import RandomForestClassifier
+        >>> from imblearn.under_sampling import RandomUnderSampler
+        >>> from fold.utils.tests import generate_zeros_and_ones_skewed
+        >>> X, y  = generate_zeros_and_ones_skewed()
+        >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+        >>> pipeline = Sample(
+        ...     sampler=RandomUnderSampler(),
+        ...     pipeline=RandomForestClassifier(),
+        ... )
+        >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+
+
     References
     ----------
     [imbalanced-learn](https://imbalanced-learn.org/)

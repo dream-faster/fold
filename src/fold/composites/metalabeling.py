@@ -32,11 +32,35 @@ class MetaLabeling(Composite):
     primary_output_included :  bool, optional
         Whether the primary pipeline's output is included in the meta pipeline's input, by default False.
 
+
+    Examples
+    --------
+        >>> from fold.loop import train_backtest
+        >>> from fold.splitters import SlidingWindowSplitter
+        >>> from fold.composites import MetaLabeling
+        >>> from sklearn.ensemble import RandomForestClassifier
+        >>> from sklearn.linear_model import LogisticRegression
+        >>> from fold.utils.tests import generate_zeros_and_ones_skewed
+        >>> X, y  = generate_zeros_and_ones_skewed()
+        >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+        >>> pipeline = MetaLabeling(
+        ...     primary=LogisticRegression(),
+        ...     meta=RandomForestClassifier(),
+        ...     positive_class=1.0,
+        ... )
+        >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+
+
     Outputs
     -------
-        A prediction is a float between 0 and 1.
-        It does not output probabilities, as the prediction already includes the probabilities.
+        A prediction is a float between -1 or 0, and 1.
+        It does not output probabilities, as the prediction already includes that information.
 
+
+    References
+    ----------
+    - https://hudsonthames.org/meta-labeling-a-toy-example/
+    - https://jfds.pm-research.com/content/4/3/31
     """
 
     properties = Composite.Properties(

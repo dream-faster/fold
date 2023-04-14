@@ -23,6 +23,7 @@ class ModelResiduals(Composite):
     - Residual chasing
     - Residual boosting
     - Hybrid approach
+    - "Moving Average" in ARIMA
 
     It's only applicable for regression tasks.
 
@@ -52,6 +53,10 @@ class ModelResiduals(Composite):
         ... )
         >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
 
+    References
+    ----------
+    - https://www.kaggle.com/code/ryanholbrook/hybrid-models
+    - https://www.uber.com/en-DE/blog/m4-forecasting-competition/
     """
 
     properties = Composite.Properties(
