@@ -53,11 +53,13 @@ tests = [
   "holidays",
 ]
 docs = [
+  
   "mkdocs-material",
   "mkdocstrings-python",
   "mkdocs-include-markdown-plugin",
   "mkdocs-autorefs",
   "mkdocs-jupyter",
+  "image",
   "mkdocs-gallery",
   "mkdocs-glightbox"
 ]
