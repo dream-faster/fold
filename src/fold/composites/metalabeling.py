@@ -123,7 +123,7 @@ class MetaLabeling(Composite):
             [
                 col
                 for col in meta_probabilities.columns
-                if int(float(col.split("_")[-1])) == self.positive_class
+                if get_int_class(col.split("_")[-1]) == self.positive_class
             ]
         ]
         if len(meta_probabilities_positive_class.columns) != 1:
@@ -156,3 +156,10 @@ class MetaLabeling(Composite):
             positive_class=self.positive_class,
             primary_output_included=self.primary_output_included,
         )
+
+
+def get_int_class(input: str) -> int:
+    if input.endswith(".0"):
+        return int(float(input[:-2]))
+    else:
+        return int(input)
