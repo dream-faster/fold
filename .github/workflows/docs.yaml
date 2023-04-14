@@ -18,8 +18,6 @@ jobs:
           path: .cache
       - run: pip install ".[docs]"
       - run: mkdocs build
-        # env:
-        #   is_on_ci: true
       - name: Deploying to Github Pages
         if: github.ref == 'refs/heads/main'
         run: mkdocs gh-deploy --force
