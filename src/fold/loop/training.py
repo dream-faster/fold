@@ -22,6 +22,33 @@ def train(
     backend: Union[Backend, str] = Backend.no,
     silent: bool = False,
 ) -> TrainedPipelines:
+    """
+    Trains a pipeline on a given dataset, for all folds returned by the Splitter.
+
+    Parameters
+    ----------
+    pipeline: Pipeline
+        The pipeline to be fitted.
+    X: Optional[pd.DataFrame]
+        Exogenous Data.
+    y: pd.Series
+        Endogenous Data (Target).
+    splitter: Splitter
+        Defines how the folds should be constructed.
+    train_method : Union[TrainMethod, str], optional
+        _description_, by default TrainMethod.parallel
+    backend: Union[str, Backend] = Backend.no
+        The library/service to use for parallelization / distributed computing, by default `no`.
+    sample_weights: Optional[pd.Series] = None
+        Weights assigned to each sample/timestamp, that are passed into models that support it, by default None.
+    silent: bool = False
+        Wether the pipeline should print to the console, by default False.
+
+    Returns
+    -------
+    TrainedPipelines
+        The fitted pipelines, for all folds.
+    """
     X, y = check_types(X, y)
     train_method = TrainMethod.from_str(train_method)
     backend = Backend.from_str(backend)

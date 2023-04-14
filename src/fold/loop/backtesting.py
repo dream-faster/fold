@@ -22,9 +22,32 @@ def backtest(
     mutate: bool = False,
 ) -> OutOfSamplePredictions:
     """
-    Backtest a list of transformations over time.
-    Run backtest on a set of TrainedPipelines and given data.
-    Only mutates the data when `mutate` is True, but its usage is discouraged.
+    Run backtest on TrainedPipelines and given data.
+
+    Parameters
+    ----------
+
+    trained_pipelines: TrainedPipelines
+        The fitted pipelines, for all folds.
+    X: Optional[pd.DataFrame]
+        Exogenous Data.
+    y: pd.Series
+        Endogenous Data (Target).
+    splitter: Splitter
+        Defines how the folds should be constructed.
+    backend: Union[str, Backend] = Backend.no
+        The library/service to use for parallelization / distributed computing, by default `no`.
+    sample_weights: Optional[pd.Series] = None
+        Weights assigned to each sample/timestamp, that are passed into models that support it, by default None.
+    silent: bool = False
+        Wether the pipeline should print to the console, by default False.
+    mutate: bool = False
+        Whether `trained_pipelines` should be mutated, by default False. This is discouraged.
+
+    Returns
+    -------
+    OutOfSamplePredictions
+        Predictions for all folds, concatenated.
     """
     backend = Backend.from_str(backend)
     X, y = check_types(X, y)
