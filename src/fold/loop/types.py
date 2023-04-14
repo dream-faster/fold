@@ -21,7 +21,11 @@ class Backend(Enum):
 
 class TrainMethod(Enum):
     parallel = "parallel"
+    """Parallel training of all pipelines in a window."""
+
     sequential = "sequential"
+    """Sequential training of all pipelines in a window."""
+
     parallel_with_search = (  # Don't use it just yet, not yet fully documented
         "parallel_with_search"
     )
