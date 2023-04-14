@@ -26,5 +26,5 @@ from .holidays import AddHolidayFeatures
 from .lags import AddLagsX, AddLagsY
 from .math import AddConstant, TakeLog, TurnPositive
 from .sklearn import WrapSKLearnFeatureSelector, WrapSKLearnTransformation
-from .update import DontUpdate, InjectPastDataAtInference
+from .update import DontUpdate
 from .window import AddWindowFeatures

@@ -35,6 +35,12 @@ def generate_all_zeros(length: int = 1000) -> Tuple[pd.DataFrame, pd.Series]:
     return X, y
 
 
+def generate_zeros_and_ones(
+    length: int = 1000, labels=[1, 0]
+) -> Tuple[pd.DataFrame, pd.Series]:
+    return generate_zeros_and_ones_skewed(length, labels, weights=[0.5, 0.5])
+
+
 def generate_zeros_and_ones_skewed(
     length: int = 1000, labels=[1, 0], weights: List[float] = [0.2, 0.8]
 ) -> Tuple[pd.DataFrame, pd.Series]:

@@ -12,8 +12,8 @@ from .common import get_concatenated_names
 
 class TransformTarget(Composite):
     """
-    Transforms the column.
-    `wrapped_pipeline` will be applied to the input data.
+    Transforms the target within the context of the wrapped Pipeline.
+    `wrapped_pipeline` will be applied to the input data, where the target (`y`) is already transformed.
     `y_pipeline` will be applied to the target column.
 
     The inverse of `y_transformation` will be applied to the predictions of the primary pipeline.
@@ -26,6 +26,23 @@ class TransformTarget(Composite):
         Pipeline, which will be applied to the input data, where the target (`y`) is already transformed.
     y_pipeline: Union[List[InvertibleTransformation], InvertibleTransformation]
         InvertibleTransformations, which will be applied to the target (`y`)
+
+    Examples
+    --------
+        >>> from fold.loop import train_backtest
+        >>> from fold.splitters import SlidingWindowSplitter
+        >>> from fold.composites import ModelResiduals
+        >>> from sklearn.linear_model import LinearRegression
+        >>> from fold.transformations import Difference
+        >>> from fold.utils.tests import generate_sine_wave_data
+        >>> X, y  = generate_sine_wave_data()
+        >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+        >>> pipeline = TransformTarget(
+        ...     wrapped_pipeline=LinearRegression(),
+        ...     y_pipeline=Difference(),
+        ... )
+        >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+
     """
 
     properties = Composite.Properties(

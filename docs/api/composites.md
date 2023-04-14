@@ -1,7 +1,7 @@
-::: fold.composites.ensemble
-::: fold.composites.metalabeling
-::: fold.composites.columns
 ::: fold.composites.concat
-::: fold.composites.hybrid
+::: fold.composites.ensemble
+::: fold.composites.columns
+::: fold.composites.metalabeling
+::: fold.composites.residual
 ::: fold.composites.sample
 ::: fold.composites.target

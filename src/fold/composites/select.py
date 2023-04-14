@@ -10,7 +10,7 @@ from .common import get_concatenated_names
 
 class SelectBest(Composite):
     """
-    Don't use this just yet. Coming in v0.2.
+    Don't use this just yet. Coming later.
     """
 
     properties = Composite.Properties()

@@ -2,7 +2,7 @@ from random import randint
 
 import numpy as np
 
-from fold.composites.columns import PerColumnEnsemble
+from fold.composites.columns import EnsembleEachColumn
 from fold.composites.concat import Pipeline
 from fold.composites.ensemble import Ensemble
 from fold.loop import backtest, train
@@ -76,7 +76,7 @@ def test_per_column_transform_predictions() -> None:
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     pipeline = [
-        PerColumnEnsemble(
+        EnsembleEachColumn(
             lambda x: (x + 1.0)
             .squeeze()
             .rename(f"predictions_{randint(1, 1000)}")

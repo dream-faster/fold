@@ -32,11 +32,35 @@ class MetaLabeling(Composite):
     primary_output_included :  bool, optional
         Whether the primary pipeline's output is included in the meta pipeline's input, by default False.
 
+
+    Examples
+    --------
+        >>> from fold.loop import train_backtest
+        >>> from fold.splitters import SingleWindowSplitter
+        >>> from fold.composites import MetaLabeling
+        >>> from sklearn.ensemble import RandomForestClassifier
+        >>> from sklearn.linear_model import LogisticRegression
+        >>> from fold.utils.tests import generate_zeros_and_ones
+        >>> X, y  = generate_zeros_and_ones()
+        >>> splitter = SingleWindowSplitter(train_window=0.5)
+        >>> pipeline = MetaLabeling(
+        ...     primary=LogisticRegression(),
+        ...     meta=RandomForestClassifier(),
+        ...     positive_class=1.0,
+        ... )
+        >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+
+
     Outputs
     -------
-        A prediction is a float between 0 and 1.
-        It does not output probabilities, as the prediction already includes the probabilities.
+        A prediction is a float between -1 or 0, and 1.
+        It does not output probabilities, as the prediction already includes that information.
 
+
+    References
+    ----------
+    - https://hudsonthames.org/meta-labeling-a-toy-example/
+    - https://jfds.pm-research.com/content/4/3/31
     """
 
     properties = Composite.Properties(
@@ -55,7 +79,9 @@ class MetaLabeling(Composite):
     ) -> None:
         self.primary = wrap_in_double_list_if_needed(primary)
         self.meta = wrap_in_double_list_if_needed(meta)
-        self.positive_class = positive_class
+        self.positive_class = (
+            int(positive_class) if isinstance(positive_class, float) else positive_class
+        )
         self.primary_output_included = primary_output_included
         self.name = "MetaLabeling-" + get_concatenated_names(self.primary + self.meta)
 
@@ -99,7 +125,7 @@ class MetaLabeling(Composite):
             [
                 col
                 for col in meta_probabilities.columns
-                if col.split("_")[-1] == str(self.positive_class)
+                if get_int_class(col.split("_")[-1]) == self.positive_class
             ]
         ]
         if len(meta_probabilities_positive_class.columns) != 1:
@@ -132,3 +158,14 @@ class MetaLabeling(Composite):
             positive_class=self.positive_class,
             primary_output_included=self.primary_output_included,
         )
+
+
+def get_int_class(input: str) -> int:
+    if input.endswith(".0"):
+        return int(float(input[:-2]))
+    elif input == "True":
+        return 1
+    elif input == "False":
+        return 0
+    else:
+        return int(input)
