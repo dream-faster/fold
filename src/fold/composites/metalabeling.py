@@ -80,7 +80,7 @@ class MetaLabeling(Composite):
     ) -> None:
         self.primary = wrap_in_double_list_if_needed(primary)
         self.meta = wrap_in_double_list_if_needed(meta)
-        self.positive_class = positive_class
+        self.positive_class = int(positive_class)
         self.primary_output_included = primary_output_included
         self.name = "MetaLabeling-" + get_concatenated_names(self.primary + self.meta)
 
@@ -124,7 +124,7 @@ class MetaLabeling(Composite):
             [
                 col
                 for col in meta_probabilities.columns
-                if col.split("_")[-1] == str(self.positive_class)
+                if int(float(col.split("_")[-1])) == self.positive_class
             ]
         ]
         if len(meta_probabilities_positive_class.columns) != 1:
