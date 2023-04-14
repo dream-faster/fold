@@ -69,8 +69,6 @@ pipeline = [
 ]
 splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.2)
 scorecard, prediction, trained_pipelines = train_evaluate(pipeline, X, y, splitter)
-scorecard.print("minimal")
- 
 ```
 
 Thinking of using `fold`? We'd love to hear about your use case and help, [please book a free 30-min call with us](https://calendly.com/mark-szulyovszky/consultation)!
