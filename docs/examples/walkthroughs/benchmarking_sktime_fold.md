@@ -2,9 +2,6 @@
 
 [:material-download:  Download](benchmarking_sktime_fold.ipynb){ .md-button }   [:simple-googlecolab:  Open In Colab](https://colab.research.google.com/drive/1iLXpty-j1kpDCzLM4fCsP3fLoS_DFN1C?usp=sharing){ .md-button .md-button--primary }
 
-![Walkthrough Cover.png](https://lh3.googleusercontent.com/drive-viewer/AAOQEOT4w3Cu4i_TPzDV4WAHd3DkRuz7-4rPsre2jX05y_oanG19aCCMmi_oglzAKdRGZ-qYYTUdSoJJxE7KSc_wNkCT3GAsCA=s1600)
-
-
 ![Cover Image for Benchmarking](https://lh3.googleusercontent.com/drive-viewer/AAOQEOQ_hiGnfxaCuCDqS5cESXFi3YVEMyqzNUYMg3lwj5a1GgU_sR5h3e1CcP1-OTshHwjHLamQizdt3qtRITdkL5HBePYdKA=s1600)
 
 ## Installing libraries, defining utility functions
