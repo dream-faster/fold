@@ -97,10 +97,6 @@ Thinking of using `fold`? We'd love to hear about your use case and help, [pleas
   <span style="color:orange;">**→ Real world is not static. Let your models adapt, without the need to re-train from scratch.**</span>
 
 
-
-
-</li>
-
 <!-- GETTING STARTED -->
 
 ## Examples and Walkthroughs
@@ -131,6 +127,12 @@ Thinking of using `fold`? We'd love to hear about your use case and help, [pleas
 - Super easy syntax!
 - Probabilistic foreacasts (currently, for Classification, full support coming in April).
 - Hyperparemeter optimization / Model selection. (coming in early April!)
+
+## What is Continuous Validation?
+![Continous Validation](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/technical_diagrams/continous_validation.svg) 
+It's Time Series Cross-Validation, plus:
+Inside a test window, and during deployment, fold provides a way for a model to access the last value.
+[Learn more](https://dream-faster.github.io/fold/concepts/continuous-validation/)
 
 
 ## Our Open-core Time Series Toolkit
