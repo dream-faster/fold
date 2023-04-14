@@ -5,6 +5,16 @@ from typing import Union
 
 
 class Backend(Enum):
+    """
+    Parameters
+    ----------
+    no: string
+        Uses sequential processing. This is the default.
+    ray: string
+        Uses `ray` as a backend. Call `ray.init()` before using this backend.
+
+    """
+
     no = "no"
     ray = "ray"
 
@@ -20,12 +30,18 @@ class Backend(Enum):
 
 
 class TrainMethod(Enum):
+    """
+    Parameters
+    ----------
+    parallel: string
+        Parallel, independent training of pipelines for each fold.
+    sequential: string
+        Sequentially train/update pipelines, walking forward in time.
+
+    """
+
     parallel = "parallel"
-    """Parallel training of all pipelines in a window."""
-
     sequential = "sequential"
-    """Sequential training of all pipelines in a window."""
-
     parallel_with_search = (  # Don't use it just yet, not yet fully documented
         "parallel_with_search"
     )

@@ -13,8 +13,7 @@ from .common import get_concatenated_names
 
 class PerColumnEnsemble(Composite):
     """
-    Train a pipeline for each column in the data.
-    Ensemble their results.
+    Train a pipeline for each column in the data, then ensemble their results.
 
     Parameters
     ----------
@@ -67,14 +66,16 @@ class PerColumnEnsemble(Composite):
 class SkipNA(Composite):
     """
     Skips rows with NaN values in the input data.
-    Adds back the rows with NaN values after the transformations are applied.
-    Enables transformations to be applied to data with missing values, without imputation.
+    In the output, rows with NaNs are returned as is, all other rows transformed.
+
+    Warning:
+    This seriously challenges the continuity of the data, which is usually very important.
+    Use with extreme caution.
 
     Parameters
     ----------
     pipeline: Pipeline
         Pipeline to run without NA values.
-
     """
 
     properties = Composite.Properties()
@@ -107,7 +108,7 @@ class SkipNA(Composite):
 
 class PerColumnTransform(Composite):
     """
-    Apply a single pipeline for each column, separately.
+    Apply a single pipeline to each column, separately.
 
     Parameters
     ----------
