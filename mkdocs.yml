@@ -35,16 +35,17 @@ nav:
       - Design: 'concepts/design.md'
       - Models: 'concepts/models_explainer.md'
       - Splitters: 'concepts/splitters.md'
-    - My Gallery: generated/gallery
     - Examples:
       - Walkthroughs: 
-        - Core Walkthrough: 'examples/walkthroughs/core_walkthrough.py'
-      - Example Cookbook: 
-        - Date-time and Holiday features: 'examples/date.py'
-        - Ensembling models: 'examples/ensembling.py'
-        - Preprocess your data: 'examples/preprocess.py'
-        - Tabular ML models: 'examples/tabular.py'
-        - Transform your target variable: 'examples/transform-target.py'
+        - Core Walkthrough: 'examples/walkthroughs/core_walkthrough.md'
+        - Benchmarking Sktime-Fold: 'examples/walkthroughs/benchmarking_sktime_fold.md'
+      - Example Cookbook: generated/gallery
+      # - Example Cookbook: 
+      #   - Date-time and Holiday features: 'examples/date.py'
+      #   - Ensembling models: 'examples/ensembling.py'
+      #   - Preprocess your data: 'examples/preprocess.py'
+      #   - Tabular ML models: 'examples/tabular.py'
+      #   - Transform your target variable: 'examples/transform-target.py'
     - API: 
       - 'api/index.md'
       - Main Loops: 'api/loop.md'
@@ -61,13 +62,12 @@ markdown_extensions:
 plugins:
   - search
   - include-markdown
+  # - mkdocs-glightbox
   - autorefs
-  - mkdocs-jupyter:
-      execute: !ENV is_on_ci
-  # - gallery:
-  #     examples_dirs: docs/examples          # path to your example scripts
-  #     gallery_dirs: docs/generated/gallery  # where to save generated gallery
-  #     ignore_pattern: 'load_data.py'
+  - gallery:
+      examples_dirs: docs/examples/cookbook          # path to your example scripts
+      gallery_dirs: docs/generated/gallery  # where to save generated gallery
+      ignore_pattern: 'load_data.py'
   - mkdocstrings:
       handlers:
         python:

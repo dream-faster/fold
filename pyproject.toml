@@ -58,6 +58,7 @@ docs = [
   "mkdocs-include-markdown-plugin",
   "mkdocs-autorefs",
   "mkdocs-jupyter",
+  "mkdocs-glightbox"
 ]
 ray = ["ray"]
 extras =[

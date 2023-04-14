@@ -1,12 +1,15 @@
 """
-Example demonstrating the DateTimeFeatures Transformation
-==============================
+Tabular Models
+===========================
 """
-from sklearn.ensemble import RandomForestRegressor
+
+from fold_models import WrapXGB
+from xgboost import XGBRegressor
 
 from fold.loop import train_evaluate
 from fold.splitters import ExpandingWindowSplitter
-from fold.transformations import AddDateTimeFeatures, AddHolidayFeatures
+from fold.transformations.lags import AddLagsX
+from fold.transformations.window import AddWindowFeatures
 from fold.utils.dataset import get_preprocessed_dataset
 
 X, y = get_preprocessed_dataset(
@@ -15,9 +18,9 @@ X, y = get_preprocessed_dataset(
 
 splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.1)
 pipeline = [
-    AddDateTimeFeatures(["hour", "day_of_week"]),
-    AddHolidayFeatures(["US"]),
-    RandomForestRegressor(),
+    AddWindowFeatures([("temperature", 14, "mean")]),
+    AddLagsX(columns_and_lags=[("temperature", list(range(1, 5)))]),
+    WrapXGB.from_model(XGBRegressor()),
 ]
 
 scorecard, prediction, trained_pipelines = train_evaluate(pipeline, X, y, splitter)

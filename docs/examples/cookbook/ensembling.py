@@ -1,5 +1,5 @@
 """
-Example demonstrating Ensembling
+Ensembling (Composite Models)
 ===========================
 """
 

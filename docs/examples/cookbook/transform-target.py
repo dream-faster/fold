@@ -1,5 +1,5 @@
 """
-Example demonstrating Target Transformation
+Transformations applied to the Target (y)
 ===========================
 """
 

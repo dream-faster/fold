@@ -1,5 +1,5 @@
 """
-Example demonstrating Preprocessing
+Preprocessing
 ===========================
 """
 
