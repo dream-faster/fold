@@ -15,6 +15,10 @@ class Sample(Composite):
     Sample data with an imbalanced-learn sampler instance during training.
     No sampling is done during inference or backtesting.
 
+    Warning:
+    This seriously challenges the continuity of the data, which is very important for traditional time series models.
+    Use with caution, and only with tabular ML models.
+
     Parameters
     ----------
     sampler : Any

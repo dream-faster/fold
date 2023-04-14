@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from fold.composites.columns import PerColumnTransform
+from fold.composites.columns import TransformEachColumn
 from fold.composites.concat import TransformColumn
 from fold.loop import backtest, train
 from fold.loop.encase import train_backtest
@@ -72,7 +72,7 @@ def test_per_column_transform() -> None:
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     transformations = [
-        PerColumnTransform([lambda x: x, lambda x: x + 1.0]),
+        TransformEachColumn([lambda x: x, lambda x: x + 1.0]),
         lambda x: x.sum(axis=1).to_frame(),
     ]
 

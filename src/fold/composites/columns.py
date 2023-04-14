@@ -11,7 +11,7 @@ from ..utils.list import unique, wrap_in_double_list_if_needed
 from .common import get_concatenated_names
 
 
-class PerColumnEnsemble(Composite):
+class EnsembleEachColumn(Composite):
     """
     Train a pipeline for each column in the data, then ensemble their results.
 
@@ -32,7 +32,7 @@ class PerColumnEnsemble(Composite):
     @classmethod
     def from_cloned_instance(
         cls, pipeline: Pipeline, models_already_cloned: bool
-    ) -> PerColumnEnsemble:
+    ) -> EnsembleEachColumn:
         instance = cls(pipeline=pipeline)
         instance.models_already_cloned = models_already_cloned
         return instance
@@ -56,8 +56,8 @@ class PerColumnEnsemble(Composite):
     def get_child_transformations_primary(self) -> Pipelines:
         return self.models
 
-    def clone(self, clone_child_transformations: Callable) -> PerColumnEnsemble:
-        return PerColumnEnsemble.from_cloned_instance(
+    def clone(self, clone_child_transformations: Callable) -> EnsembleEachColumn:
+        return EnsembleEachColumn.from_cloned_instance(
             pipeline=clone_child_transformations(self.models),
             models_already_cloned=self.models_already_cloned,
         )
@@ -69,8 +69,8 @@ class SkipNA(Composite):
     In the output, rows with NaNs are returned as is, all other rows transformed.
 
     Warning:
-    This seriously challenges the continuity of the data, which is usually very important.
-    Use with extreme caution.
+    This seriously challenges the continuity of the data, which is very important for traditional time series models.
+    Use with caution, and only with tabular ML models.
 
     Parameters
     ----------
@@ -106,7 +106,7 @@ class SkipNA(Composite):
         )
 
 
-class PerColumnTransform(Composite):
+class TransformEachColumn(Composite):
     """
     Apply a single pipeline to each column, separately.
 
@@ -127,7 +127,7 @@ class PerColumnTransform(Composite):
     @classmethod
     def from_cloned_instance(
         cls, pipeline: Pipeline, pipeline_already_cloned: bool
-    ) -> PerColumnTransform:
+    ) -> TransformEachColumn:
         instance = cls(pipeline=pipeline)
         instance.pipeline_already_cloned = pipeline_already_cloned
         return instance
@@ -150,8 +150,8 @@ class PerColumnTransform(Composite):
     def get_child_transformations_primary(self) -> Pipelines:
         return self.pipeline
 
-    def clone(self, clone_child_transformations: Callable) -> PerColumnTransform:
-        return PerColumnTransform.from_cloned_instance(
+    def clone(self, clone_child_transformations: Callable) -> TransformEachColumn:
+        return TransformEachColumn.from_cloned_instance(
             pipeline=clone_child_transformations(self.pipeline),
             pipeline_already_cloned=self.pipeline_already_cloned,
         )

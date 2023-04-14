@@ -12,8 +12,8 @@ from .common import get_concatenated_names
 
 class TransformTarget(Composite):
     """
-    Transforms the column.
-    `wrapped_pipeline` will be applied to the input data.
+    Transforms the target within the context of the wrapped Pipeline.
+    `wrapped_pipeline` will be applied to the input data, where the target (`y`) is already transformed.
     `y_pipeline` will be applied to the target column.
 
     The inverse of `y_transformation` will be applied to the predictions of the primary pipeline.
