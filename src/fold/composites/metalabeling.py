@@ -163,5 +163,9 @@ class MetaLabeling(Composite):
 def get_int_class(input: str) -> int:
     if input.endswith(".0"):
         return int(float(input[:-2]))
+    elif input == "True":
+        return 1
+    elif input == "False":
+        return 0
     else:
         return int(input)
