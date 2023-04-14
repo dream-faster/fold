@@ -16,7 +16,7 @@
   </a>
 <h3 align="center"><b>FOLD</b><br> <i>(/fold/)</i></h3>
   <p align="center">
-    <b>A Time Series Cross-Validation library that lets you build, deploy and update Composite Models easily. An order of magnitude speed-up, combined with flexibility and rigour.</b><br>
+    <b>A [Time Series Continuous Validation](https://dream-faster.github.io/fold/concepts/continuous-validation/) library that lets you build, deploy and update Composite Models easily. An order of magnitude speed-up, combined with flexibility and rigour.</b><br>
     <br/>
     <a href="https://dream-faster.github.io/fold/"><strong>Explore the docs »</strong></a>
   </p>
@@ -27,9 +27,9 @@
 
 ![Fold's main features](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/main_features.svg) 
 
-- Composite Models with Continuous Validation - [What does that mean?](#Fold-is-different)
+- Composite Models with Continuous Validation - [What does that mean?](https://dream-faster.github.io/fold/concepts/continuous-validation/)
 - Distributed computing - [Why is this important?](#Fold-is-different)
-- Update deployed models (coming in April) - [why is this important?](#Fold-is-different)
+- Update deployed models (coming in May) - [Why is this important?](#Fold-is-different)
 
 ![Fold works with many third party libraries](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/third_party.svg)
 <!-- GETTING STARTED -->
@@ -80,7 +80,7 @@ Thinking of using `fold`? We'd love to hear about your use case and help, [pleas
 
 ## Fold is different
 
-- Time Series Cross-Validation at lightning speed.<br/>
+- Time Series Continuous Validation at lightning speed.<br/>
   <span style="color:orange;">**→ fold allows to simulate and evaluate your models like they would have performed, in reality/when deployed, with clever use of paralellization and design.**</span>
 
 - Create composite models: ensembles, hybrids, stacking pipelines, easily.<br/>
@@ -131,9 +131,6 @@ Thinking of using `fold`? We'd love to hear about your use case and help, [pleas
 - Super easy syntax!
 - Probabilistic foreacasts (currently, for Classification, full support coming in April).
 - Hyperparemeter optimization / Model selection. (coming in early April!)
-
-![Continous Validation](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/technical_diagrams/continous_validation.svg) 
-![Continous Online Inference](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/technical_diagrams/continous_online_inference.svg) 
 
 
 ## Our Open-core Time Series Toolkit
