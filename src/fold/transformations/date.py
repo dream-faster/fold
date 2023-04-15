@@ -42,7 +42,7 @@ class AddDateTimeFeatures(Transformation):
     Parameters
     ----------
 
-    features: List[Union[DateTimeFeature, str]]
+    features: List[DateTimeFeature, str]
         The features to add to the input. Options: `second`, `minute`, `hour`, `day_of_week`, `day_of_month`, `day_of_year`, `week`, `week_of_year`, `month`, `quarter`, `year`.
 
     Examples

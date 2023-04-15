@@ -42,7 +42,7 @@ class DropColumns(Transformation):
     Parameters
     ----------
 
-    columns : Union[List[str], str]
+    columns : List[str], str
         The column or columns to drop.
 
     """

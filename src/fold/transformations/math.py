@@ -12,7 +12,7 @@ class TakeLog(InvertibleTransformation):
 
     Parameters
     ----------
-    base : Union[int, str], optional
+    base : int, str, optional
         The base of the logarithm, by default "e".
         Valid values are "e", np.e, "10", 10, "2", 2.
 
@@ -87,7 +87,7 @@ class AddConstant(InvertibleTransformation):
 
     Parameters
     ----------
-    constant: Union[int, float, Dict[str, Union[float, int]]]
+    constant: int, float, Dict[str, Union[float, int]]
         The constant to add to the data. If a dictionary is passed, the values will be added to the columns with the same name.
 
     Examples

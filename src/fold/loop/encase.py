@@ -40,7 +40,7 @@ def backtest_score(
         Endogenous Data (Target).
     splitter: Splitter
         Defines how the folds should be constructed.
-    backend: Union[str, Backend] = Backend.no
+    backend: str, Backend = Backend.no
         The library/service to use for parallelization / distributed computing, by default `no`.
     sample_weights: Optional[pd.Series] = None
         Weights assigned to each sample/timestamp, that are passed into models that support it, by default None.
@@ -54,9 +54,9 @@ def backtest_score(
 
     Returns
     -------
-    scorecard: Union["ScoreCard", Dict[str, float]]
+    "ScoreCard", Dict[str, float]
         A ScoreCard if `krisi` is available, else the result of the `evaluation_func` in a dict
-    pred: OutOfSamplePredictions
+    OutOfSamplePredictions
         Predictions for all folds, concatenated.
     """
 
@@ -109,20 +109,20 @@ def train_backtest(
         Endogenous Data (Target).
     splitter: Splitter
         Defines how the folds should be constructed.
-    backend: Union[str, Backend] = Backend.no
+    backend: str, Backend = Backend.no
         The library/service to use for parallelization / distributed computing, by default `no`.
     sample_weights: Optional[pd.Series] = None
         Weights assigned to each sample/timestamp, that are passed into models that support it, by default None.
-    train_method: Union[TrainMethod, str] = TrainMethod.parallel
+    train_method: TrainMethod, str = TrainMethod.parallel
         The training methodology, by default `parallel`.
     silent: bool = False
         Wether the pipeline should print to the console, by default False.
 
     Returns
     -------
-    pred: OutOfSamplePredictions
+    OutOfSamplePredictions
         Predictions for all folds, concatenated.
-    trained_pipelines: TrainedPipelines
+    TrainedPipelines
         The fitted pipelines, for all folds.
     """
     trained_pipelines = train(
@@ -167,32 +167,32 @@ def train_evaluate(
     ----------
     pipeline: Pipeline
         The pipeline to be fitted.
-    X: Optional[pd.DataFrame]
+    X: pd.DataFrame, optional
         Exogenous Data.
     y: pd.Series
         Endogenous Data (Target).
     splitter: Splitter
         Defines how the folds should be constructed.
-    backend: Union[str, Backend] = Backend.no
+    backend: str, Backend = Backend.no
         The library/service to use for parallelization / distributed computing, by default `no`.
-    sample_weights: Optional[pd.Series] = None
+    sample_weights: pd.Series, optional = None
         Weights assigned to each sample/timestamp, that are passed into models that support it, by default None.
-    train_method: Union[TrainMethod, str] = TrainMethod.parallel
+    train_method: TrainMethod, str = TrainMethod.parallel
         The training methodology, by default `parallel`.
     silent: bool = False
         Wether the pipeline should print to the console, by default False.
-    krisi_args: Optional[Dict[str, Any]] = None
+    krisi_args: Dict[str, Any], optional = None
         Arguments that will be passed into `krisi` score function, by default None.
     evaluation_func: Callable = mean_squared_error
         Function to evaluate with if `krisi` is not available, by default `mean_squared_error`.
 
     Returns
     -------
-    scorecard: Union["ScoreCard", Dict[str, float]]
+    "ScoreCard", Dict[str, float]
         A ScoreCard if `krisi` is available, else the result of the `evaluation_func` in a dict
-    pred: OutOfSamplePredictions
+    OutOfSamplePredictions
         Predictions for all folds, concatenated.
-    trained_pipelines: TrainedPipelines
+    TrainedPipelines
         The fitted pipelines, for all folds.
     """
     trained_pipelines = train(

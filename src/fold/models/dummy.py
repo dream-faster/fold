@@ -12,7 +12,7 @@ class DummyClassifier(Model):
 
     Parameters
     ----------
-    predicted_value : Union[float, int]
+    predicted_value : float, int
         The class to predict.
     all_classes : List[int]
         All possible classes.

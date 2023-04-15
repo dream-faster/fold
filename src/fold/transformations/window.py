@@ -48,7 +48,7 @@ class AddWindowFeatures(Transformation):
 
     Parameters
     ----------
-    column_window_func : Union[ColumnWindowFunction, List[ColumnWindowFunction]]
+    column_window_func : ColumnWindowFunction, List[ColumnWindowFunction]
         A list of tuples, where each tuple contains the column name, the window size and the function to apply.
         The function can be a predefined function (see PredefinedFunction) or a Callable (with a single parameter).
 

@@ -14,7 +14,7 @@ class AddLagsY(Transformation):
 
     Parameters
     ----------
-    lags : Union[List[int], range]
+    lags : List[int], range
         A list of lags (of the target) to add as features.
 
     Examples
@@ -78,7 +78,7 @@ class AddLagsX(Transformation):
 
     Parameters
     ----------
-    columns_and_lags : Union[List[ColumnAndLag], ColumnAndLag]
+    columns_and_lags : List[ColumnAndLag], ColumnAndLag
         A tuple (or a list of tuples) of the column name and a single or a list of lags to add as features.
 
     Examples
