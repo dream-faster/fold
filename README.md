@@ -16,7 +16,7 @@
   </a>
 <h3 align="center"><b>FOLD</b><br> <i>(/fold/)</i></h3>
   <p align="center">
-    <b>A [Time Series Continuous Validation](https://dream-faster.github.io/fold/concepts/continuous-validation/) library that lets you build, deploy and update Composite Models easily. An order of magnitude speed-up, combined with flexibility and rigour.</b><br>
+    <b>A <a href="https://dream-faster.github.io/fold/concepts/continuous-validation/">Time Series Continuous Validation</a> library that lets you build, deploy and update Composite Models easily. An order of magnitude speed-up, combined with flexibility and rigour.</b><br>
     <br/>
     <a href="https://dream-faster.github.io/fold/"><strong>Explore the docs »</strong></a>
   </p>
@@ -158,8 +158,6 @@ It will be always free for research useage, but we will be charging for deployme
 
 ## Limitations
 
-- No intermittent time series support, very limited support for non-
-time series.
-- No multi-step ahead forecasts. If you want to forecast multiple steps ahead, transform `y` to aggregate the change over the forecasting horizon you're interested in.
+- No intermittent time series support, very limited support for missing values.
 - No hierarchical time series support.
 

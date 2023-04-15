@@ -1,6 +1,6 @@
 """
-DateTimeFeatures Transformation
-==============================
+Adding Date/Time Features
+=========================
 """
 from sklearn.ensemble import RandomForestRegressor
 

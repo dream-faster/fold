@@ -1,15 +1,14 @@
 """
-Tabular Models
+Using Tabular Models
 ===========================
 """
 
-from fold_wrapper import WrapXGB
-from xgboost import XGBRegressor
+from sklearn.ensemble import RandomForestRegressor
 
+from fold.composites import Concat
 from fold.loop import train_evaluate
 from fold.splitters import ExpandingWindowSplitter
-from fold.transformations.lags import AddLagsX
-from fold.transformations.window import AddWindowFeatures
+from fold.transformations import AddLagsX, AddWindowFeatures
 from fold.utils.dataset import get_preprocessed_dataset
 
 X, y = get_preprocessed_dataset(
@@ -18,9 +17,13 @@ X, y = get_preprocessed_dataset(
 
 splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.1)
 pipeline = [
-    AddWindowFeatures([("temperature", 14, "mean")]),
-    AddLagsX(columns_and_lags=[("temperature", list(range(1, 5)))]),
-    WrapXGB.from_model(XGBRegressor()),
+    Concat(
+        [
+            AddWindowFeatures([("temperature", 14, "mean")]),
+            AddLagsX(columns_and_lags=[("temperature", list(range(1, 5)))]),
+        ]
+    ),
+    RandomForestRegressor(),
 ]
 
 scorecard, prediction, trained_pipelines = train_evaluate(pipeline, X, y, splitter)

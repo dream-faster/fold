@@ -34,7 +34,7 @@ The model is static, and repeats the last value for the whole test window.
 
 **Continuous Validation**
 
-![Time Series Cross-Validation with Naive model](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/technical_diagrams/naive_cross_validation.png)
+![Time Series Cross-Validation with Naive model](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/technical_diagrams/naive_continuous_validation.png)
 
 The model is up-to-date, and repeats the last value, as you'd expect.
 
@@ -42,7 +42,7 @@ The model is up-to-date, and repeats the last value, as you'd expect.
 
 There are two ways to have a model that's up-to-date:
 
-1. The model parameters are updated on each timestamp, within the test window. This can be **really slow**, but a widely available option. See the [Speed Comparison](concepts/speed) section.
+1. The model parameters are updated on each timestamp, within the test window. This can be **really slow**, but a widely available option. See the [Speed Comparison](/concepts/speed) section.
 
 2. Give the model special access to the last value, while keeping its parameters constant. This is what `fold` does with all of our models. This means that the model is still only trained once per fold, providing an order of magnitude speedup, compared to the first method.
 
