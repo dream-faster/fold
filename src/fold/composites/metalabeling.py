@@ -27,7 +27,7 @@ class MetaLabeling(Composite):
         A pipeline to be applied to the data. Target (`y`) is unchanged.
     meta : Pipeline
         A pipeline to be applied to predict whether the primary pipeline's predictions are correct. Target (`y`) is `preds == y`.
-    positive_class : Union[int, float]
+    positive_class : int, float
         The positive class of the primary pipeline.
     primary_output_included :  bool, optional
         Whether the primary pipeline's output is included in the meta pipeline's input, by default False.
@@ -59,8 +59,9 @@ class MetaLabeling(Composite):
 
     References
     ----------
-    - https://hudsonthames.org/meta-labeling-a-toy-example/
-    - https://jfds.pm-research.com/content/4/3/31
+    [Meta Labeling (A Toy Example)](https://hudsonthames.org/meta-labeling-a-toy-example/)
+    [Meta-Labeling: Theory and Framework](https://jfds.pm-research.com/content/4/3/31)
+
     """
 
     properties = Composite.Properties(

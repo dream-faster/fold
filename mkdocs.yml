@@ -31,16 +31,17 @@ theme:
 
 nav:
     - Home: 'index.md'
-    - Concepts:
+    - Must know:
       - Continuous Validation: 'concepts/continuous-validation.md'
       - Speed: 'concepts/speed.md'
       - Design: 'concepts/design.md'
-      - Models: 'concepts/models_explainer.md'
+      - Models: 'concepts/models.md'
       - Splitters: 'concepts/splitters.md'
     - Walkthroughs: 
       - Core Walkthrough: 'walkthroughs/core_walkthrough.md'
       - Benchmarking Sktime-Fold: 'walkthroughs/benchmarking_sktime_fold.md'
     - Examples: generated/gallery
+    - Roadmap: 'roadmap.md'
     - API: 
       - 'api/index.md'
       - Main Loops: 'api/loop.md'

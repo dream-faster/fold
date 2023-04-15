@@ -12,34 +12,37 @@ class TakeLog(InvertibleTransformation):
 
     Parameters
     ----------
-    base : Union[int, str], optional
+    base : int, str, optional
         The base of the logarithm, by default "e".
         Valid values are "e", np.e, "10", 10, "2", 2.
 
     Examples
     --------
-        >>> from fold.loop import train_backtest
-        >>> from fold.splitters import SlidingWindowSplitter
-        >>> from fold.transformations import TakeLog
-        >>> from fold.utils.tests import generate_sine_wave_data
-        >>> X, y  = generate_sine_wave_data(freq="min")
-        >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
-        >>> pipeline = TakeLog()
-        >>> X["sine"].head()
-        2021-12-31 07:20:00    0.0000
-        2021-12-31 07:21:00    0.0126
-        2021-12-31 07:22:00    0.0251
-        2021-12-31 07:23:00    0.0377
-        2021-12-31 07:24:00    0.0502
-        Freq: T, Name: sine, dtype: float64
-        >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
-        >>> preds["sine"].head()
-        2021-12-31 15:40:00        -inf
-        2021-12-31 15:41:00   -4.374058
-        2021-12-31 15:42:00   -3.684887
-        2021-12-31 15:43:00   -3.278095
-        2021-12-31 15:44:00   -2.991740
-        Freq: T, Name: sine, dtype: float64
+    ```pycon
+    >>> from fold.loop import train_backtest
+    >>> from fold.splitters import SlidingWindowSplitter
+    >>> from fold.transformations import TakeLog
+    >>> from fold.utils.tests import generate_sine_wave_data
+    >>> X, y  = generate_sine_wave_data(freq="min")
+    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> pipeline = TakeLog()
+    >>> X["sine"].head()
+    2021-12-31 07:20:00    0.0000
+    2021-12-31 07:21:00    0.0126
+    2021-12-31 07:22:00    0.0251
+    2021-12-31 07:23:00    0.0377
+    2021-12-31 07:24:00    0.0502
+    Freq: T, Name: sine, dtype: float64
+    >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+    >>> preds["sine"].head()
+    2021-12-31 15:40:00        -inf
+    2021-12-31 15:41:00   -4.374058
+    2021-12-31 15:42:00   -3.684887
+    2021-12-31 15:43:00   -3.278095
+    2021-12-31 15:44:00   -2.991740
+    Freq: T, Name: sine, dtype: float64
+
+    ```
     """
 
     name = "TakeLog"
@@ -84,33 +87,36 @@ class AddConstant(InvertibleTransformation):
 
     Parameters
     ----------
-    constant: Union[int, float, Dict[str, Union[float, int]]]
+    constant: int, float, Dict[str, Union[float, int]]
         The constant to add to the data. If a dictionary is passed, the values will be added to the columns with the same name.
 
     Examples
     --------
-        >>> from fold.loop import train_backtest
-        >>> from fold.splitters import SlidingWindowSplitter
-        >>> from fold.transformations import AddConstant
-        >>> from fold.utils.tests import generate_sine_wave_data
-        >>> X, y  = generate_sine_wave_data(freq="min")
-        >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
-        >>> pipeline = AddConstant(1.0)
-        >>> X["sine"].head()
-        2021-12-31 07:20:00    0.0000
-        2021-12-31 07:21:00    0.0126
-        2021-12-31 07:22:00    0.0251
-        2021-12-31 07:23:00    0.0377
-        2021-12-31 07:24:00    0.0502
-        Freq: T, Name: sine, dtype: float64
-        >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
-        >>> preds["sine"].head()
-        2021-12-31 15:40:00    1.0000
-        2021-12-31 15:41:00    1.0126
-        2021-12-31 15:42:00    1.0251
-        2021-12-31 15:43:00    1.0377
-        2021-12-31 15:44:00    1.0502
-        Freq: T, Name: sine, dtype: float64
+    ```pycon
+    >>> from fold.loop import train_backtest
+    >>> from fold.splitters import SlidingWindowSplitter
+    >>> from fold.transformations import AddConstant
+    >>> from fold.utils.tests import generate_sine_wave_data
+    >>> X, y  = generate_sine_wave_data(freq="min")
+    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> pipeline = AddConstant(1.0)
+    >>> X["sine"].head()
+    2021-12-31 07:20:00    0.0000
+    2021-12-31 07:21:00    0.0126
+    2021-12-31 07:22:00    0.0251
+    2021-12-31 07:23:00    0.0377
+    2021-12-31 07:24:00    0.0502
+    Freq: T, Name: sine, dtype: float64
+    >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+    >>> preds["sine"].head()
+    2021-12-31 15:40:00    1.0000
+    2021-12-31 15:41:00    1.0126
+    2021-12-31 15:42:00    1.0251
+    2021-12-31 15:43:00    1.0377
+    2021-12-31 15:44:00    1.0502
+    Freq: T, Name: sine, dtype: float64
+
+    ```
     """
 
     name = "AddConstant"
@@ -160,30 +166,32 @@ class TurnPositive(InvertibleTransformation):
 
     Examples
     --------
-        >>> from fold.loop import train_backtest
-        >>> from fold.splitters import SlidingWindowSplitter
-        >>> from fold.transformations import TurnPositive
-        >>> from fold.utils.tests import generate_sine_wave_data
-        >>> X, y  = generate_sine_wave_data(freq="min")
-        >>> X, y  = X - 1, y - 1
-        >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
-        >>> pipeline = TurnPositive()
-        >>> X["sine"].head()
-        2021-12-31 07:20:00   -1.0000
-        2021-12-31 07:21:00   -0.9874
-        2021-12-31 07:22:00   -0.9749
-        2021-12-31 07:23:00   -0.9623
-        2021-12-31 07:24:00   -0.9498
-        Freq: T, Name: sine, dtype: float64
-        >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
-        >>> preds["sine"].head()
-        2021-12-31 15:40:00    2.0000
-        2021-12-31 15:41:00    2.0126
-        2021-12-31 15:42:00    2.0251
-        2021-12-31 15:43:00    2.0377
-        2021-12-31 15:44:00    2.0502
-        Freq: T, Name: sine, dtype: float64
+    ```pycon
+    >>> from fold.loop import train_backtest
+    >>> from fold.splitters import SlidingWindowSplitter
+    >>> from fold.transformations import TurnPositive
+    >>> from fold.utils.tests import generate_sine_wave_data
+    >>> X, y  = generate_sine_wave_data(freq="min")
+    >>> X, y  = X - 1, y - 1
+    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> pipeline = TurnPositive()
+    >>> X["sine"].head()
+    2021-12-31 07:20:00   -1.0000
+    2021-12-31 07:21:00   -0.9874
+    2021-12-31 07:22:00   -0.9749
+    2021-12-31 07:23:00   -0.9623
+    2021-12-31 07:24:00   -0.9498
+    Freq: T, Name: sine, dtype: float64
+    >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+    >>> preds["sine"].head()
+    2021-12-31 15:40:00    2.0000
+    2021-12-31 15:41:00    2.0126
+    2021-12-31 15:42:00    2.0251
+    2021-12-31 15:43:00    2.0377
+    2021-12-31 15:44:00    2.0502
+    Freq: T, Name: sine, dtype: float64
 
+    ```
     """
 
     name = "TurnPositive"

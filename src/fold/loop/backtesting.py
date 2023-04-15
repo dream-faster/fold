@@ -29,15 +29,15 @@ def backtest(
 
     trained_pipelines: TrainedPipelines
         The fitted pipelines, for all folds.
-    X: Optional[pd.DataFrame]
+    X: pd.DataFrame, optional
         Exogenous Data.
     y: pd.Series
         Endogenous Data (Target).
     splitter: Splitter
         Defines how the folds should be constructed.
-    backend: Union[str, Backend] = Backend.no
+    backend: str, Backend = Backend.no
         The library/service to use for parallelization / distributed computing, by default `no`.
-    sample_weights: Optional[pd.Series] = None
+    sample_weights: pd.Series, optional = None
         Weights assigned to each sample/timestamp, that are passed into models that support it, by default None.
     silent: bool = False
         Wether the pipeline should print to the console, by default False.

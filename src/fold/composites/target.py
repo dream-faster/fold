@@ -29,20 +29,22 @@ class TransformTarget(Composite):
 
     Examples
     --------
-        >>> from fold.loop import train_backtest
-        >>> from fold.splitters import SlidingWindowSplitter
-        >>> from fold.composites import ModelResiduals
-        >>> from sklearn.linear_model import LinearRegression
-        >>> from fold.transformations import Difference
-        >>> from fold.utils.tests import generate_sine_wave_data
-        >>> X, y  = generate_sine_wave_data()
-        >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
-        >>> pipeline = TransformTarget(
-        ...     wrapped_pipeline=LinearRegression(),
-        ...     y_pipeline=Difference(),
-        ... )
-        >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+    ```pycon
+    >>> from fold.loop import train_backtest
+    >>> from fold.splitters import SlidingWindowSplitter
+    >>> from fold.composites import ModelResiduals
+    >>> from sklearn.linear_model import LinearRegression
+    >>> from fold.transformations import Difference
+    >>> from fold.utils.tests import generate_sine_wave_data
+    >>> X, y  = generate_sine_wave_data()
+    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> pipeline = TransformTarget(
+    ...     wrapped_pipeline=LinearRegression(),
+    ...     y_pipeline=Difference(),
+    ... )
+    >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
 
+    ```
     """
 
     properties = Composite.Properties(

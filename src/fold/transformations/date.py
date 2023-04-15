@@ -42,26 +42,29 @@ class AddDateTimeFeatures(Transformation):
     Parameters
     ----------
 
-    features: List[Union[DateTimeFeature, str]]
+    features: List[DateTimeFeature, str]
         The features to add to the input. Options: `second`, `minute`, `hour`, `day_of_week`, `day_of_month`, `day_of_year`, `week`, `week_of_year`, `month`, `quarter`, `year`.
 
     Examples
     --------
-        >>> from fold.loop import train_backtest
-        >>> from fold.splitters import SlidingWindowSplitter
-        >>> from fold.transformations import AddDateTimeFeatures
-        >>> from fold.utils.tests import generate_sine_wave_data
-        >>> X, y  = generate_sine_wave_data(freq="min")
-        >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
-        >>> pipeline = AddDateTimeFeatures(["minute"])
-        >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
-        >>> preds.head()
-                               sine  minute
-        2021-12-31 15:40:00 -0.0000      40
-        2021-12-31 15:41:00  0.0126      41
-        2021-12-31 15:42:00  0.0251      42
-        2021-12-31 15:43:00  0.0377      43
-        2021-12-31 15:44:00  0.0502      44
+    ```pycon
+    >>> from fold.loop import train_backtest
+    >>> from fold.splitters import SlidingWindowSplitter
+    >>> from fold.transformations import AddDateTimeFeatures
+    >>> from fold.utils.tests import generate_sine_wave_data
+    >>> X, y  = generate_sine_wave_data(freq="min")
+    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> pipeline = AddDateTimeFeatures(["minute"])
+    >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+    >>> preds.head()
+                           sine  minute
+    2021-12-31 15:40:00 -0.0000      40
+    2021-12-31 15:41:00  0.0126      41
+    2021-12-31 15:42:00  0.0251      42
+    2021-12-31 15:43:00  0.0377      43
+    2021-12-31 15:44:00  0.0502      44
+
+    ```
     """
 
     properties = Transformation.Properties(requires_X=False)
@@ -110,6 +113,31 @@ class AddDateTimeFeatures(Transformation):
 
 
 class AddSecond(SingleFunctionTransformation):
+    """
+    Adds "second" features to the input, as an additional column.
+
+    Examples
+    --------
+    ```pycon
+    >>> from fold.loop import train_backtest
+    >>> from fold.splitters import SlidingWindowSplitter
+    >>> from fold.transformations import AddSecond
+    >>> from fold.utils.tests import generate_sine_wave_data
+    >>> X, y  = generate_sine_wave_data(freq="S")
+    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> pipeline = AddSecond()
+    >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+    >>> preds.head()
+                           sine  second
+    2021-12-31 23:51:40 -0.0000      40
+    2021-12-31 23:51:41  0.0126      41
+    2021-12-31 23:51:42  0.0251      42
+    2021-12-31 23:51:43  0.0377      43
+    2021-12-31 23:51:44  0.0502      44
+
+    ```
+    """
+
     name = "AddSecond"
 
     def get_function(self) -> Callable:
@@ -117,6 +145,31 @@ class AddSecond(SingleFunctionTransformation):
 
 
 class AddMinute(SingleFunctionTransformation):
+    """
+    Adds "minute" features to the input, as an additional column.
+
+    Examples
+    --------
+    ```pycon
+    >>> from fold.loop import train_backtest
+    >>> from fold.splitters import SlidingWindowSplitter
+    >>> from fold.transformations import AddMinute
+    >>> from fold.utils.tests import generate_sine_wave_data
+    >>> X, y  = generate_sine_wave_data(freq="min")
+    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> pipeline = AddMinute()
+    >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+    >>> preds.head()
+                           sine  minute
+    2021-12-31 15:40:00 -0.0000      40
+    2021-12-31 15:41:00  0.0126      41
+    2021-12-31 15:42:00  0.0251      42
+    2021-12-31 15:43:00  0.0377      43
+    2021-12-31 15:44:00  0.0502      44
+
+    ```
+    """
+
     name = "AddMinute"
 
     def get_function(self) -> Callable:

@@ -16,7 +16,7 @@
   </a>
 <h3 align="center"><b>FOLD</b><br> <i>(/fold/)</i></h3>
   <p align="center">
-    <b>A [Time Series Continuous Validation](https://dream-faster.github.io/fold/concepts/continuous-validation/) library that lets you build, deploy and update Composite Models easily. An order of magnitude speed-up, combined with flexibility and rigour.</b><br>
+    <b>A <a href="https://dream-faster.github.io/fold/concepts/continuous-validation/">Time Series Continuous Validation</a> library that lets you build, deploy and update Composite Models easily. An order of magnitude speed-up, combined with flexibility and rigour.</b><br>
     <br/>
     <a href="https://dream-faster.github.io/fold/"><strong>Explore the docs »</strong></a>
   </p>
@@ -120,8 +120,8 @@ Thinking of using `fold`? We'd love to hear about your use case and help, [pleas
 - Online and Mini-batch learning.
 - Feature selection and other transformations on an expanding/rolling window basis
 - Use any scikit-learn/tabular model natively!
-- Use any univariate or sequence models (wrappers provided in [fold-models](https://github.com/dream-faster/fold-models)).
-- Use any Deep Learning Time Series models (wrappers provided in [fold-models](https://github.com/dream-faster/fold-models)).
+- Use any univariate or sequence models (wrappers provided in [fold-wrapper](https://github.com/dream-faster/fold-wrapper)).
+- Use any Deep Learning Time Series models (wrappers provided in [fold-wrapper](https://github.com/dream-faster/fold-wrapper)).
 - Super easy syntax!
 - Probabilistic foreacasts (currently, for Classification, full support coming in April).
 - Hyperparemeter optimization / Model selection. (coming in early April!)
@@ -137,7 +137,7 @@ Inside a test window, and during deployment, fold provides a way for a model to 
 
 [![Krisi](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/dream_faster_suite_krisi.svg)](https://github.com/dream-faster/krisi)
 [![Fold](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/dream_faster_suite_fold.svg)](https://github.com/dream-faster/fold)
-[![Fold/Models](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/dream_faster_suite_fold_wrapper.svg)](https://github.com/dream-faster/fold-models)
+[![Fold/Models](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/dream_faster_suite_fold_wrapper.svg)](https://github.com/dream-faster/fold-wrapper)
 
 If you want to try them out, we'd love to hear about your use case and help, [please book a free 30-min call with us](https://calendly.com/mark-szulyovszky/consultation)!
 
@@ -156,8 +156,6 @@ It will be always free for research useage, but we will be charging for deployme
 
 ## Limitations
 
-- No intermittent time series support, very limited support for non-
-time series.
-- No multi-step ahead forecasts. If you want to forecast multiple steps ahead, transform `y` to aggregate the change over the forecasting horizon you're interested in.
+- No intermittent time series support, very limited support for missing values.
 - No hierarchical time series support.
 

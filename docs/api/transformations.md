@@ -7,3 +7,4 @@
 ::: fold.transformations.math
 ::: fold.transformations.sklearn
 ::: fold.transformations.update
+::: fold.transformations.window

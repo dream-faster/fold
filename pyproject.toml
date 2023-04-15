@@ -63,9 +63,15 @@ docs = [
   "mkdocs-glightbox"
 ]
 ray = ["ray"]
-extras =[
+extras = [
   "ray",
   "holidays",
+  "krisi~=0.0.8",
+]
+all = [
+  "fold[extras]",
+  "fold-models @ https://github.com/dream-faster/fold-models/archive/main.zip",
+  "fold-wrapper @ https://github.com/dream-faster/fold-wrapper/archive/main.zip",
   "krisi~=0.0.8"
 ]
 

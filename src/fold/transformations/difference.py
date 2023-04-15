@@ -18,28 +18,31 @@ class Difference(InvertibleTransformation):
 
     Examples
     --------
-        >>> from fold.loop import train_backtest
-        >>> from fold.splitters import SlidingWindowSplitter
-        >>> from fold.transformations import Difference
-        >>> from fold.utils.tests import generate_sine_wave_data
-        >>> X, y  = generate_sine_wave_data(freq="min")
-        >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
-        >>> pipeline = Difference()
-        >>> X["sine"].head()
-        2021-12-31 07:20:00    0.0000
-        2021-12-31 07:21:00    0.0126
-        2021-12-31 07:22:00    0.0251
-        2021-12-31 07:23:00    0.0377
-        2021-12-31 07:24:00    0.0502
-        Freq: T, Name: sine, dtype: float64
-        >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
-        >>> preds["sine"].head()
-        2021-12-31 15:40:00    0.0126
-        2021-12-31 15:41:00    0.0126
-        2021-12-31 15:42:00    0.0125
-        2021-12-31 15:43:00    0.0126
-        2021-12-31 15:44:00    0.0125
-        Freq: T, Name: sine, dtype: float64
+    ```pycon
+    >>> from fold.loop import train_backtest
+    >>> from fold.splitters import SlidingWindowSplitter
+    >>> from fold.transformations import Difference
+    >>> from fold.utils.tests import generate_sine_wave_data
+    >>> X, y  = generate_sine_wave_data(freq="min")
+    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> pipeline = Difference()
+    >>> X["sine"].head()
+    2021-12-31 07:20:00    0.0000
+    2021-12-31 07:21:00    0.0126
+    2021-12-31 07:22:00    0.0251
+    2021-12-31 07:23:00    0.0377
+    2021-12-31 07:24:00    0.0502
+    Freq: T, Name: sine, dtype: float64
+    >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+    >>> preds["sine"].head()
+    2021-12-31 15:40:00    0.0126
+    2021-12-31 15:41:00    0.0126
+    2021-12-31 15:42:00    0.0125
+    2021-12-31 15:43:00    0.0126
+    2021-12-31 15:44:00    0.0125
+    Freq: T, Name: sine, dtype: float64
+
+    ```
 
     References
     ----------

@@ -35,9 +35,9 @@ def train(
         Endogenous Data (Target).
     splitter: Splitter
         Defines how the folds should be constructed.
-    train_method : Union[TrainMethod, str], optional
-        _description_, by default TrainMethod.parallel
-    backend: Union[str, Backend] = Backend.no
+    train_method : TrainMethod, str = TrainMethod.parallel
+        The training methodology, by default `parallel`.
+    backend: str, Backend = Backend.no
         The library/service to use for parallelization / distributed computing, by default `no`.
     sample_weights: Optional[pd.Series] = None
         Weights assigned to each sample/timestamp, that are passed into models that support it, by default None.

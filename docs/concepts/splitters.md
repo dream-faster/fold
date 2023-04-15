@@ -1,16 +1,16 @@
-
+![Splitters Overview](/images/technical_diagrams/splitters.svg)
 
 ### Expanding Window
 
-The recommended splitter, uses all data up until the current split date.
+Uuses all data up until the current split date.
 
 
 ### Sliding Window
 
-Useful when the Transformations should not care about "a lot of the past".
+Useful when you want to limit how much long models should look "into the past".
 
 
-#### Single train-test split
+### Single train-test split
 
 If you are not convinced of the usefulness of [Continuous Validation](continuous-validation.md),
 feel free to use the classical single train-test split.

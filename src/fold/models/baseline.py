@@ -14,21 +14,24 @@ class Naive(Model):
 
     Examples
     --------
-        >>> from fold.loop import train_backtest
-        >>> from fold.splitters import SlidingWindowSplitter
-        >>> from fold.models import Naive
-        >>> from fold.utils.tests import generate_sine_wave_data
-        >>> X, y  = generate_sine_wave_data()
-        >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
-        >>> pipeline = Naive()
-        >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
-        >>> pd.concat([preds, y[preds.index]], axis=1).head()
-                             predictions_Naive    sine
-        2021-12-31 15:40:00            -0.0000  0.0126
-        2021-12-31 15:41:00             0.0126  0.0251
-        2021-12-31 15:42:00             0.0251  0.0377
-        2021-12-31 15:43:00             0.0377  0.0502
-        2021-12-31 15:44:00             0.0502  0.0628
+    ```pycon
+    >>> from fold.loop import train_backtest
+    >>> from fold.splitters import SlidingWindowSplitter
+    >>> from fold.models import Naive
+    >>> from fold.utils.tests import generate_sine_wave_data
+    >>> X, y  = generate_sine_wave_data()
+    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> pipeline = Naive()
+    >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+    >>> pd.concat([preds, y[preds.index]], axis=1).head()
+                         predictions_Naive    sine
+    2021-12-31 15:40:00            -0.0000  0.0126
+    2021-12-31 15:41:00             0.0126  0.0251
+    2021-12-31 15:42:00             0.0251  0.0377
+    2021-12-31 15:43:00             0.0377  0.0502
+    2021-12-31 15:44:00             0.0502  0.0628
+
+    ```
     """
 
     name = "Naive"
