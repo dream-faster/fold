@@ -54,22 +54,24 @@ class AddWindowFeatures(Transformation):
 
     Examples
     --------
-        >>> from fold.loop import train_backtest
-        >>> from fold.splitters import SlidingWindowSplitter
-        >>> from fold.transformations import AddWindowFeatures
-        >>> from fold.utils.tests import generate_sine_wave_data
-        >>> X, y  = generate_sine_wave_data()
-        >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
-        >>> pipeline = AddWindowFeatures(("sine", 10, "mean"))
-        >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
-        >>> preds.head()
-                               sine  sine_10_mean
-        2021-12-31 15:40:00 -0.0000      -0.05649
-        2021-12-31 15:41:00  0.0126      -0.04394
-        2021-12-31 15:42:00  0.0251      -0.03139
-        2021-12-31 15:43:00  0.0377      -0.01883
-        2021-12-31 15:44:00  0.0502      -0.00628
+    ```pycon
+    >>> from fold.loop import train_backtest
+    >>> from fold.splitters import SlidingWindowSplitter
+    >>> from fold.transformations import AddWindowFeatures
+    >>> from fold.utils.tests import generate_sine_wave_data
+    >>> X, y  = generate_sine_wave_data()
+    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> pipeline = AddWindowFeatures(("sine", 10, "mean"))
+    >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+    >>> preds.head()
+                           sine  sine_10_mean
+    2021-12-31 15:40:00 -0.0000      -0.05649
+    2021-12-31 15:41:00  0.0126      -0.04394
+    2021-12-31 15:42:00  0.0251      -0.03139
+    2021-12-31 15:43:00  0.0377      -0.01883
+    2021-12-31 15:44:00  0.0502      -0.00628
 
+    ```
     """
 
     name = "AddWindowFeatures"

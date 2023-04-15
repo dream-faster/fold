@@ -72,22 +72,25 @@ class RenameColumns(Transformation):
 
     Examples
     --------
-        >>> from fold.loop import train_backtest
-        >>> from fold.splitters import SlidingWindowSplitter
-        >>> from fold.transformations import RenameColumns
-        >>> from fold.utils.tests import generate_sine_wave_data
-        >>> X, y  = generate_sine_wave_data()
-        >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
-        >>> pipeline = RenameColumns({"sine": "sine_renamed"})
-        >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
-        >>> preds.head()
-                             sine_renamed
-        2021-12-31 15:40:00       -0.0000
-        2021-12-31 15:41:00        0.0126
-        2021-12-31 15:42:00        0.0251
-        2021-12-31 15:43:00        0.0377
-        2021-12-31 15:44:00        0.0502
 
+    ```pycon
+    >>> from fold.loop import train_backtest
+    >>> from fold.splitters import SlidingWindowSplitter
+    >>> from fold.transformations import RenameColumns
+    >>> from fold.utils.tests import generate_sine_wave_data
+    >>> X, y  = generate_sine_wave_data()
+    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> pipeline = RenameColumns({"sine": "sine_renamed"})
+    >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+    >>> preds.head()
+                         sine_renamed
+    2021-12-31 15:40:00       -0.0000
+    2021-12-31 15:41:00        0.0126
+    2021-12-31 15:42:00        0.0251
+    2021-12-31 15:43:00        0.0377
+    2021-12-31 15:44:00        0.0502
+
+    ```
     """
 
     properties = Transformation.Properties(requires_X=True)
@@ -109,23 +112,25 @@ class OnlyPredictions(Transformation):
 
     Examples
     --------
-        >>> from fold.loop import train_backtest
-        >>> from fold.splitters import SlidingWindowSplitter
-        >>> from fold.transformations import OnlyProbabilities
-        >>> from fold.models.dummy import DummyClassifier
-        >>> from fold.utils.tests import generate_sine_wave_data
-        >>> X, y  = generate_sine_wave_data()
-        >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
-        >>> pipeline = [DummyClassifier(1, [0, 1], [0.5, 0.5]), OnlyPredictions()]
-        >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
-        >>> preds.head()
-                             predictions_DummyClassifier
-        2021-12-31 15:40:00                            1
-        2021-12-31 15:41:00                            1
-        2021-12-31 15:42:00                            1
-        2021-12-31 15:43:00                            1
-        2021-12-31 15:44:00                            1
+    ```pycon
+    >>> from fold.loop import train_backtest
+    >>> from fold.splitters import SlidingWindowSplitter
+    >>> from fold.transformations import OnlyProbabilities
+    >>> from fold.models.dummy import DummyClassifier
+    >>> from fold.utils.tests import generate_sine_wave_data
+    >>> X, y  = generate_sine_wave_data()
+    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> pipeline = [DummyClassifier(1, [0, 1], [0.5, 0.5]), OnlyPredictions()]
+    >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+    >>> preds.head()
+                         predictions_DummyClassifier
+    2021-12-31 15:40:00                            1
+    2021-12-31 15:41:00                            1
+    2021-12-31 15:42:00                            1
+    2021-12-31 15:43:00                            1
+    2021-12-31 15:44:00                            1
 
+    ```
     """
 
     properties = Transformation.Properties(requires_X=True)
@@ -148,23 +153,25 @@ class OnlyProbabilities(Transformation):
 
     Examples
     --------
-        >>> from fold.loop import train_backtest
-        >>> from fold.splitters import SlidingWindowSplitter
-        >>> from fold.transformations import OnlyProbabilities
-        >>> from fold.models.dummy import DummyClassifier
-        >>> from fold.utils.tests import generate_sine_wave_data
-        >>> X, y  = generate_sine_wave_data()
-        >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
-        >>> pipeline = [DummyClassifier(1, [0, 1], [0.5, 0.5]), OnlyProbabilities()]
-        >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
-        >>> preds.head()
-                             probabilities_DummyClassifier_0  probabilities_DummyClassifier_1
-        2021-12-31 15:40:00                              0.5                              0.5
-        2021-12-31 15:41:00                              0.5                              0.5
-        2021-12-31 15:42:00                              0.5                              0.5
-        2021-12-31 15:43:00                              0.5                              0.5
-        2021-12-31 15:44:00                              0.5                              0.5
+    ```pycon
+    >>> from fold.loop import train_backtest
+    >>> from fold.splitters import SlidingWindowSplitter
+    >>> from fold.transformations import OnlyProbabilities
+    >>> from fold.models.dummy import DummyClassifier
+    >>> from fold.utils.tests import generate_sine_wave_data
+    >>> X, y  = generate_sine_wave_data()
+    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> pipeline = [DummyClassifier(1, [0, 1], [0.5, 0.5]), OnlyProbabilities()]
+    >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+    >>> preds.head()
+                         probabilities_DummyClassifier_0  probabilities_DummyClassifier_1
+    2021-12-31 15:40:00                              0.5                              0.5
+    2021-12-31 15:41:00                              0.5                              0.5
+    2021-12-31 15:42:00                              0.5                              0.5
+    2021-12-31 15:43:00                              0.5                              0.5
+    2021-12-31 15:44:00                              0.5                              0.5
 
+    ```
     """
 
     properties = Transformation.Properties(requires_X=True)
