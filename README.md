@@ -107,7 +107,7 @@ Thinking of using `fold`? We'd love to hear about your use case and help, [pleas
   </tr>
   <tr>
     <td> 
-      <a href='https://dream-faster.github.io/fold/examples/walkthroughs/core_walkthrough/' target="_blank">⚡️ Core Walkthrough</a></td>
+      <a href='https://dream-faster.github.io/fold/walkthroughs/core_walkthrough/' target="_blank">⚡️ Core Walkthrough</a></td>
     <td>Energy</td>
   </tr>
 </table>
