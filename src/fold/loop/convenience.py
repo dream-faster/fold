@@ -40,8 +40,8 @@ def replace_transformation_if_not_fold_native(
         return transformation.clone(replace_transformation_if_not_fold_native)
     elif isinstance(transformation, Transformation):
         return transformation
-    elif find_spec("fold_models") is not None:
-        from fold_models.convenience import wrap_transformation_if_possible
+    elif find_spec("fold_wrapper") is not None:
+        from fold_wrapper.convenience import wrap_transformation_if_possible
 
         return wrap_transformation_if_possible(transformation)
     else:

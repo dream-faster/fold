@@ -3,7 +3,7 @@ Tabular Models
 ===========================
 """
 
-from fold_models import WrapXGB
+from fold_wrapper import WrapXGB
 from xgboost import XGBRegressor
 
 from fold.loop import train_evaluate

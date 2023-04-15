@@ -3,7 +3,7 @@ Transformations applied to the Target (y)
 ===========================
 """
 
-from fold_models import WrapXGB
+from fold_wrapper import WrapXGB
 from xgboost import XGBRegressor
 
 from fold.composites.target import TransformTarget

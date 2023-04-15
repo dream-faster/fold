@@ -408,7 +408,7 @@ Let's train a [MSTL](https://arxiv.org/abs/2107.13462) model that's implemented 
 
 ```python
 from statsforecast.models import MSTL
-from fold_models import WrapStatsForecast, WrapStatsModels
+from fold_wrapper import WrapStatsForecast, WrapStatsModels
 
 mstl = WrapStatsForecast.from_model(MSTL([24, 168]))
 ```
@@ -461,12 +461,12 @@ What if we could use a lightweight, "online" model, that can be updated on every
 
 And.. what if we just repeat the last value?
 
-That'd be the `Naive` model you can load from `fold_models`.
+That'd be the `Naive` model you can load from `fold_wrapper`.
 
 
 ```python
 from fold import train_evaluate
-from fold_models import Naive
+from fold_wrapper import Naive
 
 scorecard, predictions, trained_pipeline = train_evaluate(Naive(), None, y, splitter, krisi_args={"model_name":"naive"})
 results.append((scorecard, predictions))
@@ -625,7 +625,7 @@ lregression = [
 
 ```python
 from xgboost import XGBRegressor
-from fold_models.xgboost import WrapXGB
+from fold_wrapper.xgboost import WrapXGB
 
 xgboost = [
     AddLagsX(('all',range(1,3))),
