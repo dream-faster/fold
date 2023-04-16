@@ -4,7 +4,7 @@ from typing import Union
 
 import pandas as pd
 
-from ..base import Transformation, fit_noop
+from ..base import fit_noop
 from .base import TimeSeriesModel
 
 
@@ -37,7 +37,7 @@ class Naive(TimeSeriesModel):
     name = "Naive"
     properties = TimeSeriesModel.Properties(
         requires_X=False,
-        mode=Transformation.Properties.Mode.online,
+        mode=TimeSeriesModel.Properties.Mode.online,
         memory_size=1,
         _internal_supports_minibatch_backtesting=False,
     )
