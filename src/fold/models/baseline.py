@@ -5,10 +5,10 @@ from typing import Union
 import pandas as pd
 
 from ..base import Transformation, fit_noop
-from .base import Model
+from .base import TimeSeriesModel
 
 
-class Naive(Model):
+class Naive(TimeSeriesModel):
     """
     A univariate model that predicts the last target value.
 
@@ -35,21 +35,23 @@ class Naive(Model):
     """
 
     name = "Naive"
-    properties = Model.Properties(
+    properties = TimeSeriesModel.Properties(
         requires_X=False,
         mode=Transformation.Properties.Mode.online,
         memory_size=1,
         _internal_supports_minibatch_backtesting=False,
     )
 
-    def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
+    def predict(
+        self, X: pd.DataFrame, past_y: pd.Series
+    ) -> Union[pd.Series, pd.DataFrame]:
         # it's an online transformation, so len(X) will be always 1,
-        return pd.Series(
-            self._state.memory_y.iloc[-1].squeeze(), index=X.index[-1:None]
-        )
+        return pd.Series(past_y.iloc[-1].squeeze(), index=X.index[-1:None])
 
-    def predict_in_sample(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
-        return self._state.memory_y.shift(1)
+    def predict_in_sample(
+        self, X: pd.DataFrame, y: pd.Series
+    ) -> Union[pd.Series, pd.DataFrame]:
+        return y.shift(1)
 
     fit = fit_noop
     update = fit
