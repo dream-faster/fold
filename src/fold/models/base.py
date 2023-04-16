@@ -60,7 +60,10 @@ class TimeSeriesModel(Transformation):
             )
         else:
             return postpostprocess_prediction(
-                self.predict(X, self._state.memory_y), self.name
+                self.predict(
+                    X, self._state.memory_y[-self.properties.memory_size : None]
+                ),
+                self.name,
             )
 
 
