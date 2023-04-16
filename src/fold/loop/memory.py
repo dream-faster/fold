@@ -20,11 +20,19 @@ def preprocess_X_y_with_memory(
         return X, y
     assert len(memory_X) == len(memory_y)
     if y is None:
-        return pd.concat([memory_X, X], axis="index"), y
+        return (
+            pd.concat(
+                [memory_X[-transformation.properties.memory_size : None], X],
+                axis="index",
+            ),
+            y,
+        )
     else:
         memory_y.name = y.name
-        return pd.concat([memory_X, X], axis="index"), pd.concat(
-            [memory_y, y], axis="index"
+        return pd.concat(
+            [memory_X[-transformation.properties.memory_size : None], X], axis="index"
+        ), pd.concat(
+            [memory_y[-transformation.properties.memory_size : None], y], axis="index"
         )
 
 
