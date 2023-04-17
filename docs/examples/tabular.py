@@ -2,7 +2,7 @@
 Using Tabular Models
 ===========================
 """
-
+# mkdocs_gallery_thumbnail_path = 'images/example_thumnail.png'
 from sklearn.ensemble import RandomForestRegressor
 
 from fold.composites import Concat

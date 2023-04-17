@@ -1,7 +1,5 @@
 # Benchmarking the speed of [fold](https://github.com/dream-faster/fold) and SKTime.
 
-[:material-download:  Download](benchmarking_sktime_fold.ipynb){ .md-button }   [:simple-googlecolab:  Open In Colab](https://colab.research.google.com/drive/1iLXpty-j1kpDCzLM4fCsP3fLoS_DFN1C?usp=sharing){ .md-button .md-button--primary }
-
 ![Cover Image for Benchmarking](https://lh3.googleusercontent.com/drive-viewer/AAOQEOQ_hiGnfxaCuCDqS5cESXFi3YVEMyqzNUYMg3lwj5a1GgU_sR5h3e1CcP1-OTshHwjHLamQizdt3qtRITdkL5HBePYdKA=s1600)
 
 ## Installing libraries, defining utility functions
@@ -9,7 +7,7 @@
 
 ```python
 %%capture
-pip install --quiet https://github.com/dream-faster/fold/archive/main.zip https://github.com/dream-faster/fold-wrappers/archive/main.zip git+https://github.com/dream-faster/krisi.git@main matplotlib seaborn xgboost plotly prophet statsforecast statsmodels ray kaleido sktime pmdarima
+pip install --quiet https://github.com/dream-faster/fold/archive/main.zip https://github.com/dream-faster/fold-models/archive/main.zip https://github.com/dream-faster/krisi/archive/main.zip https://github.com/dream-faster/fold-wrappers/archive/main.zip matplotlib seaborn xgboost plotly prophet statsforecast statsmodels ray kaleido sktime pmdarima
 ```
 
 
@@ -26,14 +24,14 @@ class Timing:
     results = defaultdict(lambda: defaultdict(dict))
         
     def record_time(self, model_name: str, framework: str):
-        def wrappers( function, *args, **kwargs):
+        def wrapper( function, *args, **kwargs):
             start_time = monotonic()
             return_value = function(*args, **kwargs)
             print(f"Run time: {monotonic() - start_time} seconds")
 
             self.results[framework][model_name] = monotonic() - start_time
             return return_value
-        return wrappers
+        return wrapper
     def summary(self):
         pd.set_option('display.max_rows', None)
         pd.set_option('display.max_columns', None)
@@ -130,7 +128,7 @@ plot_y_predictions(y[predictions.index], predictions.to_frame(), mode="overlap")
 score(y[predictions.index], predictions)[['rmse']].print('minimal')
 ```
 
-    Run time: 0.42958214999998745 seconds
+    Run time: 0.32869669699999804 seconds
 
 
 
@@ -140,7 +138,8 @@ score(y[predictions.index], predictions)[['rmse']].print('minimal')
 
 
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">                 Root Mean Squared Error - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">5.3689</span>         
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">                                            naive
+                 Root Mean Squared Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">5.36894</span>
 </pre>
 
 
@@ -157,7 +156,7 @@ plot_y_predictions(y[predictions.index], predictions.to_frame(), mode="overlap")
 score(y[predictions.index], predictions)[['rmse']].print('minimal')
 ```
 
-    Run time: 2.570254820999992 seconds
+    Run time: 2.449221571999999 seconds
 
 
 
@@ -167,7 +166,8 @@ score(y[predictions.index], predictions)[['rmse']].print('minimal')
 
 
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">                 Root Mean Squared Error - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">6.7435</span>         
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">                                          temperature
+                 Root Mean Squared Error     <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">6.743475</span>
 </pre>
 
 
@@ -188,7 +188,7 @@ plot_y_predictions(y[predictions.index], predictions.to_frame(), mode="overlap")
 score(y[predictions.index], predictions)[['rmse']].print('minimal')
 ```
 
-    Run time: 30.31522055900001 seconds
+    Run time: 44.59098899100002 seconds
 
 
 
@@ -198,7 +198,8 @@ score(y[predictions.index], predictions)[['rmse']].print('minimal')
 
 
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">                 Root Mean Squared Error - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">5.0444</span>         
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">                                          temperature
+                 Root Mean Squared Error     <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">5.044424</span>
 </pre>
 
 
@@ -212,7 +213,7 @@ timing.summary()
 
 
 
-  <div id="df-e1c0ea9e-3829-408f-8f5c-13cc1240e174">
+  <div id="df-9190ebbe-b233-46d8-8e6b-b72c9039b13d">
     <div class="colab-df-container">
       <div>
 <style scoped>
@@ -238,20 +239,20 @@ timing.summary()
   <tbody>
     <tr>
       <th>arima</th>
-      <td>2.570</td>
+      <td>2.449</td>
     </tr>
     <tr>
       <th>naive</th>
-      <td>0.431</td>
+      <td>0.329</td>
     </tr>
     <tr>
       <th>xgboost</th>
-      <td>30.316</td>
+      <td>44.591</td>
     </tr>
   </tbody>
 </table>
 </div>
-      <button class="colab-df-convert" onclick="convertToInteractive('df-e1c0ea9e-3829-408f-8f5c-13cc1240e174')"
+      <button class="colab-df-convert" onclick="convertToInteractive('df-9190ebbe-b233-46d8-8e6b-b72c9039b13d')"
               title="Convert this dataframe to an interactive table."
               style="display:none;">
 
@@ -302,12 +303,12 @@ timing.summary()
 
       <script>
         const buttonEl =
-          document.querySelector('#df-e1c0ea9e-3829-408f-8f5c-13cc1240e174 button.colab-df-convert');
+          document.querySelector('#df-9190ebbe-b233-46d8-8e6b-b72c9039b13d button.colab-df-convert');
         buttonEl.style.display =
           google.colab.kernel.accessAllowed ? 'block' : 'none';
 
         async function convertToInteractive(key) {
-          const element = document.querySelector('#df-e1c0ea9e-3829-408f-8f5c-13cc1240e174');
+          const element = document.querySelector('#df-9190ebbe-b233-46d8-8e6b-b72c9039b13d');
           const dataTable =
             await google.colab.kernel.invokeFunction('convertToInteractive',
                                                      [key], {});
@@ -343,14 +344,15 @@ The models are static, stuck in the past between end of the training windows, th
 ```python
 from fold import train_evaluate, ExpandingWindowSplitter, Backend
 from fold.transformations import AddLagsX
-from fold_wrapper import WrapXGB, WrapStatsModels, Naive
+from fold_wrappers import WrapXGB, WrapStatsModels
+from fold_models import Naive
 from statsmodels.tsa.arima.model import ARIMA as StatsModelARIMA
-from fold_wrapper.baseline import Naive
+from fold_models.baseline import Naive
 import ray
 ray.init(ignore_reinit_error=True)
 ```
 
-    2023-04-14 10:20:37,157	INFO worker.py:1553 -- Started a local Ray instance.
+    2023-04-17 11:07:04,950	INFO worker.py:1553 -- Started a local Ray instance.
 
 
 
@@ -413,7 +415,7 @@ plot_y_predictions(y[predictions.index], predictions, mode="overlap")
 scorecard[['rmse']].print('minimal')
 ```
 
-    Run time: 0.2988592729999766 seconds
+    Run time: 0.17832120899998927 seconds
 
 
 
@@ -423,7 +425,8 @@ scorecard[['rmse']].print('minimal')
 
 
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">                 Root Mean Squared Error - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.2239</span>         
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">                                          predictions_Naive
+                 Root Mean Squared Error        <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.224</span>      
 </pre>
 
 
@@ -438,7 +441,7 @@ plot_y_predictions(y[predictions.index], predictions, mode="overlap")
 scorecard[['rmse']].print('minimal')
 ```
 
-    Run time: 37.16063724 seconds
+    Run time: 41.32513004100002 seconds
 
 
 
@@ -448,7 +451,8 @@ scorecard[['rmse']].print('minimal')
 
 
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">                 Root Mean Squared Error - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.92664</span>        
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">                                          predictions_WrapStatsModels-type
+                 Root Mean Squared Error                <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.927</span>             
 </pre>
 
 
@@ -477,7 +481,7 @@ timing.summary()
 
 
 
-  <div id="df-d7643d7c-96cd-4ea6-af50-046dfcc2161d">
+  <div id="df-4f115e4a-e515-4317-af47-c984a43718d1">
     <div class="colab-df-container">
       <div>
 <style scoped>
@@ -504,23 +508,23 @@ timing.summary()
   <tbody>
     <tr>
       <th>naive</th>
-      <td>0.431</td>
-      <td>0.300</td>
+      <td>0.329</td>
+      <td>0.180</td>
     </tr>
     <tr>
       <th>arima</th>
-      <td>2.570</td>
-      <td>37.162</td>
+      <td>2.449</td>
+      <td>41.325</td>
     </tr>
     <tr>
       <th>xgboost</th>
-      <td>30.316</td>
-      <td>8.337</td>
+      <td>44.591</td>
+      <td>13.256</td>
     </tr>
   </tbody>
 </table>
 </div>
-      <button class="colab-df-convert" onclick="convertToInteractive('df-d7643d7c-96cd-4ea6-af50-046dfcc2161d')"
+      <button class="colab-df-convert" onclick="convertToInteractive('df-4f115e4a-e515-4317-af47-c984a43718d1')"
               title="Convert this dataframe to an interactive table."
               style="display:none;">
 
@@ -571,12 +575,12 @@ timing.summary()
 
       <script>
         const buttonEl =
-          document.querySelector('#df-d7643d7c-96cd-4ea6-af50-046dfcc2161d button.colab-df-convert');
+          document.querySelector('#df-4f115e4a-e515-4317-af47-c984a43718d1 button.colab-df-convert');
         buttonEl.style.display =
           google.colab.kernel.accessAllowed ? 'block' : 'none';
 
         async function convertToInteractive(key) {
-          const element = document.querySelector('#df-d7643d7c-96cd-4ea6-af50-046dfcc2161d');
+          const element = document.querySelector('#df-4f115e4a-e515-4317-af47-c984a43718d1');
           const dataTable =
             await google.colab.kernel.invokeFunction('convertToInteractive',
                                                      [key], {});
@@ -622,7 +626,7 @@ plot_y_predictions(y[predictions.index], predictions.to_frame(), mode="overlap")
 score(y[predictions.index], predictions)[['rmse']].print('minimal')
 ```
 
-    Run time: 19.020838536000014 seconds
+    Run time: 18.046849753999993 seconds
 
 
 
@@ -632,7 +636,8 @@ score(y[predictions.index], predictions)[['rmse']].print('minimal')
 
 
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">                 Root Mean Squared Error - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.2239</span>         
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">                                          naive
+                 Root Mean Squared Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.224</span>
 </pre>
 
 
@@ -656,7 +661,7 @@ score(y[predictions.index], predictions)[['rmse']].print('minimal')
     
 
 
-    Run time: 86.393897089 seconds
+    Run time: 106.65218957599996 seconds
 
 
 
@@ -666,7 +671,8 @@ score(y[predictions.index], predictions)[['rmse']].print('minimal')
 
 
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">                 Root Mean Squared Error - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.92736</span>        
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">                                          temperature
+                 Root Mean Squared Error     <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.927</span>   
 </pre>
 
 
@@ -685,7 +691,7 @@ plot_y_predictions(y[predictions.index], predictions.to_frame(), mode="overlap")
 score(y[predictions.index], predictions)[['rmse']].print('minimal')
 ```
 
-    Run time: 564.389987367 seconds
+    Run time: 759.161927353 seconds
 
 
 
@@ -695,7 +701,8 @@ score(y[predictions.index], predictions)[['rmse']].print('minimal')
 
 
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">                 Root Mean Squared Error - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.0182</span>         
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">                                          temperature
+                 Root Mean Squared Error     <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.018</span>   
 </pre>
 
 
@@ -709,7 +716,7 @@ timing.summary()
 
 
 
-  <div id="df-8d5fdfb9-fb0d-4a3d-9572-f72a1aa47257">
+  <div id="df-119838ec-fb8d-45ca-b033-1ee3de119a31">
     <div class="colab-df-container">
       <div>
 <style scoped>
@@ -737,26 +744,26 @@ timing.summary()
   <tbody>
     <tr>
       <th>naive</th>
-      <td>0.431</td>
-      <td>0.300</td>
-      <td>19.022</td>
+      <td>0.329</td>
+      <td>0.180</td>
+      <td>18.048</td>
     </tr>
     <tr>
       <th>arima</th>
-      <td>2.570</td>
-      <td>37.162</td>
-      <td>86.394</td>
+      <td>2.449</td>
+      <td>41.325</td>
+      <td>106.653</td>
     </tr>
     <tr>
       <th>xgboost</th>
-      <td>30.316</td>
-      <td>8.337</td>
-      <td>564.391</td>
+      <td>44.591</td>
+      <td>13.256</td>
+      <td>759.163</td>
     </tr>
   </tbody>
 </table>
 </div>
-      <button class="colab-df-convert" onclick="convertToInteractive('df-8d5fdfb9-fb0d-4a3d-9572-f72a1aa47257')"
+      <button class="colab-df-convert" onclick="convertToInteractive('df-119838ec-fb8d-45ca-b033-1ee3de119a31')"
               title="Convert this dataframe to an interactive table."
               style="display:none;">
 
@@ -807,12 +814,12 @@ timing.summary()
 
       <script>
         const buttonEl =
-          document.querySelector('#df-8d5fdfb9-fb0d-4a3d-9572-f72a1aa47257 button.colab-df-convert');
+          document.querySelector('#df-119838ec-fb8d-45ca-b033-1ee3de119a31 button.colab-df-convert');
         buttonEl.style.display =
           google.colab.kernel.accessAllowed ? 'block' : 'none';
 
         async function convertToInteractive(key) {
-          const element = document.querySelector('#df-8d5fdfb9-fb0d-4a3d-9572-f72a1aa47257');
+          const element = document.querySelector('#df-119838ec-fb8d-45ca-b033-1ee3de119a31');
           const dataTable =
             await google.colab.kernel.invokeFunction('convertToInteractive',
                                                      [key], {});
@@ -837,8 +844,3 @@ timing.summary()
 Overall, [`fold`](https://github.com/dream-faster/fold) provides a speedup between 3x and 100x, already.
 
 When it comes to practice, we argue that this makes Continuos Validation feasible, compared to other tools out there.
-
-
-```python
-
-```

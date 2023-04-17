@@ -2,7 +2,7 @@
 Preprocessing
 ===========================
 """
-
+# mkdocs_gallery_thumbnail_path = 'images/example_thumnail.png'
 from fold import train
 from fold.composites import Concat
 from fold.splitters import ExpandingWindowSplitter

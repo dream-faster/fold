@@ -2,7 +2,7 @@
 Ensembling (Composite Models)
 ===========================
 """
-
+# mkdocs_gallery_thumbnail_path = 'images/example_thumnail.png'
 from fold_wrappers import WrapStatsForecast
 from statsforecast.models import ARIMA
 from xgboost import XGBRegressor
