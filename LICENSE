@@ -10,15 +10,16 @@ Licensor: Myalo UG (haftungsbeschränkt), Berlin, Germany
 
 The goal of this licence is to contribute to the advance of Time-Series 
 and Nowcasting Research by granting access to this software for
-non-commercial use.
+non-commercial use. For Commercial use a licence has to be purchased 
+from the Licensor.
 
 
                        TERMS AND CONDITIONS
 
 The Licensor hereby grants you the right to copy, modify, 
-create derivative works, redistribute, and make non-production 
+create derivative works, redistribute, and make non-commercial 
 use of the Licensed Work. The Licensor may make an Additional Use 
-Grant, above, permitting limited production use.
+Grant, above, permitting limited commercial use.
 
 If your use of the Licensed Work does not comply with the requirements 
 currently in effect as described in this License, you must purchase a 
@@ -40,9 +41,9 @@ the right to Sell the Software.
 For purposes of the foregoing, “Sell” means practicing any or all of the 
 rights granted to you under the License to provide to third parties, 
 for a fee or other consideration (including without limitation fees for hosting
-or consulting/ support services related to the Software), a product or 
-service whose value derives, entirely or substantially, from the functionality
- of the Software. 
+or consulting/support services related to the Software), a product or 
+service whose value derives, entirely or substantially, from the functionality 
+of the Software. 
 
                         DISCLAIMER OF WARRANTY
 
