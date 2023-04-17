@@ -201,35 +201,41 @@ If you want to try them out, we'd love to hear about your use case and help, [pl
 <table class="tg">
 <thead>
 <tr>
+<th>-</th>
   <th><img alt='Core' src='docs/images/product_diagrams/pricing-core.svg'></th>
   <th><img alt='Extended' src='docs/images/product_diagrams/pricing-extended.svg'></th>
   <th><img alt='Enterprise' src='docs/images/product_diagrams/pricing-enterprise.svg'></th>
 </thead>
 <tbody>
   <tr>
+    <td> Package Description</td>
     <td class="tg-0pky"><span style="font-style:italic">Commercial licence for Fold</span></td>
     <td class="tg-phtq"><span style="font-style:italic">Fold with extended functionality</span></td>
     <td class="tg-85ys"><span style="font-style:italic">Dream Faster's entire Forecasting suite</span></td>
   </tr>
   <tr>
+    <td> Features</td>
     <td class="tg-0pky">Training with Continuous Validation</td>
     <td class="tg-phtq">Deployment to Production</td>
     <td class="tg-85ys">Advanced Reporting tailored for Continuous Validation</td>
   </tr>
   <tr>
+    <td> </td>
     <td class="tg-0pky">Fast Backtesting with Continuous Validation</td>
     <td class="tg-phtq">Fast implementations of TS Models for Continuous Validation</td>
     <td class="tg-85ys">Hyperparameter Optimization</td>
   </tr>
   <tr>
+    <td> </td>
     <td class="tg-0pky">Basic Transformations and Composites</td>
     <td class="tg-phtq">Extended Transformations</td>
     <td class="tg-85ys">Feature Selection</td>
   </tr>
   <tr>
-    <td class="tg-0pky"><span style="font-style:italic">Includes:</span><br>+ Commercial Licence for <a href="https://github.com/dream-faster/fold" target="_blank" rel="noopener noreferrer">Fold</a></td>
-    <td class="tg-phtq"><span style="font-style:italic">Includes:</span><br>+ Commercial Licence for <a href="https://github.com/dream-faster/fold" target="_blank" rel="noopener noreferrer">Fold</a><br>+ Commercial Licence for <a href="https://github.com/dream-faster/fold-wrappers" target="_blank" rel="noopener noreferrer">Fold-Wrappers</a><br>+ Commercial Licence <a href="https://github.com/dream-faster/fold-models" target="_blank" rel="noopener noreferrer">Fold-Models</a></td>
-    <td class="tg-85ys"><span style="font-style:italic">Includes:</span><br>+ Everything in Extended<br>+ <a href="https://github.com/dream-faster/krisi" target="_blank" rel="noopener noreferrer">Krisi-premium</a><br>+ Fold-HPO<br>+ Fold-Advanced-Feature-Selection</td>
+    <td>Includes </td>
+    <td class="tg-0pky">+ Commercial Licence for <a href="https://github.com/dream-faster/fold" target="_blank" rel="noopener noreferrer">Fold</a></td>
+    <td class="tg-phtq">+ Commercial Licence for <a href="https://github.com/dream-faster/fold" target="_blank" rel="noopener noreferrer">Fold</a><br>+ Commercial Licence for <a href="https://github.com/dream-faster/fold-wrappers" target="_blank" rel="noopener noreferrer">Fold-Wrappers</a><br>+ Commercial Licence <a href="https://github.com/dream-faster/fold-models" target="_blank" rel="noopener noreferrer">Fold-Models</a></td>
+    <td class="tg-85ys">+ Everything in Extended<br>+ <a href="https://github.com/dream-faster/krisi" target="_blank" rel="noopener noreferrer">Krisi-premium</a><br>+ Fold-HPO<br>+ Fold-Advanced-Feature-Selection</td>
   </tr>
   <tr>
     <td> <a style="margin:2px" href="mailto:nowcasting@dreamfaster.ai?subject=Fold Core Licencing"><img alt="Contact us for Core Licence" src="https://shields.io/badge/-Contact%20us-yellow?logo=minutemailer&logoColor=white"></a> </td>
