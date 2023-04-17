@@ -201,7 +201,7 @@ If you want to try them out, we'd love to hear about your use case and help, [pl
 <table class="tg">
 <thead>
 <tr>
-<th>-</th>
+  <th></th>
   <th><img alt='Core' src='docs/images/product_diagrams/pricing-core.svg'></th>
   <th><img alt='Extended' src='docs/images/product_diagrams/pricing-extended.svg'></th>
   <th><img alt='Enterprise' src='docs/images/product_diagrams/pricing-enterprise.svg'></th>
