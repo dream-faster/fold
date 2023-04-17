@@ -184,6 +184,58 @@ Inside a test window, and during deployment, fold provides a way for a model to 
 
 If you want to try them out, we'd love to hear about your use case and help, [please book a free 30-min call with us](https://calendly.com/mark-szulyovszky/consultation)!
 
+## Pricing
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-color:#9ABAD9;border-spacing:0;}
+.tg td{background-color:#EBF5FF;border-color:#9ABAD9;border-style:solid;border-width:1px;color:#444;
+  font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:15px 15px;word-break:normal;}
+.tg th{background-color:#409cff;border-color:#9ABAD9;border-style:solid;border-width:1px;color:#fff;
+  font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:15px 15px;word-break:normal;}
+.tg .tg-phtq{background-color:#D2E4FC;border-color:inherit;text-align:left;vertical-align:top}
+.tg .tg-2jrw{background-color:#2d5a8c;border-color:inherit;font-size:18px;text-align:center;vertical-align:top}
+.tg .tg-7jts{border-color:inherit;font-size:18px;text-align:center;vertical-align:top}
+.tg .tg-ybdt{background-color:#4782c2;border-color:inherit;font-size:18px;text-align:center;vertical-align:top}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+.tg .tg-85ys{background-color:#81b2f8;border-color:inherit;text-align:left;vertical-align:top}
+</style>
+<table class="tg">
+<thead>
+  <tr>
+    <th class="tg-7jts"><span style="font-weight:bold">Core</span></th>
+    <th class="tg-ybdt"><span style="font-weight:bold">Extended</span></th>
+    <th class="tg-2jrw"><span style="font-weight:bold">Enterprise</span></th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-0pky"><span style="font-style:italic">Commercial licence for Fold</span></td>
+    <td class="tg-phtq"><span style="font-style:italic">Fold with extended functionality</span></td>
+    <td class="tg-85ys"><span style="font-style:italic">Dream Faster's entire Forecasting suite</span></td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Training with Continuous Validation</td>
+    <td class="tg-phtq">Deployment to Production</td>
+    <td class="tg-85ys">Advanced Reporting tailored for Continuous Validation</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Fast Backtesting with Continuous Validation</td>
+    <td class="tg-phtq">Fast implementations of TS Models for Continuous Validation</td>
+    <td class="tg-85ys">Hyperparameter Optimization</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Basic Transformations and Composites</td>
+    <td class="tg-phtq">Extended Transformations</td>
+    <td class="tg-85ys">Feature Selection</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky"><span style="font-style:italic">Includes:</span><br>+ Commercial Licence for <a href="https://github.com/dream-faster/fold" target="_blank" rel="noopener noreferrer">Fold</a></td>
+    <td class="tg-phtq"><span style="font-style:italic">Includes:</span><br>+ Commercial Licence for <a href="https://github.com/dream-faster/fold" target="_blank" rel="noopener noreferrer">Fold</a><br>+ Commercial Licence for <a href="https://github.com/dream-faster/fold-wrappers" target="_blank" rel="noopener noreferrer">Fold-Wrappers</a><br>+ Commercial Licence <a href="https://github.com/dream-faster/fold-models" target="_blank" rel="noopener noreferrer">Fold-Models</a></td>
+    <td class="tg-85ys"><span style="font-style:italic">Includes:</span><br>+ Everything in Extended<br>+ <a href="https://github.com/dream-faster/krisi" target="_blank" rel="noopener noreferrer">Krisi-premium</a><br>+ Fold-HPO<br>+ Fold-Advanced-Feature-Selection</td>
+  </tr>
+</tbody>
+</table>
+
 ## Contribution
 
 Join our [Discord](https://discord.gg/EKJQgfuBpE) for live discussion!
