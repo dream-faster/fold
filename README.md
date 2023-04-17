@@ -120,8 +120,8 @@ Thinking of using `fold`? We'd love to hear about your use case and help, [pleas
 - Online and Mini-batch learning.
 - Feature selection and other transformations on an expanding/rolling window basis
 - Use any scikit-learn/tabular model natively!
-- Use any univariate or sequence models (wrappers provided in [fold-wrapper](https://github.com/dream-faster/fold-wrapper)).
-- Use any Deep Learning Time Series models (wrappers provided in [fold-wrapper](https://github.com/dream-faster/fold-wrapper)).
+- Use any univariate or sequence models (wrappers provided in [fold-wrappers](https://github.com/dream-faster/fold-wrappers)).
+- Use any Deep Learning Time Series models (wrappers provided in [fold-wrappers](https://github.com/dream-faster/fold-wrappers)).
 - Super easy syntax!
 - Probabilistic foreacasts (currently, for Classification, full support coming in April).
 - Hyperparemeter optimization / Model selection. (coming in early April!)
@@ -138,7 +138,7 @@ Inside a test window, and during deployment, fold provides a way for a model to 
 [![Krisi](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/dream_faster_suite_krisi.svg)](https://github.com/dream-faster/krisi)
 [![Fold](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/dream_faster_suite_fold.svg)](https://github.com/dream-faster/fold)
 [![Fold/Models](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/dream_faster_suite_fold_models.svg)](https://github.com/dream-faster/fold-models)
-[![Fold/Wrapper](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/dream_faster_suite_fold_wrappers.svg)](https://github.com/dream-faster/fold-wrapper)
+[![Fold/Wrappers](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/dream_faster_suite_fold_wrappers.svg)](https://github.com/dream-faster/fold-wrappers)
 
 If you want to try them out, we'd love to hear about your use case and help, [please book a free 30-min call with us](https://calendly.com/mark-szulyovszky/consultation)!
 

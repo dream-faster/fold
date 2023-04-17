@@ -131,7 +131,7 @@ class Concat(Composite):
 
 class Pipeline(Composite):
     """
-    An optional wrapper that is equivalent to using a single array for the transformations.
+    An optional wrappers that is equivalent to using a single array for the transformations.
     It executes the transformations sequentially, in the order they are provided.
 
     Parameters
