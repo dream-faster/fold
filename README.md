@@ -101,8 +101,8 @@ Thinking of using `fold`? We'd love to hear about your use case and help, [pleas
 
 <table style="width:100%">
   <tr>
-    <th>Type</th>
     <th>Name</th>
+    <th>Type</th>
     <th>Dataset Type</th>
     <th>Docs Link</th>
     <th>Colab</th>
