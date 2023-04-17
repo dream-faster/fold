@@ -1,6 +1,5 @@
 # Fold - Core Walkthrough
 
-[:material-download:  Download](core_walkthrough.ipynb){ .md-button }   [:simple-googlecolab:  Open In Colab](https://colab.research.google.com/github/https://colab.research.google.com/drive/1CVhxOmbHO9PvsdHfGvR91ilJUqEnUuy8?usp=sharing){ .md-button .md-button--primary }
 
 ![Walkthrough Cover.png](https://lh3.googleusercontent.com/drive-viewer/AAOQEOT4w3Cu4i_TPzDV4WAHd3DkRuz7-4rPsre2jX05y_oanG19aCCMmi_oglzAKdRGZ-qYYTUdSoJJxE7KSc_wNkCT3GAsCA=s1600)
 
@@ -22,7 +21,7 @@ We will use the dataset from an [Energy residual load forcasting challenge](http
 
 Let's start by installing:
 - [`fold`](https://github.com/dream-faster/fold)
-- [`fold-wrappers`](https://github.com/dream-faster/fold-wrappers): optional, this will be required later for third party models. Wraps eg. `XGBoost` or `StatsForecast` models to be used with `fold`.
+- [`fold-models`](https://github.com/dream-faster/fold-models): optional, this will be required later for third party models. Wraps eg. `XGBoost` or `StatsForecast` models to be used with `fold`.
 - [`krisi`](https://github.com/dream-faster/krisi), optional. Dream Faster's Time-Series evaluation library to quickly get results.
 
 
@@ -31,7 +30,7 @@ Let's start by installing:
 
 ```python
 %%capture
-pip install --quiet https://github.com/dream-faster/fold/archive/main.zip https://github.com/dream-faster/fold-wrappers/archive/main.zip git+https://github.com/dream-faster/krisi.git@main matplotlib seaborn xgboost plotly prophet statsforecast statsmodels ray kaleido
+pip install --quiet https://github.com/dream-faster/fold/archive/main.zip https://github.com/dream-faster/fold-wrappers/archive/main.zip https://github.com/dream-faster/fold-models/archive/main.zip https://github.com/dream-faster/krisi/archive/main.zip matplotlib seaborn xgboost plotly prophet statsforecast statsmodels ray kaleido
 ```
 
 ## Data Loading and Exploration
@@ -91,7 +90,7 @@ X.head()
 
 
 
-  <div id="df-b5485d31-d3be-4181-903e-dd7aa42c041a">
+  <div id="df-576c28e5-04f1-4b33-8c57-6040e0b40fb4">
     <div class="colab-df-container">
       <div>
 <style scoped>
@@ -191,7 +190,7 @@ X.head()
   </tbody>
 </table>
 </div>
-      <button class="colab-df-convert" onclick="convertToInteractive('df-b5485d31-d3be-4181-903e-dd7aa42c041a')"
+      <button class="colab-df-convert" onclick="convertToInteractive('df-576c28e5-04f1-4b33-8c57-6040e0b40fb4')"
               title="Convert this dataframe to an interactive table."
               style="display:none;">
 
@@ -242,12 +241,12 @@ X.head()
 
       <script>
         const buttonEl =
-          document.querySelector('#df-b5485d31-d3be-4181-903e-dd7aa42c041a button.colab-df-convert');
+          document.querySelector('#df-576c28e5-04f1-4b33-8c57-6040e0b40fb4 button.colab-df-convert');
         buttonEl.style.display =
           google.colab.kernel.accessAllowed ? 'block' : 'none';
 
         async function convertToInteractive(key) {
-          const element = document.querySelector('#df-b5485d31-d3be-4181-903e-dd7aa42c041a');
+          const element = document.querySelector('#df-576c28e5-04f1-4b33-8c57-6040e0b40fb4');
           const dataTable =
             await google.colab.kernel.invokeFunction('convertToInteractive',
                                                      [key], {});
@@ -299,12 +298,12 @@ You can see that `y` (our target) contains the next value of `X`'s "residual_loa
 
 `fold` has three core type of building blocks which you can build arbitrary sophisticated pipelines from:
 - **Transformations** (classes that change, augment the data. eg: `AddHolidayFeatures` adds a column feature of holidays/weekends to your exogenous variables)
-- **Models** (eg.: Sklearn, Baseline Models, third-party adapters from [`fold-wrappers`](https://github.com/dream-faster/fold-wrappers), like Statsmodels)
+- **Models** (eg.: Sklearn, Baseline Models, third-party adapters from [`fold-models`](https://github.com/dream-faster/fold-models), like Statsmodels)
 - **Composites** (eg.: `Ensemble` - takes the mean of the output of arbitrary number of 'parallel' models or pipelines)
 
 Let's use Facebook's popular [`Prophet`](https://facebook.github.io/prophet/) library, and create in instance.
 
-If [`fold-wrappers`](https://github.com/dream-faster/fold-wrappers) is installed, `fold` can take this instance without any additional wrappers class.
+If [`fold-models`](https://github.com/dream-faster/fold-models) is installed, `fold` can take this instance without any additional wrapper class.
 
 
 ```python
@@ -358,14 +357,15 @@ scorecard.print('minimal')
 ```
 
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">                     Mean Absolute Error - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">95.076</span>         
-          Mean Absolute Percentage Error - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">7.9555e+13</span>     
-Symmetric Mean Absolute Percentage Error - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.5092</span>         
-                      Mean Squared Error - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.4779e+04</span>     
-                 Root Mean Squared Error - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">121.57</span>         
-                               R-squared - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.42684</span>        
-                   Mean of the Residuals - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">6.3616</span>         
-     Standard Deviation of the Residuals - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">121.42</span>         
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">                                               prophet
+                     Mean Absolute Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">9.507563e+01</span>
+          Mean Absolute Percentage Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">7.955506e+13</span>
+Symmetric Mean Absolute Percentage Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">5.092002e-01</span>
+                      Mean Squared Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.477914e+04</span>
+                 Root Mean Squared Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.215695e+02</span>
+                               R-squared  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">4.268419e-01</span>
+                   Mean of the Residuals  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">6.361641e+00</span>
+     Standard Deviation of the Residuals  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.214232e+02</span>
 </pre>
 
 
@@ -395,20 +395,20 @@ Here we will build an `Ensemble` model that leverages the output of multiple mod
 
 ![Ensembling Models.png](https://lh3.googleusercontent.com/drive-viewer/AAOQEORyLi4ZPadHho7_C_IMdxDHxoZOt7T-y-7vMmTJ4BTubYk_4xu6hntPuK3nY1HmS4GC3DDQCKWgyqKQijheEhclhz_qYw=s1600)
 
-### 1. Model Building with `fold-wrappers`
+### 1. Model Building with `fold-models`
 
 We are going to define three different pipelines, each leveraging a different model and different features.
 
 
 
-We can leverage the most popular modelling libraries, like StatsForecast, Sktime, XGBoost, etc. (the list can be found [here](https://github.com/dream-faster/fold-wrappers)).
+We can leverage the most popular modelling libraries, like StatsForecast, Sktime, XGBoost, etc. (the list can be found [here](https://github.com/dream-faster/fold-models)).
 
-Let's train a [MSTL](https://arxiv.org/abs/2107.13462) model that's implemented in [StatsForecast](https://nixtla.github.io/statsforecast/models.html), that can capture multiple seasonalities, with the `WrapStatsForecast` class from `fold-wrappers`. This is not strictly necessary, though, as the automatic wrapping also works for StatsForecast instaces as well.
+Let's train a [MSTL](https://arxiv.org/abs/2107.13462) model that's implemented in [StatsForecast](https://nixtla.github.io/statsforecast/models.html), that can capture multiple seasonalities, with the `WrapStatsForecast` class from `fold-models`. This is not strictly necessary, though, as the automatic wrapping also works for StatsForecast instaces as well.
 
 
 ```python
 from statsforecast.models import MSTL
-from fold_wrapper import WrapStatsForecast, WrapStatsModels
+from fold_wrappers import WrapStatsForecast, WrapStatsModels
 
 mstl = WrapStatsForecast.from_model(MSTL([24, 168]))
 ```
@@ -442,13 +442,133 @@ for name, pipeline in [
 
 
 ```python
-compare([scorecard for scorecard, predictions in results])
+compare([scorecard for scorecard, predictions in results], ['rmse', 'mse'])
 ```
 
-                        model_name    [1mrmse           [0m 
-                           prophet    [1m121.57         [0m 
-                              mstl    [1m118.7          [0m 
-               univariate_ensemble    [1m105.96         [0m 
+
+
+
+
+  <div id="df-80394008-3a99-4cf2-b914-af2afca681da">
+    <div class="colab-df-container">
+      <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>rmse</th>
+      <th>mse</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>prophet</th>
+      <td>121.569502</td>
+      <td>14779.143772</td>
+    </tr>
+    <tr>
+      <th>mstl</th>
+      <td>118.703683</td>
+      <td>14090.564243</td>
+    </tr>
+    <tr>
+      <th>univariate_ensemble</th>
+      <td>105.962271</td>
+      <td>11228.002822</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+      <button class="colab-df-convert" onclick="convertToInteractive('df-80394008-3a99-4cf2-b914-af2afca681da')"
+              title="Convert this dataframe to an interactive table."
+              style="display:none;">
+
+  <svg xmlns="http://www.w3.org/2000/svg" height="24px"viewBox="0 0 24 24"
+       width="24px">
+    <path d="M0 0h24v24H0V0z" fill="none"/>
+    <path d="M18.56 5.44l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94zm-11 1L8.5 8.5l.94-2.06 2.06-.94-2.06-.94L8.5 2.5l-.94 2.06-2.06.94zm10 10l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94z"/><path d="M17.41 7.96l-1.37-1.37c-.4-.4-.92-.59-1.43-.59-.52 0-1.04.2-1.43.59L10.3 9.45l-7.72 7.72c-.78.78-.78 2.05 0 2.83L4 21.41c.39.39.9.59 1.41.59.51 0 1.02-.2 1.41-.59l7.78-7.78 2.81-2.81c.8-.78.8-2.07 0-2.86zM5.41 20L4 18.59l7.72-7.72 1.47 1.35L5.41 20z"/>
+  </svg>
+      </button>
+
+  <style>
+    .colab-df-container {
+      display:flex;
+      flex-wrap:wrap;
+      gap: 12px;
+    }
+
+    .colab-df-convert {
+      background-color: #E8F0FE;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+      fill: #1967D2;
+      height: 32px;
+      padding: 0 0 0 0;
+      width: 32px;
+    }
+
+    .colab-df-convert:hover {
+      background-color: #E2EBFA;
+      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+      fill: #174EA6;
+    }
+
+    [theme=dark] .colab-df-convert {
+      background-color: #3B4455;
+      fill: #D2E3FC;
+    }
+
+    [theme=dark] .colab-df-convert:hover {
+      background-color: #434B5C;
+      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
+      fill: #FFFFFF;
+    }
+  </style>
+
+      <script>
+        const buttonEl =
+          document.querySelector('#df-80394008-3a99-4cf2-b914-af2afca681da button.colab-df-convert');
+        buttonEl.style.display =
+          google.colab.kernel.accessAllowed ? 'block' : 'none';
+
+        async function convertToInteractive(key) {
+          const element = document.querySelector('#df-80394008-3a99-4cf2-b914-af2afca681da');
+          const dataTable =
+            await google.colab.kernel.invokeFunction('convertToInteractive',
+                                                     [key], {});
+          if (!dataTable) return;
+
+          const docLinkHtml = 'Like what you see? Visit the ' +
+            '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
+            + ' to learn more about interactive tables.';
+          element.innerHTML = '';
+          dataTable['output_type'] = 'display_data';
+          await google.colab.output.renderOutput(dataTable, element);
+          const docLink = document.createElement('div');
+          docLink.innerHTML = docLinkHtml;
+          element.appendChild(docLink);
+        }
+      </script>
+    </div>
+  </div>
+
+
 
 
 We see that our Ensemble model has beaten all individual models' performance - which is very usual in the time series context.
@@ -461,12 +581,12 @@ What if we could use a lightweight, "online" model, that can be updated on every
 
 And.. what if we just repeat the last value?
 
-That'd be the `Naive` model you can load from `fold_wrapper`.
+That'd be the `Naive` model you can load from `fold_models`.
 
 
 ```python
 from fold import train_evaluate
-from fold_wrapper import Naive
+from fold_models import Naive
 
 scorecard, predictions, trained_pipeline = train_evaluate(Naive(), None, y, splitter, krisi_args={"model_name":"naive"})
 results.append((scorecard, predictions))
@@ -482,14 +602,15 @@ scorecard.print("minimal")
 
 
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">                     Mean Absolute Error - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">39.111</span>         
-          Mean Absolute Percentage Error - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2.1224e+14</span>     
-Symmetric Mean Absolute Percentage Error - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.2038</span>         
-                      Mean Squared Error - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">4012.9</span>         
-                 Root Mean Squared Error - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">63.348</span>         
-                               R-squared - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.84437</span>        
-                   Mean of the Residuals - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.043877</span>      
-     Standard Deviation of the Residuals - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">63.358</span>         
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">                                                 naive
+                     Mean Absolute Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">3.911054e+01</span>
+          Mean Absolute Percentage Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2.122351e+14</span>
+Symmetric Mean Absolute Percentage Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2.038015e-01</span>
+                      Mean Squared Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">4.012944e+03</span>
+                 Root Mean Squared Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">6.334780e+01</span>
+                               R-squared  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">8.443718e-01</span>
+                   Mean of the Residuals <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-4.387701e-02</span>
+     Standard Deviation of the Residuals  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">6.335837e+01</span>
 </pre>
 
 
@@ -590,14 +711,15 @@ scorecard.print("minimal")
 
 
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">                     Mean Absolute Error - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">29.653</span>         
-          Mean Absolute Percentage Error - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2.1232e+14</span>     
-Symmetric Mean Absolute Percentage Error - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.15915</span>        
-                      Mean Squared Error - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2637.6</span>         
-                 Root Mean Squared Error - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">51.357</span>         
-                               R-squared - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.89771</span>        
-                   Mean of the Residuals - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-1.7471</span>        
-     Standard Deviation of the Residuals - <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">51.336</span>         
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">                                          tabular_tree
+                     Mean Absolute Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2.965292e+01</span>
+          Mean Absolute Percentage Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2.123209e+14</span>
+Symmetric Mean Absolute Percentage Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.591514e-01</span>
+                      Mean Squared Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2.637592e+03</span>
+                 Root Mean Squared Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">5.135749e+01</span>
+                               R-squared  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">8.977101e-01</span>
+                   Mean of the Residuals <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-1.747140e+00</span>
+     Standard Deviation of the Residuals  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">5.133635e+01</span>
 </pre>
 
 
@@ -625,7 +747,7 @@ lregression = [
 
 ```python
 from xgboost import XGBRegressor
-from fold_wrapper.xgboost import WrapXGB
+from fold_wrappers.xgboost import WrapXGB
 
 xgboost = [
     AddLagsX(('all',range(1,3))),
@@ -658,16 +780,190 @@ results.append((scorecard, predictions))
 
 
 ```python
-compare([scorecard for scorecard, _ in results])
+compare([scorecard for scorecard, _ in results], sort_by="rmse")
 ```
 
-                        model_name    [1mrmse           [0m 
-                           prophet    [1m121.57         [0m 
-                              mstl    [1m118.7          [0m 
-               univariate_ensemble    [1m105.96         [0m 
-                             naive    [1m63.348         [0m 
-                      tabular_tree    [1m51.357         [0m 
-                  tabular_ensemble    [1m48.229         [0m 
+
+
+
+
+  <div id="df-9e4abfbe-0f25-4386-96b8-bb464f380a47">
+    <div class="colab-df-container">
+      <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>rmse</th>
+      <th>mae</th>
+      <th>mape</th>
+      <th>smape</th>
+      <th>mse</th>
+      <th>r_two</th>
+      <th>residuals_mean</th>
+      <th>residuals_std</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>prophet</th>
+      <td>121.569502</td>
+      <td>95.075627</td>
+      <td>7.955506e+13</td>
+      <td>0.509200</td>
+      <td>14779.143772</td>
+      <td>0.426842</td>
+      <td>6.361641</td>
+      <td>121.423231</td>
+    </tr>
+    <tr>
+      <th>mstl</th>
+      <td>118.703683</td>
+      <td>68.464305</td>
+      <td>1.846641e+14</td>
+      <td>0.279174</td>
+      <td>14090.564243</td>
+      <td>0.453546</td>
+      <td>13.258315</td>
+      <td>117.980649</td>
+    </tr>
+    <tr>
+      <th>univariate_ensemble</th>
+      <td>105.962271</td>
+      <td>73.283533</td>
+      <td>1.321096e+14</td>
+      <td>0.356740</td>
+      <td>11228.002822</td>
+      <td>0.564561</td>
+      <td>9.809978</td>
+      <td>105.524826</td>
+    </tr>
+    <tr>
+      <th>naive</th>
+      <td>63.347800</td>
+      <td>39.110541</td>
+      <td>2.122351e+14</td>
+      <td>0.203802</td>
+      <td>4012.943794</td>
+      <td>0.844372</td>
+      <td>-0.043877</td>
+      <td>63.358374</td>
+    </tr>
+    <tr>
+      <th>tabular_tree</th>
+      <td>51.357493</td>
+      <td>29.652915</td>
+      <td>2.123209e+14</td>
+      <td>0.159151</td>
+      <td>2637.592134</td>
+      <td>0.897710</td>
+      <td>-1.747140</td>
+      <td>51.336346</td>
+    </tr>
+    <tr>
+      <th>tabular_ensemble</th>
+      <td>48.228591</td>
+      <td>28.165175</td>
+      <td>2.113763e+14</td>
+      <td>0.153255</td>
+      <td>2325.997006</td>
+      <td>0.909794</td>
+      <td>-2.690336</td>
+      <td>48.161544</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+      <button class="colab-df-convert" onclick="convertToInteractive('df-9e4abfbe-0f25-4386-96b8-bb464f380a47')"
+              title="Convert this dataframe to an interactive table."
+              style="display:none;">
+
+  <svg xmlns="http://www.w3.org/2000/svg" height="24px"viewBox="0 0 24 24"
+       width="24px">
+    <path d="M0 0h24v24H0V0z" fill="none"/>
+    <path d="M18.56 5.44l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94zm-11 1L8.5 8.5l.94-2.06 2.06-.94-2.06-.94L8.5 2.5l-.94 2.06-2.06.94zm10 10l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94z"/><path d="M17.41 7.96l-1.37-1.37c-.4-.4-.92-.59-1.43-.59-.52 0-1.04.2-1.43.59L10.3 9.45l-7.72 7.72c-.78.78-.78 2.05 0 2.83L4 21.41c.39.39.9.59 1.41.59.51 0 1.02-.2 1.41-.59l7.78-7.78 2.81-2.81c.8-.78.8-2.07 0-2.86zM5.41 20L4 18.59l7.72-7.72 1.47 1.35L5.41 20z"/>
+  </svg>
+      </button>
+
+  <style>
+    .colab-df-container {
+      display:flex;
+      flex-wrap:wrap;
+      gap: 12px;
+    }
+
+    .colab-df-convert {
+      background-color: #E8F0FE;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+      fill: #1967D2;
+      height: 32px;
+      padding: 0 0 0 0;
+      width: 32px;
+    }
+
+    .colab-df-convert:hover {
+      background-color: #E2EBFA;
+      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+      fill: #174EA6;
+    }
+
+    [theme=dark] .colab-df-convert {
+      background-color: #3B4455;
+      fill: #D2E3FC;
+    }
+
+    [theme=dark] .colab-df-convert:hover {
+      background-color: #434B5C;
+      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
+      fill: #FFFFFF;
+    }
+  </style>
+
+      <script>
+        const buttonEl =
+          document.querySelector('#df-9e4abfbe-0f25-4386-96b8-bb464f380a47 button.colab-df-convert');
+        buttonEl.style.display =
+          google.colab.kernel.accessAllowed ? 'block' : 'none';
+
+        async function convertToInteractive(key) {
+          const element = document.querySelector('#df-9e4abfbe-0f25-4386-96b8-bb464f380a47');
+          const dataTable =
+            await google.colab.kernel.invokeFunction('convertToInteractive',
+                                                     [key], {});
+          if (!dataTable) return;
+
+          const docLinkHtml = 'Like what you see? Visit the ' +
+            '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
+            + ' to learn more about interactive tables.';
+          element.innerHTML = '';
+          dataTable['output_type'] = 'display_data';
+          await google.colab.output.renderOutput(dataTable, element);
+          const docLink = document.createElement('div');
+          docLink.innerHTML = docLinkHtml;
+          element.appendChild(docLink);
+        }
+      </script>
+    </div>
+  </div>
+
+
 
 
 In this simplistic, unfair comparison, it looks like the tabular models (and the Naive baseline) that have access to the previous value (and the exogenous variables) outperform the univariate models that are only re-trained every week. 
