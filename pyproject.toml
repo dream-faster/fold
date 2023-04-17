@@ -71,7 +71,7 @@ extras = [
 all = [
   "fold[extras]",
   "fold-models @ https://github.com/dream-faster/fold-models/archive/main.zip",
-  "fold-wrapper @ https://github.com/dream-faster/fold-wrapper/archive/main.zip",
+  "fold-wrappers @ https://github.com/dream-faster/fold-wrappers/archive/main.zip",
   "krisi~=0.0.8"
 ]
 

@@ -14,7 +14,7 @@ Examples:
 - [NeuralForecast](https://github.com/Nixtla/neuralforecast)
 - [Prophet](https://facebook.github.io/prophet/)
 
-... provided in [fold-wrapper](https://github.com/dream-faster/fold-wrapper).
+... provided in [fold-wrappers](https://github.com/dream-faster/fold-wrappers).
 
 
 ## Tabular ML models
@@ -37,7 +37,7 @@ Examples:
 - [XGBoost](https://github.com/dmlc/xgboost)
 - [LightGBM](https://github.com/Microsoft/LightGBM/)
 
-... provided in [fold-wrapper](https://github.com/dream-faster/fold-wrapper).
+... provided in [fold-wrappers](https://github.com/dream-faster/fold-wrappers).
 
 
 ## Baselines

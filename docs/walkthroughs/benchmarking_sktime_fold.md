@@ -9,7 +9,7 @@
 
 ```python
 %%capture
-pip install --quiet https://github.com/dream-faster/fold/archive/main.zip https://github.com/dream-faster/fold-wrapper/archive/main.zip git+https://github.com/dream-faster/krisi.git@main matplotlib seaborn xgboost plotly prophet statsforecast statsmodels ray kaleido sktime pmdarima
+pip install --quiet https://github.com/dream-faster/fold/archive/main.zip https://github.com/dream-faster/fold-wrappers/archive/main.zip git+https://github.com/dream-faster/krisi.git@main matplotlib seaborn xgboost plotly prophet statsforecast statsmodels ray kaleido sktime pmdarima
 ```
 
 
@@ -26,14 +26,14 @@ class Timing:
     results = defaultdict(lambda: defaultdict(dict))
         
     def record_time(self, model_name: str, framework: str):
-        def wrapper( function, *args, **kwargs):
+        def wrappers( function, *args, **kwargs):
             start_time = monotonic()
             return_value = function(*args, **kwargs)
             print(f"Run time: {monotonic() - start_time} seconds")
 
             self.results[framework][model_name] = monotonic() - start_time
             return return_value
-        return wrapper
+        return wrappers
     def summary(self):
         pd.set_option('display.max_rows', None)
         pd.set_option('display.max_columns', None)
