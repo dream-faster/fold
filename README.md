@@ -238,6 +238,7 @@ If you want to try them out, we'd love to hear about your use case and help, [pl
     <td class="tg-85ys">+ Everything in Extended<br>+ <a href="https://github.com/dream-faster/krisi" target="_blank" rel="noopener noreferrer">Krisi-premium</a><br>+ Fold-HPO<br>+ Fold-Advanced-Feature-Selection</td>
   </tr>
   <tr>
+    <td></td>
     <td> <a style="margin:2px" href="mailto:nowcasting@dreamfaster.ai?subject=Fold Core Licencing"><img alt="Contact us for Core Licence" src="https://shields.io/badge/-Contact%20us-yellow?logo=minutemailer&logoColor=white"></a> </td>
     <td> <a style="margin:2px" href="mailto:nowcasting@dreamfaster.ai?subject=Extended Licence"><img alt="Contact us for Extended Licence" src="https://shields.io/badge/-Contact%20us-orange?logo=minutemailer&logoColor=white"></a> </td>
     <td> <a style="margin:2px" href="mailto:nowcasting@dreamfaster.ai?subject=Enterprise Licence"><img alt="Contact us for Enterprise Licence" src="https://shields.io/badge/-Contact%20us-blue?logo=minutemailer&logoColor=white"></a> </td>
