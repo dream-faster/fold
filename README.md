@@ -97,7 +97,7 @@ Thinking of using `fold`? We'd love to hear about your use case and help, [pleas
 
 <!-- GETTING STARTED -->
 
-## Examples and Walkthroughs
+## Examples, Walkthroughs and Blog Posts
 
 <table style="width:100%">
   <tr>
@@ -148,9 +148,21 @@ Thinking of using `fold`? We'd love to hear about your use case and help, [pleas
         Collection Link
         </a>
     </td>
-    <td>
-    -
+    <td> - </td>
+  </tr>
+  <tr>
+    <td> 
+    🖋️ Back to the Future with Time Series Forecasting
     </td>
+    <td>Blog</td>
+    <td>Public Release Blog Post </td>
+    <td> 
+        <a href='https://www.appliedexploration.com/p/back-to-the-future-with-time-series' target="_blank">
+        Blog post on Applied Exploration 
+        </a>
+    </td>
+    <td> - </td>
+
   </tr>
 </table>
 
