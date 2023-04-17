@@ -25,14 +25,16 @@
 
 <!-- INTRO -->
 
-![Fold's main features](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/main_features.svg) 
+![Fold's main features](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/main_features.svg)
 
 - Composite Models with Continuous Validation - [What does that mean?](https://dream-faster.github.io/fold/concepts/continuous-validation/)
 - Distributed computing - [Why is this important?](#Fold-is-different)
 - Update deployed models (coming in May) - [Why is this important?](#Fold-is-different)
 
 ![Fold works with many third party libraries](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/third_party.svg)
+
 <!-- GETTING STARTED -->
+
 ## Installation
 
 - Prerequisites: `python >= 3.7` and `pip`
@@ -46,7 +48,7 @@
 
 You can quickly train your chosen models and get predictions by running:
 
-``` py
+```py
 from sklearn.ensemble import RandomForestRegressor
 from statsforecast.models import ARIMA
 from fold import ExpandingWindowSplitter, train_evaluate
@@ -75,7 +77,6 @@ Thinking of using `fold`? We'd love to hear about your use case and help, [pleas
 
 (If you install `krisi` by running `pip install krisi` you get an extended report back, rather than a single metric.)
 
-
 ## Fold is different
 
 - Time Series Continuous Validation at lightning speed.<br/>
@@ -94,23 +95,64 @@ Thinking of using `fold`? We'd love to hear about your use case and help, [pleas
 - Update your deployed models, easily, as new data flows in.<br/>
   <span style="color:orange;">**→ Real world is not static. Let your models adapt, without the need to re-train from scratch.**</span>
 
-
 <!-- GETTING STARTED -->
 
 ## Examples and Walkthroughs
+
 <table style="width:100%">
   <tr>
-    <th>Link</th>
+    <th>Name</th>
+    <th>Type</th>
     <th>Dataset Type</th>
+    <th>Docs Link</th>
+    <th>Colab</th>
   </tr>
   <tr>
     <td> 
-      <a href='https://dream-faster.github.io/fold/walkthroughs/core_walkthrough/' target="_blank">⚡️ Core Walkthrough</a></td>
+     ⚡️ Core Walkthrough
+    </td>
+    <td>Walkthrough</td>
     <td>Energy</td>
+    <td>  
+      <a href='https://dream-faster.github.io/fold/walkthroughs/core_walkthrough/' target="_blank">Notebook</a>
+    </td>
+    <td>
+     <a href='https://colab.research.google.com/drive/1CVhxOmbHO9PvsdHfGvR91ilJUqEnUuy8?usp=sharing' target="_blank">Colab</a>
+    </td>
+  </tr>
+  <tr>
+    <td> 
+    🚄 Speed Comparison of Fold to other libraries
+    </td>
+    <td>Walkthrough</td>
+    <td>Weather</td>
+    <td> 
+        <a href='https://dream-faster.github.io/fold/walkthroughs/benchmarking_sktime_fold/' target="_blank">
+        Notebook
+        </a>
+    </td>
+    <td>
+        <a href='https://colab.research.google.com/drive/1iLXpty-j1kpDCzLM4fCsP3fLoS_DFN1C?usp=sharing' target="_blank"> 
+        Colab
+        </a>
+    </td>
+  </tr>
+  <tr>
+    <td> 
+    📚 Example Collection
+    </td>
+    <td>Example</td>
+    <td>Weather & Synthetic</td>
+    <td> 
+        <a href='https://dream-faster.github.io/fold/generated/gallery/' target="_blank">
+        Collection Link
+        </a>
+    </td>
+    <td>
+    -
+    </td>
   </tr>
 </table>
-
-
 
 <br/>
 
@@ -127,11 +169,11 @@ Thinking of using `fold`? We'd love to hear about your use case and help, [pleas
 - Hyperparemeter optimization / Model selection. (coming in early April!)
 
 ## What is Continuous Validation?
-![Continous Validation](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/technical_diagrams/continous_validation.svg) 
+
+![Continous Validation](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/technical_diagrams/continous_validation.svg)
 It's Time Series Cross-Validation, plus:
 Inside a test window, and during deployment, fold provides a way for a model to access the last value.
 [Learn more](https://dream-faster.github.io/fold/concepts/continuous-validation/)
-
 
 ## Our Open-core Time Series Toolkit
 
@@ -159,4 +201,3 @@ It will be always free for research useage, but we will be charging for deployme
 
 - No intermittent time series support, very limited support for missing values.
 - No hierarchical time series support.
-
