@@ -186,19 +186,6 @@ If you want to try them out, we'd love to hear about your use case and help, [pl
 
 ## Pricing
 
-<style type="text/css">
-.tg  {border-collapse:collapse;border-color:#9ABAD9;border-spacing:0;}
-.tg td{background-color:#EBF5FF;border-color:#9ABAD9;border-style:solid;border-width:1px;color:#444;
-  font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:15px 15px;word-break:normal;}
-.tg th{background-color:#409cff;border-color:#9ABAD9;border-style:solid;border-width:1px;color:#fff;
-  font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:15px 15px;word-break:normal;}
-.tg .tg-phtq{background-color:#D2E4FC;border-color:inherit;text-align:left;vertical-align:top}
-.tg .tg-2jrw{background-color:#2d5a8c;border-color:inherit;font-size:18px;text-align:center;vertical-align:top}
-.tg .tg-7jts{border-color:inherit;font-size:18px;text-align:center;vertical-align:top}
-.tg .tg-ybdt{background-color:#4782c2;border-color:inherit;font-size:18px;text-align:center;vertical-align:top}
-.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
-.tg .tg-85ys{background-color:#81b2f8;border-color:inherit;text-align:left;vertical-align:top}
-</style>
 <table class="tg">
 <thead>
   <tr>
