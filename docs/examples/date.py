@@ -2,6 +2,7 @@
 Adding Date/Time Features
 =========================
 """
+# mkdocs_gallery_thumbnail_path = 'images/example_thumnail.png'
 from sklearn.ensemble import RandomForestRegressor
 
 from fold.loop import train_evaluate
