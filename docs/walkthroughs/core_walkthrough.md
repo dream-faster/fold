@@ -1,5 +1,6 @@
 # Fold - Core Walkthrough
 
+[:material-download: Download](core_walkthrough.ipynb){ .md-button }   [:simple-googlecolab:  Open In Colab](https://colab.research.google.com/drive/1CVhxOmbHO9PvsdHfGvR91ilJUqEnUuy8?usp=sharing){ .md-button .md-button--primary }
 
 ![Walkthrough Cover.png](https://lh3.googleusercontent.com/drive-viewer/AAOQEOT4w3Cu4i_TPzDV4WAHd3DkRuz7-4rPsre2jX05y_oanG19aCCMmi_oglzAKdRGZ-qYYTUdSoJJxE7KSc_wNkCT3GAsCA=s1600)
 
