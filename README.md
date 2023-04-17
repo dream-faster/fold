@@ -5,7 +5,7 @@
   <a style="margin:2px" href="https://codecov.io/gh/dream-faster/fold" ><img src="https://codecov.io/gh/dream-faster/fold/branch/main/graph/badge.svg?token=Z7I2XSF188"/></a>
   <a style="margin:2px" href="https://github.com/dream-faster/fold/actions/workflows/tests.yaml"><img alt="Tests" src="https://github.com/dream-faster/fold/actions/workflows/tests.yaml/badge.svg"/></a>
   <a style="margin:2px" href="https://discord.gg/EKJQgfuBpE"><img alt="Discord Community" src="https://img.shields.io/badge/Discord-%235865F2.svg?logo=discord&logoColor=white"></a>
-  <a style="margin:2px" href="https://calendly.com/mark-szulyovszky/consultation"><img alt="Discord Community" src="https://shields.io/badge/-Speak%20with%20us-orange?logo=minutemailer&logoColor=white"></a>
+  <a style="margin:2px" href="https://calendly.com/mark-szulyovszky/consultation"><img alt="Book a call with us!" src="https://shields.io/badge/-Speak%20with%20us-orange?logo=minutemailer&logoColor=white"></a>
 </p>
 
 <!-- PROJECT LOGO -->
@@ -188,11 +188,10 @@ If you want to try them out, we'd love to hear about your use case and help, [pl
 
 <table class="tg">
 <thead>
-  <tr>
-    <th class="tg-7jts"><span style="font-weight:bold">Core</span></th>
-    <th class="tg-ybdt"><span style="font-weight:bold">Extended</span></th>
-    <th class="tg-2jrw"><span style="font-weight:bold">Enterprise</span></th>
-  </tr>
+<tr>
+  <th><img alt='Core' src='docs/images/product_diagrams/pricing-core.svg'></th>
+  <th><img alt='Extended' src='docs/images/product_diagrams/pricing-extended.svg'></th>
+  <th><img alt='Enterprise' src='docs/images/product_diagrams/pricing-enterprise.svg'></th>
 </thead>
 <tbody>
   <tr>
@@ -219,6 +218,11 @@ If you want to try them out, we'd love to hear about your use case and help, [pl
     <td class="tg-0pky"><span style="font-style:italic">Includes:</span><br>+ Commercial Licence for <a href="https://github.com/dream-faster/fold" target="_blank" rel="noopener noreferrer">Fold</a></td>
     <td class="tg-phtq"><span style="font-style:italic">Includes:</span><br>+ Commercial Licence for <a href="https://github.com/dream-faster/fold" target="_blank" rel="noopener noreferrer">Fold</a><br>+ Commercial Licence for <a href="https://github.com/dream-faster/fold-wrappers" target="_blank" rel="noopener noreferrer">Fold-Wrappers</a><br>+ Commercial Licence <a href="https://github.com/dream-faster/fold-models" target="_blank" rel="noopener noreferrer">Fold-Models</a></td>
     <td class="tg-85ys"><span style="font-style:italic">Includes:</span><br>+ Everything in Extended<br>+ <a href="https://github.com/dream-faster/krisi" target="_blank" rel="noopener noreferrer">Krisi-premium</a><br>+ Fold-HPO<br>+ Fold-Advanced-Feature-Selection</td>
+  </tr>
+  <tr>
+    <td> <a style="margin:2px" href="mailto:nowcasting@dreamfaster.ai?subject=Fold Core Licencing"><img alt="Contact us for Core Licence" src="https://shields.io/badge/-Contact%20us-yellow?logo=minutemailer&logoColor=white"></a> </td>
+    <td> <a style="margin:2px" href="mailto:nowcasting@dreamfaster.ai?subject=Extended Licence"><img alt="Contact us for Extended Licence" src="https://shields.io/badge/-Contact%20us-orange?logo=minutemailer&logoColor=white"></a> </td>
+    <td> <a style="margin:2px" href="mailto:nowcasting@dreamfaster.ai?subject=Enterprise Licence"><img alt="Contact us for Enterprise Licence" src="https://shields.io/badge/-Contact%20us-blue?logo=minutemailer&logoColor=white"></a> </td>
   </tr>
 </tbody>
 </table>
