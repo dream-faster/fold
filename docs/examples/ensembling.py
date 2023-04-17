@@ -3,7 +3,7 @@ Ensembling (Composite Models)
 ===========================
 """
 
-from fold_wrapper import WrapStatsForecast
+from fold_wrappers import WrapStatsForecast
 from statsforecast.models import ARIMA
 from xgboost import XGBRegressor
 
