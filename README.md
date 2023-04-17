@@ -241,7 +241,7 @@ If you want to try them out, we'd love to hear about your use case and help, [pl
 
 ## Contribution
 
-Join our [Discord](https://discord.gg/EKJQgfuBpE) for live discussion!
+Join our   <a style="margin:2px" href="https://discord.gg/EKJQgfuBpE"><img alt="Discord Community" src="https://img.shields.io/badge/Discord-%235865F2.svg?logo=discord&logoColor=white"></a> for live discussion! 
 
 Submit an issue or reach out to us on info at dream-faster.ai for any inquiries.
 
