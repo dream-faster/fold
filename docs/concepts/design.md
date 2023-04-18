@@ -26,6 +26,9 @@ First class support for updating deployed models, easily, as new data flows in.
 - Real world is not static. Let your models adapt, without the need to re-train from scratch.
 
 
+Specialized in single-step ahead forecasting.
+
+- To really cater for the right usecases, `fold` doesn't support multi-step ahead forecasts, explicitly. [See why](/concepts/forecasting-horizon)
 
 
 ## What is the “Composite” class?

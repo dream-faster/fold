@@ -171,8 +171,8 @@ Thinking of using `fold`? We'd love to hear about your use case and help, [pleas
 ## What is Continuous Validation?
 
 ![Continous Validation](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/technical_diagrams/continous_validation.svg)
-It's Time Series Cross-Validation, plus:
-Inside a test window, and during deployment, fold provides a way for a model to access the last value.
+
+It's Time Series Cross-Validation, plus: Inside a test window, and during deployment, fold provides a way for models to update their parameters or access the last value.
 [Learn more](https://dream-faster.github.io/fold/concepts/continuous-validation/)
 
 ## Our Open-core Time Series Toolkit
