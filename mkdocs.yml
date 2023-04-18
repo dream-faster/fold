@@ -51,7 +51,7 @@ nav:
     - Product, Licencing & Roadmap: 
       - Pricing: product/pricing.md
       - License: product/license.md
-      - Roadmap: 'roadmap.md'
+      - Roadmap: 'product/roadmap.md'
 markdown_extensions:
   - tables
   - attr_list
