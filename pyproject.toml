@@ -3,7 +3,7 @@ build-backend = "hatchling.build"
 requires = ["hatchling"]
 
 [project]
-name = "fold"
+name = "fold-core"
 version = "0.0.3"
 authors = [
   { name="Mark Aron Szulyovszky", email="mark@dreamfaster.ai" },
