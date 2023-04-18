@@ -108,6 +108,14 @@ exclude = [
   "/.pre-commit-config.yaml",
   "/.gitignore",
   "/tests",
+  "/.vscode",
+  "mkdocs.yml",
+  "codecov.yml",
+]
+
+[tool.hatch.build]
+include = [
+  "src/**",
 ]
 
 [tool.pytest.ini_options]
