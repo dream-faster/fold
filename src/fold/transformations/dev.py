@@ -27,7 +27,7 @@ class Breakpoint(Transformation):
     def fit(
         self,
         X: pd.DataFrame,
-        y: Optional[pd.Series],
+        y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         if self.stop_at_fit:
@@ -36,7 +36,7 @@ class Breakpoint(Transformation):
     def update(
         self,
         X: pd.DataFrame,
-        y: Optional[pd.Series],
+        y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         if self.stop_at_update:
@@ -85,7 +85,7 @@ class Test(InvertibleTransformation):
     def fit(
         self,
         X: pd.DataFrame,
-        y: Optional[pd.Series],
+        y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         self.no_of_calls_fit += 1
@@ -105,7 +105,7 @@ class Test(InvertibleTransformation):
     def update(
         self,
         X: pd.DataFrame,
-        y: Optional[pd.Series],
+        y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         self.no_of_calls_update += 1

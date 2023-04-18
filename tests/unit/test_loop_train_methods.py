@@ -19,7 +19,7 @@ class TestNoOverlap(Model):
     def fit(
         self,
         X: pd.DataFrame,
-        y: Optional[pd.Series],
+        y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         self.fit_index = X.index
@@ -27,7 +27,7 @@ class TestNoOverlap(Model):
     def update(
         self,
         X: pd.DataFrame,
-        y: Optional[pd.Series],
+        y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         assert not any([i in self.fit_index for i in X.index])

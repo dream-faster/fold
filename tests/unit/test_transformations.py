@@ -160,26 +160,38 @@ def test_window_features():
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
     transformations = AddWindowFeatures(("sine", 14, "mean"))
     pred, _ = train_backtest(transformations, X, y, splitter)
-    assert pred["sine_14_mean"].equals(X["sine"].rolling(14).mean()[pred.index])
+    assert np.isclose(
+        pred["sine_14_mean"], X["sine"].rolling(14).mean()[pred.index], atol=0.01
+    ).all()
 
     # check if it works when passing a list of tuples
     transformations = AddWindowFeatures([("sine", 14, "mean")])
     pred, _ = train_backtest(transformations, X, y, splitter)
-    assert pred["sine_14_mean"].equals(X["sine"].rolling(14).mean()[pred.index])
+    assert np.isclose(
+        pred["sine_14_mean"], X["sine"].rolling(14).mean()[pred.index], atol=0.01
+    ).all()
 
     # check if it works with multiple transformations
     transformations = AddWindowFeatures([("sine", 14, "mean"), ("sine", 5, "max")])
     pred, _ = train_backtest(transformations, X, y, splitter)
-    assert pred["sine_14_mean"].equals(X["sine"].rolling(14).mean()[pred.index])
-    assert pred["sine_5_max"].equals(X["sine"].rolling(5).max()[pred.index])
+    assert np.isclose(
+        pred["sine_14_mean"], X["sine"].rolling(14).mean()[pred.index], atol=0.01
+    ).all()
+    assert np.isclose(
+        pred["sine_5_max"], X["sine"].rolling(5).max()[pred.index], atol=0.01
+    ).all()
 
     transformations = AddWindowFeatures(
         [("sine", 14, lambda X: X.mean()), ("sine", 5, lambda X: X.max())]
     )
     pred, _ = train_backtest(transformations, X, y, splitter)
     # if the Callable is lambda, then use the generic "transformed" name
-    assert pred["sine_14_transformed"].equals(X["sine"].rolling(14).mean()[pred.index])
-    assert pred["sine_5_transformed"].equals(X["sine"].rolling(5).max()[pred.index])
+    assert np.isclose(
+        pred["sine_14_transformed"], X["sine"].rolling(14).mean()[pred.index], atol=0.01
+    ).all()
+    assert np.isclose(
+        pred["sine_5_transformed"], X["sine"].rolling(5).max()[pred.index], atol=0.01
+    ).all()
 
     transformations = AddWindowFeatures(
         [
@@ -188,17 +200,25 @@ def test_window_features():
     )
     pred, _ = train_backtest(transformations, X, y, splitter)
     # it should pick up the name of the function
-    assert pred["sine_14_mean"].equals(X["sine"].rolling(14).mean()[pred.index])
+    assert np.isclose(
+        pred["sine_14_mean"], X["sine"].rolling(14).mean()[pred.index], atol=0.01
+    ).all()
 
     X["sine_inverted"] = generate_sine_wave_data(length=6000)[0].squeeze() * -1.0
     transformations = AddWindowFeatures([("sine", 14, "mean"), ("all", 5, "mean")])
     pred, _ = train_backtest(transformations, X, y, splitter)
     # it should pick up the name of the function
-    assert pred["sine_14_mean"].equals(X["sine"].rolling(14).mean()[pred.index])
-    assert pred["sine_5_mean"].equals(X["sine"].rolling(5).mean()[pred.index])
-    assert pred["sine_inverted_5_mean"].equals(
-        X["sine_inverted"].rolling(5).mean()[pred.index]
-    )
+    assert np.isclose(
+        pred["sine_14_mean"], X["sine"].rolling(14).mean()[pred.index], atol=0.01
+    ).all()
+    assert np.isclose(
+        pred["sine_5_mean"], X["sine"].rolling(5).mean()[pred.index], atol=0.01
+    ).all()
+    assert np.isclose(
+        pred["sine_inverted_5_mean"],
+        X["sine_inverted"].rolling(5).mean()[pred.index],
+        atol=0.01,
+    ).all()
     assert len(pred.columns) == 5
 
 

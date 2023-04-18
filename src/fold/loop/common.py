@@ -153,7 +153,7 @@ def process_with_inner_loop(
         X_row: pd.DataFrame, y_row: Optional[pd.Series], sample_weights_row
     ):
         X_row_with_memory, y_row_with_memory = preprocess_X_y_with_memory(
-            transformation, X_row, y_row
+            transformation, X_row, y_row, in_sample=False
         )
         result = transformation.transform(X_row_with_memory, in_sample=False)
         if y_row is not None:
@@ -185,7 +185,9 @@ def process_internal_online_model_minibatch_inference_and_update(
     sample_weights: Optional[pd.Series],
 ) -> pd.DataFrame:
     X, y = trim_initial_nans(X, y)
-    X_with_memory, y_with_memory = preprocess_X_y_with_memory(transformation, X, y)
+    X_with_memory, y_with_memory = preprocess_X_y_with_memory(
+        transformation, X, y, in_sample=True
+    )
     postprocess_X_y_into_memory(transformation, X_with_memory, y_with_memory, True)
     return_value = transformation.transform(X_with_memory, in_sample=True)
 
@@ -209,7 +211,10 @@ def process_minibatch_transformation(
             f" {transformation.__class__.__name__} requires it."
         )
 
-    X_with_memory, y_with_memory = preprocess_X_y_with_memory(transformation, X, y)
+    in_sample = stage == Stage.inital_fit
+    X_with_memory, y_with_memory = preprocess_X_y_with_memory(
+        transformation, X, y, in_sample=in_sample
+    )
     # The order is:
     # 1. fit (if we're in the initial_fit stage)
     if stage == Stage.inital_fit:
@@ -221,10 +226,10 @@ def process_minibatch_transformation(
             in_sample=stage == Stage.inital_fit,
         )
     # 2. transform (inference)
-    X_with_memory, y_with_memory = preprocess_X_y_with_memory(transformation, X, y)
-    return_value = transformation.transform(
-        X_with_memory, in_sample=stage == Stage.inital_fit
+    X_with_memory, y_with_memory = preprocess_X_y_with_memory(
+        transformation, X, y, in_sample=False
     )
+    return_value = transformation.transform(X_with_memory, in_sample=in_sample)
     # 3. update (if we're in the update stage)
     if stage == Stage.update:
         transformation.update(X_with_memory, y_with_memory, sample_weights)

@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from typing import Union
 
+import numpy as np
 import pandas as pd
 
 from ..base import Transformation
@@ -56,11 +57,25 @@ class TimeSeriesModel(Transformation):
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         if in_sample:
             return postpostprocess_prediction(
-                self.predict_in_sample(X, self._state.memory_y), self.name
+                self.predict_in_sample(X, self._state.memory_y.shift(1)), self.name
             )
         else:
             return postpostprocess_prediction(
-                self.predict(X, self._state.memory_y), self.name
+                self.predict(
+                    X[-self.properties.memory_size + 1 : None],
+                    pd.Series(
+                        np.concatenate(
+                            [
+                                np.ones((1,)) * np.nan,
+                                self._state.memory_y[
+                                    -self.properties.memory_size : None
+                                ],
+                            ]
+                        ),
+                        index=X.index,
+                    ),
+                ),
+                self.name,
             )
 
 

@@ -200,7 +200,7 @@ class TurnPositive(InvertibleTransformation):
     def fit(
         self,
         X: pd.DataFrame,
-        y: Optional[pd.Series],
+        y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         min_values = X.min(axis=0)
