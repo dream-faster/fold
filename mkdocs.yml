@@ -36,6 +36,7 @@ nav:
       - Speed: 'concepts/speed.md'
       - Design: 'concepts/design.md'
       - Models: 'concepts/models.md'
+      - Forecasting horizon: 'concepts/forecasting-horizon.md'
       - Splitters: 'concepts/splitters.md'
     - Walkthroughs: 
       - Core Walkthrough: 'walkthroughs/core_walkthrough.md'

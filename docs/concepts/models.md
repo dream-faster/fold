@@ -1,7 +1,9 @@
 
+## Model types (Time series / Tabular)
+
 `Fold` fundamentally supports both:
 
-## "Time series" models
+### "Time series" models
 
 The likes of ARIMA, RNNs, Exponential Smoothing, etc.
 
@@ -17,7 +19,7 @@ Examples:
 ... provided in [fold-wrappers](https://github.com/dream-faster/fold-wrappers).
 
 
-## Tabular ML models
+### Tabular ML models
 
 The likes of Random Forests, Gradient Boosted Trees, Linear Regression, etc.
 
@@ -40,11 +42,21 @@ Examples:
 ... provided in [fold-wrappers](https://github.com/dream-faster/fold-wrappers).
 
 
+## Online and Mini-batch Learning Modes
+
+A mini-batch model is retrained for every split the [Splitter](splitters.md) returns.
+It can not update its state within a test window, but it may depend on lagged values of `X` or `y`.
+
+For an `online` model, the "inner loop" calls the `.update()` method after each timestamp, then `.predict()`.
+Except for "in sample" predictions, which is done in a batch manner, with `predict_in_sample()` 
+
+![Continous Online Inference](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/technical_diagrams/continous_online_inference.svg) 
+
+
+
+
 ## Baselines
 
-As Time Series is a fundamentally hard problem, it's also important to use strong baselines, which we have our own, fast implementations:
-
-::: fold.models.baseline
-
+As Time Series is a fundamentally hard problem, it's also important to use strong baselines, which we have our own, fast implementations, in [fold-models](https://github.com/dream-faster/fold-wrappers).
 
 In the [Design](design.md) documentation, we explain how `fold` supports both types of models.

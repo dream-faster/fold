@@ -1,18 +1,31 @@
 # What are the design decisions that make `Fold` different?
 
-1. There's no explicit "Pipeline" class. This allows us to hand back the job of fitting a collection of models to `train()`. This enables parallelization and reduces duplicate code. See section on Composites.
+Ergonomy
 
-2. We allow both tabular and sequence models, in the same pipeline.
+- There's no explicit "Pipeline" class. This allows us to hand back the job of fitting a collection of models to `train()`. This enables parallelization and reduces duplicate code. See section on Composites.
 
-3. We allow both online and mini-batch models, in the same pipeline.
-If a Model has `learning_mode` property set to `LearningMode.online`, the main loop creates an inner "inference & fit" loop, so the Model can update its parameters on each timestamp.
+Bridging the gap between Online and Mini-Batch learning.
+
+- We allow both tabular and sequence models, in the same pipeline.
+
+- We allow both online and mini-batch models, in the same pipeline.
+If a Model has `mode` property set to `online`, the main loop creates an inner "inference & fit" loop, so the Model can update its parameters on each timestamp.
+
+- We also allow our own models to, rather than updating their parameters on each timestamp,  
+
+Built with Distributed Computing in mind
+
+- Deploy your research and development pipelines to a cluster with ray, and use modin to handle out-of-memory datasets (full support for modin is coming in April).
+
+
+First class support for updating deployed models, easily, as new data flows in.
+
+- Real world is not static. Let your models adapt, without the need to re-train from scratch.
 
 
 
 
-
-
-### Why is “Composite” necessary?
+## What is the “Composite” class?
 
 We want to keep the “business” of fitting models to the `train` loop.
 
@@ -24,15 +37,7 @@ Composites can also modify `X` and `y` via `preprocess_[X|y]_[primary|secondary]
 
 Composites enable us to:
 
-- Merge two, entirely different set of Transformations/Pipelines, like ensembling.
-- Use the result of the first (primary) set of Transformations/Pipeline in the second Transformations/Pipeline. (like MetaLabeling, or TargetTransformation)
+- Merge two, entirely different set of Pipelines, like ensembling.
+- Use the result of the first (primary) set of Pipeline in the second Transformations/Pipeline. (like MetaLabeling, or TransformTarget)
 
-
-### Mini-batch and Online Models
-
-A mini-batch model is retrained for every split, defined for the whole pipeline, by the [Splitter](splitters.md).
-It can not update its state in the meantime.
-
-For an `online` model, the "inner loop" calls the `.update()` method after each timestamp, then `.predict()`.
-Except for "in sample" predictions, which is done in a batch manner, with `predict_in_sample()` 
 
