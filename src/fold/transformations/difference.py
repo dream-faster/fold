@@ -59,7 +59,7 @@ class Difference(InvertibleTransformation):
     def fit(
         self,
         X: pd.DataFrame,
-        y: Optional[pd.Series],
+        y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         self.last_rows_X = X.iloc[-self.lag : None]
@@ -67,7 +67,7 @@ class Difference(InvertibleTransformation):
     def update(
         self,
         X: pd.DataFrame,
-        y: Optional[pd.Series],
+        y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         if len(X) >= self.lag:

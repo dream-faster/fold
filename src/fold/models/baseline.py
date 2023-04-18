@@ -49,9 +49,9 @@ class Naive(TimeSeriesModel):
         return pd.Series(past_y.iloc[-1].squeeze(), index=X.index[-1:None])
 
     def predict_in_sample(
-        self, X: pd.DataFrame, y: pd.Series
+        self, X: pd.DataFrame, lagged_y: pd.Series
     ) -> Union[pd.Series, pd.DataFrame]:
-        return y.shift(1)
+        return lagged_y
 
     fit = fit_noop
     update = fit

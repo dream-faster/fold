@@ -31,7 +31,7 @@ class WrapSKLearnClassifier(Model):
     def update(
         self,
         X: pd.DataFrame,
-        y: Optional[pd.Series],
+        y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         if hasattr(self.model, "partial_fit"):
@@ -81,7 +81,7 @@ class WrapSKLearnRegressor(Model):
     def update(
         self,
         X: pd.DataFrame,
-        y: Optional[pd.Series],
+        y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         if hasattr(self.model, "partial_fit"):
@@ -114,7 +114,7 @@ class WrapSKLearnPipeline(Model):
     def fit(
         self,
         X: pd.DataFrame,
-        y: Optional[pd.Series],
+        y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         self.pipeline.fit(X, y)

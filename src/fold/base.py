@@ -100,7 +100,7 @@ class Transformation(ABC):
     @dataclass
     class State:
         memory_X: pd.DataFrame
-        memory_y: Optional[pd.Series]
+        memory_y: pd.Series
 
     properties: Properties
     name: str
@@ -110,7 +110,7 @@ class Transformation(ABC):
     def fit(
         self,
         X: pd.DataFrame,
-        y: Optional[pd.Series],
+        y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         """
@@ -122,7 +122,7 @@ class Transformation(ABC):
     def update(
         self,
         X: pd.DataFrame,
-        y: Optional[pd.Series],
+        y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         """
@@ -163,7 +163,7 @@ OutOfSamplePredictions = pd.DataFrame
 def fit_noop(
     self,
     X: pd.DataFrame,
-    y: Optional[pd.Series],
+    y: pd.Series,
     sample_weights: Optional[pd.Series] = None,
 ) -> None:
     pass

@@ -6,7 +6,10 @@ from ..base import Transformation
 
 
 def preprocess_X_y_with_memory(
-    transformation: Transformation, X: pd.DataFrame, y: Optional[pd.Series]
+    transformation: Transformation,
+    X: pd.DataFrame,
+    y: Optional[pd.Series],
+    in_sample: bool,
 ) -> Tuple[pd.DataFrame, pd.Series]:
     if transformation._state is None or transformation.properties.memory_size is None:
         return X, y
@@ -22,24 +25,31 @@ def preprocess_X_y_with_memory(
     if y is None:
         return (
             pd.concat(
-                [memory_X[-transformation.properties.memory_size : None], X],
+                [memory_X.iloc[-transformation.properties.memory_size : None], X],
                 axis="index",
             ),
             y,
         )
+    elif in_sample is True or transformation.properties.memory_size == 0:
+        memory_y.name = y.name
+        return pd.concat([memory_X, X], axis="index"), pd.concat(
+            [memory_y, y], axis="index"
+        )
     else:
         memory_y.name = y.name
         return pd.concat(
-            [memory_X[-transformation.properties.memory_size : None], X], axis="index"
+            [memory_X.iloc[-transformation.properties.memory_size : None], X],
+            axis="index",
         ), pd.concat(
-            [memory_y[-transformation.properties.memory_size : None], y], axis="index"
+            [memory_y.iloc[-transformation.properties.memory_size : None], y],
+            axis="index",
         )
 
 
 def postprocess_X_y_into_memory(
     transformation: Transformation,
     X: pd.DataFrame,
-    y: Optional[pd.Series],
+    y: pd.Series,
     in_sample: bool,
 ) -> None:
     # don't update the transformation if we're in inference mode (y is None)
@@ -65,11 +75,11 @@ def postprocess_X_y_into_memory(
         memory_y.name = y.name
         #  memory requirement is greater than the current batch, so we use the previous memory as well
         transformation._state = Transformation.State(
-            memory_X=pd.concat([memory_X, X], axis="index").iloc[-window_size:],
-            memory_y=pd.concat([memory_y, y], axis="index").iloc[-window_size:],
+            memory_X=pd.concat([memory_X, X], axis="index").iloc[-window_size:None],
+            memory_y=pd.concat([memory_y, y], axis="index").iloc[-window_size:None],
         )
     else:
         transformation._state = Transformation.State(
-            memory_X=X.iloc[-window_size:],
-            memory_y=y.iloc[-window_size:],
+            memory_X=X.iloc[-window_size:None],
+            memory_y=y.iloc[-window_size:None],
         )
