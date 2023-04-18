@@ -1,35 +1,79 @@
-MIT License
+                            LICENSE
 
-Copyright (c) 2022-present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-# Commons Clause Restriction -  Commons Clause License Condition v1.0
-
-The Software is provided to you by the Licensor under the License, as defined below, subject to the following condition.
-
-Without limiting other conditions in the License, the grant of rights under the License will not include, and the License does not grant to you, the right to Sell the Software.
-
-For purposes of the foregoing, “Sell” means practicing any or all of the rights granted to you under the License to provide to third parties, for a fee or other consideration (including without limitation fees for hosting or consulting/ support services related to the Software), a product or service whose value derives, entirely or substantially, from the functionality of the Software. Any license notice or attribution required by the License must also include this Commons Clause License Condition notice.
+Copyright (c) 2022 - present Myalo UG (haftungbeschränkt) 
+(Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>
 
 Software: fold (https://www.github.com/dream-faster/fold)
-
-License: MIT License with Commons Clause
-
 Licensor: Myalo UG (haftungsbeschränkt), Berlin, Germany
+
+                            PREAMBLE
+
+The goal of this license is to contribute to the advance of Time-Series 
+and Nowcasting Research by granting access to this software for
+non-commercial use. For Commercial use or Commercial Entities 
+or Public Entities (with the exceptions below) 
+a license has to be purchased from the Licensor.
+
+
+                       TERMS AND CONDITIONS
+
+The Licensor hereby grants non-commercial entities the right 
+to copy, modify, create derivative works, redistribute, and make non-commercial 
+use of the Licensed Work. The Licensor may make an Additional Use Grant, 
+above, permitting commercial use. 
+
+Public (Government) and Commercial entities are required to purchase a license or 
+apply and receive a non-profit exception, unless the use is for physical 
+or mental health care, family and social services, social welfare, 
+senior care, child care, and the care of persons with disabilities.
+
+A trial period of thirty (30) days is granted for all, after which
+the Licensed Work can only be used if in complicance with the 
+License Terms and Conditions.
+
+If your use of the Licensed Work does not comply with the requirements 
+currently in effect as described in this License, you must purchase a 
+commercial license from the Licensor, its affiliated entities, or 
+authorized resellers, or you must refrain from using the Licensed Work.
+
+All copies of the original and modified Licensed Work, and derivative 
+works of the Licensed Work, are subject to this License.
+
+You must conspicuously display this License on each original or modified 
+copy of the Licensed Work. If you receive the Licensed Work in original 
+or modified form from a third party, the terms and conditions set forth 
+in this License apply to your use of that work.
+
+Without limiting other conditions in the License, the grant of rights 
+under the License will not include, and the License does not grant to you, 
+the right to Sell the Software.
+
+For purposes of the foregoing, “Sell” means practicing any or all of the 
+rights granted to you under the License to provide to third parties, 
+for a fee or other consideration (including without limitation fees for hosting
+or support services related to the Software), a product or 
+service whose value derives, entirely or substantially, from the functionality 
+of the Software. 
+
+                        DISCLAIMER OF WARRANTY
+
+  THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY
+APPLICABLE LAW.  EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT
+HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM "AS IS" WITHOUT WARRANTY
+OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO,
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE.  THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM
+IS WITH YOU.  SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF
+ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
+
+                        LIMITATION OF LIABILITY
+
+  IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
+WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES AND/OR CONVEYS
+THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY
+GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE
+USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF
+DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD
+PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS),
+EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGES.
