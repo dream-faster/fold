@@ -1,8 +1,9 @@
+
 ![Splitters Overview](/images/technical_diagrams/splitters.svg)
 
 ### Expanding Window
 
-Uuses all data up until the current split date.
+Uses all data up until the current split date.
 
 
 ### Sliding Window
