@@ -31,7 +31,7 @@ theme:
 
 nav:
     - Home: 'index.md'
-    - Must know:
+    - Must know Concepts:
       - Continuous Validation: 'concepts/continuous-validation.md'
       - Speed: 'concepts/speed.md'
       - Design: 'concepts/design.md'
@@ -49,6 +49,9 @@ nav:
       - Models: 'api/models.md'
       - Composites: 'api/composites.md'
       - Transformations: 'api/transformations.md'
+    - Commercial License: 
+      - Pricing: product/pricing.md
+      - License: product/license.md
 markdown_extensions:
   - tables
   - attr_list

@@ -5,7 +5,7 @@
   <a style="margin:2px" href="https://codecov.io/gh/dream-faster/fold" ><img src="https://codecov.io/gh/dream-faster/fold/branch/main/graph/badge.svg?token=Z7I2XSF188"/></a>
   <a style="margin:2px" href="https://github.com/dream-faster/fold/actions/workflows/tests.yaml"><img alt="Tests" src="https://github.com/dream-faster/fold/actions/workflows/tests.yaml/badge.svg"/></a>
   <a style="margin:2px" href="https://discord.gg/EKJQgfuBpE"><img alt="Discord Community" src="https://img.shields.io/badge/Discord-%235865F2.svg?logo=discord&logoColor=white"></a>
-  <a style="margin:2px" href="https://calendly.com/mark-szulyovszky/consultation"><img alt="Discord Community" src="https://shields.io/badge/-Speak%20with%20us-orange?logo=minutemailer&logoColor=white"></a>
+  <a style="margin:2px" href="https://calendly.com/mark-szulyovszky/consultation"><img alt="Book a call with us!" src="https://shields.io/badge/-Speak%20with%20us-orange?logo=minutemailer&logoColor=white"></a>
 </p>
 
 <!-- PROJECT LOGO -->
@@ -97,7 +97,7 @@ Thinking of using `fold`? We'd love to hear about your use case and help, [pleas
 
 <!-- GETTING STARTED -->
 
-## Examples and Walkthroughs
+## Examples, Walkthroughs and Blog Posts
 
 <table style="width:100%">
   <tr>
@@ -148,9 +148,21 @@ Thinking of using `fold`? We'd love to hear about your use case and help, [pleas
         Collection Link
         </a>
     </td>
-    <td>
-    -
+    <td> - </td>
+  </tr>
+  <tr>
+    <td> 
+    🖋️ Back to the Future with Time Series Forecasting
     </td>
+    <td>Blog</td>
+    <td>Public Release Blog Post </td>
+    <td> 
+        <a href='https://www.appliedexploration.com/p/back-to-the-future-with-time-series' target="_blank">
+        Blog post on Applied Exploration 
+        </a>
+    </td>
+    <td> - </td>
+
   </tr>
 </table>
 
@@ -184,9 +196,11 @@ It's Time Series Cross-Validation, plus: Inside a test window, and during deploy
 
 If you want to try them out, we'd love to hear about your use case and help, [please book a free 30-min call with us](https://calendly.com/mark-szulyovszky/consultation)!
 
+[Explore our Commercial License options here](https://dream-faster.github.io/fold/product/pricing)
+
 ## Contribution
 
-Join our [Discord](https://discord.gg/EKJQgfuBpE) for live discussion!
+Join our   <a style="margin:2px" href="https://discord.gg/EKJQgfuBpE"><img alt="Discord Community" src="https://img.shields.io/badge/Discord-%235865F2.svg?logo=discord&logoColor=white"></a> for live discussion! 
 
 Submit an issue or reach out to us on info at dream-faster.ai for any inquiries.
 
