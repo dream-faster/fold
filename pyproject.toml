@@ -29,7 +29,7 @@ dependencies = [
   "scikit-learn",
   "iteration_utilities",
 ]
-description = "Timeseries modelling on a rolling/expanding window basis."
+description = "A Time Series Cross-Validation library that lets you build, deploy and update composite models easily. An order of magnitude speed-up, combined with flexibility and rigour."
 keywords = []
 license = "MIT"
 readme = "README.md"
