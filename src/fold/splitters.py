@@ -32,6 +32,26 @@ def translate_float_if_needed(window_size: Union[int, float], length: int) -> in
 
 
 class SlidingWindowSplitter(Splitter):
+    """
+    Creates folds with a sliding window.
+    The folds are created by moving the train and test windows forward by a fixed step size.
+    See [the documentation](https://dream-faster.github.io/fold/concepts/splitters/) for more details.
+
+    Parameters
+    ----------
+
+    initial_train_window : int, float
+        The initial training window size. If a float, it is interpreted as a fraction of the total length of the data.
+    step : int, float
+        The step size of the sliding window. If a float, it is interpreted as a fraction of the total length of the data.
+    embargo : int, optional
+        The gap between the train and the test window, by default 0.
+    start : int, optional
+        The start index of the first fold, by default 0.
+    end : int, optional
+        The end index of the last fold, by default None.
+    """
+
     def __init__(
         self,
         initial_train_window: Union[
@@ -68,6 +88,27 @@ class SlidingWindowSplitter(Splitter):
 
 
 class ExpandingWindowSplitter(Splitter):
+    """
+    Creates folds with an expanding window.
+    The folds are created by moving the end of the train and test windows forward by a fixed step size,
+    while keeping the training window's start fixed.
+    See [the documentation](https://dream-faster.github.io/fold/concepts/splitters/) for more details.
+
+    Parameters
+    ----------
+
+    initial_train_window : int, float
+        The initial training window size. If a float, it is interpreted as a fraction of the total length of the data.
+    step : int, float
+        The step size of the sliding window. If a float, it is interpreted as a fraction of the total length of the data.
+    embargo : int, optional
+        The gap between the train and the test window, by default 0.
+    start : int, optional
+        The start index of the first fold, by default 0.
+    end : int, optional
+        The end index of the last fold, by default None.
+    """
+
     def __init__(
         self,
         initial_train_window: Union[
@@ -106,6 +147,18 @@ class ExpandingWindowSplitter(Splitter):
 
 
 class SingleWindowSplitter(Splitter):
+    """
+    Creates a single fold with a fixed train and test window.
+    See [the documentation](https://dream-faster.github.io/fold/concepts/splitters/) for more details.
+
+    Parameters
+    ----------
+    train_window : int, float
+        The training window size. If a float, it is interpreted as a fraction of the total length of the data.
+    embargo : int, optional
+        The gap between the train and the test window, by default 0.
+    """
+
     def __init__(
         self,
         train_window: Union[

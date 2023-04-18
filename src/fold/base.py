@@ -79,6 +79,10 @@ class Composite(ABC):
 
 
 class Transformation(ABC):
+    """
+    A transformation is a single step in a pipeline.
+    """
+
     @dataclass
     class Properties:
         class ModelType(enum.Enum):
@@ -126,7 +130,7 @@ class Transformation(ABC):
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
         """
-        Subsequent calls to update the model, on each fold.
+        Subsequent calls to update the model.
         """
         raise NotImplementedError
 
@@ -154,10 +158,14 @@ Transformations = Union[
 Pipeline = Union[
     Union[Transformation, "Composite"], List[Union[Transformation, "Composite"]]
 ]
+"""A list of `fold` objects that are executed sequentially. Or a single object."""
 Pipelines = List[Pipeline]
+"""Multiple, independent `Pipeline`s."""
 
 TrainedPipelines = List[pd.Series]
+"""A list of trained `Pipeline`s, to be used for backtesting."""
 OutOfSamplePredictions = pd.DataFrame
+"""The backtest's resulting out-of-sample predictions."""
 
 
 def fit_noop(
