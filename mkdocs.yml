@@ -39,19 +39,19 @@ nav:
       - Forecasting horizon: 'concepts/forecasting-horizon.md'
       - Splitters: 'concepts/splitters.md'
     - Walkthroughs: 
-      - Core Walkthrough: 'walkthroughs/core_walkthrough.md'
+      - Start Here (Core Walkthrough): 'walkthroughs/core_walkthrough.md'
       - Benchmarking Sktime-Fold: 'walkthroughs/benchmarking_sktime_fold.md'
     - Examples: generated/gallery
-    - Roadmap: 'roadmap.md'
     - API: 
       - 'api/index.md'
       - Main Loops: 'api/loop.md'
       - Models: 'api/models.md'
       - Composites: 'api/composites.md'
       - Transformations: 'api/transformations.md'
-    - Commercial License: 
+    - Product, Licencing & Roadmap: 
       - Pricing: product/pricing.md
       - License: product/license.md
+      - Roadmap: 'roadmap.md'
 markdown_extensions:
   - tables
   - attr_list
