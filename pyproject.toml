@@ -69,12 +69,6 @@ extras = [
   "holidays",
   "krisi~=0.0.8",
 ]
-all = [
-  "fold[extras]",
-  "fold-models @ https://github.com/dream-faster/fold-models/archive/main.zip",
-  "fold-wrappers @ https://github.com/dream-faster/fold-wrappers/archive/main.zip",
-  "krisi~=0.0.8"
-]
 
 [tool.hatch.envs.quality]
 dependencies = [
