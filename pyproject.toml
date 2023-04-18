@@ -16,6 +16,7 @@ classifiers = [
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
   "License :: Other/Proprietary License",
@@ -127,3 +128,21 @@ addopts = [
 
 [tool.hatch.metadata]
 allow-direct-references = true
+
+# bumpver command: ``bumpver update --patch``
+[tool.bumpver]
+current_version = "0.0.1"
+version_pattern = "MAJOR.MINOR.PATCH"
+commit_message = "chore(Release): Bump version from {old_version} -> {new_version}"
+commit = true
+tag = true
+push = false
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = [
+    'current_version = "{version}"',
+    'version = "{version}"'
+]
+
+[tool.hatch.version]
+path = "src/fold/__init__.py"
