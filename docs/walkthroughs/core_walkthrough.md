@@ -22,7 +22,7 @@ We will use the dataset from an [Energy residual load forcasting challenge](http
 
 Let's start by installing:
 - [`fold`](https://github.com/dream-faster/fold)
-- [`fold-models`](https://github.com/dream-faster/fold-models): optional, this will be required later for third party models. Wraps eg. `XGBoost` or `StatsForecast` models to be used with `fold`.
+- [`fold-wrappers`](https://github.com/dream-faster/fold-wrappers): optional, this will be required later for third party models. Wraps eg. `XGBoost` or `StatsForecast` models to be used with `fold`.
 - [`krisi`](https://github.com/dream-faster/krisi), optional. Dream Faster's Time-Series evaluation library to quickly get results.
 
 
@@ -299,12 +299,12 @@ You can see that `y` (our target) contains the next value of `X`'s "residual_loa
 
 `fold` has three core type of building blocks which you can build arbitrary sophisticated pipelines from:
 - **Transformations** (classes that change, augment the data. eg: `AddHolidayFeatures` adds a column feature of holidays/weekends to your exogenous variables)
-- **Models** (eg.: Sklearn, Baseline Models, third-party adapters from [`fold-models`](https://github.com/dream-faster/fold-models), like Statsmodels)
+- **Models** (eg.: Sklearn, Baseline Models, third-party adapters from [`fold-wrappers`](https://github.com/dream-faster/fold-wrappers), like Statsmodels)
 - **Composites** (eg.: `Ensemble` - takes the mean of the output of arbitrary number of 'parallel' models or pipelines)
 
 Let's use Facebook's popular [`Prophet`](https://facebook.github.io/prophet/) library, and create in instance.
 
-If [`fold-models`](https://github.com/dream-faster/fold-models) is installed, `fold` can take this instance without any additional wrapper class.
+If [`fold-wrappers`](https://github.com/dream-faster/fold-wrappers) is installed, `fold` can take this instance without any additional wrapper class.
 
 
 ```python
@@ -396,15 +396,15 @@ Here we will build an `Ensemble` model that leverages the output of multiple mod
 
 ![Ensembling Models.png](https://lh3.googleusercontent.com/drive-viewer/AAOQEORyLi4ZPadHho7_C_IMdxDHxoZOt7T-y-7vMmTJ4BTubYk_4xu6hntPuK3nY1HmS4GC3DDQCKWgyqKQijheEhclhz_qYw=s1600)
 
-### 1. Model Building with `fold-models`
+### 1. Model Building with `fold-wrappers`
 
 We are going to define three different pipelines, each leveraging a different model and different features.
 
 
 
-We can leverage the most popular modelling libraries, like StatsForecast, Sktime, XGBoost, etc. (the list can be found [here](https://github.com/dream-faster/fold-models)).
+We can leverage the most popular modelling libraries, like StatsForecast, Sktime, XGBoost, etc. (the list can be found [here](https://github.com/dream-faster/fold-wrappers)).
 
-Let's train a [MSTL](https://arxiv.org/abs/2107.13462) model that's implemented in [StatsForecast](https://nixtla.github.io/statsforecast/models.html), that can capture multiple seasonalities, with the `WrapStatsForecast` class from `fold-models`. This is not strictly necessary, though, as the automatic wrapping also works for StatsForecast instaces as well.
+Let's train a [MSTL](https://arxiv.org/abs/2107.13462) model that's implemented in [StatsForecast](https://nixtla.github.io/statsforecast/models.html), that can capture multiple seasonalities, with the `WrapStatsForecast` class from `fold-wrappers`. This is not strictly necessary, though, as the automatic wrapping also works for StatsForecast instaces as well.
 
 
 ```python
