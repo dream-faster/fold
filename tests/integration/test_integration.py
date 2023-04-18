@@ -26,7 +26,9 @@ def test_on_weather_data() -> None:
 def test_on_weather_data_ray() -> None:
     import ray
 
-    ray.init(ignore_reinit_error=True)
+    import fold
+
+    ray.init(ignore_reinit_error=True, runtime_env={"py_modules": [fold]})
     X, y = get_preprocessed_dataset(
         "weather/historical_hourly_la",
         target_col="temperature",
