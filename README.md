@@ -204,20 +204,14 @@ Join our   <a style="margin:2px" href="https://discord.gg/EKJQgfuBpE"><img alt="
 
 Submit an issue or reach out to us on info at dream-faster.ai for any inquiries.
 
-## Open Core and Relationship with the Research Community
+## Licence & Usage
 
+We want to **bring much-needed transparency, speed and rigour** to the process of creating Time Series ML pipelines, while also building a sustainable business, that can support the ecosystem in the long-term.
+Fold's licence is inbetween [source-available](https://en.wikipedia.org/wiki/Source-available_software) and a traditional commercial software licence. It requires a paid licence for any commercial use, after the initial, 30 day trial period. Deployment is only possible with the additional purchase of `fold-extended`, a product currently in development. 
 
+We also want to contribute to open research by giving free access to non-commercial use of `fold`. If you are a researcher and would like to get access to Dream Faster's all of available tools, please <a href='mailto:info@dreamfaster.ai?subject=Research Licence'>contact us here</a>. 
 
-Dream Faster is structured in an open-core Time Series structure.
-
-We want to **bring much-needed transparency, speed and rigour** to the process of building Time Series ML pipelines. We're building multiple products with Fold and on top of it, but want to contribute to Time-Series Research by giving access to non-commercial use of the software, specifically for researchers.
-
-We are providing copyleft for non-commercial use, so that researchers have access to Fold. If you are a researcher and would like to get access to Dream Faster's non-source available tools, please 
-<a href='mailto:info@dreamfaster.ai?subject=Research Licence for Dream Faster Suite'>contact us here</a>. 
-
-We are building a sustainable business, that can meanwhile support the ecosystem in the long-term.
-
-For the specific Licence of this software please check the LICENCE file found in the repository.
+[Read more](https://dream-faster.github.io/fold/product/license/)
 
 ## Limitations
 
