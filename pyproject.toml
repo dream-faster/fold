@@ -28,12 +28,12 @@ license = "Proprietary"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.7"
-pandas = "^1.2"
-numpy = "^1.16"
-scikit-learn = "^0.22"
-tqdm = "^4.0"
-iteration_utilities = "^0.11"
+python = ">=3.7"
+pandas = ">=1.2"
+numpy = ">=1.16"
+scikit-learn = ">=0.22"
+tqdm = ">=4.0"
+iteration_utilities = ">=0.11"
 
 [project.urls]
 Documentation = "https://dream-faster.github.io/fold"
