@@ -1,14 +1,14 @@
 [build-system]
-build-backend = "hatchling.build"
-requires = ["hatchling"]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
 
-[project]
+[tool.poetry]
 name = "fold-core"
-version = "0.0.5"
-authors = [
-  { name="Mark Aron Szulyovszky", email="mark@dreamfaster.ai" },
-  { name="Daniel Szemerey", email="daniel@dreamfaster.ai" },
+packages = [
+    { include="fold", from="./src" },
 ]
+version = "0.0.5"
+authors = ["Mark Aron Szulyovszky", "Daniel Szemerey" ]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Programming Language :: Python",
@@ -22,18 +22,18 @@ classifiers = [
   "License :: Other/Proprietary License",
   "Operating System :: OS Independent",
 ]
-dependencies = [
-  "numpy",
-  "pandas",
-  "tqdm",
-  "scikit-learn",
-  "iteration_utilities",
-]
 description = "A Time Series Cross-Validation library that lets you build, deploy and update composite models easily. An order of magnitude speed-up, combined with flexibility and rigour."
 keywords = []
-license-files = { paths = ["LICENSE"] }
+license = "Proprietary"
 readme = "README.md"
-requires-python = ">=3.7"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+pandas = "^1.2"
+numpy = "^1.16"
+scikit-learn = "^0.22"
+tqdm = "^4.0"
+iteration_utilities = "^0.11"
 
 [project.urls]
 Documentation = "https://dream-faster.github.io/fold"
@@ -85,39 +85,13 @@ check = [
 format = [
   "isort src tests",
   "black --preview src tests",
-  "check",
+  "check"
 ]
 
-[tool.hatch.envs.test]
-dependencies = [".[tests]"]
-
-[tool.hatch.envs.test.scripts]
-run = "pytest tests/ --durations 0 -s"
-
-[[tool.hatch.envs.test.matrix]]
-python = ["37", "38", "39", "310"]
 
 [tool.isort]
 profile = "black"
 
-[tool.hatch.build.targets.wheel]
-packages = ["fold"]
-
-[tool.hatch.build.targets.sdist]
-exclude = [
-  "/.github",
-  "/docs",
-  "/.devcontainer",
-  "/.pre-commit-config.yaml",
-  "/.gitignore",
-  "/tests",
-  "/.vscode",
-  "mkdocs.yml",
-  "codecov.yml",
-]
-
-[tool.hatch.build]
-sources = ["src"]
 
 [tool.pytest.ini_options]
 pythonpath = [
@@ -146,6 +120,3 @@ push = false
     'current_version = "{version}"',
     'version = "{version}"'
 ]
-
-[tool.hatch.version]
-path = "src/fold/__init__.py"
