@@ -35,6 +35,24 @@ scikit-learn = ">=0.22"
 tqdm = ">=4.0"
 iteration_utilities = ">=0.11"
 
+black = {version = "~=22.12.0", optional = true}
+flake8 = {version = "~=4.0.1", optional = true}
+isort = {version = "~=5.10.1", optional = true}
+pre-commit = {version = "~=2.20.0", optional = true}
+pytest = {version = "~=7.1.2", optional = true}
+pytest-cov = {version = ">=4.0", optional = true}
+imbalanced-learn = {version = ">=0.7.0", optional = true}
+holidays = {version = ">=0.10", optional = true}
+krisi = {version = "~=0.0.8", optional = true}
+mkdocs-material = {version = ">=9.0.0", optional = true}
+mkdocstrings-python = {version = ">=0.15.0", optional = true}
+mkdocs-include-markdown-plugin = {version = ">=0.5.0", optional = true}
+mkdocs-autorefs = {version = ">=0.1.0", optional = true}
+mkdocs-jupyter = {version = ">=0.7.0", optional = true}
+image = {version = ">=1.5.33", optional = true}
+mkdocs-gallery = {version = ">=0.4.0", optional = true}
+mkdocs-glightbox = {version = ">=0.1.0", optional = true}
+
 [project.urls]
 Documentation = "https://dream-faster.github.io/fold"
 Issues = "https://github.com/dream-faster/fold/issues"
@@ -42,14 +60,14 @@ Source = "https://github.com/dream-faster/fold"
 
 [tool.poetry.extras]
 quality = [
-  "black~=22.12.0",
-  "flake8~=4.0.1",
-  "isort~=5.10.1",
-  "pre-commit~=2.20.0",
+  "black",
+  "flake8",
+  "isort",
+  "pre-commit",
 ]
 tests = [
-  "pytest~=7.1.2",
-  "pytest-cov>=4.0",
+  "pytest",
+  "pytest-cov",
   "imbalanced-learn",
   "holidays",
 ]
@@ -67,7 +85,7 @@ ray = ["ray"]
 extras = [
   "ray",
   "holidays",
-  "krisi~=0.0.8",
+  "krisi",
 ]
 
 [tool.hatch.envs.quality]
