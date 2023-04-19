@@ -25,12 +25,14 @@ jobs:
       - name: install-dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install hatch
+          pip install hatch poetry
           pip install ".[tests]"
       - name: build-package
-        run: hatch build
+        run: poetry build
 
       - name: publish-package
-        run: hatch publish --user __token__ --auth $PYPI_TOKEN
+        run: |
+          poetry config pypi-token.pypi $PYPI_TOKEN
+          poetry publish
         env:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
