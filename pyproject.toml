@@ -40,7 +40,7 @@ Documentation = "https://dream-faster.github.io/fold"
 Issues = "https://github.com/dream-faster/fold/issues"
 Source = "https://github.com/dream-faster/fold"
 
-[project.optional-dependencies]
+[tool.poetry.extras]
 quality = [
   "black~=22.12.0",
   "flake8~=4.0.1",
