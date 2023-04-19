@@ -72,7 +72,7 @@ extras = [
 
 [tool.hatch.envs.quality]
 dependencies = [
-  "fold[quality]"
+  ".[quality]"
 ]
 detached = true
 
@@ -89,7 +89,7 @@ format = [
 ]
 
 [tool.hatch.envs.test]
-dependencies = ["fold[tests]"]
+dependencies = [".[tests]"]
 
 [tool.hatch.envs.test.scripts]
 run = "pytest tests/ --durations 0 -s"
@@ -114,9 +114,7 @@ exclude = [
 ]
 
 [tool.hatch.build]
-include = [
-  "src/**",
-]
+sources = ["src"]
 
 [tool.pytest.ini_options]
 pythonpath = [
