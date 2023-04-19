@@ -3,7 +3,6 @@
 ## (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>
 ## See LICENSE in root folder.
 ##
-##
 repos:
   - repo: https://github.com/PyCQA/autoflake
     rev: v2.0.1
@@ -37,5 +36,5 @@ repos:
     rev: 'master'
     hooks: 
         - id: licenseheaders
-          args: ["--tmpl", "copyright.tmpl", "-f"]
+          args: ["-t", "copyright.tmpl", "-cy", "-f", "src/*"]
           language_version: python3.9
