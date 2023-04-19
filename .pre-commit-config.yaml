@@ -37,5 +37,5 @@ repos:
     rev: 'master'
     hooks: 
         - id: licenseheaders
-          args: ["--tmpl", "copyright.tmpl", "-f", "src/base"]
+          args: ["--tmpl", "copyright.tmpl", "-f"]
           language_version: python3.9
