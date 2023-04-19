@@ -100,6 +100,9 @@ python = ["37", "38", "39", "310"]
 [tool.isort]
 profile = "black"
 
+[tool.hatch.build.targets.wheel]
+packages = ["fold"]
+
 [tool.hatch.build.targets.sdist]
 exclude = [
   "/.github",
