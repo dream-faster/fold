@@ -1,11 +1,17 @@
 repos:
+  - repo: https://github.com/johann-petrak/licenseheaders.git
+    rev: '8e2d6f944aea639d62c8d26cd99dab4003c3904d'
+    hooks: 
+        - id: licenseheaders
+          args: [ "-t", "copyright.tmpl", "-d", "./src/"]
+          language_version: python3.9
+          pass_filenames: false
   - repo: https://github.com/PyCQA/autoflake
     rev: v2.0.1
     hooks:
       - id: autoflake
         args: ['--in-place', '--remove-all-unused-imports', '--ignore-init-module-imports', '-r']
         language_version: python3.9
-
   - repo: https://github.com/psf/black
     rev: 22.12.0
     hooks:
@@ -26,3 +32,4 @@ repos:
           - flake8-black
           - flake8-isort
         language_version: python3.9
+

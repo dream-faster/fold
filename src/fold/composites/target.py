@@ -1,3 +1,6 @@
+# Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
+
+
 from __future__ import annotations
 
 from typing import Callable, List, Optional, Tuple, Union

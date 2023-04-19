@@ -1,3 +1,6 @@
+# Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
+
+
 from ..base import Composite
 from .columns import EnsembleEachColumn, SkipNA, TransformEachColumn
 from .concat import Concat, Pipeline, TransformColumn
