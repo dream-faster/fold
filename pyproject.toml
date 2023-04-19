@@ -31,7 +31,7 @@ dependencies = [
 ]
 description = "A Time Series Cross-Validation library that lets you build, deploy and update composite models easily. An order of magnitude speed-up, combined with flexibility and rigour."
 keywords = []
-license = "MIT"
+license-files = { paths = ["LICENSE"] }
 readme = "README.md"
 requires-python = ">=3.7"
 
