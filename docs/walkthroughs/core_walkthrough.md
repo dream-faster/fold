@@ -31,7 +31,7 @@ Let's start by installing:
 
 ```python
 %%capture
-pip install --quiet https://github.com/dream-faster/fold/archive/main.zip https://github.com/dream-faster/fold-wrappers/archive/main.zip https://github.com/dream-faster/fold-models/archive/main.zip https://github.com/dream-faster/krisi/archive/main.zip matplotlib seaborn xgboost plotly prophet statsforecast statsmodels ray kaleido
+pip install --quiet fold-core fold-wrappers fold-models krisi matplotlib seaborn xgboost plotly prophet statsforecast statsmodels ray kaleido
 ```
 
 ## Data Loading and Exploration
