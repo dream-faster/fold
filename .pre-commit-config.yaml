@@ -1,3 +1,9 @@
+##
+## Copyright (c) 2022 - present Myalo UG (haftungbeschränkt) 
+## (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>
+## See LICENSE in root folder.
+##
+##
 repos:
   - repo: https://github.com/PyCQA/autoflake
     rev: v2.0.1
@@ -27,3 +33,9 @@ repos:
           - flake8-isort
         language_version: python3.9
 
+  - repo: https://github.com/johann-petrak/licenseheaders.git
+    rev: 'master'
+    hooks: 
+        - id: licenseheaders
+          args: ["--tmpl", "copyright.tmpl",  "-f", "src/*"]
+          language_version: python3.9
