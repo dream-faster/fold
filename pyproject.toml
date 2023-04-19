@@ -23,7 +23,7 @@ classifiers = [
   "Operating System :: OS Independent",
 ]
 description = "A Time Series Cross-Validation library that lets you build, deploy and update composite models easily. An order of magnitude speed-up, combined with flexibility and rigour."
-keywords = []
+keywords = ["time-series", "machine-learning", "forecasting", "forecast", "nowcast", "models", "time-series-regression", "time-series-classification", "financial-machine-learning"]
 license = "Proprietary"
 readme = "README.md"
 

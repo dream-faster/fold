@@ -39,9 +39,9 @@
 
 - Prerequisites: `python >= 3.7` and `pip`
 
-- Install from git directly:
+- Install from pypi:
   ```
-  pip install https://github.com/dream-faster/fold/archive/main.zip
+  pip install fold-core
   ```
 
 ## Quickstart
