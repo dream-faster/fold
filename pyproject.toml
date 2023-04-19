@@ -3,7 +3,7 @@ build-backend = "hatchling.build"
 requires = ["hatchling"]
 
 [project]
-name = "fold-core"
+name = "fold"
 version = "0.0.4"
 authors = [
   { name="Mark Aron Szulyovszky", email="mark@dreamfaster.ai" },
@@ -31,9 +31,12 @@ dependencies = [
 ]
 description = "A Time Series Cross-Validation library that lets you build, deploy and update composite models easily. An order of magnitude speed-up, combined with flexibility and rigour."
 keywords = []
-license = "Proprietary"
+license-files = { paths = ["LICENSE"] }
 readme = "README.md"
 requires-python = ">=3.7"
+
+[tool.hatch]
+dist_name = "fold-core"
 
 [project.urls]
 Documentation = "https://dream-faster.github.io/fold"
