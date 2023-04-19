@@ -52,6 +52,7 @@ mkdocs-jupyter = {version = ">=0.24.0", optional = true}
 image = {version = ">=1.5.33", optional = true}
 mkdocs-gallery = {version = ">=0.7.0", optional = true}
 mkdocs-glightbox = {version = ">=0.3.0", optional = true}
+ray = {version = ">=1.4.0", optional = true}
 
 [project.urls]
 Documentation = "https://dream-faster.github.io/fold"
