@@ -1,3 +1,6 @@
+# Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey)<info@dreamfaster.ai> See LICENSE in root folder.
+
+
 from datetime import date
 from enum import Enum
 from typing import List, Union

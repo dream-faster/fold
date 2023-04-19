@@ -1,3 +1,6 @@
+# Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey)<info@dreamfaster.ai> See LICENSE in root folder.
+
+
 import collections
 from collections.abc import Iterable
 from typing import List, Tuple, TypeVar, Union
