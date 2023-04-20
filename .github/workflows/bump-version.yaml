@@ -26,7 +26,7 @@ jobs:
           key: ${{ github.ref }}
           path: .cache
       - run: |
-          pip install .
+          pip install bumpver
           bumpver --update ${{ inputs.type }}
       - run: |
           git config user.name "${GITHUB_ACTOR}"
