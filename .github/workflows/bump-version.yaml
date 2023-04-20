@@ -1,15 +1,15 @@
 name: bump-version 
 on:
   workflow_dispatch:
-  inputs:
-    type:
-      description: 'Bump version type'
-      required: true
-      type: choice
-      options:
-        - patch
-        - minor
-        - major
+    inputs:
+      type:
+        description: 'Bump version type'
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
 
 permissions:
   contents: write
