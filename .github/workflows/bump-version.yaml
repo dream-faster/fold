@@ -27,4 +27,4 @@ jobs:
           pip install bumpver
           bumpver update --${{ inputs.type }}
       - run: |
-          git push -u origin --tags
+          git push -u origin && git push -u origin --tags
