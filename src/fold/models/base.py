@@ -65,7 +65,7 @@ class TimeSeriesModel(Transformation):
         else:
             return postpostprocess_prediction(
                 self.predict(
-                    X[-self.properties.memory_size + 1 : None],
+                    X[-(self.properties.memory_size + 1) : None],
                     pd.Series(
                         np.concatenate(
                             [
