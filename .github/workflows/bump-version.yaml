@@ -27,7 +27,7 @@ jobs:
           path: .cache
       - run: |
           pip install bumpver
-          bumpver --update ${{ inputs.type }}
+          bumpver update --${{ inputs.type }}
       - run: |
           git config user.name "${GITHUB_ACTOR}"
           git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
