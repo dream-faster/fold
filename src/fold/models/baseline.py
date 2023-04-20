@@ -42,7 +42,7 @@ class Naive(TimeSeriesModel):
         requires_X=False,
         mode=TimeSeriesModel.Properties.Mode.online,
         memory_size=1,
-        _internal_supports_minibatch_backtesting=False,
+        _internal_supports_minibatch_backtesting=True,
     )
 
     def predict(
