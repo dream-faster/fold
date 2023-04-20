@@ -29,6 +29,6 @@ jobs:
           pip install bumpver
           bumpver update --${{ inputs.type }}
       - run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git push --tags
