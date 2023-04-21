@@ -17,15 +17,15 @@
   <tr><td>　</td></tr>
   <tr>
     <td> Features</td>
-    <td>⏩ Training with Continuous Validation</td>
+    <td>⏩ Fast Adaptive Backtesting</td>
     <td></td>
     <td>⏩ Deployment to Production</td>
   </tr>
   <tr>
     <td> </td>
-    <td>⏩ Fast Backtesting with Continuous Validation</td>
+    <td>⏩ Fast Adaptive Backtesting</td>
     <td></td>
-    <td>⏩ Fast implementations of TS Models for Continuous Validation</td>
+    <td>⏩ Fast Adaptive Models</td>
   </tr>
   <tr>
     <td> </td>

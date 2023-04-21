@@ -616,7 +616,7 @@ Symmetric Mean Absolute Percentage Error  <span style="color: #008080; text-deco
 
 
 
-**We call this [Continous Validation](https://dream-faster.github.io/fold/concepts/continuous-validation/).**
+**We call this [Adaptive Backtesting](https://dream-faster.github.io/fold/concepts/adaptive-ml/).**
 
 It looks like having access to last value really makes a difference: the baseline model beats all long-term forecasting models by a large margin.
 

@@ -7,7 +7,7 @@ You can almost always improve your model's performance with an simple update, by
 ## What is Adaptive Backtesting?
 
 With Adaptive Backtesting, you take an existing time series, and train multiple models, as you simulate your model's performance over time:
-![Continuous Validation](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/technical_diagrams/continous_validation.svg) 
+![Adaptive Backtesting](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/technical_diagrams/continous_validation.svg) 
 
 **This way, you can turn almost all of your data into an out of sample test set.**
 
