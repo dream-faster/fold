@@ -14,9 +14,9 @@
   <a href="https://dream-faster.github.io/fold/">
     <img src="https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/logo.svg" alt="Logo" width="90" >
   </a>
-<h3 align="center"><b>FOLD</b><br> <i>(/fold/)</i></h3>
+<h3 align="center"><b>FOLD</b><br></h3>
   <p align="center">
-    <b>A <a href="https://dream-faster.github.io/fold/concepts/continuous-validation/">Time Series Continuous Validation</a> library that lets you build, deploy and update Composite Models easily. An order of magnitude speed-up, combined with flexibility and rigour.</b><br>
+    Fast <b>Adaptive ML </b> Engine
     <br/>
     <a href="https://dream-faster.github.io/fold/"><strong>Explore the docs »</strong></a>
   </p>
@@ -25,15 +25,25 @@
 
 <!-- INTRO -->
 
-![Fold's main features](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/main_features.svg)
+![Adaptive Models](docs/images/overview_diagrams/main_diagram.svg)
 
-- Composite Models with Continuous Validation - [What does that mean?](https://dream-faster.github.io/fold/concepts/continuous-validation/)
-- Distributed computing - [Why is this important?](#Fold-is-different)
-- Update deployed models (coming in May) - [Why is this important?](#Fold-is-different)
+The<b> <a href="https://dream-faster.github.io/fold/concepts/continuous-validation/">Adaptive ML Engine</a></b> that lets you <b>build</b>, <b>deploy and update</b> Models easily. An order of magnitude speed-up, combined with flexibility and rigour.</b>
+<br/>
+
+
 
 ![Fold works with many third party libraries](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/third_party.svg)
 
 <!-- GETTING STARTED -->
+
+## Main Features
+
+![Fold's main features](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/main_features.svg)
+
+- Composite Models made Adaptive - [What does that mean?](https://dream-faster.github.io/fold/concepts/continuous-validation/)
+- Distributed computing - [Why is this important?](#Fold-is-different)
+- Update deployed models (coming in May) - [Why is this important?](#Fold-is-different)
+
 
 ## Installation
 
