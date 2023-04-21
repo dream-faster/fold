@@ -25,7 +25,7 @@
 
 <!-- INTRO -->
 
-![Adaptive Models](docs/images/overview_diagrams/main_diagram.svg)
+![Adaptive Models](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/main_diagram.svg)
 
 The<b> <a href="https://dream-faster.github.io/fold/concepts/continuous-validation/">Adaptive ML Engine</a></b> that lets you <b>build</b>, <b>deploy and update</b> Models easily. An order of magnitude speed-up, combined with flexibility and rigour.</b>
 <br/>
