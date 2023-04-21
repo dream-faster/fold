@@ -1,8 +1,13 @@
+## What is Adaptive ML?
 
-## What is Continuous Validation?
+Time series models that are updated often outperform their static counterparts.
+You can almost always improve your model's performance with an simple update, by continuously training them as data comes in.
 
-With Continuous Validation, you take an existing time series, and train multiple models, as you simulate your model's performance over time:
-![Continuous Validation](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/technical_diagrams/continous_validation.svg) 
+
+## What is Adaptive Backtesting?
+
+With Adaptive Backtesting, you take an existing time series, and train multiple models, as you simulate your model's performance over time:
+![Adaptive Backtesting](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/technical_diagrams/continous_validation.svg) 
 
 **This way, you can turn almost all of your data into an out of sample test set.**
 
@@ -18,21 +23,21 @@ This way, `fold` blends:
 
 1. the speed of (Mini-)batch Machine Learning.
 
-2. with the accuracy of [Online Machine learning](https://en.wikipedia.org/wiki/Online_machine_learnings). 
+2. with the accuracy of [Adaptive (or Online) Machine learning](https://en.wikipedia.org/wiki/Online_machine_learnings). 
 
 
 
-## What's wrong with classical "Time Series Cross-Validation"?
+## What's wrong with classical Backtesting ("Time Series Cross-Validation")?
 
 A simple example with the `Naive` model (that just repeats the last value):
 
-**Cross-Validation**
+**Classical Backtesting**
 
 ![Time Series Cross-Validation with Naive model](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/technical_diagrams/naive_cross_validation.png)
 
 The model is static, and repeats the last value for the whole test window.
 
-**Continuous Validation**
+**Adaptive Backtesting**
 
 ![Time Series Cross-Validation with Naive model](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/technical_diagrams/naive_continuous_validation.png)
 

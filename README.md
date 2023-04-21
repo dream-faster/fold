@@ -27,7 +27,7 @@
 
 ![Adaptive Models](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/main_diagram.svg)
 
-The<b> <a href="https://dream-faster.github.io/fold/concepts/continuous-validation/">Adaptive ML Engine</a></b> that lets you <b>build</b>, <b>deploy and update</b> Models easily. An order of magnitude speed-up, combined with flexibility and rigour.</b>
+The<b> <a href="https://dream-faster.github.io/fold/concepts/adaptive-ml/">Adaptive ML Engine</a></b> that lets you <b>build</b>, <b>deploy and update</b> Models easily. An order of magnitude speed-up, combined with flexibility and rigour.</b>
 <br/>
 
 
@@ -40,7 +40,7 @@ The<b> <a href="https://dream-faster.github.io/fold/concepts/continuous-validati
 
 ![Fold's main features](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/main_features.svg)
 
-- Composite Models made Adaptive - [What does that mean?](https://dream-faster.github.io/fold/concepts/continuous-validation/)
+- Composite Models made Adaptive - [What does that mean?](https://dream-faster.github.io/fold/concepts/adaptive-ml/)
 - Distributed computing - [Why is this important?](#Fold-is-different)
 - Update deployed models (coming in May) - [Why is this important?](#Fold-is-different)
 
@@ -89,7 +89,7 @@ Thinking of using `fold`? We'd love to hear about your use case and help, [pleas
 
 ## Fold is different
 
-- Time Series Continuous Validation at lightning speed.<br/>
+- Adaptive Models and Backtesting at lightning speed.<br/>
   <span style="color:orange;">**→ fold allows to simulate and evaluate your models like they would have performed, in reality/when deployed, with clever use of paralellization and design.**</span>
 
 - Create composite models: ensembles, hybrids, stacking pipelines, easily.<br/>
@@ -190,12 +190,12 @@ Thinking of using `fold`? We'd love to hear about your use case and help, [pleas
 - Probabilistic foreacasts (currently, for Classification, full support coming in April).
 - Hyperparemeter optimization / Model selection. (coming in early April!)
 
-## What is Continuous Validation?
+## What is Adaptive Backtesting?
 
-![Continous Validation](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/technical_diagrams/continous_validation.svg)
+![Adaptive Backtesting](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/technical_diagrams/continous_validation.svg)
 
-It's Time Series Cross-Validation, plus: Inside a test window, and during deployment, fold provides a way for models to update their parameters or access the last value.
-[Learn more](https://dream-faster.github.io/fold/concepts/continuous-validation/)
+It's like classical Backtesting / Time Series Cross-Validation, plus: Inside a test window, and during deployment, fold provides a way for models to update their parameters or access the last value.
+[Learn more](https://dream-faster.github.io/fold/concepts/adaptive-ml/)
 
 ## Our Open-core Time Series Toolkit
 
