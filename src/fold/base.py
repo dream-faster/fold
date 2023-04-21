@@ -169,6 +169,8 @@ TrainedPipelines = List[pd.Series]
 """A list of trained `Pipeline`s, to be used for backtesting."""
 OutOfSamplePredictions = pd.DataFrame
 """The backtest's resulting out-of-sample predictions."""
+DeployablePipeline = Pipeline
+"""A trained `Pipeline`, to be used for deployment."""
 
 
 def fit_noop(
