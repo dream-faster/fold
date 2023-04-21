@@ -13,6 +13,6 @@ Useful when you want to limit how much long models should look "into the past".
 
 ### Single train-test split
 
-If you are not convinced of the usefulness of [Continuous Validation](continuous-validation.md),
+If you are not convinced of the usefulness of [Adaptive ML](adaptive-ml.md),
 feel free to use the classical single train-test split.
 The downside is that you throw away data that can be used as your test set.

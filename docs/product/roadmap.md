@@ -7,7 +7,7 @@ We’re building:
 
 - Time Series AutoML without lookahead bias, to get accurate simulated performance on past data that you can rely on.
 
-- Training models on multiple time series at the same time, with synchronized Continuous Validation.
+- Training models on multiple time series at the same time, with synchronized Adaptive Models.
 
 - Full support for Uncertainty Quantification, making it an internal part of Fold.
 
