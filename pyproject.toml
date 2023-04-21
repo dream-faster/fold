@@ -52,7 +52,7 @@ mkdocs-autorefs = {version = ">=0.4", optional = true}
 mkdocs-jupyter = {version = ">=0.22", optional = true}
 image = {version = ">=1.5.33", optional = true}
 mkdocs-gallery = {version = ">=0.7", optional = true}
-mkdocs-glightbox = {version = ">=0.3", optional = true}
+mkdocs-glightbox = {version = "<=0.3.2", optional = true}
 ray = {version = ">=1.4", optional = true}
 
 [project.urls]
