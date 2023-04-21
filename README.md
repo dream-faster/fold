@@ -40,6 +40,7 @@ The<b> <a href="https://dream-faster.github.io/fold/concepts/adaptive-ml/">Adapt
 
 ![Fold's main features](https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/overview_diagrams/main_features.svg)
 
+- 10x faster Adaptive Backtesting - [What does that mean?](https://dream-faster.github.io/fold/concepts/adaptive-ml/)
 - Composite Models made Adaptive - [What does that mean?](https://dream-faster.github.io/fold/concepts/adaptive-ml/)
 - Distributed computing - [Why is this important?](#Fold-is-different)
 - Update deployed models (coming in May) - [Why is this important?](#Fold-is-different)
