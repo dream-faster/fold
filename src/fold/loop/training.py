@@ -5,7 +5,13 @@ from typing import List, Optional, Tuple, Union
 
 import pandas as pd
 
-from ..base import Composite, Pipeline, TrainedPipelines, Transformation
+from ..base import (
+    Composite,
+    DeployablePipeline,
+    Pipeline,
+    TrainedPipelines,
+    Transformation,
+)
 from ..splitters import Fold, SlidingWindowSplitter, Splitter
 from ..utils.list import wrap_in_list
 from .backend import get_backend_dependent_functions
@@ -136,6 +142,37 @@ def train(
         )
         for transformation_over_time in zip(*processed_pipelines)
     ]
+
+
+def train_for_deployment(
+    pipeline: Pipeline,
+    X: pd.DataFrame,
+    y: pd.Series,
+    sample_weights: Optional[pd.Series] = None,
+) -> DeployablePipeline:
+    X, y = check_types(X, y)
+
+    pipeline = wrap_in_list(pipeline)
+    pipeline = replace_transformation_if_not_fold_native(pipeline)
+    _, transformations = process_pipeline_window(
+        X,
+        y,
+        sample_weights,
+        pipeline,
+        Fold(
+            order=0,
+            model_index=0,
+            train_window_start=0,
+            train_window_end=None,
+            update_window_start=0,
+            update_window_end=0,
+            test_window_start=0,
+            test_window_end=None,
+        ),
+        True,
+        backend=Backend.no,
+    )
+    return transformations
 
 
 def process_pipeline_window(
