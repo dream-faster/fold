@@ -7,8 +7,9 @@ from typing import Callable, List, Optional, Tuple, Union
 
 import pandas as pd
 
-from ..base import Composite, InvertibleTransformation, Pipelines, T
+from ..base import Composite, InvertibleTransformation, Pipeline, Pipelines, T
 from ..utils.checks import get_prediction_column, get_prediction_column_name
+from ..utils.dataframe import to_series
 from ..utils.list import wrap_in_double_list_if_needed
 from .common import get_concatenated_names
 
@@ -57,7 +58,7 @@ class TransformTarget(Composite):
 
     def __init__(
         self,
-        wrapped_pipeline: Pipelines,
+        wrapped_pipeline: Pipeline,
         y_pipeline: Union[List[InvertibleTransformation], InvertibleTransformation],
     ) -> None:
         self.wrapped_pipeline = wrap_in_double_list_if_needed(wrapped_pipeline)
@@ -91,7 +92,7 @@ class TransformTarget(Composite):
         index: int,
         fit: bool,
     ) -> Tuple[pd.DataFrame, T]:
-        return X, results_primary[0].squeeze()
+        return X, to_series(results_primary[0])
 
     def postprocess_result_secondary(
         self,
@@ -103,9 +104,9 @@ class TransformTarget(Composite):
         for transformation in reversed(self.y_pipeline[0]):
             predictions = transformation.inverse_transform(predictions)
         orignal_results = secondary_results[0]
-        orignal_results[
-            get_prediction_column_name(orignal_results)
-        ] = predictions.squeeze()
+        orignal_results[get_prediction_column_name(orignal_results)] = to_series(
+            predictions
+        )
         return orignal_results
 
     def get_child_transformations_primary(self) -> Pipelines:

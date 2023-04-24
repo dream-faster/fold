@@ -50,7 +50,7 @@ class TimeSeriesModel(Transformation):
 
     @abstractmethod
     def predict_in_sample(
-        self, X: pd.DataFrame, y: pd.Series
+        self, X: pd.DataFrame, past_y: pd.Series
     ) -> Union[pd.Series, pd.DataFrame]:
         """
         Predictions for in-sample, already seen data.
