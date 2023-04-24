@@ -82,7 +82,7 @@ plugins:
         org: dream-faster
         repo: fold
         dependencies: docs/examples/requirements.txt
-        notebooks: docs/examples
+        notebooks_dir: docs/examples
   - mkdocstrings:
       handlers:
         python:
