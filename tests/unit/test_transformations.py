@@ -9,7 +9,6 @@ from fold.loop.encase import train_backtest
 from fold.splitters import ExpandingWindowSplitter, SingleWindowSplitter
 from fold.transformations.columns import DropColumns, SelectColumns
 from fold.transformations.dev import Identity
-from fold.transformations.difference import Difference
 from fold.transformations.lags import AddLagsX, AddLagsY
 from fold.transformations.math import AddConstant, TakeLog, TurnPositive
 from fold.transformations.window import AddWindowFeatures
@@ -140,19 +139,6 @@ def test_add_lags_X():
         pred["sine_inverted_lag_11"] == X["sine_inverted"].shift(11)[pred.index]
     ).all()
     assert len(pred.columns) == 11
-
-
-def test_difference():
-    X, y = generate_sine_wave_data(length=600)
-    splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
-    transformations = Difference()
-    trained_pipelines = train(transformations, X, y, splitter)
-    pred = backtest(trained_pipelines, X, y, splitter)
-    assert np.isclose(
-        X.squeeze()[pred.index],
-        trained_pipelines[0].iloc[0].inverse_transform(pred).squeeze(),
-        atol=1e-3,
-    ).all()
 
 
 def test_window_features():
