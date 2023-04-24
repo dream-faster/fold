@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
+import pytest
 
+from fold.utils.dataframe import to_series
 from fold.utils.trim import (
     get_first_valid_index,
     trim_initial_nans,
@@ -52,3 +54,23 @@ def test_trim_initial_nans():
     trimmed_X, trimmed_y = trim_initial_nans(X, y)
     assert len(trimmed_X) == 0
     assert len(trimmed_y) == 0
+
+
+def test_to_series_df_more_columns():
+    df = pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6]})
+    with pytest.raises(ValueError):
+        to_series(df)
+
+
+def test_to_series_df_single_column():
+    df = pd.DataFrame({"a": [1, 2, 3]})
+    series = to_series(df)
+    assert series.name == "a"
+    assert series.tolist() == [1, 2, 3]
+
+
+def test_to_series_df_single_column_single_value():
+    df = pd.DataFrame({"a": [1]})
+    series = to_series(df)
+    assert series.name == "a"
+    assert series.tolist() == [1]
