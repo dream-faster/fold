@@ -81,6 +81,8 @@ plugins:
       binder:
         org: dream-faster
         repo: fold
+        dependencies: docs/examples/requirements.txt
+        notebooks: docs/examples
   - mkdocstrings:
       handlers:
         python:
