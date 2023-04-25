@@ -3,7 +3,7 @@ import pytest
 
 from fold.loop.encase import train_backtest
 from fold.splitters import SingleWindowSplitter
-from fold.transformations.difference import Difference
+from fold.transformations.difference import Difference, TakeReturns
 from fold.utils.tests import generate_sine_wave_data
 
 
@@ -38,3 +38,10 @@ def test_difference_inverse(lag: int):
     diffed = difference.transform(X_test, in_sample=False).squeeze()
     inverse_diffed = difference.inverse_transform(diffed, in_sample=False)
     assert np.isclose(X_test.squeeze(), inverse_diffed, atol=1e-3).all()
+
+
+def test_returns():
+    X, y = generate_sine_wave_data(length=100)
+    splitter = SingleWindowSplitter(train_window=50)
+    pred, _ = train_backtest(TakeReturns(), X, y, splitter)
+    assert pred.squeeze().equals(X.squeeze().pct_change().loc[pred.index])
