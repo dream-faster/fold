@@ -163,7 +163,7 @@ Thinking of using `fold`? We'd love to hear about your use case and help, [pleas
   </tr>
   <tr>
     <td> 
-    🖋️ Back to the Future with Time Series Forecasting
+    🖋️ Why we ended up building an Adaptive ML engine for Time Series
     </td>
     <td>Blog</td>
     <td>Public Release Blog Post </td>
