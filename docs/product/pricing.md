@@ -1,7 +1,6 @@
 <table class="tg">
 <thead>
 <tr>
-
   <th><img alt='Core' src='https://raw.githubusercontent.com/dream-faster/fold/main/docs/images/product_diagrams/pricing-core.svg'></th>
   <th></th>
 </thead>
@@ -9,9 +8,8 @@
   <tr>
     <td><span style="font-style:italic">Commercial license for Fold</span></td>
   </tr>
-  <!-- There is an invisible character below -->
   <tr>
-  <td>⏩ Fast Adaptive Backtesting</td>
+    <td>⏩ Fast Adaptive Backtesting</td>
   </tr>
   <tr>
     <td>⏩ Fast Backtesting with Continuous Validation</td>
@@ -19,9 +17,6 @@
   <tr>
     <td>⏩ Deployment to Production</td>
   </tr>
-  <!-- There is an invisible character below -->
-
-  <!-- There is an invisible character below -->
   <tr>
     <td> <a class='md-button' style="margin:2px" href="mailto:nowcasting@dreamfaster.ai?subject=Core license">Contact Us</a> </td>
   </tr>
