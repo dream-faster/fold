@@ -16,7 +16,7 @@
   </a>
 <h3 align="center"><b>FOLD</b><br></h3>
   <p align="center">
-    Fast <b>Adaptive ML </b> Engine
+    Fast <b>Adaptive Time Series ML </b> Engine
     <br/>
     <a href="https://dream-faster.github.io/fold/"><strong>Explore the docs »</strong></a>
   </p>
