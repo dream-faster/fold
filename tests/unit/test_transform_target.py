@@ -46,9 +46,9 @@ def test_target_transformation_dummy() -> None:
     assert ((X.squeeze()[pred.index] - 1.0) == pred.squeeze()).all()
 
 
-@pytest.mark.parametrize("step", [1, 2, 400])
+@pytest.mark.parametrize("step", [1, 2, 50])
 def test_target_transformation_difference(step: int) -> None:
-    X, y = generate_monotonous_data()
+    X, y = generate_monotonous_data(length=500)
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=step)
 
     def assert_y_not_nan(X, y):
