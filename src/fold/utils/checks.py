@@ -5,7 +5,7 @@ from typing import List
 
 import pandas as pd
 
-from .dataframe import to_series
+from fold.utils.dataframe import to_series
 
 
 def is_prediction(input: pd.DataFrame) -> bool:
