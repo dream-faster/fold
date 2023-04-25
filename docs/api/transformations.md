@@ -5,6 +5,7 @@
 ::: fold.transformations.holidays
 ::: fold.transformations.lags
 ::: fold.transformations.math
+::: fold.transformations.scaling
 ::: fold.transformations.sklearn
 ::: fold.transformations.update
 ::: fold.transformations.window
