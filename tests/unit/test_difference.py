@@ -4,6 +4,7 @@ import pytest
 from fold.loop.encase import train_backtest
 from fold.splitters import SingleWindowSplitter
 from fold.transformations.difference import Difference, TakeReturns
+from fold.utils.dataframe import to_series
 from fold.utils.tests import generate_sine_wave_data
 
 
@@ -11,10 +12,13 @@ from fold.utils.tests import generate_sine_wave_data
 def test_difference(lag: int):
     X, y = generate_sine_wave_data(length=100)
     splitter = SingleWindowSplitter(train_window=50)
-    pred, trained_pipelines = train_backtest(Difference(), X, y, splitter)
+    pred, trained_pipelines = train_backtest(Difference(lag), X, y, splitter)
     assert np.isclose(
         X.squeeze()[pred.index],
-        trained_pipelines[0].iloc[0].inverse_transform(pred, in_sample=True).squeeze(),
+        trained_pipelines[0]
+        .iloc[0]
+        .inverse_transform(to_series(pred), in_sample=True)
+        .squeeze(),
         atol=1e-3,
     ).all()
 

@@ -5,6 +5,8 @@ from typing import List
 
 import pandas as pd
 
+from .dataframe import to_series
+
 
 def is_prediction(input: pd.DataFrame) -> bool:
     if len(input.columns) == 1:
@@ -37,7 +39,7 @@ def all_have_probabilities(results: List[pd.DataFrame]) -> bool:
 
 
 def get_prediction_column(input: pd.DataFrame) -> pd.Series:
-    return input[get_prediction_column_name(input)].squeeze()
+    return to_series(input[get_prediction_column_name(input)])
 
 
 def get_prediction_column_name(input: pd.DataFrame) -> str:

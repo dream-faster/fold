@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from fold.composites.target import TransformTarget
 from fold.loop.encase import train_backtest
@@ -45,14 +46,13 @@ def test_target_transformation_dummy() -> None:
     assert ((X.squeeze()[pred.index] - 1.0) == pred.squeeze()).all()
 
 
-def test_target_transformation_difference() -> None:
+@pytest.mark.parametrize("step", [1, 2, 400])
+def test_target_transformation_difference(step: int) -> None:
     X, y = generate_monotonous_data()
-    splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
+    splitter = ExpandingWindowSplitter(initial_train_window=400, step=step)
 
     def assert_y_not_nan(X, y):
         assert not np.isnan(y).any()
-        # When differencing is applied to `y`, the first value will be NaN, and it is then dropped.
-        assert (len(X) - 99) % 100 == 0
 
     pipeline = TransformTarget(
         [
