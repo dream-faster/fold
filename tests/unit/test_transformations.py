@@ -230,14 +230,14 @@ def test_log_transformation():
     pred, _ = train_backtest(TakeLog(), X, y, splitter)
     assert pred["sine"].equals(np.log(X["sine"][pred.index]))
 
-    pred = TakeLog().inverse_transform(np.log(X["sine"]))
+    pred = TakeLog().inverse_transform(np.log(X["sine"]), in_sample=False)
     assert np.isclose(pred, X["sine"][pred.index], atol=0.01).all()
 
     log = TakeLog(base=10)
     pred, _ = train_backtest(log, X, y, splitter)
     assert pred["sine"].equals(np.log10(X["sine"][pred.index]))
 
-    pred = log.inverse_transform(np.log10(X["sine"]))
+    pred = log.inverse_transform(np.log10(X["sine"]), in_sample=False)
     assert np.isclose(pred, X["sine"][pred.index], atol=0.01).all()
 
 
@@ -253,7 +253,7 @@ def test_turn_positive():
     assert pred.any().any() >= 0.0
     assert len(pred.columns) == len(X.columns)
 
-    reverse = turn_positive.inverse_transform(pred["sine"])
+    reverse = turn_positive.inverse_transform(pred["sine"], in_sample=False)
     assert np.isclose(reverse, X["sine"][pred.index], atol=0.01).all()
 
 
@@ -265,7 +265,7 @@ def test_add_constant():
     pred, _ = train_backtest(AddConstant(2.0), X, y, splitter)
     assert pred["sine"].equals(X["sine"][pred.index] + 2.0)
 
-    pred = AddConstant(2.0).inverse_transform(X["sine"] + 2.0)
+    pred = AddConstant(2.0).inverse_transform(X["sine"] + 2.0, in_sample=False)
     assert np.isclose(pred, X["sine"][pred.index], atol=0.01).all()
 
     pred, _ = train_backtest(
