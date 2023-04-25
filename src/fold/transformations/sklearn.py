@@ -6,7 +6,7 @@ from typing import Optional
 
 import pandas as pd
 
-from ..base import FeatureSelector, Transformation, fit_noop
+from ..base import FeatureSelector, InvertibleTransformation, Transformation, fit_noop
 
 
 class WrapSKLearnTransformation(Transformation):
@@ -61,6 +61,10 @@ class WrapSKLearnTransformation(Transformation):
         else:
             return pd.DataFrame(self.transformation.transform(X), columns=X.columns)
 
+
+class WrapInvertibleSKLearnTransformation(
+    WrapSKLearnTransformation, InvertibleTransformation
+):
     def inverse_transform(self, X: pd.Series, in_sample: bool) -> pd.Series:
         return pd.Series(self.transformation.inverse_transform(X), index=X.index)
 

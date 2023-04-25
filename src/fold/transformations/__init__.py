@@ -28,6 +28,7 @@ from .function import WrapFunction
 from .holidays import AddHolidayFeatures
 from .lags import AddLagsX, AddLagsY
 from .math import AddConstant, TakeLog, TurnPositive
+from .scaling import MinMaxScaler, StandardScaler
 from .sklearn import WrapSKLearnFeatureSelector, WrapSKLearnTransformation
 from .update import DontUpdate
 from .window import AddWindowFeatures
