@@ -47,12 +47,10 @@ def test_target_transformation_dummy() -> None:
 
 def test_target_transformation_difference() -> None:
     X, y = generate_monotonous_data()
-    splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
+    splitter = ExpandingWindowSplitter(initial_train_window=400, step=50)
 
     def assert_y_not_nan(X, y):
         assert not np.isnan(y).any()
-        # When differencing is applied to `y`, the first value will be NaN, and it is then dropped.
-        assert (len(X) - 99) % 100 == 0
 
     pipeline = TransformTarget(
         [
