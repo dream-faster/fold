@@ -137,7 +137,7 @@ class Test(InvertibleTransformation):
             return X
         return return_value
 
-    def inverse_transform(self, X: pd.Series) -> pd.Series:
+    def inverse_transform(self, X: pd.Series, in_sample: bool) -> pd.Series:
         self.no_of_calls_inverse_transform += 1
         if self.inverse_transform_func is not None:
             return self.inverse_transform_func(X)

@@ -112,6 +112,7 @@ class ModelResiduals(Composite):
         primary_results: List[pd.DataFrame],
         secondary_results: List[pd.DataFrame],
         y: Optional[pd.Series],
+        in_sample: bool,
     ) -> pd.DataFrame:
         primary_predictions = get_prediction_column(primary_results[0])
         residual_predictions = get_prediction_column(secondary_results[0])

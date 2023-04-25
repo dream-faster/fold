@@ -69,7 +69,7 @@ class TakeLog(InvertibleTransformation):
         else:
             raise ValueError(f"Invalid base: {self.base}")
 
-    def inverse_transform(self, X: pd.Series) -> pd.Series:
+    def inverse_transform(self, X: pd.Series, in_sample: bool) -> pd.Series:
         if self.base == "e" or self.base == np.e:
             return pd.Series(np.exp(X.values), index=X.index)
         elif self.base == "10" or self.base == 10:
@@ -149,7 +149,7 @@ class AddConstant(InvertibleTransformation):
         else:
             return X + self.constant
 
-    def inverse_transform(self, X: pd.Series) -> pd.Series:
+    def inverse_transform(self, X: pd.Series, in_sample: bool) -> pd.Series:
         constant = self.constant
         if constant is dict:
             constant = next(iter(constant.values()))
@@ -216,7 +216,7 @@ class TurnPositive(InvertibleTransformation):
             axis="columns",
         )
 
-    def inverse_transform(self, X: pd.Series) -> pd.Series:
+    def inverse_transform(self, X: pd.Series, in_sample: bool) -> pd.Series:
         return X - next(iter(self.constant.values()))
 
     update = fit_noop

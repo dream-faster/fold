@@ -61,10 +61,8 @@ class WrapSKLearnTransformation(Transformation):
         else:
             return pd.DataFrame(self.transformation.transform(X), columns=X.columns)
 
-    def inverse_transform(self, X: pd.DataFrame) -> pd.DataFrame:
-        return pd.DataFrame(
-            self.transformation.inverse_transform(X), columns=X.columns, index=X.index
-        )
+    def inverse_transform(self, X: pd.Series, in_sample: bool) -> pd.Series:
+        return pd.Series(self.transformation.inverse_transform(X), index=X.index)
 
 
 class WrapSKLearnFeatureSelector(FeatureSelector):

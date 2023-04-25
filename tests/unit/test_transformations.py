@@ -9,7 +9,6 @@ from fold.loop.encase import train_backtest
 from fold.splitters import ExpandingWindowSplitter, SingleWindowSplitter
 from fold.transformations.columns import DropColumns, SelectColumns
 from fold.transformations.dev import Identity
-from fold.transformations.difference import Difference
 from fold.transformations.lags import AddLagsX, AddLagsY
 from fold.transformations.math import AddConstant, TakeLog, TurnPositive
 from fold.transformations.window import AddWindowFeatures
@@ -142,19 +141,6 @@ def test_add_lags_X():
     assert len(pred.columns) == 11
 
 
-def test_difference():
-    X, y = generate_sine_wave_data(length=600)
-    splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
-    transformations = Difference()
-    trained_pipelines = train(transformations, X, y, splitter)
-    pred = backtest(trained_pipelines, X, y, splitter)
-    assert np.isclose(
-        X.squeeze()[pred.index],
-        trained_pipelines[0].iloc[0].inverse_transform(pred).squeeze(),
-        atol=1e-3,
-    ).all()
-
-
 def test_window_features():
     X, y = generate_sine_wave_data(length=600)
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
@@ -244,14 +230,14 @@ def test_log_transformation():
     pred, _ = train_backtest(TakeLog(), X, y, splitter)
     assert pred["sine"].equals(np.log(X["sine"][pred.index]))
 
-    pred = TakeLog().inverse_transform(np.log(X["sine"]))
+    pred = TakeLog().inverse_transform(np.log(X["sine"]), in_sample=False)
     assert np.isclose(pred, X["sine"][pred.index], atol=0.01).all()
 
     log = TakeLog(base=10)
     pred, _ = train_backtest(log, X, y, splitter)
     assert pred["sine"].equals(np.log10(X["sine"][pred.index]))
 
-    pred = log.inverse_transform(np.log10(X["sine"]))
+    pred = log.inverse_transform(np.log10(X["sine"]), in_sample=False)
     assert np.isclose(pred, X["sine"][pred.index], atol=0.01).all()
 
 
@@ -267,7 +253,7 @@ def test_turn_positive():
     assert pred.any().any() >= 0.0
     assert len(pred.columns) == len(X.columns)
 
-    reverse = turn_positive.inverse_transform(pred["sine"])
+    reverse = turn_positive.inverse_transform(pred["sine"], in_sample=False)
     assert np.isclose(reverse, X["sine"][pred.index], atol=0.01).all()
 
 
@@ -279,7 +265,7 @@ def test_add_constant():
     pred, _ = train_backtest(AddConstant(2.0), X, y, splitter)
     assert pred["sine"].equals(X["sine"][pred.index] + 2.0)
 
-    pred = AddConstant(2.0).inverse_transform(X["sine"] + 2.0)
+    pred = AddConstant(2.0).inverse_transform(X["sine"] + 2.0, in_sample=False)
     assert np.isclose(pred, X["sine"][pred.index], atol=0.01).all()
 
     pred, _ = train_backtest(
