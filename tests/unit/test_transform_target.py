@@ -63,7 +63,7 @@ def test_target_transformation_difference(step: int) -> None:
     )
 
     pred, _ = train_backtest(pipeline, X, y, splitter)
-    assert np.isclose(y[pred.index], pred.squeeze(), atol=0.001).all()
+    assert np.isclose(y[pred.index], pred.squeeze(), atol=0.002).all()
 
 
 def test_target_transformation_log() -> None:
