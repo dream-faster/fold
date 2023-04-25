@@ -116,6 +116,7 @@ class MetaLabeling(Composite):
         primary_results: List[pd.DataFrame],
         secondary_results: List[pd.DataFrame],
         y: Optional[pd.Series],
+        in_sample: bool,
     ) -> pd.DataFrame:
         primary_predictions = get_prediction_column(primary_results[0])
         meta_probabilities = secondary_results[0][

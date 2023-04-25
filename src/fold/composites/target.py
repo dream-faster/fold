@@ -99,10 +99,11 @@ class TransformTarget(Composite):
         primary_results: List[pd.DataFrame],
         secondary_results: List[pd.DataFrame],
         y: Optional[pd.Series],
+        in_sample: bool,
     ) -> pd.DataFrame:
         predictions = get_prediction_column(secondary_results[0])
         for transformation in reversed(self.y_pipeline[0]):
-            predictions = transformation.inverse_transform(predictions)
+            predictions = transformation.inverse_transform(predictions, in_sample)
         orignal_results = secondary_results[0]
         orignal_results[get_prediction_column_name(orignal_results)] = to_series(
             predictions

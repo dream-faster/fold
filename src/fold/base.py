@@ -55,6 +55,7 @@ class Composite(ABC):
         primary_results: List[pd.DataFrame],
         secondary_results: List[pd.DataFrame],
         y: Optional[pd.Series],
+        in_sample: bool,
     ) -> pd.DataFrame:
         raise NotImplementedError
 
@@ -144,7 +145,7 @@ class Transformation(ABC):
 
 class InvertibleTransformation(Transformation, ABC):
     @abstractmethod
-    def inverse_transform(self, X: pd.Series) -> pd.Series:
+    def inverse_transform(self, X: pd.Series, in_sample: bool) -> pd.Series:
         raise NotImplementedError
 
 

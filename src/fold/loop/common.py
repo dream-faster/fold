@@ -137,7 +137,9 @@ def process_composite(
             " something else."
         )
 
-    return composite.postprocess_result_secondary(results_primary, results_secondary, y)
+    return composite.postprocess_result_secondary(
+        results_primary, results_secondary, y, in_sample=stage == Stage.inital_fit
+    )
 
 
 def process_with_inner_loop(

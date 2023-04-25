@@ -59,9 +59,7 @@ class Difference(InvertibleTransformation):
 
     def __init__(self, lag: int = 1) -> None:
         self.lag = lag
-        self.properties = InvertibleTransformation.Properties(
-            requires_X=False, memory_size=lag
-        )
+        self.properties = InvertibleTransformation.Properties(requires_X=False)
 
     def fit(
         self,
@@ -69,6 +67,7 @@ class Difference(InvertibleTransformation):
         y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
+        self.last_values_X = X.iloc[-self.lag : None]
         self.first_values_X = X.iloc[: self.lag]
 
     def update(
@@ -77,36 +76,27 @@ class Difference(InvertibleTransformation):
         y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
     ) -> None:
-        self.first_values_X = X.iloc[: self.lag]
-        # if len(X) >= self.lag:
-        #     self.first_values_X = X.iloc[-self.lag : None]
-        # else:
-        #     self.first_values_X = pd.concat(
-        #         [self.first_values_X, X], axis="index"
-        #     ).iloc[-self.lag : None]
+        self.last_values_X = X.iloc[-self.lag : None]
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         if in_sample:
             return X.diff(self.lag)
         else:
             return (
-                pd.concat([self.first_values_X, X], axis="index")
+                pd.concat([self.last_values_X, X], axis="index")
                 .diff(self.lag)
                 .iloc[self.lag :]
             )
 
-    def inverse_transform(self, X: pd.Series) -> pd.Series:
-        X = X.copy()
-        X.iloc[: self.lag] = to_series(self.first_values_X)
-        for i in range(self.lag):
-            X.iloc[i :: self.lag] = X.iloc[i :: self.lag].cumsum()
-        return X
-        # return X.combine_first(
-        #     to_series(self.first_values_X).set_axis(X.index[: len(self.first_values_X)])
-        # ).cumsum()
-        # return pd.Series(
-        #     np.concatenate(
-        #         [to_series(self.last_rows_X), X[len(self.last_rows_X) :]]
-        #     ).cumsum(),
-        #     index=X.index,
-        # )
+    def inverse_transform(self, X: pd.Series, in_sample: bool) -> pd.Series:
+        if in_sample:
+            X = X.copy()
+            X.iloc[: self.lag] = to_series(self.first_values_X)
+            for i in range(self.lag):
+                X.iloc[i :: self.lag] = X.iloc[i :: self.lag].cumsum()
+            return X
+        else:
+            X = pd.concat([to_series(self.last_values_X), X], axis="index")
+            for i in range(self.lag):
+                X.iloc[i :: self.lag] = X.iloc[i :: self.lag].cumsum()
+            return X.iloc[self.lag :]
