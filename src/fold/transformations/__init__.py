@@ -23,7 +23,7 @@ from .date import (
     AddWeekOfYear,
     AddYear,
 )
-from .difference import Difference
+from .difference import Difference, TakeReturns
 from .function import WrapFunction
 from .holidays import AddHolidayFeatures
 from .lags import AddLagsX, AddLagsY
