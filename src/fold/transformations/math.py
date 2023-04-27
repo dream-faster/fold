@@ -9,7 +9,7 @@ import pandas as pd
 from fold.base import InvertibleTransformation, Tuneable, fit_noop
 
 
-class TakeLog(InvertibleTransformation):
+class TakeLog(InvertibleTransformation, Tuneable):
     """
     Takes the logarithm of the data.
 
