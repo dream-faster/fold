@@ -1,8 +1,9 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
+from __future__ import annotations
 
 from inspect import getfullargspec
-from typing import Optional
+from typing import Optional, Type
 
 import pandas as pd
 
@@ -23,11 +24,19 @@ class WrapSKLearnTransformation(Transformation, Tuneable):
 
     properties = Transformation.Properties(requires_X=True)
 
-    def __init__(self, transformation) -> None:
-        if hasattr(transformation, "set_output"):
-            transformation = transformation.set_output(transform="pandas")
-        self.transformation = transformation
-        self.name = transformation.__class__.__name__
+    def __init__(
+        self,
+        transformation_class: Type,
+        init_args: dict,
+    ) -> None:
+        self.transformation = transformation_class(**init_args)
+        if hasattr(self.transformation, "set_output"):
+            self.transformation = self.transformation.set_output(transform="pandas")
+        self.name = self.transformation.__class__.__name__
+
+    @classmethod
+    def from_model(cls, model) -> WrapSKLearnTransformation:
+        return cls(transformation_class=model.__class__, init_args=model.get_params())
 
     def fit(
         self,
@@ -71,7 +80,7 @@ class WrapSKLearnTransformation(Transformation, Tuneable):
         return self.transformation.get_params()
 
     def set_params(self, **params) -> None:
-        self.transformation.set_params(params)
+        self.transformation.set_params(**params)
 
 
 class WrapInvertibleSKLearnTransformation(
@@ -90,11 +99,19 @@ class WrapSKLearnFeatureSelector(FeatureSelector, Tuneable):
     properties = Transformation.Properties(requires_X=True)
     selected_features: Optional[str] = None
 
-    def __init__(self, transformation) -> None:
-        if hasattr(transformation, "set_output"):
-            transformation = transformation.set_output(transform="pandas")
-        self.transformation = transformation
-        self.name = transformation.__class__.__name__
+    def __init__(
+        self,
+        transformation_class: Type,
+        init_args: dict,
+    ) -> None:
+        self.transformation = transformation_class(**init_args)
+        if hasattr(self.transformation, "set_output"):
+            self.transformation = self.transformation.set_output(transform="pandas")
+        self.name = self.transformation.__class__.__name__
+
+    @classmethod
+    def from_model(cls, model) -> WrapSKLearnFeatureSelector:
+        return cls(transformation_class=model.__class__, init_args=model.get_params())
 
     def fit(
         self,
@@ -117,6 +134,6 @@ class WrapSKLearnFeatureSelector(FeatureSelector, Tuneable):
         return self.transformation.get_params()
 
     def set_params(self, **params) -> None:
-        self.transformation.set_params(params)
+        self.transformation.set_params(**params)
 
     update = fit_noop
