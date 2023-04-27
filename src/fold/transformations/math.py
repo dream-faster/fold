@@ -6,7 +6,7 @@ from typing import Dict, Optional, Union
 import numpy as np
 import pandas as pd
 
-from fold.base import InvertibleTransformation, fit_noop
+from fold.base import InvertibleTransformation, Tuneable, fit_noop
 
 
 class TakeLog(InvertibleTransformation):
@@ -82,8 +82,15 @@ class TakeLog(InvertibleTransformation):
     fit = fit_noop
     update = fit_noop
 
+    def get_params(self) -> dict:
+        return {"base": self.base}
 
-class AddConstant(InvertibleTransformation):
+    def set_params(self, **parameters):
+        for parameter, value in parameters.items():
+            setattr(self, parameter, value)
+
+
+class AddConstant(InvertibleTransformation, Tuneable):
 
     """
     Adds a constant to the data.
@@ -157,6 +164,13 @@ class AddConstant(InvertibleTransformation):
 
     fit = fit_noop
     update = fit_noop
+
+    def get_params(self) -> dict:
+        return {"constant": self.constant}
+
+    def set_params(self, **parameters):
+        for parameter, value in parameters.items():
+            setattr(self, parameter, value)
 
 
 class TurnPositive(InvertibleTransformation):

@@ -6,10 +6,16 @@ from typing import Optional
 
 import pandas as pd
 
-from ..base import FeatureSelector, InvertibleTransformation, Transformation, fit_noop
+from ..base import (
+    FeatureSelector,
+    InvertibleTransformation,
+    Transformation,
+    Tuneable,
+    fit_noop,
+)
 
 
-class WrapSKLearnTransformation(Transformation):
+class WrapSKLearnTransformation(Transformation, Tuneable):
     """
     Wraps an SKLearn Transformation.
     There's no need to use it directly, `fold` automatically wraps all sklearn transformations into this class.
@@ -61,6 +67,12 @@ class WrapSKLearnTransformation(Transformation):
         else:
             return pd.DataFrame(self.transformation.transform(X), columns=X.columns)
 
+    def get_params(self) -> dict:
+        return self.transformation.get_params()
+
+    def set_params(self, **params) -> None:
+        self.transformation.set_params(params)
+
 
 class WrapInvertibleSKLearnTransformation(
     WrapSKLearnTransformation, InvertibleTransformation
@@ -69,7 +81,7 @@ class WrapInvertibleSKLearnTransformation(
         return pd.Series(self.transformation.inverse_transform(X), index=X.index)
 
 
-class WrapSKLearnFeatureSelector(FeatureSelector):
+class WrapSKLearnFeatureSelector(FeatureSelector, Tuneable):
     """
     Wraps an SKLearn Feature Selector class, stores the selected columns in `selected_features` property.
     There's no need to use it directly, `fold` automatically wraps all sklearn feature selectors into this class.
@@ -100,5 +112,11 @@ class WrapSKLearnFeatureSelector(FeatureSelector):
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         return X[self.selected_features]
+
+    def get_params(self) -> dict:
+        return self.transformation.get_params()
+
+    def set_params(self, **params) -> None:
+        self.transformation.set_params(params)
 
     update = fit_noop

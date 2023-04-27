@@ -149,6 +149,16 @@ class InvertibleTransformation(Transformation, ABC):
         raise NotImplementedError
 
 
+class Tuneable(ABC):
+    @abstractmethod
+    def get_params(self) -> dict:
+        raise NotImplementedError
+
+    @abstractmethod
+    def set_params(self, **parameters):
+        raise NotImplementedError
+
+
 class FeatureSelector(Transformation):
     selected_features: List[str]
 
