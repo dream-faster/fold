@@ -20,7 +20,7 @@ class StandardScaler(WrapInvertibleSKLearnTransformation):
     ```pycon
     >>> from fold.loop import train_backtest
     >>> from fold.splitters import SlidingWindowSplitter
-    >>> from fold.transformations import Difference
+    >>> from fold.transformations import StandardScaler
     >>> from fold.utils.tests import generate_sine_wave_data
     >>> X, y  = generate_sine_wave_data()
     >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
@@ -52,7 +52,7 @@ class StandardScaler(WrapInvertibleSKLearnTransformation):
     name = "StandardScaler"
 
     def __init__(self):
-        super().__init__(SKLearnStandardScaler())
+        super().__init__(SKLearnStandardScaler, init_args=dict())
 
 
 class MinMaxScaler(WrapInvertibleSKLearnTransformation):
@@ -107,4 +107,6 @@ class MinMaxScaler(WrapInvertibleSKLearnTransformation):
     name = "MinMaxScaler"
 
     def __init__(self, feature_range: Tuple[int, int] = (0, 1), clip=False):
-        super().__init__(SKLearnMinMaxScaler(feature_range=feature_range, clip=clip))
+        super().__init__(
+            SKLearnMinMaxScaler, init_args=dict(feature_range=feature_range, clip=clip)
+        )

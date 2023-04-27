@@ -28,15 +28,15 @@ def replace_transformation_if_not_fold_native(
     if isinstance(transformation, List):
         return [replace_transformation_if_not_fold_native(t) for t in transformation]
     elif isinstance(transformation, RegressorMixin):
-        return WrapSKLearnRegressor(transformation)
+        return WrapSKLearnRegressor.from_model(transformation)
     elif isinstance(transformation, ClassifierMixin):
-        return WrapSKLearnClassifier(transformation)
+        return WrapSKLearnClassifier.from_model(transformation)
     elif isinstance(transformation, Callable):
         return WrapFunction(transformation, None)
     elif isinstance(transformation, SelectorMixin):
-        return WrapSKLearnFeatureSelector(transformation)
+        return WrapSKLearnFeatureSelector.from_model(transformation)
     elif isinstance(transformation, TransformerMixin):
-        return WrapSKLearnTransformation(transformation)
+        return WrapSKLearnTransformation.from_model(transformation)
     elif isinstance(transformation, SKLearnPipeline):
         return WrapSKLearnPipeline(transformation)
     elif isinstance(transformation, Composite):

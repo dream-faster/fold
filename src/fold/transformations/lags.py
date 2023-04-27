@@ -7,11 +7,11 @@ import pandas as pd
 
 from fold.utils.checks import is_X_available
 
-from ..base import Transformation, fit_noop
+from ..base import Transformation, Tuneable, fit_noop
 from ..utils.list import flatten, transform_range_to_list, wrap_in_list
 
 
-class AddLagsY(Transformation):
+class AddLagsY(Transformation, Tuneable):
     """
     Adds past values of `y`.
 
@@ -74,8 +74,21 @@ class AddLagsY(Transformation):
     fit = fit_noop
     update = fit_noop
 
+    def get_params(self) -> dict:
+        return {"lags": self.lags}
 
-class AddLagsX(Transformation):
+    def set_params(self, **parameters):
+        for parameter, value in parameters.items():
+            setattr(self, parameter, value)
+        self.properties = Transformation.Properties(
+            requires_X=False,
+            mode=Transformation.Properties.Mode.online,
+            memory_size=max(self.lags),
+            _internal_supports_minibatch_backtesting=True,
+        )
+
+
+class AddLagsX(Transformation, Tuneable):
     """
     Adds past values of `X` for the desired column(s).
 
@@ -152,3 +165,14 @@ class AddLagsX(Transformation):
 
     fit = fit_noop
     update = fit_noop
+
+    def get_params(self) -> dict:
+        return {"columns_and_lags": self.columns_and_lags}
+
+    def set_params(self, **parameters):
+        for parameter, value in parameters.items():
+            setattr(self, parameter, value)
+        self.properties = Transformation.Properties(
+            requires_X=True,
+            memory_size=max(flatten([l for _, l in self.columns_and_lags])),
+        )

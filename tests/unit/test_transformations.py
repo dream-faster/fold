@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import pytest
+from tuneable import tuneability_test
 
 from fold.composites.columns import TransformEachColumn
 from fold.composites.concat import TransformColumn
@@ -99,6 +100,8 @@ def test_add_lags_y():
         transformations = AddLagsY(lags=0)  # type: ignore
         _ = train(transformations, X, y, splitter)
 
+    tuneability_test(transformations, dict(lags=[1, 2]))
+
 
 def test_add_lags_X():
     X, y = generate_sine_wave_data(length=6000)
@@ -139,6 +142,8 @@ def test_add_lags_X():
         pred["sine_inverted_lag_11"] == X["sine_inverted"].shift(11)[pred.index]
     ).all()
     assert len(pred.columns) == 11
+
+    tuneability_test(transformations, dict(columns_and_lags=[("all", [1, 2])]))
 
 
 def test_window_features():
@@ -240,6 +245,11 @@ def test_log_transformation():
     pred = log.inverse_transform(np.log10(X["sine"]), in_sample=False)
     assert np.isclose(pred, X["sine"][pred.index], atol=0.01).all()
 
+    tuneability_test(
+        instance=TakeLog(base=10),
+        different_params=dict(base="e"),
+    )
+
 
 def test_turn_positive():
     X, y = generate_sine_wave_data(length=600)
@@ -274,3 +284,8 @@ def test_add_constant():
     assert pred["sine"].equals(X["sine"][pred.index] + 2.0)
     assert pred["sine_inverted"].equals(X["sine_inverted"][pred.index] + 3.0)
     assert len(pred.columns) == 3
+
+    tuneability_test(
+        instance=AddConstant(2.0),
+        different_params=dict(constant=1.0),
+    )

@@ -4,9 +4,11 @@ from sklearn.dummy import DummyClassifier, DummyRegressor
 from sklearn.feature_selection import SelectKBest, VarianceThreshold, f_regression
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
+from tuneable import tuneability_test
 
 from fold.composites.concat import TransformColumn
-from fold.loop import backtest, train
+from fold.loop import backtest, train, train_backtest
+from fold.models.sklearn import WrapSKLearnClassifier, WrapSKLearnRegressor
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.columns import OnlyPredictions, RenameColumns, SelectColumns
 from fold.utils.tests import generate_all_zeros, generate_sine_wave_data
@@ -16,26 +18,38 @@ def test_sklearn_classifier() -> None:
     X, y = generate_all_zeros(1000)
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    transformations = [
-        DummyClassifier(strategy="constant", constant=0),
-        OnlyPredictions(),
-    ]
-    trained_pipelines = train(transformations, X, y, splitter)
-    pred = backtest(trained_pipelines, X, y, splitter)
+    pipeline = [DummyClassifier(strategy="constant", constant=0), OnlyPredictions()]
+    pred, _ = train_backtest(pipeline, X, y, splitter)
     assert (pred.squeeze() == y[pred.index]).all()
+
+    tuneability_test(
+        instance=WrapSKLearnClassifier.from_model(pipeline[0]),
+        different_params=dict(strategy="constant", constant=1),
+        init_function=lambda **kwargs: WrapSKLearnClassifier.from_model(
+            DummyClassifier(**kwargs)
+        ),
+        classification=True,
+    )
 
 
 def test_sklearn_regressor() -> None:
     X, y = generate_all_zeros(1000)
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    transformations = [
+    pipeline = [
         DummyRegressor(strategy="constant", constant=0),
         OnlyPredictions(),
     ]
-    trained_pipelines = train(transformations, X, y, splitter)
-    pred = backtest(trained_pipelines, X, y, splitter)
+    pred, _ = train_backtest(pipeline, X, y, splitter)
     assert (pred.squeeze() == y[pred.index]).all()
+
+    tuneability_test(
+        instance=WrapSKLearnRegressor.from_model(pipeline[0]),
+        different_params=dict(strategy="constant", constant=1),
+        init_function=lambda **kwargs: WrapSKLearnRegressor.from_model(
+            DummyRegressor(**kwargs)
+        ),
+    )
 
 
 def test_sklearn_pipeline() -> None:
@@ -71,6 +85,12 @@ def test_sklearn_partial_fit() -> None:
 
         def transform(self, X):
             return X
+
+        def get_params(self, deep=True):
+            return {}
+
+        def set_params(self, **params):
+            pass
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     transformations = [

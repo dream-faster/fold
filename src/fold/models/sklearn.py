@@ -1,15 +1,16 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
+from __future__ import annotations
 
-from typing import Optional, Union
+from typing import Optional, Type, Union
 
 import pandas as pd
 
-from ..base import Transformation, fit_noop
+from ..base import Transformation, Tuneable, fit_noop
 from .base import Model
 
 
-class WrapSKLearnClassifier(Model):
+class WrapSKLearnClassifier(Model, Tuneable):
     """
     Wraps an SKLearn Classifier model.
     There's no need to use it directly, `fold` automatically wraps all sklearn classifiers into this class.
@@ -19,9 +20,17 @@ class WrapSKLearnClassifier(Model):
         requires_X=True, model_type=Model.Properties.ModelType.classifier
     )
 
-    def __init__(self, model) -> None:
-        self.model = model
-        self.name = model.__class__.__name__
+    def __init__(
+        self,
+        model_class: Type,
+        init_args: dict,
+    ) -> None:
+        self.model = model_class(**init_args)
+        self.name = self.model.__class__.__name__
+
+    @classmethod
+    def from_model(cls, model) -> WrapSKLearnClassifier:
+        return cls(model_class=model.__class__, init_args=model.get_params())
 
     def fit(
         self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
@@ -58,8 +67,14 @@ class WrapSKLearnClassifier(Model):
 
     predict_in_sample = predict
 
+    def get_params(self) -> dict:
+        return self.model.get_params()
 
-class WrapSKLearnRegressor(Model):
+    def set_params(self, **params) -> None:
+        self.model.set_params(**params)
+
+
+class WrapSKLearnRegressor(Model, Tuneable):
     """
     Wraps an SKLearn regressor model.
     There's no need to use it directly, `fold` automatically wraps all sklearn regressors into this class.
@@ -69,9 +84,17 @@ class WrapSKLearnRegressor(Model):
         requires_X=True, model_type=Model.Properties.ModelType.regressor
     )
 
-    def __init__(self, model) -> None:
-        self.model = model
-        self.name = model.__class__.__name__
+    def __init__(
+        self,
+        model_class: Type,
+        init_args: dict,
+    ) -> None:
+        self.model = model_class(**init_args)
+        self.name = self.model.__class__.__name__
+
+    @classmethod
+    def from_model(cls, model) -> WrapSKLearnRegressor:
+        return cls(model_class=model.__class__, init_args=model.get_params())
 
     def fit(
         self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
@@ -99,6 +122,12 @@ class WrapSKLearnRegressor(Model):
         ).to_frame()
 
     predict_in_sample = predict
+
+    def get_params(self) -> dict:
+        return self.model.get_params()
+
+    def set_params(self, **params) -> None:
+        self.model.set_params(**params)
 
 
 class WrapSKLearnPipeline(Model):
