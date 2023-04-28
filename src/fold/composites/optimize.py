@@ -84,7 +84,7 @@ class OptimizeGridSearch(Composite):
         )
 
 
-class SelectGridSearch(Optimizer):
+class GridSearchOptimizer(Optimizer):
     properties = Composite.Properties(primary_requires_predictions=True)
     selected_params: Optional[dict] = None
     param_permutations: List[dict(str, Any)]
@@ -98,7 +98,7 @@ class SelectGridSearch(Optimizer):
     ) -> None:
         self.model = wrap_in_list(model)
         self.param_grid = param_grid
-        self.name = "SelectGridSearch-" + get_concatenated_names(self.model)
+        self.name = "GridSearchOptimizer-" + get_concatenated_names(self.model)
         self.scorer = scorer
         self.is_scorer_loss = is_scorer_loss
         self.param_permutations = list(ParameterGrid(self.param_grid))
@@ -111,7 +111,7 @@ class SelectGridSearch(Optimizer):
         scorer: Callable,
         is_scorer_loss: bool,
         selected_params: Optional[dict],
-    ) -> SelectGridSearch:
+    ) -> GridSearchOptimizer:
         instance = cls(model, param_grid, scorer, is_scorer_loss)
         instance.selected_params = selected_params
         return instance
@@ -142,8 +142,8 @@ class SelectGridSearch(Optimizer):
         )
         self.selected_params = self.param_permutations[selected_index]
 
-    def clone(self, clone_child_transformations: Callable) -> SelectGridSearch:
-        return SelectGridSearch.from_cloned_instance(
+    def clone(self, clone_child_transformations: Callable) -> GridSearchOptimizer:
+        return GridSearchOptimizer.from_cloned_instance(
             model=clone_child_transformations(self.model),
             param_grid=self.param_grid,
             scorer=self.scorer,
