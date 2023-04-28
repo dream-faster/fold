@@ -18,15 +18,15 @@ from fold.transformations.sklearn import (
     WrapSKLearnTransformation,
 )
 
-from ..base import Composite, Pipeline, Transformation
+from ..base import Composite, Optimizer, Pipeline, Transformation
 from ..transformations.function import WrapFunction
 
 
-def replace_transformation_if_not_fold_native(
+def wrap_transformation_if_needed(
     transformation: Pipeline,
 ) -> Pipeline:
     if isinstance(transformation, List):
-        return [replace_transformation_if_not_fold_native(t) for t in transformation]
+        return [wrap_transformation_if_needed(t) for t in transformation]
     elif isinstance(transformation, RegressorMixin):
         return WrapSKLearnRegressor.from_model(transformation)
     elif isinstance(transformation, ClassifierMixin):
@@ -40,7 +40,9 @@ def replace_transformation_if_not_fold_native(
     elif isinstance(transformation, SKLearnPipeline):
         return WrapSKLearnPipeline(transformation)
     elif isinstance(transformation, Composite):
-        return transformation.clone(replace_transformation_if_not_fold_native)
+        return transformation.clone(wrap_transformation_if_needed)
+    elif isinstance(transformation, Optimizer):
+        return transformation.clone(wrap_transformation_if_needed)
     elif isinstance(transformation, Transformation):
         return transformation
     elif find_spec("fold_wrappers") is not None:

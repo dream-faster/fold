@@ -8,6 +8,7 @@ import pandas as pd
 from ..base import (
     Composite,
     DeployablePipeline,
+    Optimizer,
     Pipeline,
     TrainedPipelines,
     Transformation,
@@ -17,8 +18,8 @@ from ..utils.list import wrap_in_list
 from .backend import get_backend_dependent_functions
 from .checks import check_types
 from .common import deepcopy_pipelines, recursively_transform
-from .convenience import replace_transformation_if_not_fold_native
 from .types import Backend, Stage, TrainMethod
+from .wrap import wrap_transformation_if_needed
 
 
 def train(
@@ -69,7 +70,7 @@ def train(
         )
 
     pipeline = wrap_in_list(pipeline)
-    pipeline = replace_transformation_if_not_fold_native(pipeline)
+    pipeline = wrap_transformation_if_needed(pipeline)
 
     splits = splitter.splits(length=len(y))
     backend_functions = get_backend_dependent_functions(backend)
@@ -153,7 +154,7 @@ def train_for_deployment(
     X, y = check_types(X, y)
 
     pipeline = wrap_in_list(pipeline)
-    pipeline = replace_transformation_if_not_fold_native(pipeline)
+    pipeline = wrap_transformation_if_needed(pipeline)
     _, transformations = process_pipeline_window(
         X,
         y,
@@ -179,11 +180,11 @@ def process_pipeline_window(
     X: pd.DataFrame,
     y: pd.Series,
     sample_weights: Optional[pd.Series],
-    transformations: List[Union[Transformation, Composite]],
+    transformations: List[Union[Transformation, Composite, Optimizer]],
     split: Fold,
     never_update: bool,
     backend: Backend,
-) -> Tuple[int, List[Union[Transformation, Composite]]]:
+) -> Tuple[int, List[Union[Transformation, Composite, Optimizer]]]:
     stage = Stage.inital_fit if (split.order == 0 or never_update) else Stage.update
     window_start = (
         split.update_window_start if stage == Stage.update else split.train_window_start
