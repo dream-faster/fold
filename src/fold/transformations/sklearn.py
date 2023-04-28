@@ -11,12 +11,12 @@ from ..base import (
     FeatureSelector,
     InvertibleTransformation,
     Transformation,
-    Tuneable,
+    Tunable,
     fit_noop,
 )
 
 
-class WrapSKLearnTransformation(Transformation, Tuneable):
+class WrapSKLearnTransformation(Transformation, Tunable):
     """
     Wraps an SKLearn Transformation.
     There's no need to use it directly, `fold` automatically wraps all sklearn transformations into this class.
@@ -90,7 +90,7 @@ class WrapInvertibleSKLearnTransformation(
         return pd.Series(self.transformation.inverse_transform(X), index=X.index)
 
 
-class WrapSKLearnFeatureSelector(FeatureSelector, Tuneable):
+class WrapSKLearnFeatureSelector(FeatureSelector, Tunable):
     """
     Wraps an SKLearn Feature Selector class, stores the selected columns in `selected_features` property.
     There's no need to use it directly, `fold` automatically wraps all sklearn feature selectors into this class.

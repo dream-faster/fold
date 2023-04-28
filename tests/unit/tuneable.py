@@ -1,6 +1,6 @@
 from typing import Callable, Optional
 
-from fold.base import Transformation, Tuneable
+from fold.base import Transformation, Tunable
 from fold.loop import train_backtest
 from fold.splitters import SingleWindowSplitter
 from fold.utils.tests import generate_sine_wave_data, generate_zeros_and_ones
@@ -16,7 +16,7 @@ def tuneability_test(
     Used to test the general structure and implementation of get_params() and set_params() methods.
     the kwargs are used to set the parameters of the transformation, which should be different to the init parameters of the `instance`.
     """
-    assert isinstance(instance, Tuneable)
+    assert isinstance(instance, Tunable)
 
     params = instance.get_params()
     different_instance = (

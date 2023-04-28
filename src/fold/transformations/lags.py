@@ -7,11 +7,11 @@ import pandas as pd
 
 from fold.utils.checks import is_X_available
 
-from ..base import Transformation, Tuneable, fit_noop
+from ..base import Transformation, Tunable, fit_noop
 from ..utils.list import flatten, transform_range_to_list, wrap_in_list
 
 
-class AddLagsY(Transformation, Tuneable):
+class AddLagsY(Transformation, Tunable):
     """
     Adds past values of `y`.
 
@@ -88,7 +88,7 @@ class AddLagsY(Transformation, Tuneable):
         )
 
 
-class AddLagsX(Transformation, Tuneable):
+class AddLagsX(Transformation, Tunable):
     """
     Adds past values of `X` for the desired column(s).
 

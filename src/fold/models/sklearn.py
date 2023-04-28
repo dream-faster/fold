@@ -6,11 +6,11 @@ from typing import Optional, Type, Union
 
 import pandas as pd
 
-from ..base import Transformation, Tuneable, fit_noop
+from ..base import Transformation, Tunable, fit_noop
 from .base import Model
 
 
-class WrapSKLearnClassifier(Model, Tuneable):
+class WrapSKLearnClassifier(Model, Tunable):
     """
     Wraps an SKLearn Classifier model.
     There's no need to use it directly, `fold` automatically wraps all sklearn classifiers into this class.
@@ -74,7 +74,7 @@ class WrapSKLearnClassifier(Model, Tuneable):
         self.model.set_params(**params)
 
 
-class WrapSKLearnRegressor(Model, Tuneable):
+class WrapSKLearnRegressor(Model, Tunable):
     """
     Wraps an SKLearn regressor model.
     There's no need to use it directly, `fold` automatically wraps all sklearn regressors into this class.

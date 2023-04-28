@@ -10,7 +10,7 @@ from sklearn.model_selection import ParameterGrid
 
 from fold.utils.list import wrap_in_list
 
-from ..base import Composite, Optimizer, Pipelines, Tuneable
+from ..base import Composite, Optimizer, Pipelines, Tunable
 from .common import get_concatenated_names
 
 
@@ -24,7 +24,7 @@ class OptimizeGridSearch(Composite):
 
     def __init__(
         self,
-        model: Tuneable,
+        model: Tunable,
         param_grid: dict,
         scorer: Callable,
         is_scorer_loss: bool = True,
@@ -38,7 +38,7 @@ class OptimizeGridSearch(Composite):
     @classmethod
     def from_cloned_instance(
         cls,
-        model: Tuneable,
+        model: Tunable,
         param_grid: dict,
         scorer: Callable,
         is_scorer_loss: bool,
@@ -89,7 +89,7 @@ class SelectGridSearch(Optimizer):
 
     def __init__(
         self,
-        model: Tuneable,
+        model: Tunable,
         param_grid: dict,
         scorer: Callable,
         is_scorer_loss: bool = True,
@@ -104,7 +104,7 @@ class SelectGridSearch(Optimizer):
     @classmethod
     def from_cloned_instance(
         cls,
-        model: Tuneable,
+        model: Tunable,
         param_grid: dict,
         scorer: Callable,
         is_scorer_loss: bool,
@@ -114,12 +114,12 @@ class SelectGridSearch(Optimizer):
         instance.selected_params = selected_params
         return instance
 
-    def get_candidates(self) -> Iterable["Tuneable"]:
+    def get_candidates(self) -> Iterable["Tunable"]:
         return [
             self.model[0].set_params(**params) for params in self.param_permutations
         ]
 
-    def get_optimized_pipeline(self) -> Optional["Tuneable"]:
+    def get_optimized_pipeline(self) -> Optional["Tunable"]:
         assert self.selected_params is not None, "Optimizer is not fitted."
         return self.model[0].set_params(**self.selected_params)
 
