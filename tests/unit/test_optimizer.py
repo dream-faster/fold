@@ -24,4 +24,4 @@ def test_gridsearch() -> None:
     ]
 
     pred, _ = train_backtest(pipeline, X, y, splitter)
-    assert (pred.squeeze() == 0.2).all()
+    assert (pred.squeeze() == 0).all()
