@@ -3,7 +3,8 @@
 
 from __future__ import annotations
 
-from typing import Callable, Iterable, List, Optional
+from copy import deepcopy
+from typing import Any, Callable, Iterable, List, Optional
 
 import pandas as pd
 from sklearn.model_selection import ParameterGrid
@@ -86,6 +87,7 @@ class OptimizeGridSearch(Composite):
 class SelectGridSearch(Optimizer):
     properties = Composite.Properties(primary_requires_predictions=True)
     selected_params: Optional[dict] = None
+    param_permutations: List[dict(str, Any)]
 
     def __init__(
         self,
@@ -96,10 +98,10 @@ class SelectGridSearch(Optimizer):
     ) -> None:
         self.model = wrap_in_list(model)
         self.param_grid = param_grid
-        self.name = "OptimizeGridSearch-" + get_concatenated_names(self.model)
+        self.name = "SelectGridSearch-" + get_concatenated_names(self.model)
         self.scorer = scorer
         self.is_scorer_loss = is_scorer_loss
-        self.param_permutations = ParameterGrid(self.param_grid)
+        self.param_permutations = list(ParameterGrid(self.param_grid))
 
     @classmethod
     def from_cloned_instance(
@@ -109,15 +111,18 @@ class SelectGridSearch(Optimizer):
         scorer: Callable,
         is_scorer_loss: bool,
         selected_params: Optional[dict],
-    ) -> OptimizeGridSearch:
+    ) -> SelectGridSearch:
         instance = cls(model, param_grid, scorer, is_scorer_loss)
         instance.selected_params = selected_params
         return instance
 
     def get_candidates(self) -> Iterable["Tunable"]:
-        return [
-            self.model[0].set_params(**params) for params in self.param_permutations
-        ]
+        models = [deepcopy(self.model[0]) for _ in self.param_permutations]
+
+        for model, params in zip(models, self.param_permutations):
+            model.set_params(**params)
+
+        return models
 
     def get_optimized_pipeline(self) -> Optional["Tunable"]:
         assert self.selected_params is not None, "Optimizer is not fitted."
@@ -135,8 +140,8 @@ class SelectGridSearch(Optimizer):
         )
         self.selected_params = self.param_permutations[selected_index]
 
-    def clone(self, clone_child_transformations: Callable) -> OptimizeGridSearch:
-        return OptimizeGridSearch.from_cloned_instance(
+    def clone(self, clone_child_transformations: Callable) -> SelectGridSearch:
+        return SelectGridSearch.from_cloned_instance(
             model=clone_child_transformations(self.model),
             param_grid=self.param_grid,
             scorer=self.scorer,
