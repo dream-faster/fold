@@ -17,11 +17,11 @@ def test_gridsearch() -> None:
             model=WrapSKLearnRegressor.from_model(
                 DummyRegressor(strategy="constant", constant=1)
             ),
-            param_grid=dict(constant=[0, 1, 2, 3, 4, 5]),
+            param_grid=dict(constant=[100, 25, 50]),
             scorer=mean_squared_error,
             is_scorer_loss=True,
         )
     ]
 
     pred, _ = train_backtest(pipeline, X, y, splitter)
-    assert (pred.squeeze() == 0).all()
+    assert (pred.squeeze() == 25).all()
