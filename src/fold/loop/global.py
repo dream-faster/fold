@@ -9,9 +9,9 @@ from ..base import Pipeline, TrainedPipelines
 from ..splitters import Splitter
 from ..utils.list import wrap_in_list
 from .checks import check_types_multi_series
-from .convenience import replace_transformation_if_not_fold_native
 from .training import _process_pipeline_window
 from .types import Backend
+from .wrap import wrap_transformation_if_needed
 
 
 def _train_global(
@@ -30,7 +30,7 @@ def _train_global(
     backend = Backend.from_str(backend)
 
     pipeline = wrap_in_list(pipeline)
-    pipeline = replace_transformation_if_not_fold_native(pipeline)
+    pipeline = wrap_transformation_if_needed(pipeline)
 
     splits = splitter.splits(
         length=len(data["unique_id" == data["unique_id"].unique()[0]])
