@@ -116,7 +116,7 @@ class GridSearchOptimizer(Optimizer):
         instance.selected_params = selected_params
         return instance
 
-    def get_candidates(self) -> Iterable["Tunable"]:
+    def get_candidates(self) -> Iterable[Tunable]:
         models = [deepcopy(self.model[0]) for _ in self.param_permutations]
 
         for model, params in zip(models, self.param_permutations):
@@ -124,7 +124,7 @@ class GridSearchOptimizer(Optimizer):
 
         return models
 
-    def get_optimized_pipeline(self) -> Optional["Tunable"]:
+    def get_optimized_pipeline(self) -> Optional[Tunable]:
         if self.selected_params is None:
             return None
         self.model[0].set_params(**self.selected_params)
