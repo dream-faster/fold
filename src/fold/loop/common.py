@@ -8,7 +8,7 @@ from typing import List, Optional
 
 import pandas as pd
 
-from ..base import Composite, Transformation, Transformations
+from ..base import Composite, Optimizer, Transformation, Transformations
 from ..models.base import Model
 from ..utils.checks import is_prediction, is_X_available
 from ..utils.trim import trim_initial_nans
@@ -41,6 +41,9 @@ def recursively_transform(
 
     elif isinstance(transformations, Composite):
         return process_composite(transformations, X, y, sample_weights, stage, backend)
+
+    elif isinstance(transformations, Optimizer):
+        return process_optimizer(transformations, X, y, sample_weights, stage, backend)
 
     elif isinstance(transformations, Transformation) or isinstance(
         transformations, Model
@@ -88,7 +91,7 @@ def process_composite(
     composite.before_fit(X)
     primary_transformations = composite.get_child_transformations_primary()
 
-    results_primary = backend_functions.process_primary_child_transformations(
+    results_primary = backend_functions.process_child_transformations(
         __process_primary_child_transform,
         enumerate(primary_transformations),
         composite,
@@ -97,6 +100,7 @@ def process_composite(
         sample_weights,
         stage,
         backend,
+        None,
     )
 
     if composite.properties.primary_only_single_pipeline:
@@ -114,16 +118,16 @@ def process_composite(
     if secondary_transformations is None:
         return composite.postprocess_result_primary(results_primary, y)
 
-    results_secondary = backend_functions.process_secondary_child_transformations(
+    results_secondary = backend_functions.process_child_transformations(
         __process_secondary_child_transform,
         enumerate(secondary_transformations),
         composite,
         X,
         y,
         sample_weights,
-        results_primary,
         stage,
         backend,
+        results_primary,
     )
 
     if composite.properties.secondary_only_single_pipeline:
@@ -139,6 +143,38 @@ def process_composite(
 
     return composite.postprocess_result_secondary(
         results_primary, results_secondary, y, in_sample=stage == Stage.inital_fit
+    )
+
+
+def process_optimizer(
+    optimizer: Optimizer,
+    X: pd.DataFrame,
+    y: Optional[pd.Series],
+    sample_weights: Optional[pd.Series],
+    stage: Stage,
+    backend: Backend,
+) -> pd.DataFrame:
+    backend_functions = get_backend_dependent_functions(backend)
+
+    if stage == Stage.inital_fit:
+        # Optimized needs to run the search
+        candidates = optimizer.get_candidates()
+
+        results_primary = backend_functions.process_child_transformations(
+            __process_candidates,
+            enumerate(candidates),
+            optimizer,
+            X,
+            y,
+            sample_weights,
+            stage,
+            backend,
+        )
+        optimizer.process_candidate_results(results_primary)
+
+    optimized_pipeline = optimizer.get_optimized_pipeline()
+    return recursively_transform(
+        X, y, sample_weights, optimized_pipeline, stage, backend
     )
 
 
@@ -242,6 +278,19 @@ def process_minibatch_transformation(
     return return_value.loc[X.index]
 
 
+def __process_candidates(
+    optimizer: Optimizer,
+    index: int,
+    child_transform: Transformations,
+    X: pd.DataFrame,
+    y: Optional[pd.Series],
+    sample_weights: Optional[pd.Series],
+    stage: Stage,
+    backend: Backend,
+) -> pd.DataFrame:
+    return recursively_transform(X, y, sample_weights, child_transform, stage, backend)
+
+
 def __process_primary_child_transform(
     composite: Composite,
     index: int,
@@ -251,6 +300,7 @@ def __process_primary_child_transform(
     sample_weights: Optional[pd.Series],
     stage: Stage,
     backend: Backend,
+    results_primary: Optional[List[pd.DataFrame]],
 ) -> pd.DataFrame:
     X, y = composite.preprocess_primary(X, index, y, fit=stage.is_fit_or_update())
     return recursively_transform(X, y, sample_weights, child_transform, stage, backend)
@@ -263,9 +313,9 @@ def __process_secondary_child_transform(
     X: pd.DataFrame,
     y: Optional[pd.Series],
     sample_weights: Optional[pd.Series],
-    results_primary: List[pd.DataFrame],
     stage: Stage,
     backend: Backend,
+    results_primary: Optional[List[pd.DataFrame]],
 ) -> pd.DataFrame:
     X, y = composite.preprocess_secondary(
         X, y, results_primary, index, fit=stage.is_fit_or_update()

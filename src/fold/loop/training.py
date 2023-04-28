@@ -8,6 +8,7 @@ import pandas as pd
 from ..base import (
     Composite,
     DeployablePipeline,
+    Optimizer,
     Pipeline,
     TrainedPipelines,
     Transformation,
@@ -179,11 +180,11 @@ def process_pipeline_window(
     X: pd.DataFrame,
     y: pd.Series,
     sample_weights: Optional[pd.Series],
-    transformations: List[Union[Transformation, Composite]],
+    transformations: List[Union[Transformation, Composite, Optimizer]],
     split: Fold,
     never_update: bool,
     backend: Backend,
-) -> Tuple[int, List[Union[Transformation, Composite]]]:
+) -> Tuple[int, List[Union[Transformation, Composite, Optimizer]]]:
     stage = Stage.inital_fit if (split.order == 0 or never_update) else Stage.update
     window_start = (
         split.update_window_start if stage == Stage.update else split.train_window_start

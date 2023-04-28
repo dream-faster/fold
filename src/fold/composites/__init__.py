@@ -8,5 +8,5 @@ from .ensemble import Ensemble
 from .metalabeling import MetaLabeling
 from .residual import ModelResiduals
 from .sample import Sample
-from .select import SelectBest
+from .select import SelectBestComposite
 from .target import TransformTarget

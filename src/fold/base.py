@@ -6,9 +6,11 @@ from __future__ import annotations
 import enum
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Callable, List, Optional, Tuple, TypeVar, Union
+from typing import Callable, Iterable, List, Optional, Tuple, TypeVar, Union
 
 import pandas as pd
+
+from fold.splitters import SingleWindowSplitter
 
 T = TypeVar("T", Optional[pd.Series], pd.Series)
 
@@ -60,7 +62,7 @@ class Composite(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def clone(self, clone_child_transformations: Callable) -> "Composite":
+    def clone(self, clone_child_transformations: Callable) -> Composite:
         raise NotImplementedError
 
     def before_fit(self, X: pd.DataFrame) -> None:
@@ -80,6 +82,26 @@ class Composite(ABC):
         fit: bool,
     ) -> Tuple[pd.DataFrame, T]:
         return X, y
+
+
+class Optimizer(ABC):
+    splitter: SingleWindowSplitter
+
+    @abstractmethod
+    def get_candidates(self) -> Iterable["Pipeline"]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_optimized_pipeline(self) -> Optional["Pipeline"]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def process_candidate_results(self, results: List[pd.DataFrame]):
+        raise NotImplementedError
+
+    @abstractmethod
+    def clone(self, clone_child_transformations: Callable) -> Optimizer:
+        raise NotImplementedError
 
 
 class Transformation(ABC):
