@@ -104,13 +104,22 @@ class SelectBest(Optimizer):
         return instance
 
     def get_candidates(self) -> Iterable["Pipeline"]:
-        raise NotImplementedError
+        return self.pipelines
 
     def get_optimized_pipeline(self) -> Optional["Pipeline"]:
-        raise NotImplementedError
+        return self.selected_pipeline
 
-    def process_candidate_results(self, results: List[pd.DataFrame]):
-        raise NotImplementedError
+    def process_candidate_results(self, results: List[pd.DataFrame], y: pd.Series):
+        if self.selected_pipeline is not None:
+            raise ValueError("Optimizer is already fitted.")
+
+        scores = [self.scorer(y, result) for result in results]
+        selected_index = (
+            scores.index(min(scores))
+            if self.is_scorer_loss
+            else scores.index(max(scores))
+        )
+        self.selected_pipeline = [self.pipelines[selected_index]]
 
     def clone(self, clone_child_transformations: Callable) -> SelectBest:
         return SelectBestComposite.from_cloned_instance(

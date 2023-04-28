@@ -1,17 +1,19 @@
+import pytest
 from sklearn.metrics import mean_squared_error
 
-from fold.composites.select import SelectBestComposite
+from fold.composites.select import SelectBest, SelectBestComposite
 from fold.loop import train_backtest
 from fold.models.dummy import DummyRegressor
 from fold.splitters import ExpandingWindowSplitter
 from fold.utils.tests import generate_monotonous_data
 
 
-def test_selectbest() -> None:
+@pytest.mark.parametrize("cls", [SelectBestComposite, SelectBest])
+def test_selectbest(cls) -> None:
     X, y = generate_monotonous_data(1000)
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    pipeline = SelectBestComposite(
+    pipeline = cls(
         pipelines=[
             [
                 lambda x: x,
