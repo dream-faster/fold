@@ -1,7 +1,7 @@
 from sklearn.dummy import DummyRegressor
 from sklearn.metrics import mean_squared_error
 
-from fold.composites.optimize import GridSearchOptimizer
+from fold.composites.optimize import OptimizeGridSearch
 from fold.loop import train_backtest
 from fold.models.sklearn import WrapSKLearnRegressor
 from fold.splitters import ExpandingWindowSplitter
@@ -13,7 +13,7 @@ def test_gridsearch() -> None:
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     pipeline = [
-        GridSearchOptimizer(
+        OptimizeGridSearch(
             model=WrapSKLearnRegressor.from_model(
                 DummyRegressor(strategy="constant", constant=1)
             ),
