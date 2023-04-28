@@ -44,7 +44,7 @@ def process_child_transformations(
     sample_weights: Optional[pd.Series],
     stage: Stage,
     backend: Backend,
-    results_primary: List[pd.DataFrame],
+    results_primary: Optional[List[pd.DataFrame]],
 ):
     func = ray.remote(func)
     X = ray.put(X)

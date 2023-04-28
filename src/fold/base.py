@@ -171,7 +171,7 @@ class InvertibleTransformation(Transformation, ABC):
         raise NotImplementedError
 
 
-class Tuneable(ABC):
+class Tunable(ABC):
     @abstractmethod
     def get_params(self) -> dict:
         raise NotImplementedError

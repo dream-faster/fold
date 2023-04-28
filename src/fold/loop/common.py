@@ -156,7 +156,8 @@ def process_optimizer(
 ) -> pd.DataFrame:
     backend_functions = get_backend_dependent_functions(backend)
 
-    if stage == Stage.inital_fit:
+    optimized_pipeline = optimizer.get_optimized_pipeline()
+    if optimized_pipeline is None:
         # Optimized needs to run the search
         candidates = optimizer.get_candidates()
 
@@ -169,8 +170,9 @@ def process_optimizer(
             sample_weights,
             stage,
             backend,
+            None,
         )
-        optimizer.process_candidate_results(results_primary)
+        optimizer.process_candidate_results(results_primary, y)
 
     optimized_pipeline = optimizer.get_optimized_pipeline()
     return recursively_transform(
@@ -287,6 +289,7 @@ def __process_candidates(
     sample_weights: Optional[pd.Series],
     stage: Stage,
     backend: Backend,
+    results_primary: Optional[List[pd.DataFrame]],
 ) -> pd.DataFrame:
     return recursively_transform(X, y, sample_weights, child_transform, stage, backend)
 

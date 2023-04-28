@@ -6,10 +6,10 @@ from typing import Dict, Optional, Union
 import numpy as np
 import pandas as pd
 
-from fold.base import InvertibleTransformation, Tuneable, fit_noop
+from fold.base import InvertibleTransformation, Tunable, fit_noop
 
 
-class TakeLog(InvertibleTransformation, Tuneable):
+class TakeLog(InvertibleTransformation, Tunable):
     """
     Takes the logarithm of the data.
 
@@ -90,7 +90,7 @@ class TakeLog(InvertibleTransformation, Tuneable):
             setattr(self, parameter, value)
 
 
-class AddConstant(InvertibleTransformation, Tuneable):
+class AddConstant(InvertibleTransformation, Tunable):
 
     """
     Adds a constant to the data.
