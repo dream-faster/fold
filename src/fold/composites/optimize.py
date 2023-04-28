@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Any, Callable, Iterable, List, Optional
+from typing import Any, Callable, Dict, Iterable, List, Optional
 
 import pandas as pd
 from sklearn.model_selection import ParameterGrid
@@ -87,7 +87,7 @@ class OptimizeGridSearch(Composite):
 class GridSearchOptimizer(Optimizer):
     properties = Composite.Properties(primary_requires_predictions=True)
     selected_params: Optional[dict] = None
-    param_permutations: List[dict(str, Any)]
+    param_permutations: List[Dict(str, Any)]
 
     def __init__(
         self,
