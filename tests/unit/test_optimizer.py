@@ -8,7 +8,7 @@ from fold.splitters import ExpandingWindowSplitter
 from fold.utils.tests import generate_monotonous_data
 
 
-def test_selectbest() -> None:
+def test_gridsearch() -> None:
     X, y = generate_monotonous_data(1000)
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)

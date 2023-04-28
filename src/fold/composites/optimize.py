@@ -125,8 +125,10 @@ class SelectGridSearch(Optimizer):
         return models
 
     def get_optimized_pipeline(self) -> Optional["Tunable"]:
-        assert self.selected_params is not None, "Optimizer is not fitted."
-        return self.model[0].set_params(**self.selected_params)
+        if self.selected_params is None:
+            return None
+        self.model[0].set_params(**self.selected_params)
+        return self.model[0]
 
     def process_candidate_results(self, results: List[pd.DataFrame], y: pd.Series):
         if self.selected_params is not None:
