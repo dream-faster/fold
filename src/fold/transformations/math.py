@@ -234,3 +234,32 @@ class TurnPositive(InvertibleTransformation):
         return X - next(iter(self.constant.values()))
 
     update = fit_noop
+
+
+class MultiplyBy(InvertibleTransformation, Tunable):
+    """
+    Multiplies the data by a constant.
+    """
+
+    name = "MultiplyBy"
+    properties = InvertibleTransformation.Properties(requires_X=True)
+    constant: float
+
+    def __init__(self, constant: float) -> None:
+        self.constant = constant
+
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
+        return X * self.constant
+
+    def inverse_transform(self, X: pd.Series, in_sample: bool) -> pd.Series:
+        return X / self.constant
+
+    fit = fit_noop
+    update = fit_noop
+
+    def get_params(self) -> dict:
+        return {"constant": self.constant}
+
+    def set_params(self, **parameters):
+        for parameter, value in parameters.items():
+            setattr(self, parameter, value)

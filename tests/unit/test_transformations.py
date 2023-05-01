@@ -11,7 +11,7 @@ from fold.splitters import ExpandingWindowSplitter, SingleWindowSplitter
 from fold.transformations.columns import DropColumns, SelectColumns
 from fold.transformations.dev import Identity, Lookahead
 from fold.transformations.lags import AddLagsX, AddLagsY
-from fold.transformations.math import AddConstant, TakeLog, TurnPositive
+from fold.transformations.math import AddConstant, MultiplyBy, TakeLog, TurnPositive
 from fold.transformations.window import AddWindowFeatures
 from fold.utils.tests import generate_sine_wave_data
 
@@ -288,6 +288,21 @@ def test_add_constant():
     tuneability_test(
         instance=AddConstant(2.0),
         different_params=dict(constant=1.0),
+    )
+
+
+def test_multiplyby():
+    X, y = generate_sine_wave_data(length=600)
+    splitter = SingleWindowSplitter(train_window=400)
+    pred, _ = train_backtest(MultiplyBy(2.0), X, y, splitter)
+    assert pred["sine"].equals(X["sine"][pred.index] * 2.0)
+
+    pred = MultiplyBy(2.0).inverse_transform(X["sine"] * 2.0, in_sample=False)
+    assert np.isclose(pred, X["sine"][pred.index], atol=0.01).all()
+
+    tuneability_test(
+        instance=MultiplyBy(2.0),
+        different_params=dict(constant=2.5),
     )
 
 
