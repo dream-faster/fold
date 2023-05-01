@@ -4,7 +4,7 @@ from fold.composites.target import TransformTarget
 from fold.loop.encase import train_backtest
 from fold.models.dummy import DummyRegressor
 from fold.splitters import ExpandingWindowSplitter
-from fold.transformations.dev import Test
+from fold.transformations.dev import Lookahead, Test
 from fold.transformations.difference import Difference
 from fold.transformations.math import TakeLog
 from fold.utils.tests import (
@@ -95,8 +95,10 @@ def test_target_transformation_log_difference() -> None:
     pipeline = TransformTarget(
         [
             Test(fit_func=assert_y_not_nan, transform_func=lambda x: x),
+            Lookahead(),
         ],
         y_pipeline=[TakeLog(), Difference()],
     )
 
-    _, _ = train_backtest(pipeline, X, y, splitter)
+    pred, _ = train_backtest(pipeline, X, y, splitter)
+    assert np.isclose(y[pred.index], pred.squeeze(), atol=0.001).all()
