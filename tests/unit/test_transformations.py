@@ -9,7 +9,7 @@ from fold.loop import backtest, train
 from fold.loop.encase import train_backtest
 from fold.splitters import ExpandingWindowSplitter, SingleWindowSplitter
 from fold.transformations.columns import DropColumns, SelectColumns
-from fold.transformations.dev import Identity
+from fold.transformations.dev import Identity, Lookahead
 from fold.transformations.lags import AddLagsX, AddLagsY
 from fold.transformations.math import AddConstant, TakeLog, TurnPositive
 from fold.transformations.window import AddWindowFeatures
@@ -289,3 +289,10 @@ def test_add_constant():
         instance=AddConstant(2.0),
         different_params=dict(constant=1.0),
     )
+
+
+def test_lookahead():
+    X, y = generate_sine_wave_data(length=600)
+    splitter = SingleWindowSplitter(train_window=400)
+    pred, _ = train_backtest(Lookahead(), X, y, splitter)
+    assert (pred.squeeze() == y[pred.index]).all()

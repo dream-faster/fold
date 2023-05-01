@@ -14,6 +14,7 @@ class Breakpoint(Transformation):
     A transformation that stops execution at the specified point.
     """
 
+    name = "Breakpoint"
     properties = Transformation.Properties(requires_X=False)
 
     def __init__(
@@ -22,7 +23,6 @@ class Breakpoint(Transformation):
         stop_at_update: bool = True,
         stop_at_transform: bool = True,
     ) -> None:
-        self.name = "Debug"
         self.stop_at_fit = stop_at_fit
         self.stop_at_update = stop_at_update
         self.stop_at_transform = stop_at_transform
@@ -71,6 +71,7 @@ class Test(InvertibleTransformation):
     no_of_calls_transform_insample = 0
     no_of_calls_transform_outofsample = 0
     no_of_calls_inverse_transform = 0
+    name = "Test"
 
     def __init__(
         self,
@@ -79,7 +80,6 @@ class Test(InvertibleTransformation):
         update_func: Optional[Callable] = None,
         inverse_transform_func: Optional[Callable] = None,
     ) -> None:
-        self.name = "Test"
         self.fit_func = fit_func
         self.transform_func = transform_func
         self.update_func = update_func
@@ -142,3 +142,23 @@ class Test(InvertibleTransformation):
         if self.inverse_transform_func is not None:
             return self.inverse_transform_func(X)
         return X
+
+
+class Lookahead(Transformation):
+    """
+    A transformation that stops execution at the specified point.
+    """
+
+    name = "Lookahead"
+    properties = Transformation.Properties(
+        requires_X=False,
+        mode=Transformation.Properties.Mode.online,
+        memory_size=0,
+        _internal_supports_minibatch_backtesting=True,
+    )
+
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
+        return self._state.memory_y.to_frame()
+
+    fit = fit_noop
+    update = fit
