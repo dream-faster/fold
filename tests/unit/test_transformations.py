@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 import pytest
-from tuneable import tuneability_test
 
 from fold.composites.columns import TransformEachColumn
 from fold.composites.concat import TransformColumn
@@ -13,7 +12,7 @@ from fold.transformations.dev import Identity, Lookahead
 from fold.transformations.lags import AddLagsX, AddLagsY
 from fold.transformations.math import AddConstant, MultiplyBy, TakeLog, TurnPositive
 from fold.transformations.window import AddWindowFeatures
-from fold.utils.tests import generate_sine_wave_data
+from fold.utils.tests import generate_sine_wave_data, tuneability_test
 
 
 def test_no_transformation() -> None:
