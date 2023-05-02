@@ -11,7 +11,7 @@ import pandas as pd
 from ..base import Composite, Optimizer, Transformation, Transformations
 from ..models.base import Model
 from ..utils.checks import is_prediction, is_X_available
-from ..utils.trim import trim_initial_nans
+from ..utils.trim import trim_initial_nans, trim_initial_nans_single
 from .backend import get_backend_dependent_functions
 from .memory import postprocess_X_y_into_memory, preprocess_X_y_with_memory
 from .types import Backend, Stage
@@ -172,6 +172,9 @@ def process_optimizer(
             backend,
             None,
         )
+        results_primary = [
+            trim_initial_nans_single(result) for result in results_primary
+        ]
         optimizer.process_candidate_results(results_primary, y)
 
     optimized_pipeline = optimizer.get_optimized_pipeline()

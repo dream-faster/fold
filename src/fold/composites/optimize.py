@@ -71,7 +71,7 @@ class OptimizeGridSearch(Optimizer):
         if self.selected_params_ is not None:
             raise ValueError("Optimizer is already fitted.")
 
-        scores = [self.scorer(y, result) for result in results]
+        scores = [self.scorer(y[-len(result) :], result) for result in results]
         selected_index = (
             scores.index(min(scores))
             if self.is_scorer_loss
