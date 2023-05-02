@@ -11,12 +11,11 @@ from sklearn.model_selection import ParameterGrid
 
 from fold.utils.list import wrap_in_list
 
-from ..base import Composite, Optimizer, Tunable
+from ..base import Optimizer, Tunable
 from .common import get_concatenated_names
 
 
 class OptimizeGridSearch(Optimizer):
-    properties = Composite.Properties(primary_requires_predictions=True)
     selected_params: Optional[dict] = None
     param_permutations: List[dict]
 

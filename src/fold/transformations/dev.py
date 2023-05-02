@@ -51,12 +51,14 @@ class Breakpoint(Transformation):
         return X
 
 
-class Identity(Transformation):
+class Identity(InvertibleTransformation):
     properties = Transformation.Properties(requires_X=False)
-
     name = "Identity"
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
+        return X
+
+    def inverse_transform(self, X: pd.Series, in_sample: bool) -> pd.Series:
         return X
 
     fit = fit_noop

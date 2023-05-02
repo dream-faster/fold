@@ -119,7 +119,9 @@ class TransformTarget(Composite):
         return self.wrapped_pipeline
 
     def clone(self, clone_child_transformations: Callable) -> TransformTarget:
-        return TransformTarget(
+        clone = TransformTarget(
             wrapped_pipeline=clone_child_transformations(self.wrapped_pipeline),
             y_pipeline=clone_child_transformations(self.y_pipeline),
         )
+        clone.properties = self.properties
+        return clone
