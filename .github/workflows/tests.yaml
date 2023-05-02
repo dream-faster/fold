@@ -69,7 +69,8 @@ jobs:
       - name: install-dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install ".[tests] .[all]"
+          pip install ".[tests]"
+          pip install ".[all]"
 
       - name: run-tests
         run: pytest tests/integration -s --durations 0
@@ -91,7 +92,8 @@ jobs:
       - name: install-dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install ".[tests] .[all]"
+          pip install ".[tests]"
+          pip install ".[all]"
 
       - name: run-tests
         run: pytest src/ -s --durations 0
