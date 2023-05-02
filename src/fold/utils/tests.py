@@ -109,6 +109,7 @@ def tuneability_test(
     different_params: dict,
     init_function: Optional[Callable] = None,
     classification: bool = False,
+    tolerance: Optional[float] = None,
 ):
     """
     Used to test the general structure and implementation of get_params() and set_params() methods.
@@ -137,4 +138,7 @@ def tuneability_test(
     reconstructed_instance.set_params(**params)
 
     preds_reconstructed, _ = train_backtest(reconstructed_instance, X, y, splitter)
-    assert preds_orig.equals(preds_reconstructed)
+    if tolerance is None:
+        assert preds_orig.equals(preds_reconstructed)
+    else:
+        assert np.isclose(preds_orig, preds_reconstructed, atol=tolerance).all()

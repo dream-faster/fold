@@ -27,7 +27,7 @@ from .difference import Difference, TakeReturns
 from .function import WrapFunction
 from .holidays import AddHolidayFeatures
 from .lags import AddLagsX, AddLagsY
-from .math import AddConstant, TakeLog, TurnPositive
+from .math import AddConstant, MultiplyBy, TakeLog, TurnPositive
 from .scaling import MinMaxScaler, StandardScaler
 from .sklearn import WrapSKLearnFeatureSelector, WrapSKLearnTransformation
 from .update import DontUpdate
