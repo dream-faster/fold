@@ -4,14 +4,17 @@ from sklearn.dummy import DummyClassifier, DummyRegressor
 from sklearn.feature_selection import SelectKBest, VarianceThreshold, f_regression
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
-from tuneable import tuneability_test
 
 from fold.composites.concat import TransformColumn
 from fold.loop import backtest, train, train_backtest
 from fold.models.sklearn import WrapSKLearnClassifier, WrapSKLearnRegressor
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.columns import OnlyPredictions, RenameColumns, SelectColumns
-from fold.utils.tests import generate_all_zeros, generate_sine_wave_data
+from fold.utils.tests import (
+    generate_all_zeros,
+    generate_sine_wave_data,
+    tuneability_test,
+)
 
 
 def test_sklearn_classifier() -> None:
