@@ -157,12 +157,14 @@ class MetaLabeling(Composite):
         return self.meta
 
     def clone(self, clone_child_transformations: Callable) -> MetaLabeling:
-        return MetaLabeling(
+        clone = MetaLabeling(
             primary=clone_child_transformations(self.primary),
             meta=clone_child_transformations(self.meta),
             positive_class=self.positive_class,
             primary_output_included=self.primary_output_included,
         )
+        clone.properties = self.properties
+        return clone
 
 
 def get_int_class(input: str) -> int:

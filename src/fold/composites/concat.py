@@ -126,10 +126,12 @@ class Concat(Composite):
         return self.pipelines
 
     def clone(self, clone_child_transformations: Callable) -> Concat:
-        return Concat(
+        clone = Concat(
             pipelines=clone_child_transformations(self.pipelines),
             if_duplicate_keep=self.if_duplicate_keep,
         )
+        clone.properties = self.properties
+        return clone
 
 
 class Pipeline(Composite):
@@ -163,7 +165,9 @@ class Pipeline(Composite):
         return self.pipeline
 
     def clone(self, clone_child_transformations: Callable) -> Pipeline:
-        return Pipeline(pipeline=clone_child_transformations(self.pipeline))
+        clone = Pipeline(pipeline=clone_child_transformations(self.pipeline))
+        clone.properties = self.properties
+        return clone
 
 
 def TransformColumn(

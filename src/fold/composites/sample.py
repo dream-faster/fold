@@ -88,7 +88,9 @@ class Sample(Composite):
         return self.pipeline
 
     def clone(self, clone_child_transformations: Callable) -> Sample:
-        return Sample(
+        clone = Sample(
             sampler=self.sampler,
             pipeline=clone_child_transformations(self.pipeline),
         )
+        clone.properties = self.properties
+        return clone
