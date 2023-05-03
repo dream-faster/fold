@@ -77,16 +77,6 @@ class AddLagsY(Transformation, Tunable):
     def get_params(self) -> dict:
         return {"lags": self.lags}
 
-    def set_params(self, **parameters):
-        for parameter, value in parameters.items():
-            setattr(self, parameter, value)
-        self.properties = Transformation.Properties(
-            requires_X=False,
-            mode=Transformation.Properties.Mode.online,
-            memory_size=max(self.lags),
-            _internal_supports_minibatch_backtesting=True,
-        )
-
 
 class AddLagsX(Transformation, Tunable):
     """
@@ -168,11 +158,3 @@ class AddLagsX(Transformation, Tunable):
 
     def get_params(self) -> dict:
         return {"columns_and_lags": self.columns_and_lags}
-
-    def set_params(self, **parameters):
-        for parameter, value in parameters.items():
-            setattr(self, parameter, value)
-        self.properties = Transformation.Properties(
-            requires_X=True,
-            memory_size=max(flatten([l for _, l in self.columns_and_lags])),
-        )

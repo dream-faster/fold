@@ -79,8 +79,10 @@ class WrapSKLearnTransformation(Transformation, Tunable):
     def get_params(self) -> dict:
         return self.transformation.get_params()
 
-    def set_params(self, **params) -> None:
-        self.transformation.set_params(**params)
+    def clone_with_params(self, **parameters) -> Tunable:
+        return WrapSKLearnTransformation(
+            transformation_class=self.transformation.__class__, init_args=parameters
+        )
 
 
 class WrapInvertibleSKLearnTransformation(
@@ -133,7 +135,9 @@ class WrapSKLearnFeatureSelector(FeatureSelector, Tunable):
     def get_params(self) -> dict:
         return self.transformation.get_params()
 
-    def set_params(self, **params) -> None:
-        self.transformation.set_params(**params)
+    def clone_with_params(self, **parameters) -> Tunable:
+        return WrapSKLearnFeatureSelector(
+            transformation_class=self.transformation.__class__, init_args=parameters
+        )
 
     update = fit_noop

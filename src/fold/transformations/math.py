@@ -85,10 +85,6 @@ class TakeLog(InvertibleTransformation, Tunable):
     def get_params(self) -> dict:
         return {"base": self.base}
 
-    def set_params(self, **parameters):
-        for parameter, value in parameters.items():
-            setattr(self, parameter, value)
-
 
 class AddConstant(InvertibleTransformation, Tunable):
 
@@ -167,10 +163,6 @@ class AddConstant(InvertibleTransformation, Tunable):
 
     def get_params(self) -> dict:
         return {"constant": self.constant}
-
-    def set_params(self, **parameters):
-        for parameter, value in parameters.items():
-            setattr(self, parameter, value)
 
 
 class TurnPositive(InvertibleTransformation):
@@ -259,7 +251,3 @@ class MultiplyBy(InvertibleTransformation, Tunable):
 
     def get_params(self) -> dict:
         return {"constant": self.constant}
-
-    def set_params(self, **parameters):
-        for parameter, value in parameters.items():
-            setattr(self, parameter, value)
