@@ -138,7 +138,7 @@ def train(
             )
             processed_idx.append(processed_id)
             processed_pipelines.append(processed_pipeline)
-            processed_artifacts.append(processed_artifacts)
+            processed_artifacts.append(processed_artifact)
 
     return [
         pd.Series(
