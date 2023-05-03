@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 import pandas as pd
 
@@ -14,17 +14,18 @@ from ..utils.checks import is_prediction, is_X_available
 from ..utils.trim import trim_initial_nans, trim_initial_nans_single
 from .backend import get_backend_dependent_functions
 from .memory import postprocess_X_y_into_memory, preprocess_X_y_with_memory
-from .types import Backend, Stage
+from .types import Artifacts, Backend, Stage, X
 
 
 def recursively_transform(
-    X: pd.DataFrame,
+    X: X,
     y: Optional[pd.Series],
     sample_weights: Optional[pd.Series],
+    artifacts: Artifacts,
     transformations: Transformations,
     stage: Stage,
     backend: Backend,
-) -> pd.DataFrame:
+) -> Tuple[X, Artifacts]:
     """
     The main function to transform (and fit or update) a pipline of transformations.
     `stage` is used to determine whether to run the inner loop for online models.
@@ -34,16 +35,20 @@ def recursively_transform(
 
     if isinstance(transformations, List):
         for transformation in transformations:
-            X = recursively_transform(
-                X, y, sample_weights, transformation, stage, backend
+            X, artifacts = recursively_transform(
+                X, y, sample_weights, artifacts, transformation, stage, backend
             )
-        return X
+        return X, artifacts
 
     elif isinstance(transformations, Composite):
-        return process_composite(transformations, X, y, sample_weights, stage, backend)
+        return _process_composite(
+            transformations, X, y, sample_weights, artifacts, stage, backend
+        )
 
     elif isinstance(transformations, Optimizer):
-        return process_optimizer(transformations, X, y, sample_weights, stage, backend)
+        return _process_optimizer(
+            transformations, X, y, sample_weights, artifacts, stage, backend
+        )
 
     elif isinstance(transformations, Transformation) or isinstance(
         transformations, Model
@@ -54,21 +59,23 @@ def recursively_transform(
             and stage in [Stage.update, Stage.update_online_only]
             and not transformations.properties._internal_supports_minibatch_backtesting
         ):
-            return process_with_inner_loop(transformations, X, y, sample_weights)
+            return _process_with_inner_loop(
+                transformations, X, y, sample_weights, artifacts
+            )
         # If the transformation is "online" but also supports our internal "mini-batch"-style updating
         elif (
             transformations.properties.mode == Transformation.Properties.Mode.online
             and stage in [Stage.update, Stage.update_online_only]
             and transformations.properties._internal_supports_minibatch_backtesting
         ):
-            return process_internal_online_model_minibatch_inference_and_update(
-                transformations, X, y, sample_weights
+            return _process_internal_online_model_minibatch_inference_and_update(
+                transformations, X, y, sample_weights, artifacts
             )
 
         # or perform "mini-batch" updating OR the initial fit.
         else:
-            return process_minibatch_transformation(
-                transformations, X, y, sample_weights, stage
+            return _process_minibatch_transformation(
+                transformations, X, y, sample_weights, artifacts, stage
             )
 
     else:
@@ -78,26 +85,31 @@ def recursively_transform(
         )
 
 
-def process_composite(
+def _process_composite(
     composite: Composite,
     X: pd.DataFrame,
     y: Optional[pd.Series],
     sample_weights: Optional[pd.Series],
+    artifacts: Artifacts,
     stage: Stage,
     backend: Backend,
-) -> pd.DataFrame:
+) -> Tuple[X, Artifacts]:
     backend_functions = get_backend_dependent_functions(backend)
 
     composite.before_fit(X)
     primary_transformations = composite.get_child_transformations_primary()
 
-    results_primary = backend_functions.process_child_transformations(
+    (
+        results_primary,
+        artifacts_primary,
+    ) = backend_functions.process_child_transformations(
         __process_primary_child_transform,
         enumerate(primary_transformations),
         composite,
         X,
         y,
         sample_weights,
+        artifacts,
         stage,
         backend,
         None,
@@ -115,16 +127,24 @@ def process_composite(
 
     secondary_transformations = composite.get_child_transformations_secondary()
 
+    artifacts_primary = composite.postprocess_artifacts_primary(artifacts_primary)
     if secondary_transformations is None:
-        return composite.postprocess_result_primary(results_primary, y)
+        return (
+            composite.postprocess_result_primary(results_primary, y),
+            artifacts_primary,
+        )
 
-    results_secondary = backend_functions.process_child_transformations(
+    (
+        results_secondary,
+        artifacts_secondary,
+    ) = backend_functions.process_child_transformations(
         __process_secondary_child_transform,
         enumerate(secondary_transformations),
         composite,
         X,
         y,
         sample_weights,
+        artifacts,
         stage,
         backend,
         results_primary,
@@ -141,19 +161,25 @@ def process_composite(
             " something else."
         )
 
-    return composite.postprocess_result_secondary(
-        results_primary, results_secondary, y, in_sample=stage == Stage.inital_fit
+    return (
+        composite.postprocess_result_secondary(
+            results_primary, results_secondary, y, in_sample=stage == Stage.inital_fit
+        ),
+        composite.postprocess_artifacts_secondary(
+            artifacts_primary, artifacts_secondary
+        ),
     )
 
 
-def process_optimizer(
+def _process_optimizer(
     optimizer: Optimizer,
     X: pd.DataFrame,
     y: Optional[pd.Series],
     sample_weights: Optional[pd.Series],
+    artifacts: Artifacts,
     stage: Stage,
     backend: Backend,
-) -> pd.DataFrame:
+) -> Tuple[X, Artifacts]:
     backend_functions = get_backend_dependent_functions(backend)
 
     optimized_pipeline = optimizer.get_optimized_pipeline()
@@ -179,18 +205,19 @@ def process_optimizer(
 
     optimized_pipeline = optimizer.get_optimized_pipeline()
     return recursively_transform(
-        X, y, sample_weights, optimized_pipeline, stage, backend
+        X, y, sample_weights, artifacts, optimized_pipeline, stage, backend
     )
 
 
-def process_with_inner_loop(
+def _process_with_inner_loop(
     transformation: Transformation,
     X: pd.DataFrame,
     y: Optional[pd.Series],
     sample_weights: Optional[pd.Series],
-) -> pd.DataFrame:
+    artifacts: Artifacts,
+) -> Tuple[X, Artifacts]:
     if len(X) == 0:
-        return pd.DataFrame()
+        return (pd.DataFrame(), pd.DataFrame())
 
     # We need to run the inference & fit loop on each row, sequentially (one-by-one).
     # This is so the transformation can update its parameters after each sample.
@@ -211,25 +238,29 @@ def process_with_inner_loop(
             )
         return result.loc[X_row.index]
 
-    return pd.concat(
-        [
-            transform_row(
-                X.loc[index:index],
-                y.loc[index:index] if y is not None else None,
-                sample_weights.loc[index] if sample_weights is not None else None,
-            )
-            for index in X.index
-        ],
-        axis="index",
+    return (
+        pd.concat(
+            [
+                transform_row(
+                    X.loc[index:index],
+                    y.loc[index:index] if y is not None else None,
+                    sample_weights.loc[index] if sample_weights is not None else None,
+                )
+                for index in X.index
+            ],
+            axis="index",
+        ),
+        pd.DataFrame(),
     )
 
 
-def process_internal_online_model_minibatch_inference_and_update(
+def _process_internal_online_model_minibatch_inference_and_update(
     transformation: Transformation,
     X: pd.DataFrame,
     y: Optional[pd.Series],
     sample_weights: Optional[pd.Series],
-) -> pd.DataFrame:
+    artifacts: Artifacts,
+) -> Tuple[X, Artifacts]:
     X, y = trim_initial_nans(X, y)
     X_with_memory, y_with_memory = preprocess_X_y_with_memory(
         transformation, X, y, in_sample=True
@@ -239,16 +270,17 @@ def process_internal_online_model_minibatch_inference_and_update(
 
     transformation.update(X_with_memory, y_with_memory, sample_weights)
     postprocess_X_y_into_memory(transformation, X, y, False)
-    return return_value.loc[X.index]
+    return return_value.loc[X.index], pd.DataFrame()
 
 
-def process_minibatch_transformation(
+def _process_minibatch_transformation(
     transformation: Transformation,
     X: pd.DataFrame,
     y: Optional[pd.Series],
     sample_weights: Optional[pd.Series],
+    artifacts: Artifacts,
     stage: Stage,
-) -> pd.DataFrame:
+) -> Tuple[X, Artifacts]:
     X, y = trim_initial_nans(X, y)
 
     if not is_X_available(X) and transformation.properties.requires_X:
@@ -280,7 +312,7 @@ def process_minibatch_transformation(
     if stage == Stage.update:
         transformation.update(X_with_memory, y_with_memory, sample_weights)
         postprocess_X_y_into_memory(transformation, X, y, False)
-    return return_value.loc[X.index]
+    return return_value.loc[X.index], pd.DataFrame()
 
 
 def __process_candidates(
@@ -290,10 +322,11 @@ def __process_candidates(
     X: pd.DataFrame,
     y: Optional[pd.Series],
     sample_weights: Optional[pd.Series],
+    artifacts: Artifacts,
     stage: Stage,
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
-) -> pd.DataFrame:
+) -> Tuple[X, Artifacts]:
     return recursively_transform(X, y, sample_weights, child_transform, stage, backend)
 
 
@@ -304,12 +337,15 @@ def __process_primary_child_transform(
     X: pd.DataFrame,
     y: Optional[pd.Series],
     sample_weights: Optional[pd.Series],
+    artifacts: Artifacts,
     stage: Stage,
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
-) -> pd.DataFrame:
+) -> Tuple[X, Artifacts]:
     X, y = composite.preprocess_primary(X, index, y, fit=stage.is_fit_or_update())
-    return recursively_transform(X, y, sample_weights, child_transform, stage, backend)
+    return recursively_transform(
+        X, y, sample_weights, artifacts, child_transform, stage, backend
+    )
 
 
 def __process_secondary_child_transform(
@@ -319,14 +355,17 @@ def __process_secondary_child_transform(
     X: pd.DataFrame,
     y: Optional[pd.Series],
     sample_weights: Optional[pd.Series],
+    artifacts: Artifacts,
     stage: Stage,
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
-) -> pd.DataFrame:
+) -> Tuple[X, Artifacts]:
     X, y = composite.preprocess_secondary(
         X, y, results_primary, index, fit=stage.is_fit_or_update()
     )
-    return recursively_transform(X, y, sample_weights, child_transform, stage, backend)
+    return recursively_transform(
+        X, y, sample_weights, artifacts, child_transform, stage, backend
+    )
 
 
 def deepcopy_pipelines(transformation: Transformations) -> Transformations:

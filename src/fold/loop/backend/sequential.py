@@ -8,7 +8,7 @@ from tqdm.auto import tqdm
 
 from ...base import Composite, Transformations
 from ...splitters import Fold
-from ..types import Backend, Stage
+from ..types import Artifacts, Backend, Stage, X
 
 
 def train_transformations(
@@ -32,9 +32,10 @@ def process_child_transformations(
     func: Callable,
     list_of_child_transformations_with_index: List,
     composite: Composite,
-    X: pd.DataFrame,
+    X: X,
     y: Optional[pd.Series],
     sample_weights: Optional[pd.Series],
+    artifacts: Artifacts,
     stage: Stage,
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
@@ -47,6 +48,7 @@ def process_child_transformations(
             X,
             y,
             sample_weights,
+            artifacts,
             stage,
             backend,
             results_primary,

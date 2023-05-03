@@ -8,13 +8,13 @@ import ray
 
 from ...base import Composite, Transformations
 from ...splitters import Fold
-from ..types import Backend, Stage
+from ..types import Artifacts, Backend, Stage, X
 
 
 def train_transformations(
     func: Callable,
     transformations: Transformations,
-    X: pd.DataFrame,
+    X: X,
     y: pd.Series,
     sample_weights: Optional[pd.Series],
     splits: List[Fold],
@@ -28,7 +28,14 @@ def train_transformations(
     return ray.get(
         [
             func.remote(
-                X, y, sample_weights, transformations, split, never_update, backend
+                X,
+                y,
+                sample_weights,
+                transformations,
+                split,
+                never_update,
+                backend,
+                silent,
             )
             for split in splits
         ]
@@ -39,9 +46,10 @@ def process_child_transformations(
     func: Callable,
     list_of_child_transformations_with_index: List,
     composite: Composite,
-    X: pd.DataFrame,
+    X: X,
     y: Optional[pd.Series],
     sample_weights: Optional[pd.Series],
+    artifacts: Artifacts,
     stage: Stage,
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
@@ -58,6 +66,7 @@ def process_child_transformations(
                 X,
                 y,
                 sample_weights,
+                artifacts,
                 stage,
                 backend,
                 results_primary,

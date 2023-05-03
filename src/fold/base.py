@@ -83,6 +83,22 @@ class Composite(ABC):
     ) -> Tuple[pd.DataFrame, T]:
         return X, y
 
+    def postprocess_artifacts_primary(
+        self, artifacts: List[pd.DataFrame]
+    ) -> pd.DataFrame:
+        return pd.concat(artifacts, axis="columns").add_prefix("primary_")
+
+    def postprocess_artifacts_secondary(
+        self, primary_artifacts: pd.DataFrame, secondary_artifacts: List[pd.DataFrame]
+    ) -> pd.DataFrame:
+        return pd.concat(
+            [
+                primary_artifacts,
+                pd.concat(secondary_artifacts, axis="columns").add_prefix("secondary_"),
+            ],
+            axis="columns",
+        )
+
 
 class Optimizer(ABC):
     splitter: SingleWindowSplitter

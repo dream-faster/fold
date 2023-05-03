@@ -97,7 +97,8 @@ def __backtest_on_window(
         X_test,
         y_test,
         sample_weights_test,
+        pd.DataFrame(),
         current_pipeline,
         stage=Stage.update_online_only,
         backend=backend,
-    )
+    )[0]
