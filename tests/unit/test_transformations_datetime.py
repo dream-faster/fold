@@ -20,7 +20,7 @@ from fold.transformations.date import (
     DateTimeFeature,
 )
 from fold.transformations.holidays import AddHolidayFeatures, LabelingMethod
-from fold.utils.tests import generate_sine_wave_data
+from fold.utils.tests import generate_sine_wave_data, tuneability_test
 
 
 def test_datetime_features():
@@ -56,6 +56,9 @@ def test_datetime_features():
     assert (pred["month"] == X.loc[pred.index].index.month).all()
     assert (pred["quarter"] == X.loc[pred.index].index.quarter).all()
     assert (pred["year"] == X.loc[pred.index].index.year).all()
+
+    trans = AddDateTimeFeatures([DateTimeFeature.second, DateTimeFeature.minute])
+    tuneability_test(trans, dict(features=[DateTimeFeature.day_of_week]))
 
 
 def test_add_second():

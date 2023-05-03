@@ -132,12 +132,18 @@ def tuneability_test(
     splitter = SingleWindowSplitter(train_window=0.5)
     preds_orig, _ = train_backtest(instance, X, y, splitter)
     preds_different, _ = train_backtest(different_instance, X, y, splitter)
-    assert not preds_orig.equals(preds_different)
+    assert not preds_orig.equals(
+        preds_different
+    ), "The output of the two instances with different parameters should be different"
 
     reconstructed_instance = different_instance.clone_with_params(**params)
 
     preds_reconstructed, _ = train_backtest(reconstructed_instance, X, y, splitter)
     if tolerance is None:
-        assert preds_orig.equals(preds_reconstructed)
+        assert preds_orig.equals(
+            preds_reconstructed
+        ), "The output of the two instances with different parameters should be the same"
     else:
-        assert np.isclose(preds_orig, preds_reconstructed, atol=tolerance).all()
+        assert np.isclose(
+            preds_orig, preds_reconstructed, atol=tolerance
+        ).all(), "The output of the two instances with different parameters should be the close"
