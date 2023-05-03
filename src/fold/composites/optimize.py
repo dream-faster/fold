@@ -57,7 +57,9 @@ class OptimizeGridSearch(Optimizer):
     def get_candidates(self) -> Iterable[Tunable]:
         if self.candidates is None:
             self.candidates = [
-                self.model[0].clone_with_params(**(self.model[0].get_params() | params))
+                self.model[0].clone_with_params(
+                    **{**self.model[0].get_params(), **params}
+                )
                 for params in self.param_permutations
             ]
         return self.candidates
