@@ -54,6 +54,8 @@ image = {version = ">=1.5.33", optional = true}
 mkdocs-gallery = {version = ">=0.7", optional = true}
 mkdocs-glightbox = {version = "<=0.3.2", optional = true}
 ray = {version = ">=1.4", optional = true}
+fold-models = {version = "~=0.1.2", optional = true}
+fold-wrappers = {version = "~=0.1", optional = true}
 
 [project.urls]
 Documentation = "https://dream-faster.github.io/fold"
@@ -84,10 +86,12 @@ docs = [
   "mkdocs-glightbox"
 ]
 ray = ["ray"]
-extras = [
+all = [
   "ray",
   "holidays",
   "krisi",
+  "fold-core",
+  "fold-wrappers",
 ]
 
 [tool.hatch.envs.quality]

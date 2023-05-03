@@ -70,7 +70,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install ".[tests]"
-          pip install ".[extras]"
+          pip install ".[all]"
 
       - name: run-tests
         run: pytest tests/integration -s --durations 0
@@ -93,7 +93,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install ".[tests]"
-          pip install ".[extras]"
+          pip install ".[all]"
 
       - name: run-tests
         run: pytest src/ -s --durations 0
