@@ -5,7 +5,7 @@ from fold.loop.encase import train_backtest
 from fold.splitters import SingleWindowSplitter
 from fold.transformations.difference import Difference, TakeReturns
 from fold.utils.dataframe import to_series
-from fold.utils.tests import generate_sine_wave_data
+from fold.utils.tests import generate_sine_wave_data, tuneability_test
 
 
 @pytest.mark.parametrize("lag", [1, 2, 3, 5, 10, 24])
@@ -21,6 +21,10 @@ def test_difference(lag: int):
         .squeeze(),
         atol=1e-3,
     ).all()
+
+
+def test_difference_tunability():
+    tuneability_test(Difference(lag=1), dict(lag=12), tolerance=0.01)
 
 
 @pytest.mark.parametrize("lag", [1, 2, 3, 5, 10, 24])

@@ -5,11 +5,11 @@ from typing import Optional, Union
 
 import pandas as pd
 
-from ..base import InvertibleTransformation, Transformation
+from ..base import InvertibleTransformation, Transformation, Tunable
 from ..utils.dataframe import to_series
 
 
-class Difference(InvertibleTransformation):
+class Difference(InvertibleTransformation, Tunable):
     """
     Performs differencing.
     Sesonal differencing can be achieved by setting `lag` to the seasonality of the data.
@@ -102,6 +102,9 @@ class Difference(InvertibleTransformation):
             for i in range(self.lag):
                 X.iloc[i :: self.lag] = X.iloc[i :: self.lag].cumsum()
             return X.iloc[self.lag :]
+
+    def get_params(self) -> dict:
+        return {"lag": self.lag}
 
 
 class TakeReturns(Transformation):

@@ -8,7 +8,7 @@ from typing import Callable, List, Union
 
 import pandas as pd
 
-from ..base import SingleFunctionTransformation, Transformation, fit_noop
+from ..base import SingleFunctionTransformation, Transformation, Tunable, fit_noop
 from ..utils.list import wrap_in_list
 
 
@@ -36,7 +36,7 @@ class DateTimeFeature(Enum):
             raise ValueError(f"Unknown DateTimeFeature: {value}")
 
 
-class AddDateTimeFeatures(Transformation):
+class AddDateTimeFeatures(Transformation, Tunable):
     """
     Adds (potentially multiple) date/time features to the input, as additional columns.
     The name of the new column will be the name of the DateTimeFeature passed in.
@@ -113,6 +113,9 @@ class AddDateTimeFeatures(Transformation):
 
     fit = fit_noop
     update = fit_noop
+
+    def get_params(self) -> dict:
+        return {"features": self.features}
 
 
 class AddSecond(SingleFunctionTransformation):

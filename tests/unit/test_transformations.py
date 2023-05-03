@@ -154,6 +154,11 @@ def test_window_features():
         pred["sine_14_mean"], X["sine"].rolling(14).mean()[pred.index], atol=0.01
     ).all()
 
+    tuneability_test(
+        AddWindowFeatures(("sine", 14, "mean")),
+        dict(column_window_func=("sine", 10, "std")),
+    )
+
     # check if it works when passing a list of tuples
     transformations = AddWindowFeatures([("sine", 14, "mean")])
     pred, _ = train_backtest(transformations, X, y, splitter)

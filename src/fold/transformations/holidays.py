@@ -7,7 +7,7 @@ from typing import List, Union
 
 import pandas as pd
 
-from ..base import Transformation, fit_noop
+from ..base import Transformation, Tunable, fit_noop
 from ..utils.list import swap_tuples, wrap_in_list
 
 
@@ -48,7 +48,7 @@ class LabelingMethod(Enum):
             raise ValueError(f"Unknown HolidayType: {value}")
 
 
-class AddHolidayFeatures(Transformation):
+class AddHolidayFeatures(Transformation, Tunable):
     """
     Adds holiday features for given region(s) as new column(s).
     It uses the pattern "holiday_{country_code}" for naming the columns.
@@ -78,7 +78,7 @@ class AddHolidayFeatures(Transformation):
             country_code.upper() for country_code in wrap_in_list(country_codes)
         ]
         self.name = f"AddHolidayFeatures-{self.country_codes}"
-        self.type = LabelingMethod.from_str(labeling)
+        self.labeling = LabelingMethod.from_str(labeling)
         from holidays import country_holidays, list_supported_countries
 
         all_supported_countries = list_supported_countries()
@@ -111,14 +111,14 @@ class AddHolidayFeatures(Transformation):
         ]
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
-        if self.type == LabelingMethod.holiday_binary:
+        if self.labeling == LabelingMethod.holiday_binary:
             holidays = _get_holidays(
                 X.index, self.country_codes, self.holiday_to_int_maps, encode=True
             )
             holidays[holidays != 0] = 1
 
             return pd.concat([X, holidays], axis="columns")
-        elif self.type == LabelingMethod.weekday_weekend_holiday:
+        elif self.labeling == LabelingMethod.weekday_weekend_holiday:
             holidays = _get_holidays(
                 X.index, self.country_codes, self.holiday_to_int_maps, encode=True
             )
@@ -131,14 +131,14 @@ class AddHolidayFeatures(Transformation):
             )
             return pd.concat([X, holidays], axis="columns")
         elif (
-            self.type == LabelingMethod.weekday_weekend_uniqueholiday
-            or self.type == LabelingMethod.weekday_weekend_uniqueholiday_string
+            self.labeling == LabelingMethod.weekday_weekend_uniqueholiday
+            or self.labeling == LabelingMethod.weekday_weekend_uniqueholiday_string
         ):
             holidays = _get_holidays(
                 X.index,
                 self.country_codes,
                 self.holiday_to_int_maps,
-                encode=self.type == LabelingMethod.weekday_weekend_uniqueholiday,
+                encode=self.labeling == LabelingMethod.weekday_weekend_uniqueholiday,
             )
 
             weekends = _get_weekends(X.index)
@@ -147,10 +147,16 @@ class AddHolidayFeatures(Transformation):
             )
             return pd.concat([X, holidays], axis="columns")
         else:
-            raise ValueError(f"Unknown HolidayType: {self.type}")
+            raise ValueError(f"Unknown HolidayType: {self.labeling}")
 
     fit = fit_noop
     update = fit_noop
+
+    def get_params(self) -> dict:
+        return {
+            "country_codes": self.country_codes,
+            "labeling": self.labeling,
+        }
 
 
 def _get_weekends(dates: pd.DatetimeIndex) -> pd.Series:
