@@ -42,7 +42,21 @@ def test_target_transformation_dummy() -> None:
         y_pipeline=test_transform_plus_2,
     )
     pred, _ = train_backtest(pipeline, X, y, splitter)
-    assert ((X.squeeze()[pred.index] - 1.0) == pred.squeeze()).all()
+    assert (X.squeeze()[pred.index] - 1.0 == pred.squeeze()).all()
+
+
+def test_target_transformation_dummy_dont_invert() -> None:
+    X, y = generate_zeros_and_ones_skewed(length=1000, weights=[0.5, 0.5])
+    X.columns = ["predictions_woo"]
+    splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
+
+    pipeline = TransformTarget(
+        [lambda x: x + 1, test_all_y_values_above_1],
+        y_pipeline=test_transform_plus_2,
+        invert_wrapped_output=False,
+    )
+    pred, _ = train_backtest(pipeline, X, y, splitter)
+    assert (X.squeeze()[pred.index] + 1.0 == pred.squeeze()).all()
 
 
 def test_target_transformation_difference() -> None:

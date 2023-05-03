@@ -30,6 +30,9 @@ class TransformTarget(Composite):
         Pipeline, which will be applied to the input data, where the target (`y`) is already transformed.
     y_pipeline: Union[List[InvertibleTransformation], InvertibleTransformation]
         InvertibleTransformations, which will be applied to the target (`y`)
+    invert_wrapped_output: bool, default=True
+        Apply the inverse transformation of `y_pipeline` to the output of `wrapped_pipeline`. default is `True`.
+
 
     Examples
     --------
@@ -60,12 +63,14 @@ class TransformTarget(Composite):
         self,
         wrapped_pipeline: Pipeline,
         y_pipeline: Union[List[InvertibleTransformation], InvertibleTransformation],
+        invert_wrapped_output: bool = True,
     ) -> None:
         self.wrapped_pipeline = wrap_in_double_list_if_needed(wrapped_pipeline)
         self.y_pipeline = wrap_in_double_list_if_needed(y_pipeline)
         self.name = "TransformTarget-" + get_concatenated_names(
             self.wrapped_pipeline + self.y_pipeline
         )
+        self.invert_wrapped_output = invert_wrapped_output
 
     def preprocess_primary(
         self, X: pd.DataFrame, index: int, y: T, fit: bool
@@ -101,14 +106,14 @@ class TransformTarget(Composite):
         y: Optional[pd.Series],
         in_sample: bool,
     ) -> pd.DataFrame:
+        if self.invert_wrapped_output is False:
+            return secondary_results[0]
         predictions = get_prediction_column(secondary_results[0])
         for transformation in reversed(self.y_pipeline[0]):
             predictions = transformation.inverse_transform(predictions, in_sample)
-        orignal_results = secondary_results[0]
-        orignal_results[get_prediction_column_name(orignal_results)] = to_series(
-            predictions
-        )
-        return orignal_results
+        results = secondary_results[0]
+        results[get_prediction_column_name(results)] = to_series(predictions)
+        return results
 
     def get_child_transformations_primary(self) -> Pipelines:
         return self.y_pipeline
@@ -122,6 +127,7 @@ class TransformTarget(Composite):
         clone = TransformTarget(
             wrapped_pipeline=clone_child_transformations(self.wrapped_pipeline),
             y_pipeline=clone_child_transformations(self.y_pipeline),
+            invert_wrapped_output=self.invert_wrapped_output,
         )
         clone.properties = self.properties
         return clone
