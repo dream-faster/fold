@@ -70,8 +70,10 @@ class WrapSKLearnClassifier(Model, Tunable):
     def get_params(self) -> dict:
         return self.model.get_params()
 
-    def set_params(self, **params) -> None:
-        self.model.set_params(**params)
+    def clone_with_params(self, **parameters) -> Tunable:
+        return WrapSKLearnClassifier(
+            model_class=self.model.__class__, init_args=parameters
+        )
 
 
 class WrapSKLearnRegressor(Model, Tunable):
@@ -126,8 +128,10 @@ class WrapSKLearnRegressor(Model, Tunable):
     def get_params(self) -> dict:
         return self.model.get_params()
 
-    def set_params(self, **params) -> None:
-        self.model.set_params(**params)
+    def clone_with_params(self, **parameters) -> Tunable:
+        return WrapSKLearnRegressor(
+            model_class=self.model.__class__, init_args=parameters
+        )
 
 
 class WrapSKLearnPipeline(Model):

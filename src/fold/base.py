@@ -176,9 +176,11 @@ class Tunable(ABC):
     def get_params(self) -> dict:
         raise NotImplementedError
 
-    @abstractmethod
-    def set_params(self, **parameters):
-        raise NotImplementedError
+    def clone_with_params(self, **parameters) -> Tunable:
+        """
+        The default implementation only works for Transformations, when parameters and the init parameters match 100%.
+        """
+        return self.__class__(**parameters)
 
 
 class FeatureSelector(Transformation):

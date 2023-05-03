@@ -112,7 +112,7 @@ def tuneability_test(
     tolerance: Optional[float] = None,
 ):
     """
-    Used to test the general structure and implementation of get_params() and set_params() methods.
+    Used to test the general structure and implementation of get_params() and clone_with_params() methods.
     the kwargs are used to set the parameters of the transformation, which should be different to the init parameters of the `instance`.
     """
     assert isinstance(instance, Tunable)
@@ -134,8 +134,7 @@ def tuneability_test(
     preds_different, _ = train_backtest(different_instance, X, y, splitter)
     assert not preds_orig.equals(preds_different)
 
-    reconstructed_instance = different_instance
-    reconstructed_instance.set_params(**params)
+    reconstructed_instance = different_instance.clone_with_params(**params)
 
     preds_reconstructed, _ = train_backtest(reconstructed_instance, X, y, splitter)
     if tolerance is None:
