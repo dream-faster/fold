@@ -8,7 +8,7 @@ from typing import Callable, List, Tuple, Union
 
 import pandas as pd
 
-from ..base import Transformation, fit_noop
+from ..base import Transformation, Tunable, fit_noop
 from ..utils.list import wrap_in_list
 
 
@@ -42,7 +42,7 @@ FunctionOrPredefined = Union[Callable, PredefinedFunction, str]
 ColumnWindowFunction = Tuple[ColumnOrColumns, int, FunctionOrPredefined]
 
 
-class AddWindowFeatures(Transformation):
+class AddWindowFeatures(Transformation, Tunable):
 
     """
     Creates rolling window features on the specified columns.
@@ -125,3 +125,6 @@ class AddWindowFeatures(Transformation):
 
     fit = fit_noop
     update = fit
+
+    def get_params(self) -> dict:
+        return {"column_window_func": self.column_window_func}

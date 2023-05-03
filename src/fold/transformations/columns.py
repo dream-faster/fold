@@ -7,12 +7,12 @@ from typing import List, Union
 
 import pandas as pd
 
-from ..base import Transformation, fit_noop
+from ..base import Transformation, Tunable, fit_noop
 from ..utils.checks import check_get_columns
 from ..utils.list import wrap_in_list
 
 
-class SelectColumns(Transformation):
+class SelectColumns(Transformation, Tunable):
     """
     Selects a single or multiple columns, drops the rest.
 
@@ -37,8 +37,11 @@ class SelectColumns(Transformation):
     fit = fit_noop
     update = fit
 
+    def get_params(self) -> dict:
+        return {"columns": self.columns}
 
-class DropColumns(Transformation):
+
+class DropColumns(Transformation, Tunable):
     """
     Drops a single or multiple columns.
 
@@ -61,6 +64,9 @@ class DropColumns(Transformation):
 
     fit = fit_noop
     update = fit
+
+    def get_params(self) -> dict:
+        return {"columns": self.columns}
 
 
 class RenameColumns(Transformation):
