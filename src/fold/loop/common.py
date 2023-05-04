@@ -237,11 +237,12 @@ def _process_with_inner_loop(
         X_row_with_memory, y_row_with_memory = preprocess_X_y_with_memory(
             transformation, X_row, y_row, in_sample=False
         )
-        result, artifact = transformation.transform(X_row_with_memory, in_sample=False)
+        result, _ = transformation.transform(X_row_with_memory, in_sample=False)
         if y_row is not None:
-            transformation.update(
+            artifact = transformation.update(
                 X_row_with_memory, y_row_with_memory, sample_weights_row
             )
+            _ = concat_on_columns([artifact, artifacts])
             postprocess_X_y_into_memory(
                 transformation, X_row_with_memory, y_row_with_memory, False
             )
@@ -276,6 +277,7 @@ def _process_internal_online_model_minibatch_inference_and_update(
     )
     postprocess_X_y_into_memory(transformation, X_with_memory, y_with_memory, True)
     return_value, artifact = transformation.transform(X_with_memory, in_sample=True)
+    artifacts = concat_on_columns([artifact, artifacts])
 
     artifact = transformation.update(X_with_memory, y_with_memory, sample_weights)
     postprocess_X_y_into_memory(transformation, X, y, False)
@@ -313,6 +315,7 @@ def _process_minibatch_transformation(
             y_with_memory,
             in_sample=stage == Stage.inital_fit,
         )
+        artifacts = concat_on_columns([artifact, artifacts])
     # 2. transform (inference)
     X_with_memory, y_with_memory = preprocess_X_y_with_memory(
         transformation, X, y, in_sample=False
@@ -320,11 +323,13 @@ def _process_minibatch_transformation(
     return_value, artifact = transformation.transform(
         X_with_memory, in_sample=in_sample
     )
+    artifacts = concat_on_columns([artifact, artifacts])
     # 3. update (if we're in the update stage)
     if stage == Stage.update:
         artifact = transformation.update(X_with_memory, y_with_memory, sample_weights)
+        artifacts = concat_on_columns([artifact, artifacts])
         postprocess_X_y_into_memory(transformation, X, y, False)
-    return return_value.loc[X.index], concat_on_columns([artifact, artifacts])
+    return return_value.loc[X.index], artifacts
 
 
 def __process_candidates(
