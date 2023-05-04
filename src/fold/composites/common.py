@@ -1,10 +1,33 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
 
-from typing import List
+from copy import deepcopy
+from typing import Callable, List
 
-from ..base import Composite, Pipelines, Transformations
+from ..base import (
+    Composite,
+    Optimizer,
+    Pipeline,
+    Pipelines,
+    Transformation,
+    Transformations,
+)
 from ..utils.list import flatten, wrap_in_list
+
+
+def traverse_pipeline(pipeline: Pipeline, apply_func: Callable) -> Pipeline:
+    def _traverse(pipeline):
+        if isinstance(pipeline, List):
+            return [_traverse(t) for t in pipeline]
+        elif isinstance(pipeline, Composite):
+            composite = pipeline
+            return composite.clone(clone_child_transformations=_traverse)
+        elif isinstance(pipeline, Optimizer):
+            raise ValueError("Optimizer is not supported within an Optimizer.")
+        elif isinstance(pipeline, Transformation):
+            return apply_func(deepcopy(pipeline))
+
+    return _traverse(pipeline)
 
 
 def get_flat_list_of_transformations(

@@ -2,6 +2,11 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from fold.composites.common import traverse_pipeline
+from fold.composites.target import TransformTarget
+from fold.transformations.dev import Lookahead, Test
+from fold.transformations.difference import Difference
+from fold.transformations.math import TakeLog
 from fold.utils.dataframe import to_series
 from fold.utils.trim import (
     get_first_valid_index,
@@ -74,3 +79,21 @@ def test_to_series_df_single_column_single_value():
     series = to_series(df)
     assert series.name == "a"
     assert series.tolist() == [1]
+
+
+def test_traversal():
+    pipeline = TransformTarget(
+        [
+            Test(fit_func=lambda x: x, transform_func=lambda x: x),
+            Lookahead(),
+        ],
+        y_pipeline=[TakeLog(), Difference()],
+    )
+
+    def set_value_on_lookahead(x):
+        if isinstance(x, Lookahead):
+            x.value = 1
+        return x
+
+    modified_pipeline = traverse_pipeline(pipeline, set_value_on_lookahead)
+    print(modified_pipeline)
