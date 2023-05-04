@@ -6,7 +6,7 @@ from typing import Dict, Optional, Tuple, Union
 import numpy as np
 import pandas as pd
 
-from fold.base import Artifact, InvertibleTransformation, Tunable, fit_noop
+from ..base import Artifact, InvertibleTransformation, Tunable, fit_noop
 
 
 class TakeLog(InvertibleTransformation, Tunable):
