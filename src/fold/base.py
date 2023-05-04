@@ -13,6 +13,8 @@ import pandas as pd
 from fold.splitters import SingleWindowSplitter
 
 T = TypeVar("T", Optional[pd.Series], pd.Series)
+X = pd.DataFrame
+Artifacts = pd.DataFrame
 
 
 class Composite(ABC):
@@ -83,13 +85,11 @@ class Composite(ABC):
     ) -> Tuple[pd.DataFrame, T]:
         return X, y
 
-    def postprocess_artifacts_primary(
-        self, artifacts: List[pd.DataFrame]
-    ) -> pd.DataFrame:
+    def postprocess_artifacts_primary(self, artifacts: List[Artifacts]) -> pd.DataFrame:
         return pd.concat(artifacts, axis="columns").add_prefix("primary_")
 
     def postprocess_artifacts_secondary(
-        self, primary_artifacts: pd.DataFrame, secondary_artifacts: List[pd.DataFrame]
+        self, primary_artifacts: pd.DataFrame, secondary_artifacts: List[Artifacts]
     ) -> pd.DataFrame:
         return pd.concat(
             [

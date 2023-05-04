@@ -5,13 +5,13 @@ from typing import Optional, Tuple, Union
 
 import pandas as pd
 
-from ..base import DeployablePipeline, Pipeline, TrainedPipelines
+from ..base import Artifacts, DeployablePipeline, Pipeline, TrainedPipelines
 from ..splitters import Fold, SlidingWindowSplitter, Splitter
 from ..utils.list import wrap_in_list
 from .backend import get_backend_dependent_functions
 from .checks import check_types
 from .common import deepcopy_pipelines, recursively_transform
-from .types import Artifacts, Backend, Stage, TrainMethod
+from .types import Backend, Stage, TrainMethod
 from .wrap import wrap_transformation_if_needed
 
 

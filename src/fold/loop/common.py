@@ -8,13 +8,13 @@ from typing import List, Optional, Tuple
 
 import pandas as pd
 
-from ..base import Composite, Optimizer, Transformation, Transformations
+from ..base import Artifacts, Composite, Optimizer, Transformation, Transformations, X
 from ..models.base import Model
 from ..utils.checks import is_prediction, is_X_available
 from ..utils.trim import trim_initial_nans, trim_initial_nans_single
 from .backend import get_backend_dependent_functions
 from .memory import postprocess_X_y_into_memory, preprocess_X_y_with_memory
-from .types import Artifacts, Backend, Stage, X
+from .types import Backend, Stage
 
 
 def recursively_transform(

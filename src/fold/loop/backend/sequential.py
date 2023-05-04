@@ -6,9 +6,9 @@ from typing import Callable, List, Optional
 import pandas as pd
 from tqdm.auto import tqdm
 
-from ...base import Composite, Transformations
+from ...base import Artifacts, Composite, Transformations, X
 from ...splitters import Fold
-from ..types import Artifacts, Backend, Stage, X
+from ..types import Backend, Stage
 
 
 def train_transformations(

@@ -6,11 +6,6 @@ from __future__ import annotations
 from enum import Enum
 from typing import Union
 
-import pandas as pd
-
-X = pd.DataFrame
-Artifacts = pd.DataFrame
-
 
 class Backend(Enum):
     """
