@@ -8,6 +8,7 @@ from typing import Optional, Type
 import pandas as pd
 
 from ..base import (
+    Artifact,
     FeatureSelector,
     InvertibleTransformation,
     Transformation,
@@ -43,7 +44,7 @@ class WrapSKLearnTransformation(Transformation, Tunable):
         X: pd.DataFrame,
         y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
-    ) -> None:
+    ) -> Optional[Artifact]:
         fit_func = (
             self.transformation.partial_fit
             if hasattr(self.transformation, "partial_fit")
@@ -61,7 +62,7 @@ class WrapSKLearnTransformation(Transformation, Tunable):
         X: pd.DataFrame,
         y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
-    ) -> None:
+    ) -> Optional[Artifact]:
         if hasattr(self.transformation, "partial_fit"):
             argspec = getfullargspec(self.transformation.partial_fit)
             if len(argspec.args) == 3:
@@ -120,7 +121,7 @@ class WrapSKLearnFeatureSelector(FeatureSelector, Tunable):
         X: pd.DataFrame,
         y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
-    ) -> None:
+    ) -> Optional[Artifact]:
         self.transformation.fit(X, y)
         if hasattr(self.transformation, "get_feature_names_out"):
             self.selected_features = self.transformation.get_feature_names_out()

@@ -5,7 +5,7 @@ from typing import Optional, Tuple, Union
 
 import pandas as pd
 
-from ..base import Artifacts, DeployablePipeline, Pipeline, TrainedPipelines
+from ..base import Artifact, DeployablePipeline, Pipeline, TrainedPipelines
 from ..splitters import Fold, SlidingWindowSplitter, Splitter
 from ..utils.list import wrap_in_list
 from .backend import get_backend_dependent_functions
@@ -189,7 +189,7 @@ def _process_pipeline_window(
     split: Fold,
     never_update: bool,
     backend: Backend,
-) -> Tuple[int, Pipeline, Artifacts]:
+) -> Tuple[int, Pipeline, Artifact]:
     stage = Stage.inital_fit if (split.order == 0 or never_update) else Stage.update
     window_start = (
         split.update_window_start if stage == Stage.update else split.train_window_start

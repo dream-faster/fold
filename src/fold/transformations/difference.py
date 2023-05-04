@@ -5,7 +5,7 @@ from typing import Optional, Union
 
 import pandas as pd
 
-from ..base import InvertibleTransformation, Transformation, Tunable
+from ..base import Artifact, InvertibleTransformation, Transformation, Tunable
 from ..utils.dataframe import to_series
 
 
@@ -68,7 +68,7 @@ class Difference(InvertibleTransformation, Tunable):
         X: pd.DataFrame,
         y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
-    ) -> None:
+    ) -> Optional[Artifact]:
         self.last_values_X = X.iloc[-self.lag : None]
         self.first_values_X = X.iloc[: self.lag]
 
@@ -77,7 +77,7 @@ class Difference(InvertibleTransformation, Tunable):
         X: pd.DataFrame,
         y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
-    ) -> None:
+    ) -> Optional[Artifact]:
         self.last_values_X = X.iloc[-self.lag : None]
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
@@ -154,7 +154,7 @@ class TakeReturns(Transformation):
         X: pd.DataFrame,
         y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
-    ) -> None:
+    ) -> Optional[Artifact]:
         self.last_values_X = X.iloc[-1:None]
 
     def update(
@@ -162,7 +162,7 @@ class TakeReturns(Transformation):
         X: pd.DataFrame,
         y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
-    ) -> None:
+    ) -> Optional[Artifact]:
         self.last_values_X = X.iloc[-1:None]
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:

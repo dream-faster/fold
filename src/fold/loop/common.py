@@ -8,7 +8,7 @@ from typing import List, Optional, Tuple
 
 import pandas as pd
 
-from ..base import Artifacts, Composite, Optimizer, Transformation, Transformations, X
+from ..base import Artifact, Composite, Optimizer, Transformation, Transformations, X
 from ..models.base import Model
 from ..utils.checks import is_prediction, is_X_available
 from ..utils.trim import trim_initial_nans, trim_initial_nans_single
@@ -21,11 +21,11 @@ def recursively_transform(
     X: X,
     y: Optional[pd.Series],
     sample_weights: Optional[pd.Series],
-    artifacts: Artifacts,
+    artifacts: Artifact,
     transformations: Transformations,
     stage: Stage,
     backend: Backend,
-) -> Tuple[X, Artifacts]:
+) -> Tuple[X, Artifact]:
     """
     The main function to transform (and fit or update) a pipline of transformations.
     `stage` is used to determine whether to run the inner loop for online models.
@@ -90,10 +90,10 @@ def _process_composite(
     X: pd.DataFrame,
     y: Optional[pd.Series],
     sample_weights: Optional[pd.Series],
-    artifacts: Artifacts,
+    artifacts: Artifact,
     stage: Stage,
     backend: Backend,
-) -> Tuple[X, Artifacts]:
+) -> Tuple[X, Artifact]:
     backend_functions = get_backend_dependent_functions(backend)
 
     composite.before_fit(X)
@@ -174,10 +174,10 @@ def _process_optimizer(
     X: pd.DataFrame,
     y: Optional[pd.Series],
     sample_weights: Optional[pd.Series],
-    artifacts: Artifacts,
+    artifacts: Artifact,
     stage: Stage,
     backend: Backend,
-) -> Tuple[X, Artifacts]:
+) -> Tuple[X, Artifact]:
     backend_functions = get_backend_dependent_functions(backend)
 
     optimized_pipeline = optimizer.get_optimized_pipeline()
@@ -215,8 +215,8 @@ def _process_with_inner_loop(
     X: pd.DataFrame,
     y: Optional[pd.Series],
     sample_weights: Optional[pd.Series],
-    artifacts: Artifacts,
-) -> Tuple[X, Artifacts]:
+    artifacts: Artifact,
+) -> Tuple[X, Artifact]:
     if len(X) == 0:
         return (pd.DataFrame(), pd.DataFrame())
 
@@ -260,8 +260,8 @@ def _process_internal_online_model_minibatch_inference_and_update(
     X: pd.DataFrame,
     y: Optional[pd.Series],
     sample_weights: Optional[pd.Series],
-    artifacts: Artifacts,
-) -> Tuple[X, Artifacts]:
+    artifacts: Artifact,
+) -> Tuple[X, Artifact]:
     X, y = trim_initial_nans(X, y)
     X_with_memory, y_with_memory = preprocess_X_y_with_memory(
         transformation, X, y, in_sample=True
@@ -279,9 +279,9 @@ def _process_minibatch_transformation(
     X: pd.DataFrame,
     y: Optional[pd.Series],
     sample_weights: Optional[pd.Series],
-    artifacts: Artifacts,
+    artifacts: Artifact,
     stage: Stage,
-) -> Tuple[X, Artifacts]:
+) -> Tuple[X, Artifact]:
     X, y = trim_initial_nans(X, y)
 
     if not is_X_available(X) and transformation.properties.requires_X:
@@ -323,11 +323,11 @@ def __process_candidates(
     X: pd.DataFrame,
     y: Optional[pd.Series],
     sample_weights: Optional[pd.Series],
-    artifacts: Artifacts,
+    artifacts: Artifact,
     stage: Stage,
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
-) -> Tuple[X, Artifacts]:
+) -> Tuple[X, Artifact]:
     return recursively_transform(
         X, y, sample_weights, artifacts, child_transform, stage, backend
     )
@@ -340,11 +340,11 @@ def __process_primary_child_transform(
     X: pd.DataFrame,
     y: Optional[pd.Series],
     sample_weights: Optional[pd.Series],
-    artifacts: Artifacts,
+    artifacts: Artifact,
     stage: Stage,
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
-) -> Tuple[X, Artifacts]:
+) -> Tuple[X, Artifact]:
     X, y = composite.preprocess_primary(X, index, y, fit=stage.is_fit_or_update())
     return recursively_transform(
         X, y, sample_weights, artifacts, child_transform, stage, backend
@@ -358,11 +358,11 @@ def __process_secondary_child_transform(
     X: pd.DataFrame,
     y: Optional[pd.Series],
     sample_weights: Optional[pd.Series],
-    artifacts: Artifacts,
+    artifacts: Artifact,
     stage: Stage,
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
-) -> Tuple[X, Artifacts]:
+) -> Tuple[X, Artifact]:
     X, y = composite.preprocess_secondary(
         X, y, results_primary, index, fit=stage.is_fit_or_update()
     )

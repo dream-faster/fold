@@ -14,7 +14,7 @@ from fold.splitters import SingleWindowSplitter
 
 T = TypeVar("T", Optional[pd.Series], pd.Series)
 X = pd.DataFrame
-Artifacts = pd.DataFrame
+Artifact = pd.DataFrame
 
 
 class Composite(ABC):
@@ -85,11 +85,11 @@ class Composite(ABC):
     ) -> Tuple[pd.DataFrame, T]:
         return X, y
 
-    def postprocess_artifacts_primary(self, artifacts: List[Artifacts]) -> pd.DataFrame:
+    def postprocess_artifacts_primary(self, artifacts: List[Artifact]) -> pd.DataFrame:
         return pd.concat(artifacts, axis="columns").add_prefix("primary_")
 
     def postprocess_artifacts_secondary(
-        self, primary_artifacts: pd.DataFrame, secondary_artifacts: List[Artifacts]
+        self, primary_artifacts: pd.DataFrame, secondary_artifacts: List[Artifact]
     ) -> pd.DataFrame:
         return pd.concat(
             [
@@ -158,7 +158,7 @@ class Transformation(ABC):
         X: pd.DataFrame,
         y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
-    ) -> None:
+    ) -> Optional[Artifact]:
         """
         Called once, with on initial training window.
         """
@@ -170,7 +170,7 @@ class Transformation(ABC):
         X: pd.DataFrame,
         y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
-    ) -> None:
+    ) -> Optional[Artifact]:
         """
         Subsequent calls to update the model.
         """

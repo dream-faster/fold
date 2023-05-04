@@ -6,7 +6,7 @@ from typing import Callable, Optional
 
 import pandas as pd
 
-from ..base import InvertibleTransformation, Transformation, fit_noop
+from ..base import Artifact, InvertibleTransformation, Transformation, fit_noop
 
 
 class Breakpoint(Transformation):
@@ -32,7 +32,7 @@ class Breakpoint(Transformation):
         X: pd.DataFrame,
         y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
-    ) -> None:
+    ) -> Optional[Artifact]:
         if self.stop_at_fit:
             breakpoint()
 
@@ -41,7 +41,7 @@ class Breakpoint(Transformation):
         X: pd.DataFrame,
         y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
-    ) -> None:
+    ) -> Optional[Artifact]:
         if self.stop_at_update:
             breakpoint()
 
@@ -92,7 +92,7 @@ class Test(InvertibleTransformation):
         X: pd.DataFrame,
         y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
-    ) -> None:
+    ) -> Optional[Artifact]:
         self.no_of_calls_fit += 1
         argspec = getfullargspec(self.fit_func)
         if len(argspec.args) == 1:
@@ -112,7 +112,7 @@ class Test(InvertibleTransformation):
         X: pd.DataFrame,
         y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
-    ) -> None:
+    ) -> Optional[Artifact]:
         self.no_of_calls_update += 1
         if self.update_func is None:
             return

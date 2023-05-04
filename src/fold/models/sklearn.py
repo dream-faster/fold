@@ -6,7 +6,7 @@ from typing import Optional, Type, Union
 
 import pandas as pd
 
-from ..base import Transformation, Tunable, fit_noop
+from ..base import Artifact, Transformation, Tunable, fit_noop
 from .base import Model
 
 
@@ -34,7 +34,7 @@ class WrapSKLearnClassifier(Model, Tunable):
 
     def fit(
         self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
-    ) -> None:
+    ) -> Optional[Artifact]:
         if hasattr(self.model, "partial_fit"):
             self.model.partial_fit(X, y, sample_weights)
         else:
@@ -45,7 +45,7 @@ class WrapSKLearnClassifier(Model, Tunable):
         X: pd.DataFrame,
         y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
-    ) -> None:
+    ) -> Optional[Artifact]:
         if hasattr(self.model, "partial_fit"):
             self.model.partial_fit(X, y, sample_weights)
         # if we don't have partial_fit, we can't update the model (maybe throw an exception, and force user to wrap it into `DontUpdate`?)
@@ -100,7 +100,7 @@ class WrapSKLearnRegressor(Model, Tunable):
 
     def fit(
         self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
-    ) -> None:
+    ) -> Optional[Artifact]:
         if hasattr(self.model, "partial_fit"):
             self.model.partial_fit(X, y, sample_weights)
         else:
@@ -111,7 +111,7 @@ class WrapSKLearnRegressor(Model, Tunable):
         X: pd.DataFrame,
         y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
-    ) -> None:
+    ) -> Optional[Artifact]:
         if hasattr(self.model, "partial_fit"):
             self.model.partial_fit(X, y, sample_weights)
         # if we don't have partial_fit, we can't update the model (maybe throw an exception, and force user to wrap it into `DontUpdate`?)
@@ -152,7 +152,7 @@ class WrapSKLearnPipeline(Model):
         X: pd.DataFrame,
         y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
-    ) -> None:
+    ) -> Optional[Artifact]:
         self.pipeline.fit(X, y)
 
     def predict(self, X: pd.DataFrame) -> pd.DataFrame:

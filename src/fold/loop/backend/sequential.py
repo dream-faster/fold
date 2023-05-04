@@ -6,7 +6,7 @@ from typing import Callable, List, Optional
 import pandas as pd
 from tqdm.auto import tqdm
 
-from ...base import Artifacts, Composite, Transformations, X
+from ...base import Artifact, Composite, Transformations, X
 from ...splitters import Fold
 from ..types import Backend, Stage
 
@@ -35,7 +35,7 @@ def process_child_transformations(
     X: X,
     y: Optional[pd.Series],
     sample_weights: Optional[pd.Series],
-    artifacts: Artifacts,
+    artifacts: Artifact,
     stage: Stage,
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],

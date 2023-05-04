@@ -2,7 +2,7 @@ from typing import Optional, Union
 
 import pandas as pd
 
-from fold.base import Transformation
+from fold.base import Artifact, Transformation
 from fold.loop import train
 from fold.loop.backtesting import backtest
 from fold.loop.types import TrainMethod
@@ -21,7 +21,7 @@ class TestNoOverlap(Model):
         X: pd.DataFrame,
         y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
-    ) -> None:
+    ) -> Optional[Artifact]:
         self.fit_index = X.index
 
     def update(
@@ -29,7 +29,7 @@ class TestNoOverlap(Model):
         X: pd.DataFrame,
         y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
-    ) -> None:
+    ) -> Optional[Artifact]:
         assert not any([i in self.fit_index for i in X.index])
         # append to fit_index
         self.update_index = X.index
