@@ -7,7 +7,7 @@ from typing import Callable, Iterable, List, Optional
 
 import pandas as pd
 
-from ..base import Optimizer, Pipeline, Pipelines
+from ..base import Artifact, Optimizer, Pipeline, Pipelines
 from .common import get_concatenated_names
 
 
@@ -43,7 +43,9 @@ class SelectBest(Optimizer):
     def get_optimized_pipeline(self) -> Optional["Pipeline"]:
         return self.selected_pipeline
 
-    def process_candidate_results(self, results: List[pd.DataFrame], y: pd.Series):
+    def process_candidate_results(
+        self, results: List[pd.DataFrame], y: pd.Series
+    ) -> Optional[Artifact]:
         if self.selected_pipeline is not None:
             raise ValueError("Optimizer is already fitted.")
 
@@ -54,6 +56,9 @@ class SelectBest(Optimizer):
             else scores.index(max(scores))
         )
         self.selected_pipeline = [self.pipelines[selected_index]]
+        return pd.DataFrame(
+            {"selected_pipeline_index": selected_index}, index=y.index[-1:]
+        )
 
     def clone(self, clone_child_transformations: Callable) -> SelectBest:
         return SelectBest.from_cloned_instance(

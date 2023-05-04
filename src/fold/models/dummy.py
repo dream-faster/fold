@@ -5,7 +5,7 @@ from typing import List, Union
 
 import pandas as pd
 
-from ..base import Transformation, fit_noop
+from ..base import Transformation, Tunable, fit_noop
 from .base import Model
 
 
@@ -83,7 +83,7 @@ class DummyClassifier(Model):
     update = fit
 
 
-class DummyRegressor(Model):
+class DummyRegressor(Model, Tunable):
     """
     A model that predicts a predefined value.
 
@@ -129,3 +129,6 @@ class DummyRegressor(Model):
     predict_in_sample = predict
     fit = fit_noop
     update = fit
+
+    def get_params(self) -> dict:
+        return {"predicted_value": self.predicted_value}

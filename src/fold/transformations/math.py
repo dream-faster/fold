@@ -6,7 +6,7 @@ from typing import Dict, Optional, Union
 import numpy as np
 import pandas as pd
 
-from fold.base import InvertibleTransformation, Tunable, fit_noop
+from fold.base import Artifact, InvertibleTransformation, Tunable, fit_noop
 
 
 class TakeLog(InvertibleTransformation, Tunable):
@@ -211,7 +211,7 @@ class TurnPositive(InvertibleTransformation):
         X: pd.DataFrame,
         y: pd.Series,
         sample_weights: Optional[pd.Series] = None,
-    ) -> None:
+    ) -> Optional[Artifact]:
         min_values = X.min(axis=0)
         self.constant = dict(min_values[min_values <= 0].abs() + 1)
 

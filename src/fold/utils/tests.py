@@ -140,10 +140,12 @@ def tuneability_test(
 
     preds_reconstructed, _ = train_backtest(reconstructed_instance, X, y, splitter)
     if tolerance is None:
-        assert preds_orig.equals(
-            preds_reconstructed
-        ), "The output of the two instances with different parameters should be the same"
+        assert preds_orig.equals(preds_reconstructed), (
+            "The output of the two instances with different parameters should be the"
+            " same"
+        )
     else:
-        assert np.isclose(
-            preds_orig, preds_reconstructed, atol=tolerance
-        ).all(), "The output of the two instances with different parameters should be the close"
+        assert np.isclose(preds_orig, preds_reconstructed, atol=tolerance).all(), (
+            "The output of the two instances with different parameters should be the"
+            " close"
+        )

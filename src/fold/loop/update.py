@@ -22,6 +22,12 @@ def update(
 
     transformations = deepcopy_pipelines(pipeline)
     _ = recursively_transform(
-        X, y, sample_weights, transformations, stage=Stage.update, backend=Backend.no
+        X,
+        y,
+        sample_weights,
+        pd.DataFrame(),
+        transformations,
+        stage=Stage.update,
+        backend=Backend.no,
     )
     return transformations
