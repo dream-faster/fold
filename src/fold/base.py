@@ -179,7 +179,9 @@ class Transformation(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
+    def transform(
+        self, X: pd.DataFrame, in_sample: bool
+    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
         raise NotImplementedError
 
 
@@ -244,5 +246,7 @@ class SingleFunctionTransformation(Transformation):
     fit = fit_noop
     update = fit_noop
 
-    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
-        return pd.concat([X, self.get_function()(X)], axis="columns")
+    def transform(
+        self, X: pd.DataFrame, in_sample: bool
+    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
+        return pd.concat([X, self.get_function()(X)], axis="columns"), None

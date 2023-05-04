@@ -1,6 +1,8 @@
-from typing import Union
+from typing import List, Optional, Union
 
 import pandas as pd
+
+from .list import filter_none
 
 
 def to_series(dataframe_or_series: Union[pd.DataFrame, pd.Series]) -> pd.Series:
@@ -15,3 +17,11 @@ def to_series(dataframe_or_series: Union[pd.DataFrame, pd.Series]) -> pd.Series:
         return dataframe_or_series
     else:
         raise ValueError("Not a pd.Series or pd.DataFrame")
+
+
+def concat_on_index(dfs: List[Optional[pd.DataFrame]]) -> pd.DataFrame:
+    return pd.concat(filter_none(dfs), axis="index")
+
+
+def concat_on_columns(dfs: List[Optional[pd.DataFrame]]) -> pd.DataFrame:
+    return pd.concat(filter_none(dfs), axis="columns")

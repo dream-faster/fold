@@ -1,7 +1,7 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
 
-from typing import Optional, Union
+from typing import Optional, Tuple, Union
 
 import pandas as pd
 
@@ -80,15 +80,17 @@ class Difference(InvertibleTransformation, Tunable):
     ) -> Optional[Artifact]:
         self.last_values_X = X.iloc[-self.lag : None]
 
-    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
+    def transform(
+        self, X: pd.DataFrame, in_sample: bool
+    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
         if in_sample:
-            return X.diff(self.lag)
+            return X.diff(self.lag), None
         else:
             return (
                 pd.concat([self.last_values_X, X], axis="index")
                 .diff(self.lag)
                 .iloc[self.lag :]
-            )
+            ), None
 
     def inverse_transform(self, X: pd.Series, in_sample: bool) -> pd.Series:
         if in_sample:
@@ -165,10 +167,12 @@ class TakeReturns(Transformation):
     ) -> Optional[Artifact]:
         self.last_values_X = X.iloc[-1:None]
 
-    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
+    def transform(
+        self, X: pd.DataFrame, in_sample: bool
+    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
         if in_sample:
-            return X.pct_change()
+            return X.pct_change(), None
         else:
             return (
                 pd.concat([self.last_values_X, X], axis="index").pct_change().iloc[1:]
-            )
+            ), None
