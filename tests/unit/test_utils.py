@@ -96,4 +96,5 @@ def test_traversal():
         return x
 
     modified_pipeline = traverse_pipeline(pipeline, set_value_on_lookahead)
-    print(modified_pipeline)
+    assert modified_pipeline.wrapped_pipeline[0][1].value == 1
+    assert not hasattr(pipeline.wrapped_pipeline[0][1], "value")
