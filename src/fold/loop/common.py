@@ -99,10 +99,7 @@ def _process_composite(
     composite.before_fit(X)
     primary_transformations = composite.get_child_transformations_primary()
 
-    (
-        results_primary,
-        artifacts_primary,
-    ) = zip(
+    (results_primary, artifacts_primary,) = zip(
         *backend_functions.process_child_transformations(
             __process_primary_child_transform,
             enumerate(primary_transformations),
@@ -136,10 +133,7 @@ def _process_composite(
             artifacts_primary,
         )
 
-    (
-        results_secondary,
-        artifacts_secondary,
-    ) = zip(
+    (results_secondary, artifacts_secondary,) = zip(
         *backend_functions.process_child_transformations(
             __process_secondary_child_transform,
             enumerate(secondary_transformations),
