@@ -35,7 +35,6 @@ def train_transformations(
                 split,
                 never_update,
                 backend,
-                silent,
             )
             for split in splits
         ]

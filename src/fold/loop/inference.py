@@ -22,7 +22,7 @@ def infer(
     else:
         assert type(X) is pd.DataFrame, "X must be a pandas DataFrame."
 
-    results = recursively_transform(
+    results, _ = recursively_transform(
         X, None, None, pd.DataFrame(), pipeline, stage=Stage.infer, backend=Backend.no
     )
     return results

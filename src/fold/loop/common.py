@@ -102,17 +102,19 @@ def _process_composite(
     (
         results_primary,
         artifacts_primary,
-    ) = backend_functions.process_child_transformations(
-        __process_primary_child_transform,
-        enumerate(primary_transformations),
-        composite,
-        X,
-        y,
-        sample_weights,
-        artifacts,
-        stage,
-        backend,
-        None,
+    ) = zip(
+        *backend_functions.process_child_transformations(
+            __process_primary_child_transform,
+            enumerate(primary_transformations),
+            composite,
+            X,
+            y,
+            sample_weights,
+            artifacts,
+            stage,
+            backend,
+            None,
+        )
     )
 
     if composite.properties.primary_only_single_pipeline:
@@ -137,17 +139,19 @@ def _process_composite(
     (
         results_secondary,
         artifacts_secondary,
-    ) = backend_functions.process_child_transformations(
-        __process_secondary_child_transform,
-        enumerate(secondary_transformations),
-        composite,
-        X,
-        y,
-        sample_weights,
-        artifacts,
-        stage,
-        backend,
-        results_primary,
+    ) = zip(
+        *backend_functions.process_child_transformations(
+            __process_secondary_child_transform,
+            enumerate(secondary_transformations),
+            composite,
+            X,
+            y,
+            sample_weights,
+            artifacts,
+            stage,
+            backend,
+            results_primary,
+        )
     )
 
     if composite.properties.secondary_only_single_pipeline:
@@ -187,16 +191,19 @@ def _process_optimizer(
         # Optimized needs to run the search
         candidates = optimizer.get_candidates()
 
-        results_primary = backend_functions.process_child_transformations(
-            __process_candidates,
-            enumerate(candidates),
-            optimizer,
-            X,
-            y,
-            sample_weights,
-            stage,
-            backend,
-            None,
+        results_primary, _ = zip(
+            *backend_functions.process_child_transformations(
+                __process_candidates,
+                enumerate(candidates),
+                optimizer,
+                X,
+                y,
+                sample_weights,
+                artifacts,
+                stage,
+                backend,
+                None,
+            )
         )
         results_primary = [
             trim_initial_nans_single(result) for result in results_primary
@@ -327,7 +334,9 @@ def __process_candidates(
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
 ) -> Tuple[X, Artifacts]:
-    return recursively_transform(X, y, sample_weights, child_transform, stage, backend)
+    return recursively_transform(
+        X, y, sample_weights, artifacts, child_transform, stage, backend
+    )
 
 
 def __process_primary_child_transform(
