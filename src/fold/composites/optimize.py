@@ -84,7 +84,7 @@ class OptimizeGridSearch(Optimizer):
         # TODO: need to store the params for each score as well
         self.scores_ = scores
         return pd.DataFrame(
-            {"selected_params": self.selected_params_}, index=y.index[-1:]
+            {"selected_params": [self.selected_params_]}, index=y.index[-1:]
         )
 
     def clone(self, clone_child_transformations: Callable) -> OptimizeGridSearch:

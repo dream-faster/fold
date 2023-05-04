@@ -141,7 +141,7 @@ def train(
             processed_pipelines.append(processed_pipeline)
             processed_artifacts.append(processed_artifact)
 
-    return [
+    trained_pipelines = [
         pd.Series(
             transformation_over_time,
             index=processed_idx,
@@ -149,6 +149,12 @@ def train(
         )
         for transformation_over_time in zip(*processed_pipelines)
     ]
+
+    if return_artifacts is True:
+        aggregate_artifacts = pd.concat(processed_artifacts, axis="index")
+        return trained_pipelines, aggregate_artifacts
+    else:
+        return trained_pipelines
 
 
 def train_for_deployment(
