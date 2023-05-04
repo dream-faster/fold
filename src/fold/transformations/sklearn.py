@@ -75,7 +75,7 @@ class WrapSKLearnTransformation(Transformation, Tunable):
         self, X: pd.DataFrame, in_sample: bool
     ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
         if hasattr(self.transformation, "set_output"):
-            return self.transformation.transform(X)
+            return self.transformation.transform(X), None
         else:
             return (
                 pd.DataFrame(self.transformation.transform(X), columns=X.columns),
