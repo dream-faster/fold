@@ -181,6 +181,7 @@ def _process_optimizer(
     backend_functions = get_backend_dependent_functions(backend)
 
     optimized_pipeline = optimizer.get_optimized_pipeline()
+    artifact = None
     if optimized_pipeline is None:
         # Optimized needs to run the search
         candidates = optimizer.get_candidates()
@@ -202,11 +203,19 @@ def _process_optimizer(
         results_primary = [
             trim_initial_nans_single(result) for result in results_primary
         ]
-        optimizer.process_candidate_results(results_primary, y)
+        artifact = optimizer.process_candidate_results(results_primary, y)
 
     optimized_pipeline = optimizer.get_optimized_pipeline()
     return recursively_transform(
-        X, y, sample_weights, artifacts, optimized_pipeline, stage, backend
+        X,
+        y,
+        sample_weights,
+        pd.concat([artifact, artifacts], axis="columns")
+        if artifact is not None
+        else artifacts,
+        optimized_pipeline,
+        stage,
+        backend,
     )
 
 
@@ -269,9 +278,11 @@ def _process_internal_online_model_minibatch_inference_and_update(
     postprocess_X_y_into_memory(transformation, X_with_memory, y_with_memory, True)
     return_value = transformation.transform(X_with_memory, in_sample=True)
 
-    transformation.update(X_with_memory, y_with_memory, sample_weights)
+    artifact = transformation.update(X_with_memory, y_with_memory, sample_weights)
     postprocess_X_y_into_memory(transformation, X, y, False)
-    return return_value.loc[X.index], pd.DataFrame()
+    return return_value.loc[X.index], artifacts if artifact is None else pd.concat(
+        [artifacts, artifact], axis="columns"
+    )
 
 
 def _process_minibatch_transformation(
@@ -296,8 +307,9 @@ def _process_minibatch_transformation(
     )
     # The order is:
     # 1. fit (if we're in the initial_fit stage)
+    artifact = None
     if stage == Stage.inital_fit:
-        transformation.fit(X_with_memory, y_with_memory, sample_weights)
+        artifact = transformation.fit(X_with_memory, y_with_memory, sample_weights)
         postprocess_X_y_into_memory(
             transformation,
             X_with_memory,
@@ -311,9 +323,11 @@ def _process_minibatch_transformation(
     return_value = transformation.transform(X_with_memory, in_sample=in_sample)
     # 3. update (if we're in the update stage)
     if stage == Stage.update:
-        transformation.update(X_with_memory, y_with_memory, sample_weights)
+        artifact = transformation.update(X_with_memory, y_with_memory, sample_weights)
         postprocess_X_y_into_memory(transformation, X, y, False)
-    return return_value.loc[X.index], pd.DataFrame()
+    return return_value.loc[X.index], artifacts if artifact is None else pd.concat(
+        [artifacts, artifact], axis="columns"
+    )
 
 
 def __process_candidates(

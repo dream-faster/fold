@@ -112,7 +112,9 @@ class Optimizer(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def process_candidate_results(self, results: List[pd.DataFrame]):
+    def process_candidate_results(
+        self, results: List[pd.DataFrame], y: pd.Series
+    ) -> Optional[Artifact]:
         raise NotImplementedError
 
     @abstractmethod

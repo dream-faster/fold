@@ -10,7 +10,7 @@ from sklearn.model_selection import ParameterGrid
 
 from fold.utils.list import wrap_in_list
 
-from ..base import Optimizer, Tunable
+from ..base import Artifact, Optimizer, Tunable
 from .common import get_concatenated_names
 
 
@@ -67,7 +67,9 @@ class OptimizeGridSearch(Optimizer):
     def get_optimized_pipeline(self) -> Optional[Tunable]:
         return self.selected_model_
 
-    def process_candidate_results(self, results: List[pd.DataFrame], y: pd.Series):
+    def process_candidate_results(
+        self, results: List[pd.DataFrame], y: pd.Series
+    ) -> Optional[Artifact]:
         if self.selected_params_ is not None:
             raise ValueError("Optimizer is already fitted.")
 
@@ -81,6 +83,9 @@ class OptimizeGridSearch(Optimizer):
         self.selected_model_ = self.candidates[selected_index]
         # TODO: need to store the params for each score as well
         self.scores_ = scores
+        return pd.DataFrame(
+            {"selected_params": self.selected_params_}, index=y.index[-1:]
+        )
 
     def clone(self, clone_child_transformations: Callable) -> OptimizeGridSearch:
         return OptimizeGridSearch.from_cloned_instance(

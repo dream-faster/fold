@@ -24,6 +24,7 @@ def train(
     train_method: Union[TrainMethod, str] = TrainMethod.parallel,
     backend: Union[Backend, str] = Backend.no,
     silent: bool = False,
+    return_artifacts: bool = False,
 ) -> TrainedPipelines:
     """
     Trains a pipeline on a given dataset, for all folds returned by the Splitter.
