@@ -14,18 +14,16 @@ class EventFilter(ABC):
         raise NotImplementedError
 
 
-# class EventSchema(pa.SchemaModel):
-#     start: Series[pd.Timestamp]
-#     end: Series[pd.Timestamp]
-#     label: Series[int]
-#     returns: Series[float]
-
-
 class EventLabeler(ABC):
     @abstractmethod
     def label_events(
         self, event_start_times: pd.DatetimeIndex, y: pd.Series
     ) -> pd.DataFrame:
+        # class EventSchema(pa.SchemaModel):
+        #     start: Series[pd.Timestamp]
+        #     end: Series[pd.Timestamp]
+        #     label: Series[int]
+        #     raw: Series[float]
         raise NotImplementedError
 
     def get_all_possible_labels(self) -> List[int]:

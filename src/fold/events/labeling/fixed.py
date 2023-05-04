@@ -1,11 +1,10 @@
 import pandas as pd
 
-from ...utils.forward import create_forward_rolling_sum
+from ....utils.forward import create_forward_rolling_sum
 from ..base import EventLabeler
 
 
 class BinarizeFixedForwardHorizon(EventLabeler):
-
     time_horizon: int
 
     def __init__(self, time_horizon: int):
@@ -29,7 +28,7 @@ class BinarizeFixedForwardHorizon(EventLabeler):
                 "start": event_start_times,
                 "end": y.index.shift(-self.time_horizon)[event_start_times],
                 "label": labels,
-                "returns": forward_rolling_sum[event_start_times],
+                "raw": forward_rolling_sum[event_start_times],
             }
         )
         return events
