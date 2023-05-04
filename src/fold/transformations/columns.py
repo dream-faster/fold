@@ -3,11 +3,11 @@
 
 from __future__ import annotations
 
-from typing import List, Optional, Tuple, Union
+from typing import List, Union
 
 import pandas as pd
 
-from ..base import Artifact, Transformation, Tunable, fit_noop
+from ..base import Transformation, Tunable, fit_noop
 from ..utils.checks import check_get_columns
 from ..utils.list import wrap_in_list
 
@@ -31,10 +31,8 @@ class SelectColumns(Transformation, Tunable):
         self.columns: List[str] = wrap_in_list(columns)
         self.name = f"SelectColumns-{columns}"
 
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
-        return X[self.columns], None
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
+        return X[self.columns]
 
     fit = fit_noop
     update = fit
@@ -61,10 +59,8 @@ class DropColumns(Transformation, Tunable):
         self.columns = wrap_in_list(columns)
         self.name = f"DropColumns-{columns}"
 
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
-        return X.drop(columns=check_get_columns(self.columns, X)), None
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
+        return X.drop(columns=check_get_columns(self.columns, X))
 
     fit = fit_noop
     update = fit
@@ -112,10 +108,8 @@ class RenameColumns(Transformation):
         self.columns_mapper = columns_mapper
         self.name = "RenameColumns"
 
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
-        return X.rename(columns=self.columns_mapper), None
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
+        return X.rename(columns=self.columns_mapper)
 
     fit = fit_noop
     update = fit
@@ -153,14 +147,9 @@ class OnlyPredictions(Transformation):
     def __init__(self) -> None:
         self.name = "OnlyPredictions"
 
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
-        return (
-            X.drop(
-                columns=[col for col in X.columns if not col.startswith("predictions_")]
-            ),
-            None,
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
+        return X.drop(
+            columns=[col for col in X.columns if not col.startswith("predictions_")]
         )
 
     fit = fit_noop
@@ -199,16 +188,9 @@ class OnlyProbabilities(Transformation):
     def __init__(self) -> None:
         self.name = "OnlyProbabilities"
 
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
-        return (
-            X.drop(
-                columns=[
-                    col for col in X.columns if not col.startswith("probabilities_")
-                ]
-            ),
-            None,
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
+        return X.drop(
+            columns=[col for col in X.columns if not col.startswith("probabilities_")]
         )
 
     fit = fit_noop

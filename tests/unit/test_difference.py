@@ -37,13 +37,13 @@ def test_difference_inverse(lag: int):
     )
     difference = Difference(lag)
     difference.fit(X_train, y_train)
-    diffed = difference.transform(X_train, in_sample=True)[0].squeeze()
+    diffed = difference.transform(X_train, in_sample=True).squeeze()
     inverse_diffed = difference.inverse_transform(diffed, in_sample=True)
     assert np.isclose(X_train.squeeze(), inverse_diffed, atol=1e-3).all()
 
     difference.update(X_train, y_train)
     assert difference.last_values_X.equals(X_train.iloc[-lag:None])
-    diffed = difference.transform(X_test, in_sample=False)[0].squeeze()
+    diffed = difference.transform(X_test, in_sample=False).squeeze()
     inverse_diffed = difference.inverse_transform(diffed, in_sample=False)
     assert np.isclose(X_test.squeeze(), inverse_diffed, atol=1e-3).all()
 

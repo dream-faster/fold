@@ -1,13 +1,13 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
 
-from typing import List, Optional, Tuple, Union
+from typing import List, Tuple, Union
 
 import pandas as pd
 
 from fold.utils.checks import is_X_available
 
-from ..base import Artifact, Transformation, Tunable, fit_noop
+from ..base import Transformation, Tunable, fit_noop
 from ..utils.list import flatten, transform_range_to_list, wrap_in_list
 
 
@@ -54,24 +54,22 @@ class AddLagsY(Transformation, Tunable):
             _internal_supports_minibatch_backtesting=True,
         )
 
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         lags = pd.DataFrame([], index=X.index)
 
-        past_y = (
-            self._state.memory_y if in_sample else self._state.memory_y.reindex(X.index)
-        )
-        lags = pd.concat(
-            [past_y.shift(lag)[-len(X) :].rename(f"y_lag_{lag}") for lag in self.lags],
-            axis="columns",
-        )
+        if in_sample:
+            for lag in self.lags:
+                lags[f"y_lag_{lag}"] = self._state.memory_y.shift(lag)[-len(X) :]
+        else:
+            past_y = self._state.memory_y.reindex(X.index)
+            for lag in self.lags:
+                lags[f"y_lag_{lag}"] = past_y.shift(lag)[-len(X) :]
 
         if is_X_available(X):
-            return pd.concat([X, lags], axis="columns"), None
+            return pd.concat([X, lags], axis="columns")
         else:
             # If X is just an DataFrame with zeros, then just return the lags
-            return lags, None
+            return lags
 
     fit = fit_noop
     update = fit_noop
@@ -142,9 +140,7 @@ class AddLagsX(Transformation, Tunable):
             memory_size=max(flatten([l for _, l in self.columns_and_lags])),
         )
 
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         X_lagged = pd.DataFrame([], index=X.index)
         for column, lags in self.columns_and_lags:
             for lag in lags:
@@ -155,7 +151,7 @@ class AddLagsX(Transformation, Tunable):
                     )
                 else:
                     X_lagged[f"{column}_lag_{lag}"] = X[column].shift(lag)[-len(X) :]
-        return pd.concat([X, X_lagged], axis="columns"), None
+        return pd.concat([X, X_lagged], axis="columns")
 
     fit = fit_noop
     update = fit_noop

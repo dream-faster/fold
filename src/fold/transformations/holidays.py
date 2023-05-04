@@ -3,11 +3,11 @@
 
 from datetime import date
 from enum import Enum
-from typing import List, Optional, Tuple, Union
+from typing import List, Union
 
 import pandas as pd
 
-from ..base import Artifact, Transformation, Tunable, fit_noop
+from ..base import Transformation, Tunable, fit_noop
 from ..utils.list import swap_tuples, wrap_in_list
 
 
@@ -110,16 +110,14 @@ class AddHolidayFeatures(Transformation, Tunable):
             for country_code in self.country_codes
         ]
 
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         if self.labeling == LabelingMethod.holiday_binary:
             holidays = _get_holidays(
                 X.index, self.country_codes, self.holiday_to_int_maps, encode=True
             )
             holidays[holidays != 0] = 1
 
-            return pd.concat([X, holidays], axis="columns"), None
+            return pd.concat([X, holidays], axis="columns")
         elif self.labeling == LabelingMethod.weekday_weekend_holiday:
             holidays = _get_holidays(
                 X.index, self.country_codes, self.holiday_to_int_maps, encode=True
@@ -131,7 +129,7 @@ class AddHolidayFeatures(Transformation, Tunable):
             holidays[holidays == 0] = holidays[holidays == 0].add(
                 _get_weekends(X.index), axis="index"
             )
-            return pd.concat([X, holidays], axis="columns"), None
+            return pd.concat([X, holidays], axis="columns")
         elif (
             self.labeling == LabelingMethod.weekday_weekend_uniqueholiday
             or self.labeling == LabelingMethod.weekday_weekend_uniqueholiday_string
@@ -147,7 +145,7 @@ class AddHolidayFeatures(Transformation, Tunable):
             holidays[holidays == 0] = holidays[holidays == 0].add(
                 weekends, axis="index"
             )
-            return pd.concat([X, holidays], axis="columns"), None
+            return pd.concat([X, holidays], axis="columns")
         else:
             raise ValueError(f"Unknown HolidayType: {self.labeling}")
 

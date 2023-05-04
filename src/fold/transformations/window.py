@@ -4,11 +4,11 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Callable, List, Optional, Tuple, Union
+from typing import Callable, List, Tuple, Union
 
 import pandas as pd
 
-from ..base import Artifact, Transformation, Tunable, fit_noop
+from ..base import Transformation, Tunable, fit_noop
 from ..utils.list import wrap_in_list
 
 
@@ -98,9 +98,7 @@ class AddWindowFeatures(Transformation, Tunable):
             requires_X=True, memory_size=max_memory
         )
 
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         X_function_applied = pd.DataFrame([], index=X.index)
         for columns, window, function in self.column_window_func:
             if isinstance(function, PredefinedFunction):
@@ -123,7 +121,7 @@ class AddWindowFeatures(Transformation, Tunable):
                     X_function_applied[f"{col}_{window}_{function_name}"] = function(
                         X[col].rolling(window)
                     )
-        return pd.concat([X, X_function_applied], axis="columns"), None
+        return pd.concat([X, X_function_applied], axis="columns")
 
     fit = fit_noop
     update = fit

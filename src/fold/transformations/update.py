@@ -1,7 +1,7 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
 
-from typing import Optional, Tuple
+from typing import Optional
 
 import pandas as pd
 
@@ -23,9 +23,7 @@ class DontUpdate(Transformation):
     ) -> Optional[Artifact]:
         self.transformation.fit(X, y, sample_weights)
 
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
-        return self.transformation.transform(X, in_sample), None
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
+        return self.transformation.transform(X, in_sample)
 
     update = fit_noop
