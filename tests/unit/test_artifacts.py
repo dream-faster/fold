@@ -8,7 +8,7 @@ from fold.splitters import ExpandingWindowSplitter
 from fold.utils.tests import generate_monotonous_data, generate_sine_wave_data
 
 
-def test_transformation_artifacts() -> None:
+def test_artifacts_transformation_fit() -> None:
     X, y = generate_sine_wave_data()
     X["sine_2"] = X["sine"] + 1
     X["constant"] = 1.0
@@ -24,7 +24,7 @@ def test_transformation_artifacts() -> None:
     assert artifacts["selected_features"].iloc[0] == ["sine"]
 
 
-def test_optimizer_artifacts() -> None:
+def test_artifacts_optimizer() -> None:
     X, y = generate_monotonous_data(1000)
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
