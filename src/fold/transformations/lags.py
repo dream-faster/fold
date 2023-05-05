@@ -57,14 +57,13 @@ class AddLagsY(Transformation, Tunable):
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         lags = pd.DataFrame([], index=X.index)
 
-        if in_sample:
-            for lag in self.lags:
-                lags[f"y_lag_{lag}"] = self._state.memory_y.shift(lag)[-len(X) :]
-        else:
-            past_y = self._state.memory_y.reindex(X.index)
-            for lag in self.lags:
-                lags[f"y_lag_{lag}"] = past_y.shift(lag)[-len(X) :]
-
+        past_y = (
+            self._state.memory_y if in_sample else self._state.memory_y.reindex(X.index)
+        )
+        lags = pd.concat(
+            [past_y.shift(lag)[-len(X) :].rename(f"y_lag_{lag}") for lag in self.lags],
+            axis="columns",
+        )
         if is_X_available(X):
             return pd.concat([X, lags], axis="columns")
         else:
