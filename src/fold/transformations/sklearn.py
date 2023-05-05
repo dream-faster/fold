@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from inspect import getfullargspec
-from typing import Optional, Tuple, Type
+from typing import Optional, Type
 
 import pandas as pd
 
@@ -71,16 +71,11 @@ class WrapSKLearnTransformation(Transformation, Tunable):
                 self.transformation.partial_fit(X, y, sample_weights)
         # if we don't have partial_fit, we can't update the model (maybe throw an exception, and force user to wrap it into `DontUpdate`?)
 
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         if hasattr(self.transformation, "set_output"):
-            return self.transformation.transform(X), None
+            return self.transformation.transform(X)
         else:
-            return (
-                pd.DataFrame(self.transformation.transform(X), columns=X.columns),
-                None,
-            )
+            return pd.DataFrame(self.transformation.transform(X), columns=X.columns)
 
     def get_params(self) -> dict:
         return self.transformation.get_params()
@@ -138,10 +133,8 @@ class WrapSKLearnFeatureSelector(FeatureSelector, Tunable):
             {"selected_features": [self.selected_features]}, index=X.index[-1:]
         )
 
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
-        return X[self.selected_features], None
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
+        return X[self.selected_features]
 
     def get_params(self) -> dict:
         return self.transformation.get_params()

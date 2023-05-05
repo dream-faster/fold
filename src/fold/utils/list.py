@@ -56,7 +56,3 @@ def unique(input: List) -> List:
 
 def swap_tuples(input: List[Tuple]) -> List[Tuple]:
     return [(b, a) for a, b in input]
-
-
-def filter_none(input: List) -> List:
-    return [x for x in input if x is not None]

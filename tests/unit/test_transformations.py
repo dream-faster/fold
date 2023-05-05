@@ -263,7 +263,7 @@ def test_turn_positive():
 
     turn_positive = TurnPositive()
     turn_positive.fit(X, y, None)
-    pred = turn_positive.transform(X, False)[0]
+    pred = turn_positive.transform(X, False)
     assert pred.any().any() >= 0.0
     assert len(pred.columns) == len(X.columns)
 

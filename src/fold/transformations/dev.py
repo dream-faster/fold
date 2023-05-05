@@ -2,7 +2,7 @@
 
 
 from inspect import getfullargspec
-from typing import Callable, Optional, Tuple
+from typing import Callable, Optional
 
 import pandas as pd
 
@@ -45,22 +45,18 @@ class Breakpoint(Transformation):
         if self.stop_at_update:
             breakpoint()
 
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         if self.stop_at_transform:
             breakpoint()
-        return X, None
+        return X
 
 
 class Identity(InvertibleTransformation):
     properties = Transformation.Properties(requires_X=False)
     name = "Identity"
 
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
-        return X, None
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
+        return X
 
     def inverse_transform(self, X: pd.Series, in_sample: bool) -> pd.Series:
         return X
@@ -133,17 +129,15 @@ class Test(InvertibleTransformation):
                 f"but {len(argspec.args)} were given."
             )
 
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         if in_sample:
             self.no_of_calls_transform_insample += 1
         else:
             self.no_of_calls_transform_outofsample += 1
         return_value = self.transform_func(X)
         if return_value is None:
-            return X, None
-        return return_value, None
+            return X
+        return return_value
 
     def inverse_transform(self, X: pd.Series, in_sample: bool) -> pd.Series:
         self.no_of_calls_inverse_transform += 1
@@ -165,10 +159,8 @@ class Lookahead(Transformation):
         _internal_supports_minibatch_backtesting=True,
     )
 
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
-        return self._state.memory_y.to_frame(), None
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
+        return self._state.memory_y.to_frame()
 
     fit = fit_noop
     update = fit

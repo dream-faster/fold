@@ -11,7 +11,6 @@ import pandas as pd
 from ..base import Artifact, Composite, Optimizer, Transformation, Transformations, X
 from ..models.base import Model
 from ..utils.checks import is_prediction, is_X_available
-from ..utils.dataframe import concat_on_columns
 from ..utils.trim import trim_initial_nans, trim_initial_nans_single
 from .backend import get_backend_dependent_functions
 from .memory import postprocess_X_y_into_memory, preprocess_X_y_with_memory
@@ -211,7 +210,9 @@ def _process_optimizer(
         X,
         y,
         sample_weights,
-        concat_on_columns([artifact, artifacts]),
+        pd.concat([artifact, artifacts], axis="columns")
+        if artifact is not None
+        else artifacts,
         optimized_pipeline,
         stage,
         backend,
@@ -237,12 +238,11 @@ def _process_with_inner_loop(
         X_row_with_memory, y_row_with_memory = preprocess_X_y_with_memory(
             transformation, X_row, y_row, in_sample=False
         )
-        result, _ = transformation.transform(X_row_with_memory, in_sample=False)
+        result = transformation.transform(X_row_with_memory, in_sample=False)
         if y_row is not None:
-            artifact = transformation.update(
+            transformation.update(
                 X_row_with_memory, y_row_with_memory, sample_weights_row
             )
-            _ = concat_on_columns([artifact, artifacts])
             postprocess_X_y_into_memory(
                 transformation, X_row_with_memory, y_row_with_memory, False
             )
@@ -276,12 +276,13 @@ def _process_internal_online_model_minibatch_inference_and_update(
         transformation, X, y, in_sample=True
     )
     postprocess_X_y_into_memory(transformation, X_with_memory, y_with_memory, True)
-    return_value, artifact = transformation.transform(X_with_memory, in_sample=True)
-    artifacts = concat_on_columns([artifact, artifacts])
+    return_value = transformation.transform(X_with_memory, in_sample=True)
 
     artifact = transformation.update(X_with_memory, y_with_memory, sample_weights)
     postprocess_X_y_into_memory(transformation, X, y, False)
-    return return_value.loc[X.index], concat_on_columns([artifact, artifacts])
+    return return_value.loc[X.index], artifacts if artifact is None else pd.concat(
+        [artifacts, artifact], axis="columns"
+    )
 
 
 def _process_minibatch_transformation(
@@ -315,21 +316,18 @@ def _process_minibatch_transformation(
             y_with_memory,
             in_sample=stage == Stage.inital_fit,
         )
-        artifacts = concat_on_columns([artifact, artifacts])
     # 2. transform (inference)
     X_with_memory, y_with_memory = preprocess_X_y_with_memory(
         transformation, X, y, in_sample=False
     )
-    return_value, artifact = transformation.transform(
-        X_with_memory, in_sample=in_sample
-    )
-    artifacts = concat_on_columns([artifact, artifacts])
+    return_value = transformation.transform(X_with_memory, in_sample=in_sample)
     # 3. update (if we're in the update stage)
     if stage == Stage.update:
         artifact = transformation.update(X_with_memory, y_with_memory, sample_weights)
-        artifacts = concat_on_columns([artifact, artifacts])
         postprocess_X_y_into_memory(transformation, X, y, False)
-    return return_value.loc[X.index], artifacts
+    return return_value.loc[X.index], artifacts if artifact is None else pd.concat(
+        [artifacts, artifact], axis="columns"
+    )
 
 
 def __process_candidates(
