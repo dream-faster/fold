@@ -1,22 +1,28 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
+from __future__ import annotations
 
-
-from typing import List, Optional, Tuple
+from typing import Callable, List, Optional, Tuple
 
 import pandas as pd
 
-from ..base import Artifact, Composite, T
+from fold.utils.list import wrap_in_list
+
+from ..base import Artifact, Composite, Pipeline, Pipelines, T
 from .base import EventFilter, EventLabeler
 from .filters import EveryNFilter, NoFilter
 from .labeling import BinarizeFixedForwardHorizon
 
 
 class CreateEvents(Composite):
+    properties = Composite.Properties(primary_only_single_pipeline=True)
+
     def __init__(
         self,
+        wrapped_pipeline: Pipeline,
         labeler: EventLabeler,
         event_filter: EventFilter,
     ) -> None:
+        self.wrapped_pipeline = wrap_in_list(wrapped_pipeline)
         self.labeler = labeler
         self.filter = event_filter
 
@@ -27,9 +33,19 @@ class CreateEvents(Composite):
         events = self.labeler.label_events(start_times, y)
         return X.loc[start_times], events["label"]
 
-   def postprocess_result_primary(
+    def get_child_transformations_primary(self) -> Pipelines:
+        return self.wrapped_pipeline
+
+    def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
     ) -> pd.DataFrame:
-        
-        
+        return results[0]
 
+    def clone(self, clone_child_transformations: Callable) -> CreateEvents:
+        clone = CreateEvents(
+            clone_child_transformations(self.wrapped_pipeline),
+            self.labeler,
+            self.filter,
+        )
+        clone.properties = self.properties
+        return clone

@@ -1,6 +1,6 @@
 import pandas as pd
 
-from ....utils.forward import create_forward_rolling_sum
+from ...utils.forward import create_forward_rolling_sum
 from ..base import EventLabeler
 
 
@@ -23,10 +23,11 @@ class BinarizeFixedForwardHorizon(EventLabeler):
 
         # TODO: this can be done much more efficiently
         labels = event_candidates.map(get_class_binary)
+        offset = pd.Timedelta(value=self.time_horizon, unit=y.index.freqstr)
         events = pd.DataFrame(
             {
                 "start": event_start_times,
-                "end": y.index.shift(-self.time_horizon)[event_start_times],
+                "end": event_start_times + offset,
                 "label": labels,
                 "raw": forward_rolling_sum[event_start_times],
             }
