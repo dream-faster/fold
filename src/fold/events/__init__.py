@@ -9,12 +9,13 @@ from fold.utils.list import wrap_in_list
 
 from ..base import Artifact, Composite, Pipeline, Pipelines, T
 from .base import EventFilter, EventLabeler
-from .filters import EveryNFilter, NoFilter
+from .filters import EveryNth, NoFilter
 from .labeling import BinarizeFixedForwardHorizon
 
 
 class CreateEvents(Composite):
     properties = Composite.Properties(primary_only_single_pipeline=True)
+    name = "CreateEvents"
 
     def __init__(
         self,
@@ -29,9 +30,9 @@ class CreateEvents(Composite):
     def preprocess_primary(
         self, X: pd.DataFrame, index: int, y: T, fit: bool
     ) -> Tuple[pd.DataFrame, T]:
-        start_times = self.filter.get_event_start_times(y)
-        events = self.labeler.label_events(start_times, y)
-        return X.loc[start_times], events["label"]
+        original_start_times = self.filter.get_event_start_times(y)
+        events = self.labeler.label_events(original_start_times, y)
+        return X.loc[events.index], events["label"]
 
     def get_child_transformations_primary(self) -> Pipelines:
         return self.wrapped_pipeline

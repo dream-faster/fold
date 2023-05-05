@@ -3,7 +3,7 @@ import pandas as pd
 from ..base import EventFilter
 
 
-class EveryNFilter(EventFilter):
+class EveryNth(EventFilter):
     def __init__(self, n: int):
         self.n = n
 
