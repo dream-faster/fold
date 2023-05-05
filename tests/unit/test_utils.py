@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from fold.composites.common import traverse_pipeline
+from fold.composites.common import traverse, traverse_apply
 from fold.composites.target import TransformTarget
 from fold.transformations.dev import Lookahead, Test
 from fold.transformations.difference import Difference
@@ -81,7 +81,7 @@ def test_to_series_df_single_column_single_value():
     assert series.tolist() == [1]
 
 
-def test_traversal():
+def test_traverse_apply():
     pipeline = TransformTarget(
         [
             Test(fit_func=lambda x: x, transform_func=lambda x: x),
@@ -95,6 +95,19 @@ def test_traversal():
             x.value = 1
         return x
 
-    modified_pipeline = traverse_pipeline(pipeline, set_value_on_lookahead)
+    modified_pipeline = traverse_apply(pipeline, set_value_on_lookahead)
     assert modified_pipeline.wrapped_pipeline[0][1].value == 1
     assert not hasattr(pipeline.wrapped_pipeline[0][1], "value")
+
+
+def test_traverse():
+    pipeline = TransformTarget(
+        [
+            Test(fit_func=lambda x: x, transform_func=lambda x: x),
+            Lookahead(),
+        ],
+        y_pipeline=[TakeLog(), Difference()],
+    )
+
+    transformations = list(traverse(pipeline))
+    assert len(transformations) == 4
