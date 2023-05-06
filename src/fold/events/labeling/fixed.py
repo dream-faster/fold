@@ -1,10 +1,10 @@
 import pandas as pd
 
 from ...utils.forward import create_forward_rolling_sum
-from ..base import EventLabeler
+from ..base import EventDataFrame, Labeler
 
 
-class BinarizeFixedForwardHorizon(EventLabeler):
+class BinarizeFixedForwardHorizon(Labeler):
     time_horizon: int
 
     def __init__(self, time_horizon: int):
@@ -12,7 +12,7 @@ class BinarizeFixedForwardHorizon(EventLabeler):
 
     def label_events(
         self, event_start_times: pd.DatetimeIndex, y: pd.Series
-    ) -> pd.DataFrame:
+    ) -> EventDataFrame:
         forward_rolling_sum = create_forward_rolling_sum(y, self.time_horizon)
         cutoff_point = y.index[-self.time_horizon]
         event_start_times = event_start_times[event_start_times < cutoff_point]
@@ -24,13 +24,11 @@ class BinarizeFixedForwardHorizon(EventLabeler):
         # TODO: this can be done much more efficiently
         labels = event_candidates.map(get_class_binary)
         offset = pd.Timedelta(value=self.time_horizon, unit=y.index.freqstr)
-        events = pd.DataFrame(
-            {
-                "start": event_start_times,
-                "end": event_start_times + offset,
-                "label": labels,
-                "raw": forward_rolling_sum[event_start_times],
-            }
+        events = EventDataFrame(
+            start=event_start_times,
+            end=event_start_times + offset,
+            label=labels,
+            raw=forward_rolling_sum[event_start_times],
         )
         return events
 

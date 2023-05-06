@@ -4,6 +4,22 @@ from typing import List
 import pandas as pd
 
 
+class EventDataFrame(pd.DataFrame):
+    start: pd.Series
+    end: pd.Series
+    label: pd.Series
+    raw: pd.Series
+
+    def __init__(
+        self,
+        start: pd.DatetimeIndex,
+        end: pd.DatetimeIndex,
+        label: pd.Series,
+        raw: pd.Series,
+    ):
+        super().__init__({"start": start, "end": end, "label": label, "raw": raw})
+
+
 class EventFilter(ABC):
     @abstractmethod
     def get_event_start_times(self, y: pd.Series) -> pd.DatetimeIndex:
@@ -14,16 +30,11 @@ class EventFilter(ABC):
         raise NotImplementedError
 
 
-class EventLabeler(ABC):
+class Labeler(ABC):
     @abstractmethod
     def label_events(
         self, event_start_times: pd.DatetimeIndex, y: pd.Series
-    ) -> pd.DataFrame:
-        # class EventSchema(pa.SchemaModel):
-        #     start: Series[pd.Timestamp]
-        #     end: Series[pd.Timestamp]
-        #     label: Series[int]
-        #     raw: Series[float]
+    ) -> EventDataFrame:
         raise NotImplementedError
 
     def get_all_possible_labels(self) -> List[int]:

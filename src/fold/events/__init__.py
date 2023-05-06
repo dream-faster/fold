@@ -8,7 +8,7 @@ import pandas as pd
 from fold.utils.list import wrap_in_list
 
 from ..base import Artifact, Composite, Pipeline, Pipelines, T
-from .base import EventFilter, EventLabeler
+from .base import EventFilter, Labeler
 from .filters import EveryNth, NoFilter
 from .labeling import BinarizeFixedForwardHorizon
 
@@ -20,7 +20,7 @@ class CreateEvents(Composite):
     def __init__(
         self,
         wrapped_pipeline: Pipeline,
-        labeler: EventLabeler,
+        labeler: Labeler,
         event_filter: EventFilter,
     ) -> None:
         self.wrapped_pipeline = wrap_in_list(wrapped_pipeline)
