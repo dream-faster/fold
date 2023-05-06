@@ -20,10 +20,10 @@ def to_series(dataframe_or_series: Union[pd.DataFrame, pd.Series]) -> pd.Series:
 
 
 def __concat_on_axis(axis: str) -> Callable:
-    def concat_on(dfs: List[Optional[pd.DataFrame]]) -> pd.DataFrame:
+    def concat_on(dfs: List[Optional[Union[pd.DataFrame, pd.Series]]]) -> pd.DataFrame:
         filtered = filter_none(dfs)
         if len(filtered) == 0:
-            raise ValueError("No non-None DataFrames to concatenate")
+            return None  # type: ignore
         elif len(filtered) == 1:
             return filtered[0]
         else:

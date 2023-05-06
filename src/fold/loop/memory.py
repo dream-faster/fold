@@ -1,24 +1,27 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
 
-from typing import Optional, Tuple
+from typing import Optional, Tuple, TypeVar
 
 import pandas as pd
 
 from ..base import Transformation
-from ..utils.functional import apply_if_not_none
+from ..utils.dataframe import concat_on_index
+
+T = TypeVar("T", pd.Series, Optional[pd.Series])
+S = TypeVar("S", pd.Series, Optional[pd.Series])
 
 
 def preprocess_X_y_with_memory(
     transformation: Transformation,
     X: pd.DataFrame,
-    y: Optional[pd.Series],
-    sample_weights: Optional[pd.Series],
+    y: T,
+    sample_weights: S,
     in_sample: bool,
-) -> Tuple[pd.DataFrame, pd.Series, Optional[pd.Series]]:
+) -> Tuple[pd.DataFrame, T, S]:
     memory_size = transformation.properties.memory_size
     if transformation._state is None or memory_size is None:
-        return X, y
+        return X, y, sample_weights
     memory_X, memory_y, memory_sample_weights = (
         transformation._state.memory_X,
         transformation._state.memory_y,
@@ -28,87 +31,86 @@ def preprocess_X_y_with_memory(
     memory_X, memory_y, memory_sample_weights = (
         memory_X[non_overlapping_indices],
         memory_y[non_overlapping_indices],
-        apply_if_not_none(memory_sample_weights, lambda x: x[non_overlapping_indices]),
+        memory_sample_weights[non_overlapping_indices]
+        if memory_sample_weights is not None
+        else None,
     )
     if len(memory_X) == 0:
         return X, y, sample_weights
     assert len(memory_X) == len(memory_y)
+    if memory_sample_weights is not None:
+        assert len(memory_X) == len(memory_sample_weights)
     if y is None:
         return (
-            pd.concat(
-                [memory_X.iloc[-memory_size:None], X],
-                axis="index",
-            ),
+            concat_on_index([memory_X.iloc[-memory_size:None], X]),
             y,
-            apply_if_not_none(
-                sample_weights,
-                lambda x: pd.concat(
-                    [memory_sample_weights.iloc[-memory_size:None], x],
-                    axis="index",
-                ),
-            ),
+            sample_weights,
         )
     elif in_sample is True or memory_size == 0:
         memory_y.name = y.name
         return (
-            pd.concat([memory_X, X], axis="index"),
-            pd.concat([memory_y, y], axis="index"),
-            pd.concat([memory_sample_weights, sample_weights], axis="index"),
+            concat_on_index([memory_X, X]),
+            concat_on_index([memory_y, y]),
+            concat_on_index([memory_sample_weights, sample_weights]),
         )
     else:
         memory_y.name = y.name
         return (
-            pd.concat(
+            concat_on_index(
                 [memory_X.iloc[-memory_size:None], X],
-                axis="index",
             ),
-            pd.concat(
+            concat_on_index(
                 [memory_y.iloc[-memory_size:None], y],
-                axis="index",
             ),
-            pd.concat(
+            concat_on_index(
                 [memory_sample_weights.iloc[-memory_size:None], sample_weights],
-                axis="index",
             )
             if sample_weights is not None
             else None,
         )
 
 
-def postprocess_X_y_into_memory(
+def postprocess_X_y_into_memory_(
     transformation: Transformation,
     X: pd.DataFrame,
     y: pd.Series,
+    sample_weights: Optional[pd.Series],
     in_sample: bool,
 ) -> None:
+    # This function mutates the transformation's state property
     # don't update the transformation if we're in inference mode (y is None)
-    if transformation.properties.memory_size is None or y is None:
+    memory_size = transformation.properties.memory_size
+    if memory_size is None or y is None:
         return
 
-    window_size = (
-        len(X)
-        if transformation.properties.memory_size == 0
-        else transformation.properties.memory_size
-    )
+    window_size = len(X) if memory_size == 0 else memory_size
     if in_sample:
         # store the whole training X and y
         transformation._state = Transformation.State(
-            memory_X=X,
-            memory_y=y,
+            memory_X=X, memory_y=y, memory_sample_weights=sample_weights
         )
-    elif transformation.properties.memory_size < len(X):
-        memory_X, memory_y = (
+    elif memory_size < len(X):
+        memory_X, memory_y, memory_sample_weights = (
             transformation._state.memory_X,
             transformation._state.memory_y,
+            transformation._state.memory_sample_weights,
         )
         memory_y.name = y.name
         #  memory requirement is greater than the current batch, so we use the previous memory as well
         transformation._state = Transformation.State(
-            memory_X=pd.concat([memory_X, X], axis="index").iloc[-window_size:None],
-            memory_y=pd.concat([memory_y, y], axis="index").iloc[-window_size:None],
+            memory_X=concat_on_index([memory_X, X]).iloc[-window_size:None],
+            memory_y=concat_on_index([memory_y, y]).iloc[-window_size:None],
+            memory_sample_weights=concat_on_index(
+                [memory_sample_weights, sample_weights]
+            ).iloc[-window_size:None]
+            if sample_weights is not None
+            else None,
         )
     else:
         transformation._state = Transformation.State(
             memory_X=X.iloc[-window_size:None],
             memory_y=y.iloc[-window_size:None],
+            memory_sample_weights=sample_weights.iloc[-window_size:None]
+            if sample_weights is not None
+            else None,
         )
