@@ -149,6 +149,7 @@ class Transformation(ABC):
     class State:
         memory_X: pd.DataFrame
         memory_y: pd.Series
+        memory_sample_weights: Optional[pd.Series]
 
     properties: Properties
     name: str
