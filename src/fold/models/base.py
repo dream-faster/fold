@@ -2,12 +2,12 @@
 
 
 from abc import abstractmethod
-from typing import Union
+from typing import Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
 
-from ..base import Transformation
+from ..base import Artifact, Transformation
 
 
 class Model(Transformation):
@@ -25,11 +25,16 @@ class Model(Transformation):
         """
         raise NotImplementedError
 
-    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
+    def transform(
+        self, X: pd.DataFrame, in_sample: bool
+    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
         if in_sample:
-            return postpostprocess_prediction(self.predict_in_sample(X), self.name)
+            return (
+                postpostprocess_prediction(self.predict_in_sample(X), self.name),
+                None,
+            )
         else:
-            return postpostprocess_prediction(self.predict(X), self.name)
+            return postpostprocess_prediction(self.predict(X), self.name), None
 
 
 class TimeSeriesModel(Transformation):
@@ -57,28 +62,36 @@ class TimeSeriesModel(Transformation):
         """
         raise NotImplementedError
 
-    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
+    def transform(
+        self, X: pd.DataFrame, in_sample: bool
+    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
         if in_sample:
-            return postpostprocess_prediction(
-                self.predict_in_sample(X, self._state.memory_y.shift(1)), self.name
+            return (
+                postpostprocess_prediction(
+                    self.predict_in_sample(X, self._state.memory_y.shift(1)), self.name
+                ),
+                None,
             )
         else:
-            return postpostprocess_prediction(
-                self.predict(
-                    X[-(self.properties.memory_size + 1) : None],
-                    pd.Series(
-                        np.concatenate(
-                            [
-                                np.ones((1,)) * np.nan,
-                                self._state.memory_y[
-                                    -self.properties.memory_size : None
-                                ],
-                            ]
+            return (
+                postpostprocess_prediction(
+                    self.predict(
+                        X[-(self.properties.memory_size + 1) : None],
+                        pd.Series(
+                            np.concatenate(
+                                [
+                                    np.ones((1,)) * np.nan,
+                                    self._state.memory_y[
+                                        -self.properties.memory_size : None
+                                    ],
+                                ]
+                            ),
+                            index=X.index,
                         ),
-                        index=X.index,
                     ),
+                    self.name,
                 ),
-                self.name,
+                None,
             )
 
 
