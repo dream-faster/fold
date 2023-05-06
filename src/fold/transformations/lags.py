@@ -66,7 +66,6 @@ class AddLagsY(Transformation, Tunable):
             [past_y.shift(lag)[-len(X) :].rename(f"y_lag_{lag}") for lag in self.lags],
             axis="columns",
         )
-
         if is_X_available(X):
             return pd.concat([X, lags], axis="columns"), None
         else:
