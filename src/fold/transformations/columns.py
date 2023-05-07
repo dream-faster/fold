@@ -27,8 +27,11 @@ class SelectColumns(Transformation, Tunable):
 
     properties = Transformation.Properties(requires_X=True)
 
-    def __init__(self, columns: Union[List[str], str]) -> None:
+    def __init__(
+        self, columns: Union[List[str], str], params_to_try: Optional[dict] = None
+    ) -> None:
         self.columns: List[str] = wrap_in_list(columns)
+        self.params_to_try = params_to_try
         self.name = f"SelectColumns-{columns}"
 
     def transform(
@@ -57,8 +60,11 @@ class DropColumns(Transformation, Tunable):
 
     properties = Transformation.Properties(requires_X=True)
 
-    def __init__(self, columns: Union[List[str], str]) -> None:
+    def __init__(
+        self, columns: Union[List[str], str], params_to_try: Optional[dict] = None
+    ) -> None:
         self.columns = wrap_in_list(columns)
+        self.params_to_try = params_to_try
         self.name = f"DropColumns-{columns}"
 
     def transform(

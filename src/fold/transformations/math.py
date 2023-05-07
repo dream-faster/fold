@@ -54,10 +54,12 @@ class TakeLog(InvertibleTransformation, Tunable):
     def __init__(
         self,
         base: Union[int, str] = "e",
+        params_to_try: Optional[dict] = None,
     ) -> None:
         if base not in ["e", np.e, "10", 10, "2", 2]:
             raise ValueError("base should be either 'e', np.e, '10', 10, '2', 2.")
         self.base = base
+        self.params_to_try = params_to_try
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -142,6 +144,7 @@ class AddConstant(InvertibleTransformation, Tunable):
     def __init__(
         self,
         constant: Union[int, float, Dict[str, Union[float, int]]],
+        params_to_try: Optional[dict] = None,
     ) -> None:
         if not isinstance(constant, (int, float, dict)):
             raise ValueError(
@@ -150,6 +153,7 @@ class AddConstant(InvertibleTransformation, Tunable):
             )
 
         self.constant = constant
+        self.params_to_try = params_to_try
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -258,8 +262,13 @@ class MultiplyBy(InvertibleTransformation, Tunable):
     properties = InvertibleTransformation.Properties(requires_X=True)
     constant: float
 
-    def __init__(self, constant: float) -> None:
+    def __init__(
+        self,
+        constant: float,
+        params_to_try: Optional[dict] = None,
+    ) -> None:
         self.constant = constant
+        self.params_to_try = params_to_try
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool

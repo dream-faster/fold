@@ -60,8 +60,9 @@ class Difference(InvertibleTransformation, Tunable):
     first_values_X: Optional[Union[pd.DataFrame, pd.Series]] = None
     last_values_X: Optional[Union[pd.DataFrame, pd.Series]] = None
 
-    def __init__(self, lag: int = 1) -> None:
+    def __init__(self, lag: int = 1, params_to_try: Optional[dict] = None) -> None:
         self.lag = lag
+        self.params_to_try = params_to_try
 
     def fit(
         self,

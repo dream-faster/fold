@@ -82,6 +82,7 @@ class AddWindowFeatures(Transformation, Tunable):
     def __init__(
         self,
         column_window_func: Union[ColumnWindowFunction, List[ColumnWindowFunction]],
+        params_to_try: Optional[dict] = None,
     ) -> None:
         self.column_window_func = [
             (
@@ -97,6 +98,7 @@ class AddWindowFeatures(Transformation, Tunable):
         self.properties = Transformation.Properties(
             requires_X=True, memory_size=max_memory
         )
+        self.params_to_try = params_to_try
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool

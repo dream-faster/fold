@@ -42,7 +42,9 @@ class AddLagsY(Transformation, Tunable):
     ```
     """
 
-    def __init__(self, lags: Union[List[int], range]) -> None:
+    def __init__(
+        self, lags: Union[List[int], range], params_to_try: Optional[dict] = None
+    ) -> None:
         if not isinstance(lags, range) and not isinstance(lags, List):
             raise ValueError("lags must be a range or a List")
         self.lags = sorted(transform_range_to_list(lags))
@@ -53,6 +55,7 @@ class AddLagsY(Transformation, Tunable):
             memory_size=max(self.lags),
             _internal_supports_minibatch_backtesting=True,
         )
+        self.params_to_try = params_to_try
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -113,9 +116,12 @@ class AddLagsX(Transformation, Tunable):
     ColumnAndLag = Tuple[str, Union[int, List[int]]]
 
     def __init__(
-        self, columns_and_lags: Union[List[ColumnAndLag], ColumnAndLag]
+        self,
+        columns_and_lags: Union[List[ColumnAndLag], ColumnAndLag],
+        params_to_try: Optional[dict] = None,
     ) -> None:
         self.columns_and_lags = wrap_in_list(columns_and_lags)
+        self.params_to_try = params_to_try
 
         def check_and_transform_if_needed(
             column_and_lag: AddLagsX.ColumnAndLag,

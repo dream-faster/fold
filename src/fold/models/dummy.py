@@ -1,7 +1,7 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
 
-from typing import List, Union
+from typing import List, Optional, Union
 
 import pandas as pd
 
@@ -117,8 +117,11 @@ class DummyRegressor(Model, Tunable):
     properties = Transformation.Properties(requires_X=False)
     name = "DummyRegressor"
 
-    def __init__(self, predicted_value: float) -> None:
+    def __init__(
+        self, predicted_value: float, params_to_try: Optional[dict] = None
+    ) -> None:
         self.predicted_value = predicted_value
+        self.params_to_try = params_to_try
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         return pd.Series(
