@@ -5,9 +5,8 @@ from typing import Callable, List, Optional, Tuple
 
 import pandas as pd
 
-from fold.utils.list import wrap_in_list
-
 from ..base import Artifact, Composite, Pipeline, Pipelines, T
+from ..utils.list import wrap_in_list
 from .base import EventFilter, Labeler
 from .filters import EveryNth, NoFilter
 from .labeling import BinarizeFixedForwardHorizon
@@ -32,6 +31,7 @@ class CreateEvents(Composite):
     ) -> Tuple[pd.DataFrame, T]:
         original_start_times = self.filter.get_event_start_times(y)
         events = self.labeler.label_events(original_start_times, y)
+        self.last_events = events
         return X.loc[events.index], events["label"]
 
     def get_child_transformations_primary(self) -> Pipelines:
@@ -41,6 +41,9 @@ class CreateEvents(Composite):
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
     ) -> pd.DataFrame:
         return results[0]
+
+    def postprocess_artifacts_primary(self, artifacts: List[Artifact]) -> pd.DataFrame:
+        return self.last_events
 
     def clone(self, clone_child_transformations: Callable) -> CreateEvents:
         clone = CreateEvents(

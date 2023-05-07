@@ -18,11 +18,13 @@ class BinarizeFixedForwardHorizon(Labeler):
         event_start_times = event_start_times[event_start_times < cutoff_point]
         event_candidates = forward_rolling_sum[event_start_times]
 
-        def get_class_binary(x: float) -> int:
-            return -1 if x <= 0.0 else 1
+        def map_to_binary(series: pd.Series) -> pd.Series:
+            series.loc[series >= 0.0] = 1
+            series.loc[series < 0.0] = -1
+            return series
 
-        # TODO: this can be done much more efficiently
-        labels = event_candidates.map(get_class_binary)
+        labels = map_to_binary(event_candidates)
+
         offset = pd.Timedelta(value=self.time_horizon, unit=y.index.freqstr)
         events = EventDataFrame(
             start=event_start_times,

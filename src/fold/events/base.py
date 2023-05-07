@@ -17,7 +17,7 @@ class EventDataFrame(pd.DataFrame):
         label: pd.Series,
         raw: pd.Series,
     ):
-        super().__init__({"start": start, "end": end, "label": label, "raw": raw})
+        super().__init__(data={"start": start, "end": end, "label": label, "raw": raw})
 
 
 class EventFilter(ABC):
@@ -25,9 +25,9 @@ class EventFilter(ABC):
     def get_event_start_times(self, y: pd.Series) -> pd.DatetimeIndex:
         raise NotImplementedError
 
-    # TODO: this is the online, out-of-sample equivalent of get_event_start_times, need a final name
-    def update(self, y: pd.Series) -> bool:
-        raise NotImplementedError
+    # TODO: out-of-sample equivalent of get_event_start_times
+    # def should_emit_event(self, y: pd.Series) -> bool:
+    #     raise NotImplementedError
 
 
 class Labeler(ABC):
