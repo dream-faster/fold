@@ -11,10 +11,10 @@ import pandas as pd
 from ..base import Artifact, Composite, Optimizer, Transformation, Transformations, X
 from ..models.base import Model
 from ..utils.checks import is_prediction, is_X_available
-from ..utils.dataframe import concat_on_columns
+from ..utils.dataframe import concat_on_columns, concat_on_index
 from ..utils.trim import trim_initial_nans, trim_initial_nans_single
 from .backend import get_backend_dependent_functions
-from .memory import postprocess_X_y_into_memory, preprocess_X_y_with_memory
+from .memory import postprocess_X_y_into_memory_, preprocess_X_y_with_memory
 from .types import Backend, Stage
 
 
@@ -31,6 +31,11 @@ def recursively_transform(
     The main function to transform (and fit or update) a pipline of transformations.
     `stage` is used to determine whether to run the inner loop for online models.
     """
+    if sample_weights is not None and len(X) != len(sample_weights):
+        sample_weights = sample_weights.loc[
+            X.index
+        ]  # we're calling recursively_transform() recursively, and we trim sample_weights as well, but for simplicity's sake, recursive_transform doesn't return it explicitly, so these two could get out of sync.
+
     if y is not None and len(X) != len(y):
         y = y[X.index]
 
@@ -232,24 +237,34 @@ def _process_with_inner_loop(
     # This is so the transformation can update its parameters after each sample.
 
     def transform_row(
-        X_row: pd.DataFrame, y_row: Optional[pd.Series], sample_weights_row
+        X_row: pd.DataFrame,
+        y_row: Optional[pd.Series],
+        sample_weights_row: Optional[pd.Series],
     ):
-        X_row_with_memory, y_row_with_memory = preprocess_X_y_with_memory(
-            transformation, X_row, y_row, in_sample=False
+        (
+            X_row_with_memory,
+            y_row_with_memory,
+            sample_weights_row_with_memory,
+        ) = preprocess_X_y_with_memory(
+            transformation, X_row, y_row, sample_weights_row, in_sample=False
         )
         result, _ = transformation.transform(X_row_with_memory, in_sample=False)
         if y_row is not None:
             artifact = transformation.update(
-                X_row_with_memory, y_row_with_memory, sample_weights_row
+                X_row_with_memory, y_row_with_memory, sample_weights_row_with_memory
             )
             _ = concat_on_columns([artifact, artifacts])
-            postprocess_X_y_into_memory(
-                transformation, X_row_with_memory, y_row_with_memory, False
+            postprocess_X_y_into_memory_(
+                transformation,
+                X_row_with_memory,
+                y_row_with_memory,
+                sample_weights_row_with_memory,
+                False,
             )
         return result.loc[X_row.index]
 
     return (
-        pd.concat(
+        concat_on_index(
             [
                 transform_row(
                     X.loc[index:index],
@@ -257,8 +272,7 @@ def _process_with_inner_loop(
                     sample_weights.loc[index] if sample_weights is not None else None,
                 )
                 for index in X.index
-            ],
-            axis="index",
+            ]
         ),
         pd.DataFrame(),
     )
@@ -271,16 +285,20 @@ def _process_internal_online_model_minibatch_inference_and_update(
     sample_weights: Optional[pd.Series],
     artifacts: Artifact,
 ) -> Tuple[X, Artifact]:
-    X, y = trim_initial_nans(X, y)
-    X_with_memory, y_with_memory = preprocess_X_y_with_memory(
-        transformation, X, y, in_sample=True
+    X, y, sample_weights = trim_initial_nans(X, y, sample_weights)
+    (
+        X_with_memory,
+        y_with_memory,
+        sample_weights_with_memory,
+    ) = preprocess_X_y_with_memory(transformation, X, y, sample_weights, in_sample=True)
+    postprocess_X_y_into_memory_(
+        transformation, X_with_memory, y_with_memory, sample_weights_with_memory, True
     )
-    postprocess_X_y_into_memory(transformation, X_with_memory, y_with_memory, True)
     return_value, artifact = transformation.transform(X_with_memory, in_sample=True)
     artifacts = concat_on_columns([artifact, artifacts])
 
     artifact = transformation.update(X_with_memory, y_with_memory, sample_weights)
-    postprocess_X_y_into_memory(transformation, X, y, False)
+    postprocess_X_y_into_memory_(transformation, X, y, sample_weights, False)
     return return_value.loc[X.index], concat_on_columns([artifact, artifacts])
 
 
@@ -292,7 +310,7 @@ def _process_minibatch_transformation(
     artifacts: Artifact,
     stage: Stage,
 ) -> Tuple[X, Artifact]:
-    X, y = trim_initial_nans(X, y)
+    X, y, sample_weights = trim_initial_nans(X, y, sample_weights)
 
     if not is_X_available(X) and transformation.properties.requires_X:
         raise ValueError(
@@ -301,24 +319,35 @@ def _process_minibatch_transformation(
         )
 
     in_sample = stage == Stage.inital_fit
-    X_with_memory, y_with_memory = preprocess_X_y_with_memory(
-        transformation, X, y, in_sample=in_sample
+    (
+        X_with_memory,
+        y_with_memory,
+        sample_weights_with_memory,
+    ) = preprocess_X_y_with_memory(
+        transformation, X, y, sample_weights, in_sample=in_sample
     )
     # The order is:
     # 1. fit (if we're in the initial_fit stage)
     artifact = None
     if stage == Stage.inital_fit:
-        artifact = transformation.fit(X_with_memory, y_with_memory, sample_weights)
-        postprocess_X_y_into_memory(
+        artifact = transformation.fit(
+            X_with_memory, y_with_memory, sample_weights_with_memory
+        )
+        postprocess_X_y_into_memory_(
             transformation,
             X_with_memory,
             y_with_memory,
+            sample_weights_with_memory,
             in_sample=stage == Stage.inital_fit,
         )
         artifacts = concat_on_columns([artifact, artifacts])
     # 2. transform (inference)
-    X_with_memory, y_with_memory = preprocess_X_y_with_memory(
-        transformation, X, y, in_sample=False
+    (
+        X_with_memory,
+        y_with_memory,
+        sample_weights_with_memory,
+    ) = preprocess_X_y_with_memory(
+        transformation, X, y, sample_weights, in_sample=False
     )
     return_value, artifact = transformation.transform(
         X_with_memory, in_sample=in_sample
@@ -328,7 +357,7 @@ def _process_minibatch_transformation(
     if stage == Stage.update:
         artifact = transformation.update(X_with_memory, y_with_memory, sample_weights)
         artifacts = concat_on_columns([artifact, artifacts])
-        postprocess_X_y_into_memory(transformation, X, y, False)
+        postprocess_X_y_into_memory_(transformation, X, y, sample_weights, False)
     return return_value.loc[X.index], artifacts
 
 

@@ -1,3 +1,5 @@
+import numpy as np
+import pandas as pd
 import pytest
 from sklearn.ensemble import HistGradientBoostingRegressor
 
@@ -15,6 +17,7 @@ def test_on_weather_data(backend: str) -> None:
         target_col="temperature",
         shorten=1000,
     )
+    sample_weights = pd.Series(np.ones(len(y)), index=y.index)
     splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.2)
     pipeline = [
         AddLagsX(columns_and_lags=[("pressure", list(range(1, 3)))]),
@@ -22,7 +25,9 @@ def test_on_weather_data(backend: str) -> None:
         HistGradientBoostingRegressor(),
     ]
 
-    _, _ = train_backtest(pipeline, X, y, splitter, backend=backend)
+    _, _ = train_backtest(
+        pipeline, X, y, splitter, backend=backend, sample_weights=sample_weights
+    )
 
 
 def test_train_evaluate() -> None:
