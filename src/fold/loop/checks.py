@@ -18,7 +18,7 @@ def check_types(
         assert isinstance(X, pd.DataFrame), "X must be a pandas DataFrame."
     assert isinstance(y, pd.Series), "y must be a pandas Series."
 
-    X_trimmed, _ = trim_initial_nans(X, y)
+    X_trimmed, _, _ = trim_initial_nans(X, y, None)
     if len(X_trimmed) < len(X):
         warn(
             f"Detected initial NaNs in X ({ len(X) - len(X_trimmed) } instances),"

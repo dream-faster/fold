@@ -305,7 +305,7 @@ def _process_minibatch_transformation(
     artifacts: Artifact,
     stage: Stage,
 ) -> Tuple[X, Artifact]:
-    X, y = trim_initial_nans(X, y)
+    X, y, sample_weights = trim_initial_nans(X, y, sample_weights)
 
     if not is_X_available(X) and transformation.properties.requires_X:
         raise ValueError(
