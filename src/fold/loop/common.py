@@ -31,6 +31,11 @@ def recursively_transform(
     The main function to transform (and fit or update) a pipline of transformations.
     `stage` is used to determine whether to run the inner loop for online models.
     """
+    if sample_weights is not None and len(X) != len(sample_weights):
+        sample_weights = sample_weights.loc[
+            X.index
+        ]  # we're calling recursively_transform() recursively, and we trim sample_weights as well, but for simplicity's sake, recursive_transform doesn't return it explicitly, so these two could get out of sync.
+
     if y is not None and len(X) != len(y):
         y = y[X.index]
 
@@ -325,7 +330,9 @@ def _process_minibatch_transformation(
     # 1. fit (if we're in the initial_fit stage)
     artifact = None
     if stage == Stage.inital_fit:
-        artifact = transformation.fit(X_with_memory, y_with_memory, sample_weights)
+        artifact = transformation.fit(
+            X_with_memory, y_with_memory, sample_weights_with_memory
+        )
         postprocess_X_y_into_memory_(
             transformation,
             X_with_memory,

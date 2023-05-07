@@ -41,6 +41,7 @@ def preprocess_X_y_with_memory(
     if memory_sample_weights is not None:
         assert len(memory_X) == len(memory_sample_weights)
     if y is None:
+        assert sample_weights is None
         return (
             concat_on_index([memory_X.iloc[-memory_size:None], X]),
             y,
