@@ -32,7 +32,7 @@ def test_trim_initial_nans():
         }
     )
     y = pd.Series([1, 2, 3, 4, 5])
-    trimmed_X, trimmed_y = trim_initial_nans(X, y)
+    trimmed_X, trimmed_y, _ = trim_initial_nans(X, y, y)
     assert trimmed_X.equals(X.iloc[3:])
     assert trimmed_y.equals(y.iloc[3:])
     assert trim_initial_nans_single(X).equals(X.iloc[3:])

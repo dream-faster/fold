@@ -280,7 +280,7 @@ def _process_internal_online_model_minibatch_inference_and_update(
     sample_weights: Optional[pd.Series],
     artifacts: Artifact,
 ) -> Tuple[X, Artifact]:
-    X, y = trim_initial_nans(X, y)
+    X, y, sample_weights = trim_initial_nans(X, y)
     (
         X_with_memory,
         y_with_memory,
