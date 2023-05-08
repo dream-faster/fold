@@ -1,6 +1,6 @@
 import numpy as np
 
-from fold.loop import infer, train_for_deployment, updateing
+from fold.loop import infer, train_for_deployment, update
 from fold.models.baseline import Naive
 from fold.utils.tests import generate_sine_wave_data
 
@@ -27,6 +27,6 @@ def test_deployment() -> None:
         X = X_test.loc[index:index]
         y = y_test.loc[index:index]
         preds.append(infer(deployable_transformations, X).squeeze())
-        deployable_transformations = updateing(deployable_transformations, X, y)
+        deployable_transformations = update(deployable_transformations, X, y)
 
     assert (y_test.shift(1).values[1:] == np.array(preds)[1:]).all()
