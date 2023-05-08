@@ -16,12 +16,14 @@ from ..base import Artifact, Optimizer, Pipeline, Tunable
 from .common import get_concatenated_names
 
 
-def to_hierachical_dict(dict: dict) -> dict:
-    dict_ = defaultdict(lambda: defaultdict(float))
-    for key, value in dict.items():
+def to_hierachical_dict(flat_dict: dict) -> dict:
+    recur_dict = lambda: defaultdict(recur_dict)
+    dict_ = recur_dict()
+    # dict_ = defaultdict(lambda: defaultdict(lambda: defaultdict(default_factory=dict)))
+    for key, value in flat_dict.items():
         if "." in key:
             dict_[int(key.split(".")[0])][key.split(".")[1]] = value
-    return dict_
+    return dict({key: dict(value) for key, value in dict_.items()})
 
 
 class OptimizeGridSearch(Optimizer):
