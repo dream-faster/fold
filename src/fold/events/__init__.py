@@ -85,7 +85,7 @@ class _EventLabelWrapper(Transformation):
         mode=Transformation.Properties.Mode.online,
         requires_X=False,
         _internal_supports_minibatch_backtesting=True,
-        memory_size=0,
+        memory_size=1,
     )
     last_events: Optional[pd.DataFrame] = None
 
@@ -102,4 +102,8 @@ class _EventLabelWrapper(Transformation):
         past_y = self._state.memory_y
         original_start_times = self.filter.get_event_start_times(past_y)
         events = self.labeler.label_events(original_start_times, past_y)
+        if in_sample is False and events.dropna().empty:
+            self.properties.memory_size += 1
+        elif in_sample is False and not events.dropna().empty:
+            self.properties.memory_size = 1
         return events["label"].to_frame().reindex(X.index), events
