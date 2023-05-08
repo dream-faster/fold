@@ -1,3 +1,5 @@
+from typing import List
+
 import pandas as pd
 
 from ...utils.forward import create_forward_rolling_sum
@@ -34,5 +36,5 @@ class BinarizeFixedForwardHorizon(Labeler):
         )
         return events
 
-    def get_labels(self) -> list[int]:
+    def get_labels(self) -> List[int]:
         return [-1, 1]
