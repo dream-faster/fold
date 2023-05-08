@@ -1,8 +1,8 @@
-from fold_models import MovingAverage
 from sklearn.metrics import mean_squared_error
 
 from fold.composites.optimize import OptimizeGridSearch
 from fold.loop.encase import train_backtest
+from fold.models.dummy import DummyRegressor
 from fold.splitters import ExpandingWindowSplitter
 from fold.utils.dataset import get_preprocessed_dataset
 
@@ -15,8 +15,9 @@ def test_on_weather_data() -> None:
     )
     splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.2)
     pipeline = OptimizeGridSearch(
-        MovingAverage(window_size=12),
-        param_grid={"window_size": range(10, 19)},
+        DummyRegressor(
+            predicted_value=1.0, params_to_try=dict(predicted_value=[1.0, 2.0])
+        ),
         scorer=mean_squared_error,
     )
 
