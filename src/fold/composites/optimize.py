@@ -3,26 +3,16 @@
 
 from __future__ import annotations
 
-from collections import defaultdict
 from typing import Callable, Iterable, List, Optional
 
 import pandas as pd
 from sklearn.model_selection import ParameterGrid
 
 from fold.traverse import traverse, traverse_apply
-from fold.utils.list import wrap_in_list
+from fold.utils.list import to_hierachical_dict, wrap_in_list
 
 from ..base import Artifact, Optimizer, Pipeline, Tunable
 from .common import get_concatenated_names
-
-
-def to_hierachical_dict(flat_dict: dict) -> dict:
-    recur_dict = lambda: defaultdict(recur_dict)  # noqa: E731
-    dict_ = recur_dict()
-    for key, value in flat_dict.items():
-        if "." in key:
-            dict_[int(key.split(".")[0])][key.split(".")[1]] = value
-    return dict({key: dict(value) for key, value in dict_.items()})
 
 
 class OptimizeGridSearch(Optimizer):
@@ -62,28 +52,31 @@ class OptimizeGridSearch(Optimizer):
         return instance
 
     def get_candidates(self) -> Iterable[Pipeline]:
-        param_grid = {
-            f"{id(transformation)}.{key}": value
-            for transformation in list(traverse(self.pipeline))
-            for key, value in transformation.params_to_try.items()
-            if transformation.params_to_try is not None
-        }
-        self.param_permutations = [
-            to_hierachical_dict(params) for params in list(ParameterGrid(param_grid))
-        ]
-
-        def hoc(params: dict):
-            def select_transformation_apply_params(transformation: Tunable) -> Tunable:
-                selected_params = params[id(transformation)]
-                return transformation.clone_with_params(
-                    **{**transformation.get_params(), **selected_params}
-                )
-
-            return select_transformation_apply_params
-
         if self.candidates is None:
+            param_grid = {
+                f"{id(transformation)}.{key}": value
+                for transformation in list(traverse(self.pipeline))
+                for key, value in transformation.params_to_try.items()
+                if transformation.params_to_try is not None
+            }
+            self.param_permutations = [
+                to_hierachical_dict(params)
+                for params in list(ParameterGrid(param_grid))
+            ]
+
+            def __apply_params(params: dict) -> Callable:
+                def __apply_params_to_transformation(
+                    transformation: Tunable,
+                ) -> Tunable:
+                    selected_params = params[id(transformation)]
+                    return transformation.clone_with_params(
+                        **{**transformation.get_params(), **selected_params}
+                    )
+
+                return __apply_params_to_transformation
+
             self.candidates = [
-                traverse_apply(self.pipeline, hoc(params))
+                traverse_apply(self.pipeline, __apply_params(params))
                 for params in self.param_permutations
             ]
         return self.candidates

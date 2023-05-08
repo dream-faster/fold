@@ -2,6 +2,7 @@
 
 
 import collections
+from collections import defaultdict
 from collections.abc import Iterable
 from typing import List, Tuple, TypeVar, Union
 
@@ -64,3 +65,18 @@ def filter_none(input: List) -> List:
 
 def empty_if_none(input: Union[List, None]) -> List:
     return [] if input is None else input
+
+
+def to_hierachical_dict(flat_dict: dict, separator: str = ".") -> dict:
+    if not isinstance(flat_dict, dict):
+        return flat_dict
+
+    recur_dict = lambda: defaultdict(recur_dict)  # noqa: E731
+    dict_ = recur_dict()
+    for key, value in flat_dict.items():
+        if separator in key:
+            dict_[int(key.split(separator)[0])][
+                key.split(separator)[1]
+            ] = to_hierachical_dict(value)
+
+    return dict({key: dict(value) for key, value in dict_.items()})

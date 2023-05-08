@@ -30,3 +30,4 @@ def test_model_residuals() -> None:
     pred = backtest(trained_pipelines, X, y, splitter)
 
     assert pred is not None
+    assert len(pred) == 600
