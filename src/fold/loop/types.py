@@ -15,6 +15,10 @@ class Backend(Enum):
         Uses sequential processing. This is the default.
     ray: string
         Uses `ray` as a backend. Call `ray.init()` before using this backend.
+    process: string
+        Uses `multiprocessing` as a backend (via tqdm.contrib.concurrent.process_map).
+    thread: string
+        Uses `threading` as a backend (via tqdm.contrib.concurrent.thread_map).
 
     """
 
