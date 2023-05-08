@@ -15,9 +15,9 @@ from .labeling import BinarizeFixedForwardHorizon
 def CreateEvents(
     wrapped_pipeline: Pipeline,
     labeler: Labeler,
-    event_filter: EventFilter = NoFilter(),
+    filter: EventFilter = NoFilter(),
 ) -> _CreateEvents:
-    return _CreateEvents(wrapped_pipeline, _EventLabelWrapper(event_filter, labeler))
+    return _CreateEvents(wrapped_pipeline, _EventLabelWrapper(filter, labeler))
 
 
 class _CreateEvents(Composite):
@@ -65,7 +65,7 @@ class _CreateEvents(Composite):
         return pd.concat(
             [
                 primary_artifacts,
-                pd.concat(secondary_artifacts, axis="columns").add_prefix("secondary_"),
+                pd.concat(secondary_artifacts, axis="columns"),
             ],
             axis="columns",
         )
