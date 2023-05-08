@@ -62,6 +62,10 @@ class Sample(Composite):
         pipeline: Pipeline,
     ) -> None:
         self.sampler = sampler
+        from imblearn.over_sampling import RandomOverSampler
+
+        if isinstance(sampler, RandomOverSampler):
+            raise ValueError("Oversamplig is not supported.")
         self.pipeline = wrap_in_double_list_if_needed(pipeline)
         self.name = f"Sample-{sampler.__class__.__name__}-{get_concatenated_names(self.pipeline)}"
 
@@ -71,8 +75,10 @@ class Sample(Composite):
         if fit:
             X_resampled, y_resampled = self.sampler.fit_resample(X, y)
             X_resampled.columns = X.columns
+            X_resampled.index = X.index[: len(X_resampled)]
             if y is not None:
                 y_resampled.name = y.name
+                y_resampled.index = y.index[: len(y_resampled)]
             return X_resampled, y_resampled
         else:
             return X, y
