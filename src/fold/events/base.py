@@ -25,10 +25,6 @@ class EventFilter(ABC):
     def get_event_start_times(self, y: pd.Series) -> pd.DatetimeIndex:
         raise NotImplementedError
 
-    # TODO: out-of-sample equivalent of get_event_start_times
-    # def should_emit_event(self, y: pd.Series) -> bool:
-    #     raise NotImplementedError
-
 
 class Labeler(ABC):
     @abstractmethod
