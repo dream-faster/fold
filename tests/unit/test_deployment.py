@@ -1,8 +1,6 @@
 import numpy as np
 
-from fold.loop.inference import infer
-from fold.loop.training import train_for_deployment
-from fold.loop.update import update
+from fold.loop import infer, train_for_deployment, update
 from fold.models.baseline import Naive
 from fold.utils.tests import generate_sine_wave_data
 

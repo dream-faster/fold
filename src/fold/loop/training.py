@@ -7,6 +7,7 @@ import pandas as pd
 
 from ..base import Artifact, DeployablePipeline, Pipeline, TrainedPipelines
 from ..splitters import Fold, SlidingWindowSplitter, Splitter
+from ..utils.dataframe import concat_on_index
 from ..utils.list import wrap_in_list
 from .backend import get_backend_dependent_functions
 from .checks import check_types
@@ -151,8 +152,7 @@ def train(
     ]
 
     if return_artifacts is True:
-        aggregate_artifacts = pd.concat(processed_artifacts, axis="index")
-        return trained_pipelines, aggregate_artifacts
+        return trained_pipelines, concat_on_index(processed_artifacts)
     else:
         return trained_pipelines
 
