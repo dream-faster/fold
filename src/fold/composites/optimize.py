@@ -3,22 +3,31 @@
 
 from __future__ import annotations
 
+from collections import defaultdict
 from typing import Callable, Iterable, List, Optional
 
 import pandas as pd
 from sklearn.model_selection import ParameterGrid
 
-from fold.traverse import traverse
+from fold.traverse import traverse, traverse_apply
 from fold.utils.list import wrap_in_list
 
 from ..base import Artifact, Optimizer, Pipeline, Tunable
 from .common import get_concatenated_names
 
 
+def to_hierachical_dict(dict: dict) -> dict:
+    dict_ = defaultdict(lambda: defaultdict(float))
+    for key, value in dict.items():
+        if "." in key:
+            dict_[int(key.split(".")[0])][key.split(".")[1]] = value
+    return dict_
+
+
 class OptimizeGridSearch(Optimizer):
-    candidates: Optional[List[Tunable]] = None
+    candidates: Optional[List[Pipeline]] = None
     selected_params_: Optional[dict] = None
-    selected_model_: Optional[Tunable] = None
+    selected_pipeline_: Optional[Tunable] = None
     scores_: Optional[List[float]] = None
     param_permutations: List[dict]
 
@@ -37,42 +46,51 @@ class OptimizeGridSearch(Optimizer):
             if transformation.params_to_try is not None
         }
 
-        self.name = "GridSearchOptimizer-" + get_concatenated_names(self.model)
+        self.name = "GridSearchOptimizer-" + get_concatenated_names(self.pipeline)
         self.scorer = scorer
         self.is_scorer_loss = is_scorer_loss
-        self.param_permutations = list(ParameterGrid(self.param_grid))
+        self.param_permutations = [
+            to_hierachical_dict(params)
+            for params in list(ParameterGrid(self.param_grid))
+        ]
 
     @classmethod
     def from_cloned_instance(
         cls,
-        model: Tunable,
-        param_grid: dict,
+        pipeline: Pipeline,
         scorer: Callable,
         is_scorer_loss: bool,
         candidates: Optional[List[Tunable]],
         selected_params_: Optional[dict],
-        selected_model_: Optional[Tunable],
+        selected_pipeline_: Optional[Tunable],
         scores_: Optional[List[float]],
     ) -> OptimizeGridSearch:
-        instance = cls(model, param_grid, scorer, is_scorer_loss)
+        instance = cls(pipeline, scorer, is_scorer_loss)
         instance.candidates = candidates
         instance.selected_params_ = selected_params_
-        instance.selected_model_ = selected_model_
+        instance.selected_pipeline_ = selected_pipeline_
         instance.scores_ = scores_
         return instance
 
-    def get_candidates(self) -> Iterable[Tunable]:
+    def get_candidates(self) -> Iterable[Pipeline]:
+        def hoc(params: dict):
+            def select_transformation_apply_params(transformation: Tunable) -> Tunable:
+                selected_params = params[id(transformation)]
+                return transformation.clone_with_params(
+                    **{**transformation.get_params(), **selected_params}
+                )
+
+            return select_transformation_apply_params
+
         if self.candidates is None:
             self.candidates = [
-                self.model[0].clone_with_params(
-                    **{**self.model[0].get_params(), **params}
-                )
+                traverse_apply(self.pipeline, hoc(params))
                 for params in self.param_permutations
             ]
         return self.candidates
 
     def get_optimized_pipeline(self) -> Optional[Tunable]:
-        return self.selected_model_
+        return self.selected_pipeline_
 
     def process_candidate_results(
         self, results: List[pd.DataFrame], y: pd.Series
@@ -87,7 +105,7 @@ class OptimizeGridSearch(Optimizer):
             else scores.index(max(scores))
         )
         self.selected_params_ = self.param_permutations[selected_index]
-        self.selected_model_ = self.candidates[selected_index]
+        self.selected_pipeline_ = self.candidates[selected_index]
         # TODO: need to store the params for each score as well
         self.scores_ = scores
         return pd.DataFrame(
@@ -96,12 +114,11 @@ class OptimizeGridSearch(Optimizer):
 
     def clone(self, clone_child_transformations: Callable) -> OptimizeGridSearch:
         return OptimizeGridSearch.from_cloned_instance(
-            model=clone_child_transformations(self.model),
-            param_grid=self.param_grid,
+            pipeline=clone_child_transformations(self.pipeline),
             scorer=self.scorer,
             is_scorer_loss=self.is_scorer_loss,
             candidates=self.candidates,
             selected_params_=self.selected_params_,
-            selected_model_=self.selected_model_,
+            selected_pipeline_=self.selected_pipeline_,
             scores_=self.scores_,
         )
