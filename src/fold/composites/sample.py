@@ -38,7 +38,7 @@ class Sample(Composite):
         >>> from imblearn.under_sampling import RandomUnderSampler
         >>> from fold.utils.tests import generate_zeros_and_ones_skewed
         >>> X, y  = generate_zeros_and_ones_skewed()
-        >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+        >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
         >>> pipeline = Sample(
         ...     sampler=RandomUnderSampler(),
         ...     pipeline=RandomForestClassifier(),

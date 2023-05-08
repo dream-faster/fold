@@ -32,7 +32,7 @@ class RandomClassifier(Model):
     >>> from fold.models import RandomClassifier
     >>> from fold.utils.tests import generate_sine_wave_data
     >>> X, y  = generate_sine_wave_data()
-    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> np.random.seed(42)
     >>> pipeline = RandomClassifier([0,1], 0.5)
     >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)

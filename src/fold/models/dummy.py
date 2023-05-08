@@ -30,7 +30,7 @@ class DummyClassifier(Model):
     >>> from fold.models import DummyClassifier
     >>> from fold.utils.tests import generate_sine_wave_data
     >>> X, y  = generate_sine_wave_data()
-    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> pipeline = DummyClassifier(1, [0, 1], [0.5, 0.5])
     >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
     >>> preds.head()
@@ -100,7 +100,7 @@ class DummyRegressor(Model, Tunable):
     >>> from fold.models import DummyRegressor
     >>> from fold.utils.tests import generate_sine_wave_data
     >>> X, y  = generate_sine_wave_data()
-    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> pipeline = DummyRegressor(0.1)
     >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
     >>> preds.head()

@@ -98,7 +98,7 @@ class RenameColumns(Transformation):
     >>> from fold.transformations import RenameColumns
     >>> from fold.utils.tests import generate_sine_wave_data
     >>> X, y  = generate_sine_wave_data()
-    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> pipeline = RenameColumns({"sine": "sine_renamed"})
     >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
     >>> preds.head()
@@ -140,7 +140,7 @@ class OnlyPredictions(Transformation):
     >>> from fold.models.dummy import DummyClassifier
     >>> from fold.utils.tests import generate_sine_wave_data
     >>> X, y  = generate_sine_wave_data()
-    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> pipeline = [DummyClassifier(1, [0, 1], [0.5, 0.5]), OnlyPredictions()]
     >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
     >>> preds.head()
@@ -186,7 +186,7 @@ class OnlyProbabilities(Transformation):
     >>> from fold.models.dummy import DummyClassifier
     >>> from fold.utils.tests import generate_sine_wave_data
     >>> X, y  = generate_sine_wave_data()
-    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> pipeline = [DummyClassifier(1, [0, 1], [0.5, 0.5]), OnlyProbabilities()]
     >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
     >>> preds.head()

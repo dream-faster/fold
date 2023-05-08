@@ -44,7 +44,7 @@ class TransformTarget(Composite):
     >>> from fold.transformations import Difference
     >>> from fold.utils.tests import generate_sine_wave_data
     >>> X, y  = generate_sine_wave_data()
-    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> pipeline = TransformTarget(
     ...     wrapped_pipeline=LinearRegression(),
     ...     y_pipeline=Difference(),

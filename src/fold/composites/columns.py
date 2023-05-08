@@ -31,7 +31,7 @@ class EnsembleEachColumn(Composite):
         >>> from sklearn.ensemble import RandomForestRegressor
         >>> from fold.utils.tests import generate_sine_wave_data
         >>> X, y  = generate_sine_wave_data()
-        >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+        >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
         >>> pipeline = EnsembleEachColumn(RandomForestRegressor())
         >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
 
@@ -105,7 +105,7 @@ class TransformEachColumn(Composite):
         2021-12-31 07:22:00  0.0251       1.0251
         2021-12-31 07:23:00  0.0377       1.0377
         2021-12-31 07:24:00  0.0502       1.0502
-        >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+        >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
         >>> pipeline = TransformEachColumn(lambda x: x + 1.0)
         >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
         >>> preds.head()
@@ -184,7 +184,7 @@ class SkipNA(Composite):
         >>> from fold.utils.tests import generate_zeros_and_ones
         >>> X, y  = generate_zeros_and_ones()
         >>> X[1:100] = np.nan
-        >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+        >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
         >>> pipeline = SkipNA(
         ...     pipeline=RandomForestClassifier(),
         ... )

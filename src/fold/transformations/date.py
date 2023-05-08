@@ -62,7 +62,7 @@ class AddDateTimeFeatures(Transformation, Tunable):
     >>> from fold.transformations import AddDateTimeFeatures
     >>> from fold.utils.tests import generate_sine_wave_data
     >>> X, y  = generate_sine_wave_data(freq="min")
-    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> pipeline = AddDateTimeFeatures(["minute"])
     >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
     >>> preds.head()
@@ -140,7 +140,7 @@ class AddSecond(SingleFunctionTransformation):
     >>> from fold.transformations import AddSecond
     >>> from fold.utils.tests import generate_sine_wave_data
     >>> X, y  = generate_sine_wave_data(freq="S")
-    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> pipeline = AddSecond()
     >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
     >>> preds.head()
@@ -172,7 +172,7 @@ class AddMinute(SingleFunctionTransformation):
     >>> from fold.transformations import AddMinute
     >>> from fold.utils.tests import generate_sine_wave_data
     >>> X, y  = generate_sine_wave_data(freq="min")
-    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> pipeline = AddMinute()
     >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
     >>> preds.head()

@@ -28,7 +28,7 @@ class Difference(InvertibleTransformation, Tunable):
     >>> from fold.transformations import Difference
     >>> from fold.utils.tests import generate_sine_wave_data
     >>> X, y  = generate_sine_wave_data(freq="min")
-    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> pipeline = Difference()
     >>> X["sine"].head()
     2021-12-31 07:20:00    0.0000
@@ -122,7 +122,7 @@ class TakeReturns(Transformation):
     >>> from fold.transformations import TakeReturns
     >>> from fold.utils.tests import generate_sine_wave_data
     >>> X, y  = generate_sine_wave_data(freq="min")
-    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> pipeline = TakeReturns()
     >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
     >>> X["sine"].loc[preds.index].head()
