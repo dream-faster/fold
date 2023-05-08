@@ -8,9 +8,10 @@ from typing import Callable, Iterable, List, Optional
 import pandas as pd
 from sklearn.model_selection import ParameterGrid
 
+from fold.traverse import traverse
 from fold.utils.list import wrap_in_list
 
-from ..base import Artifact, Optimizer, Tunable
+from ..base import Artifact, Optimizer, Pipeline, Tunable
 from .common import get_concatenated_names
 
 
@@ -23,13 +24,19 @@ class OptimizeGridSearch(Optimizer):
 
     def __init__(
         self,
-        model: Tunable,
-        param_grid: dict,
+        pipeline: Pipeline,
         scorer: Callable,
         is_scorer_loss: bool = True,
     ) -> None:
-        self.model = wrap_in_list(model)
-        self.param_grid = param_grid
+        self.pipeline = wrap_in_list(pipeline)
+
+        self.param_grid = {
+            f"{id(transformation)}.{key}": value
+            for transformation in list(traverse(self.pipeline))
+            for key, value in transformation.params_to_try.items()
+            if transformation.params_to_try is not None
+        }
+
         self.name = "GridSearchOptimizer-" + get_concatenated_names(self.model)
         self.scorer = scorer
         self.is_scorer_loss = is_scorer_loss
