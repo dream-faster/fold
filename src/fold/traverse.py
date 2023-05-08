@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import Callable, List
 
 from .base import Composite, Optimizer, Pipeline, Transformation
@@ -16,7 +17,7 @@ def traverse_apply(pipeline: Pipeline, apply_func: Callable) -> Pipeline:
         elif isinstance(pipeline, Transformation):
             return apply_func(pipeline)
 
-    return _traverse_apply(pipeline)
+    return deepcopy(_traverse_apply(pipeline))
 
 
 def traverse(

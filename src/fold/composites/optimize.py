@@ -17,9 +17,8 @@ from .common import get_concatenated_names
 
 
 def to_hierachical_dict(flat_dict: dict) -> dict:
-    recur_dict = lambda: defaultdict(recur_dict)
+    recur_dict = lambda: defaultdict(recur_dict)  # noqa: E731
     dict_ = recur_dict()
-    # dict_ = defaultdict(lambda: defaultdict(lambda: defaultdict(default_factory=dict)))
     for key, value in flat_dict.items():
         if "." in key:
             dict_[int(key.split(".")[0])][key.split(".")[1]] = value
@@ -40,21 +39,9 @@ class OptimizeGridSearch(Optimizer):
         is_scorer_loss: bool = True,
     ) -> None:
         self.pipeline = wrap_in_list(pipeline)
-
-        self.param_grid = {
-            f"{id(transformation)}.{key}": value
-            for transformation in list(traverse(self.pipeline))
-            for key, value in transformation.params_to_try.items()
-            if transformation.params_to_try is not None
-        }
-
         self.name = "GridSearchOptimizer-" + get_concatenated_names(self.pipeline)
         self.scorer = scorer
         self.is_scorer_loss = is_scorer_loss
-        self.param_permutations = [
-            to_hierachical_dict(params)
-            for params in list(ParameterGrid(self.param_grid))
-        ]
 
     @classmethod
     def from_cloned_instance(
@@ -75,6 +62,16 @@ class OptimizeGridSearch(Optimizer):
         return instance
 
     def get_candidates(self) -> Iterable[Pipeline]:
+        param_grid = {
+            f"{id(transformation)}.{key}": value
+            for transformation in list(traverse(self.pipeline))
+            for key, value in transformation.params_to_try.items()
+            if transformation.params_to_try is not None
+        }
+        self.param_permutations = [
+            to_hierachical_dict(params) for params in list(ParameterGrid(param_grid))
+        ]
+
         def hoc(params: dict):
             def select_transformation_apply_params(transformation: Tunable) -> Tunable:
                 selected_params = params[id(transformation)]
