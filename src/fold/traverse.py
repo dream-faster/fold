@@ -17,7 +17,7 @@ def traverse_apply(pipeline: Pipeline, apply_func: Callable) -> Pipeline:
         elif isinstance(pipeline, Transformation):
             return apply_func(pipeline)
 
-    return deepcopy(_traverse_apply(pipeline))
+    return _traverse_apply(deepcopy(pipeline))
 
 
 def traverse(

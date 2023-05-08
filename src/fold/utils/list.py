@@ -4,7 +4,7 @@
 import collections
 from collections import defaultdict
 from collections.abc import Iterable
-from typing import List, Tuple, TypeVar, Union
+from typing import Dict, List, Optional, Tuple, TypeVar, Union
 
 from iteration_utilities import unique_everseen
 
@@ -79,4 +79,8 @@ def to_hierachical_dict(flat_dict: dict, separator: str = ".") -> dict:
                 key.split(separator)[1]
             ] = to_hierachical_dict(value)
 
-    return dict({key: dict(value) for key, value in dict_.items()})
+    return dict_  # dict({key: dict(value) for key, value in dict_.items()})
+
+
+def ensure_dict(dictionary: Optional[Dict]) -> dict:
+    return {} if dictionary is None else dictionary

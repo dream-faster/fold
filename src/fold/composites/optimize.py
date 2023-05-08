@@ -9,7 +9,7 @@ import pandas as pd
 from sklearn.model_selection import ParameterGrid
 
 from fold.traverse import traverse, traverse_apply
-from fold.utils.list import to_hierachical_dict, wrap_in_list
+from fold.utils.list import ensure_dict, to_hierachical_dict, wrap_in_list
 
 from ..base import Artifact, Optimizer, Pipeline, Tunable
 from .common import get_concatenated_names
@@ -56,7 +56,7 @@ class OptimizeGridSearch(Optimizer):
             param_grid = {
                 f"{id(transformation)}.{key}": value
                 for transformation in list(traverse(self.pipeline))
-                for key, value in transformation.params_to_try.items()
+                for key, value in ensure_dict(transformation.params_to_try).items()
                 if transformation.params_to_try is not None
             }
             self.param_permutations = [
@@ -64,11 +64,14 @@ class OptimizeGridSearch(Optimizer):
                 for params in list(ParameterGrid(param_grid))
             ]
 
+            for transformation in list(traverse(self.pipeline)):
+                transformation._key = id(transformation)
+
             def __apply_params(params: dict) -> Callable:
                 def __apply_params_to_transformation(
                     transformation: Tunable,
                 ) -> Tunable:
-                    selected_params = params[id(transformation)]
+                    selected_params = params[transformation._key]
                     return transformation.clone_with_params(
                         **{**transformation.get_params(), **selected_params}
                     )
