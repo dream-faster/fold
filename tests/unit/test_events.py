@@ -12,9 +12,11 @@ def test_event() -> None:
     pipeline = CreateEvents(Identity(), BinarizeFixedForwardHorizon(1), EveryNth(5))
     trained_pipeline, artifacts = train(pipeline, X, y, splitter, return_artifacts=True)
     pred = backtest(trained_pipeline, X, y, splitter)
-    assert len(pred) == 200
+    assert len(pred) == 1000
+    assert len(pred.dropna()) == 200
 
     pipeline = CreateEvents(Identity(), BinarizeFixedForwardHorizon(10), EveryNth(5))
     trained_pipeline, artifacts = train(pipeline, X, y, splitter, return_artifacts=True)
     pred = backtest(trained_pipeline, X, y, splitter)
-    assert len(pred) == 190
+    assert len(pred) == 1000
+    assert len(pred.dropna()) == 190

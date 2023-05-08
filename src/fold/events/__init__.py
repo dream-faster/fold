@@ -5,7 +5,7 @@ from typing import Callable, List, Optional, Tuple
 
 import pandas as pd
 
-from ..base import Artifact, Composite, Pipeline, Pipelines, T, Transformation
+from ..base import Artifact, Composite, Pipeline, Pipelines, T, Transformation, fit_noop
 from ..utils.list import wrap_in_list
 from .base import EventFilter, Labeler
 from .filters import EveryNth, NoFilter
@@ -85,6 +85,7 @@ class _EventLabelWrapper(Transformation):
         mode=Transformation.Properties.Mode.online,
         requires_X=False,
         _internal_supports_minibatch_backtesting=True,
+        memory_size=0,
     )
     last_events: Optional[pd.DataFrame] = None
 
@@ -92,19 +93,13 @@ class _EventLabelWrapper(Transformation):
         self.filter = event_filter
         self.labeler = labeler
 
-    def fit(
-        self,
-        X: pd.DataFrame,
-        y: pd.Series,
-        sample_weights: Optional[pd.Series] = None,
-    ) -> Optional[Artifact]:
-        original_start_times = self.filter.get_event_start_times(y)
-        events = self.labeler.label_events(original_start_times, y)
-        self.last_events = events
-
+    fit = fit_noop
     update = fit
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
     ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
-        return self.last_events["label"].to_frame().reindex(X.index), self.last_events
+        past_y = self._state.memory_y
+        original_start_times = self.filter.get_event_start_times(past_y)
+        events = self.labeler.label_events(original_start_times, past_y)
+        return events["label"].to_frame().reindex(X.index), events
