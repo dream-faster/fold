@@ -53,9 +53,14 @@ class OptimizeGridSearch(Optimizer):
 
     def get_candidates(self) -> Iterable[Pipeline]:
         if self.candidates is None:
+            all_transformation = list(traverse(self.pipeline))
+
+            for transformation in all_transformation:
+                transformation._origin_id = id(transformation)
+
             param_grid = {
-                f"{id(transformation)}.{key}": value
-                for transformation in list(traverse(self.pipeline))
+                f"{transformation._origin_id}.{key}": value
+                for transformation in all_transformation
                 for key, value in ensure_dict(transformation.params_to_try).items()
                 if transformation.params_to_try is not None
             }
@@ -64,14 +69,11 @@ class OptimizeGridSearch(Optimizer):
                 for params in list(ParameterGrid(param_grid))
             ]
 
-            for transformation in list(traverse(self.pipeline)):
-                transformation._key = id(transformation)
-
             def __apply_params(params: dict) -> Callable:
                 def __apply_params_to_transformation(
                     transformation: Tunable,
                 ) -> Tunable:
-                    selected_params = params[transformation._key]
+                    selected_params = params[transformation._origin_id]
                     return transformation.clone_with_params(
                         **{**transformation.get_params(), **selected_params}
                     )
