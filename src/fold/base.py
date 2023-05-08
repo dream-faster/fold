@@ -48,7 +48,6 @@ class Composite(ABC):
     ) -> Optional[Pipelines]:
         return None
 
-    @abstractmethod
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
     ) -> pd.DataFrame:

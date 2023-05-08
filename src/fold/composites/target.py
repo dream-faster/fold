@@ -84,11 +84,6 @@ class TransformTarget(Composite):
         else:
             return y.to_frame(), None
 
-    def postprocess_result_primary(
-        self, results: List[pd.DataFrame], y: Optional[pd.Series]
-    ) -> pd.DataFrame:
-        raise NotImplementedError
-
     def preprocess_secondary(
         self,
         X: pd.DataFrame,
