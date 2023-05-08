@@ -20,6 +20,8 @@ class Backend(Enum):
 
     no = "no"
     ray = "ray"
+    process = "process"
+    thread = "thread"
 
     @staticmethod
     def from_str(value: Union[str, Backend]) -> Backend:

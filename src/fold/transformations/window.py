@@ -82,6 +82,7 @@ class AddWindowFeatures(Transformation, Tunable):
     def __init__(
         self,
         column_window_func: Union[ColumnWindowFunction, List[ColumnWindowFunction]],
+        engine: str = "pandas",
         params_to_try: Optional[dict] = None,
     ) -> None:
         self.column_window_func = [
