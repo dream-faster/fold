@@ -2,10 +2,9 @@ from imblearn.over_sampling import RandomOverSampler
 from imblearn.under_sampling import RandomUnderSampler
 
 from fold.composites.sample import Sample
-from fold.loop import train
-from fold.loop.encase import train_backtest
+from fold.loop import train_backtest
 from fold.models.dummy import DummyRegressor
-from fold.splitters import ExpandingWindowSplitter, SingleWindowSplitter
+from fold.splitters import SingleWindowSplitter
 from fold.transformations.dev import Test
 from fold.utils.tests import generate_zeros_and_ones_skewed
 
