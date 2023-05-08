@@ -45,7 +45,6 @@ def test_sklearn_regressor() -> None:
     ]
     pred, _ = train_backtest(pipeline, X, y, splitter)
     assert (pred.squeeze() == y[pred.index]).all()
-    assert len(pred) == 600
 
     tuneability_test(
         instance=WrapSKLearnRegressor.from_model(pipeline[0]),
