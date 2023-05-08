@@ -71,10 +71,8 @@ class Sample(Composite):
         if fit:
             X_resampled, y_resampled = self.sampler.fit_resample(X, y)
             X_resampled.columns = X.columns
-            X_resampled.index = X.index[: len(X_resampled)]
             if y is not None:
                 y_resampled.name = y.name
-                y_resampled.index = y.index[: len(y_resampled)]
             return X_resampled, y_resampled
         else:
             return X, y
