@@ -23,7 +23,7 @@ class StandardScaler(WrapInvertibleSKLearnTransformation):
     >>> from fold.transformations import StandardScaler
     >>> from fold.utils.tests import generate_sine_wave_data
     >>> X, y  = generate_sine_wave_data()
-    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> pipeline = StandardScaler()
     >>> X["sine"].head()
     2021-12-31 07:20:00    0.0000
@@ -79,7 +79,7 @@ class MinMaxScaler(WrapInvertibleSKLearnTransformation):
     >>> from fold.transformations import MinMaxScaler
     >>> from fold.utils.tests import generate_sine_wave_data
     >>> X, y  = generate_sine_wave_data()
-    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> pipeline = MinMaxScaler()
     >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
     >>> X["sine"].loc[preds.index].head()

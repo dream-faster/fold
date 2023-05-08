@@ -28,7 +28,7 @@ class AddLagsY(Transformation, Tunable):
     >>> from fold.transformations import AddLagsY
     >>> from fold.utils.tests import generate_sine_wave_data
     >>> _, y  = generate_sine_wave_data()
-    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> pipeline = AddLagsY([1,2,3])
     >>> preds, trained_pipeline = train_backtest(pipeline, None, y, splitter)
     >>> preds.head()
@@ -99,7 +99,7 @@ class AddLagsX(Transformation, Tunable):
     >>> from fold.transformations import AddLagsX
     >>> from fold.utils.tests import generate_sine_wave_data
     >>> X, y  = generate_sine_wave_data()
-    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> pipeline = AddLagsX([("sine", 1), ("sine", [2,3])])
     >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
     >>> preds.head()

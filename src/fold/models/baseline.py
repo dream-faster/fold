@@ -23,7 +23,7 @@ class Naive(TimeSeriesModel):
     >>> from fold.models import Naive
     >>> from fold.utils.tests import generate_sine_wave_data
     >>> X, y  = generate_sine_wave_data()
-    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> pipeline = Naive()
     >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
     >>> pd.concat([preds, y[preds.index]], axis=1).head()

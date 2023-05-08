@@ -67,7 +67,7 @@ class Concat(Composite):
         >>> from fold.composites import Concat
         >>> from fold.utils.tests import generate_sine_wave_data
         >>> X, y  = generate_sine_wave_data()
-        >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+        >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
         >>> pipeline = Concat([
         ...     lambda X: X.assign(sine_plus_1=X["sine"] + 1),
         ...     lambda X: X.assign(sine_plus_2=X["sine"] + 2),

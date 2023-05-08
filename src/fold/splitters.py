@@ -43,8 +43,8 @@ class SlidingWindowSplitter(Splitter):
     Parameters
     ----------
 
-    initial_train_window : int, float
-        The initial training window size. If a float, it is interpreted as a fraction of the total length of the data.
+    train_window : int, float
+        The training window size. If a float, it is interpreted as a fraction of the total length of the data.
     step : int, float
         The step size of the sliding window. If a float, it is interpreted as a fraction of the total length of the data.
     embargo : int, optional
@@ -57,7 +57,7 @@ class SlidingWindowSplitter(Splitter):
 
     def __init__(
         self,
-        initial_train_window: Union[
+        train_window: Union[
             int, float
         ],  # this is what you don't out of sample get predictions for
         step: Union[int, float],
@@ -65,7 +65,7 @@ class SlidingWindowSplitter(Splitter):
         start: int = 0,
         end: Optional[int] = None,
     ) -> None:
-        self.window_size = initial_train_window
+        self.window_size = train_window
         self.step = step
         self.embargo = embargo
         self.start = start

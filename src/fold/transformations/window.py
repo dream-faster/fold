@@ -63,7 +63,7 @@ class AddWindowFeatures(Transformation, Tunable):
     >>> from fold.transformations import AddWindowFeatures
     >>> from fold.utils.tests import generate_sine_wave_data
     >>> X, y  = generate_sine_wave_data()
-    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> pipeline = AddWindowFeatures(("sine", 10, "mean"))
     >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
     >>> preds.head()

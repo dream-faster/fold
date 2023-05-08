@@ -27,7 +27,7 @@ class TakeLog(InvertibleTransformation, Tunable):
     >>> from fold.transformations import TakeLog
     >>> from fold.utils.tests import generate_sine_wave_data
     >>> X, y  = generate_sine_wave_data(freq="min")
-    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> pipeline = TakeLog()
     >>> X["sine"].head()
     2021-12-31 07:20:00    0.0000
@@ -117,7 +117,7 @@ class AddConstant(InvertibleTransformation, Tunable):
     >>> from fold.transformations import AddConstant
     >>> from fold.utils.tests import generate_sine_wave_data
     >>> X, y  = generate_sine_wave_data(freq="min")
-    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> pipeline = AddConstant(1.0)
     >>> X["sine"].head()
     2021-12-31 07:20:00    0.0000
@@ -202,7 +202,7 @@ class TurnPositive(InvertibleTransformation):
     >>> from fold.utils.tests import generate_sine_wave_data
     >>> X, y  = generate_sine_wave_data(freq="min")
     >>> X, y  = X - 1, y - 1
-    >>> splitter = SlidingWindowSplitter(initial_train_window=0.5, step=0.2)
+    >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> pipeline = TurnPositive()
     >>> X["sine"].head()
     2021-12-31 07:20:00   -1.0000
