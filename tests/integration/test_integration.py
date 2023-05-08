@@ -10,7 +10,7 @@ from fold.transformations.lags import AddLagsX, AddLagsY
 from fold.utils.dataset import get_preprocessed_dataset
 
 
-@pytest.mark.parametrize("backend", ["no", "ray", "parallel", "thread"])
+@pytest.mark.parametrize("backend", ["no", "ray", "process", "thread"])
 def test_on_weather_data(backend: str) -> None:
     X, y = get_preprocessed_dataset(
         "weather/historical_hourly_la",
