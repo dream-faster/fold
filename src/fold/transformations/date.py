@@ -82,8 +82,10 @@ class AddDateTimeFeatures(Transformation, Tunable):
     def __init__(
         self,
         features: List[Union[DateTimeFeature, str]],
+        params_to_try: Optional[dict] = None,
     ) -> None:
         self.features = [DateTimeFeature(f) for f in wrap_in_list(features)]
+        self.params_to_try = params_to_try
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool

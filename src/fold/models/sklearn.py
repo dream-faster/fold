@@ -24,13 +24,23 @@ class WrapSKLearnClassifier(Model, Tunable):
         self,
         model_class: Type,
         init_args: dict,
+        params_to_try: Optional[dict] = None,
     ) -> None:
         self.model = model_class(**init_args)
         self.name = self.model.__class__.__name__
+        self.params_to_try = params_to_try
 
     @classmethod
-    def from_model(cls, model) -> WrapSKLearnClassifier:
-        return cls(model_class=model.__class__, init_args=model.get_params())
+    def from_model(
+        cls,
+        model,
+        params_to_try: Optional[dict] = None,
+    ) -> WrapSKLearnClassifier:
+        return cls(
+            model_class=model.__class__,
+            init_args=model.get_params(),
+            params_to_try=params_to_try,
+        )
 
     def fit(
         self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
@@ -72,7 +82,8 @@ class WrapSKLearnClassifier(Model, Tunable):
 
     def clone_with_params(self, **parameters) -> Tunable:
         return WrapSKLearnClassifier(
-            model_class=self.model.__class__, init_args=parameters
+            model_class=self.model.__class__,
+            init_args=parameters,
         )
 
 
@@ -90,13 +101,23 @@ class WrapSKLearnRegressor(Model, Tunable):
         self,
         model_class: Type,
         init_args: dict,
+        params_to_try: Optional[dict] = None,
     ) -> None:
         self.model = model_class(**init_args)
         self.name = self.model.__class__.__name__
+        self.params_to_try = params_to_try
 
     @classmethod
-    def from_model(cls, model) -> WrapSKLearnRegressor:
-        return cls(model_class=model.__class__, init_args=model.get_params())
+    def from_model(
+        cls,
+        model,
+        params_to_try: Optional[dict] = None,
+    ) -> WrapSKLearnRegressor:
+        return cls(
+            model_class=model.__class__,
+            init_args=model.get_params(),
+            params_to_try=params_to_try,
+        )
 
     def fit(
         self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
@@ -130,7 +151,8 @@ class WrapSKLearnRegressor(Model, Tunable):
 
     def clone_with_params(self, **parameters) -> Tunable:
         return WrapSKLearnRegressor(
-            model_class=self.model.__class__, init_args=parameters
+            model_class=self.model.__class__,
+            init_args=parameters,
         )
 
 

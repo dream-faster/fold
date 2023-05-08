@@ -193,9 +193,14 @@ class InvertibleTransformation(Transformation, ABC):
 
 
 class Tunable(ABC):
+    params_to_try: Optional[dict]
+
     @abstractmethod
     def get_params(self) -> dict:
         raise NotImplementedError
+
+    def get_params_to_try(self) -> Optional[dict]:
+        self.params_to_try
 
     def clone_with_params(self, **parameters) -> Tunable:
         """
