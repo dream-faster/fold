@@ -79,7 +79,7 @@ def to_hierachical_dict(flat_dict: dict, separator: str = ".") -> dict:
                 key.split(separator)[1]
             ] = to_hierachical_dict(value)
 
-    return dict_  # dict({key: dict(value) for key, value in dict_.items()})
+    return dict_
 
 
 def ensure_dict(dictionary: Optional[Dict]) -> dict:
