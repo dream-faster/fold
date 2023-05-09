@@ -21,7 +21,7 @@ class SelectBest(Composite, Tunable):
     ) -> None:
         self.choose_from = choose_from
         for i in self.choose_from:
-            if isinstance(i, Tunable) and i.get_params_to_try() is None:
+            if isinstance(i, Tunable) and i.get_params_to_try() is not None:
                 raise ValueError(
                     "You can not simulatenously select a model and tune its parameters right now."
                 )
