@@ -1,4 +1,3 @@
-from copy import deepcopy
 from typing import Callable, List
 
 from .base import Composite, Optimizer, Pipeline, Transformation
@@ -9,15 +8,12 @@ def traverse_apply(pipeline: Pipeline, apply_func: Callable) -> Pipeline:
     def _traverse_apply(pipeline):
         if isinstance(pipeline, List):
             return [_traverse_apply(t) for t in pipeline]
-        elif isinstance(pipeline, Composite):
-            composite = pipeline
-            return composite.clone(clone_children=_traverse_apply)
         elif isinstance(pipeline, Optimizer):
             raise ValueError("Optimizer is not supported within an Optimizer.")
-        elif isinstance(pipeline, Transformation):
-            return apply_func(pipeline)
+        elif isinstance(pipeline, Transformation) or isinstance(pipeline, Composite):
+            return apply_func(pipeline, _traverse_apply)
 
-    return _traverse_apply(deepcopy(pipeline))
+    return _traverse_apply(pipeline)
 
 
 def traverse(
@@ -31,6 +27,7 @@ def traverse(
         for i in pipeline:
             yield from traverse(i)
     elif isinstance(pipeline, Composite):
+        yield pipeline
         items = pipeline.get_child_transformations_primary() + empty_if_none(
             pipeline.get_child_transformations_secondary()
         )

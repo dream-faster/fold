@@ -205,7 +205,7 @@ class Tunable(ABC):
         raise NotImplementedError
 
     def get_params_to_try(self) -> Optional[dict]:
-        self.params_to_try
+        return self.params_to_try
 
     def clone_with_params(
         self, parameters: dict, clone_children: Optional[Callable] = None
