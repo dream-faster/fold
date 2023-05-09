@@ -8,6 +8,7 @@ from typing import Callable, Iterable, List, Optional
 import pandas as pd
 from sklearn.model_selection import ParameterGrid
 
+from fold.splitters import SingleWindowSplitter
 from fold.traverse import traverse, traverse_apply
 from fold.utils.list import ensure_dict, to_hierachical_dict, wrap_in_list
 
@@ -27,11 +28,13 @@ class OptimizeGridSearch(Optimizer):
         pipeline: Pipeline,
         scorer: Callable,
         is_scorer_loss: bool = True,
+        splitter: SingleWindowSplitter = SingleWindowSplitter(0.7),
     ) -> None:
         self.pipeline = wrap_in_list(pipeline)
         self.name = "GridSearchOptimizer-" + get_concatenated_names(self.pipeline)
         self.scorer = scorer
         self.is_scorer_loss = is_scorer_loss
+        self.splitter = splitter
 
     @classmethod
     def from_cloned_instance(
@@ -39,12 +42,13 @@ class OptimizeGridSearch(Optimizer):
         pipeline: Pipeline,
         scorer: Callable,
         is_scorer_loss: bool,
+        splitter: SingleWindowSplitter,
         candidates: Optional[List[Tunable]],
         selected_params_: Optional[dict],
         selected_pipeline_: Optional[Tunable],
         scores_: Optional[List[float]],
     ) -> OptimizeGridSearch:
-        instance = cls(pipeline, scorer, is_scorer_loss)
+        instance = cls(pipeline, scorer, is_scorer_loss, splitter)
         instance.candidates = candidates
         instance.selected_params_ = selected_params_
         instance.selected_pipeline_ = selected_pipeline_
@@ -110,6 +114,7 @@ class OptimizeGridSearch(Optimizer):
             pipeline=clone_children(self.pipeline),
             scorer=self.scorer,
             is_scorer_loss=self.is_scorer_loss,
+            splitter=self.splitter,
             candidates=self.candidates,
             selected_params_=self.selected_params_,
             selected_pipeline_=self.selected_pipeline_,

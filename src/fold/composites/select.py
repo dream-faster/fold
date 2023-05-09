@@ -7,12 +7,15 @@ from typing import Callable, Iterable, List, Optional
 
 import pandas as pd
 
+from fold.splitters import SingleWindowSplitter
+
 from ..base import Artifact, Optimizer, Pipeline, Pipelines
 from .common import get_concatenated_names
 
 
 class SelectBest(Optimizer):
     selected_pipeline: Optional[Pipeline] = None
+    splitter = SingleWindowSplitter(0.7)
 
     def __init__(
         self,

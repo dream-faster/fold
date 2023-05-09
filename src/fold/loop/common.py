@@ -4,12 +4,22 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 import pandas as pd
 
-from ..base import Artifact, Composite, Optimizer, Transformation, Transformations, X
+from ..base import (
+    Artifact,
+    Composite,
+    Optimizer,
+    Pipeline,
+    TrainedPipelines,
+    Transformation,
+    Transformations,
+    X,
+)
 from ..models.base import Model
+from ..splitters import Fold
 from ..utils.checks import is_prediction, is_X_available
 from ..utils.dataframe import concat_on_columns, concat_on_index
 from ..utils.trim import trim_initial_nans, trim_initial_nans_single
@@ -189,7 +199,6 @@ def _process_optimizer(
     optimized_pipeline = optimizer.get_optimized_pipeline()
     artifact = None
     if optimized_pipeline is None:
-        # Optimized needs to run the search
         candidates = optimizer.get_candidates()
 
         results_primary, _ = zip(
@@ -209,7 +218,9 @@ def _process_optimizer(
         results_primary = [
             trim_initial_nans_single(result) for result in results_primary
         ]
-        artifact = optimizer.process_candidate_results(results_primary, y)
+        artifact = optimizer.process_candidate_results(
+            results_primary, y.loc[results_primary[0].index]
+        )
 
     optimized_pipeline = optimizer.get_optimized_pipeline()
     return recursively_transform(
@@ -373,8 +384,29 @@ def __process_candidates(
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
 ) -> Tuple[X, Artifact]:
-    return recursively_transform(
-        X, y, sample_weights, artifacts, child_transform, stage, backend
+    splits = optimizer.splitter.splits(length=len(y))
+
+    (
+        processed_idx,
+        processed_pipelines,
+        processed_artifacts,
+    ) = _sequential_train_on_window(
+        child_transform, X, y, splits, sample_weights, backend
+    )
+    trained_pipelines = _extract_trained_pipelines(processed_idx, processed_pipelines)
+
+    result = _backtest_on_window(
+        trained_pipelines,
+        splits[0],
+        X,
+        y,
+        sample_weights,
+        backend,
+        mutate=False,
+    )
+    return (
+        trim_initial_nans_single(result),
+        processed_artifacts[0],
     )
 
 
@@ -423,3 +455,113 @@ def deepcopy_pipelines(transformation: Transformations) -> Transformations:
         return transformation.clone(deepcopy_pipelines)
     else:
         return deepcopy(transformation)
+
+
+def _train_on_window(
+    X: pd.DataFrame,
+    y: pd.Series,
+    sample_weights: Optional[pd.Series],
+    pipeline: Pipeline,
+    split: Fold,
+    never_update: bool,
+    backend: Backend,
+) -> Tuple[int, Pipeline, Artifact]:
+    stage = Stage.inital_fit if (split.order == 0 or never_update) else Stage.update
+    window_start = (
+        split.update_window_start if stage == Stage.update else split.train_window_start
+    )
+    window_end = (
+        split.update_window_end if stage == Stage.update else split.train_window_end
+    )
+    X_train: pd.DataFrame = X.iloc[window_start:window_end]  # type: ignore
+    y_train = y.iloc[window_start:window_end]
+
+    sample_weights_train = (
+        sample_weights.iloc[window_start:window_end]
+        if sample_weights is not None
+        else None
+    )
+    artifacts = pd.DataFrame()
+
+    pipeline = deepcopy_pipelines(pipeline)
+    X_train, artifacts = recursively_transform(
+        X_train, y_train, sample_weights_train, artifacts, pipeline, stage, backend
+    )
+
+    return split.model_index, pipeline, artifacts
+
+
+def _backtest_on_window(
+    trained_pipelines: TrainedPipelines,
+    split: Fold,
+    X: pd.DataFrame,
+    y: pd.Series,
+    sample_weights: Optional[pd.Series],
+    backend: Backend,
+    mutate: bool,
+) -> pd.DataFrame:
+    current_pipeline = [
+        pipeline_over_time.loc[split.model_index]
+        for pipeline_over_time in trained_pipelines
+    ]
+    if not mutate:
+        current_pipeline = deepcopy_pipelines(current_pipeline)
+
+    X_test = X.iloc[split.test_window_start : split.test_window_end]
+    y_test = y.iloc[split.test_window_start : split.test_window_end]
+    sample_weights_test = (
+        sample_weights.iloc[split.train_window_start : split.test_window_end]
+        if sample_weights is not None
+        else None
+    )
+    return recursively_transform(
+        X_test,
+        y_test,
+        sample_weights_test,
+        pd.DataFrame(),
+        current_pipeline,
+        stage=Stage.update_online_only,
+        backend=backend,
+    )[0]
+
+
+def _sequential_train_on_window(
+    pipeline: Pipeline,
+    X: Optional[pd.DataFrame],
+    y: pd.Series,
+    splits: List[Fold],
+    sample_weights: Optional[pd.Series] = None,
+    backend: Union[Backend, str] = Backend.no,
+) -> Tuple[List[int], List[Pipeline], List[Artifact]]:
+    processed_idx = []
+    processed_pipelines: List[Pipeline] = []
+    processed_pipeline = pipeline
+    processed_artifacts = []
+    for split in splits:
+        processed_id, processed_pipeline, processed_artifact = _train_on_window(
+            X,
+            y,
+            sample_weights,
+            processed_pipeline,
+            split,
+            False,
+            backend,
+        )
+        processed_idx.append(processed_id)
+        processed_pipelines.append(processed_pipeline)
+        processed_artifacts.append(processed_artifact)
+
+    return processed_idx, processed_pipelines, processed_artifacts
+
+
+def _extract_trained_pipelines(
+    processed_idx: List[int], processed_pipelines: List[Pipeline]
+) -> TrainedPipelines:
+    return [
+        pd.Series(
+            transformation_over_time,
+            index=processed_idx,
+            name=transformation_over_time[0].name,
+        )
+        for transformation_over_time in zip(*processed_pipelines)
+    ]
