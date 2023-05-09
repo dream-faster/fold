@@ -20,8 +20,8 @@ def trim_initial_nans(
     if first_valid_index_X is None or first_valid_index_y is None:
         return (
             pd.DataFrame(),
-            pd.Series(),
-            pd.Series() if sample_weights is not None else None,
+            pd.Series(dtype="float64"),
+            pd.Series(dtype="float64") if sample_weights is not None else None,
         )
     first_valid_index = max(first_valid_index_X, first_valid_index_y)
     return (

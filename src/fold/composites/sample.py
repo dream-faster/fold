@@ -62,6 +62,10 @@ class Sample(Composite):
         pipeline: Pipeline,
     ) -> None:
         self.sampler = sampler
+        from imblearn.over_sampling import RandomOverSampler
+
+        if isinstance(sampler, RandomOverSampler):
+            raise ValueError("Oversamplig is not supported.")
         self.pipeline = wrap_in_double_list_if_needed(pipeline)
         self.name = f"Sample-{sampler.__class__.__name__}-{get_concatenated_names(self.pipeline)}"
 
