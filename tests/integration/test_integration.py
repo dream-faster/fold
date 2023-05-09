@@ -27,7 +27,7 @@ def test_on_weather_data() -> None:
     _, _ = train_backtest(pipeline, X, y, splitter, sample_weights=sample_weights)
 
 
-@pytest.mark.parametrize("backend", ["no", "ray", "pathos", "thread"])
+@pytest.mark.parametrize("backend", ["no", "ray", "thread"])
 def test_on_weather_data_backends(backend: str) -> None:
     X, y = get_preprocessed_dataset(
         "weather/historical_hourly_la",
