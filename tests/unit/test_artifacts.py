@@ -30,12 +30,15 @@ def test_artifacts_optimizer() -> None:
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     pipeline = [
         OptimizeGridSearch(
-            model=DummyRegressor(predicted_value=1),
-            param_grid=dict(predicted_value=[100, 25, 50]),
+            pipeline=DummyRegressor(
+                predicted_value=1, params_to_try=dict(predicted_value=[100, 25, 50])
+            ),
             scorer=mean_squared_error,
             is_scorer_loss=True,
         )
     ]
     _, artifacts = train(pipeline, X, y, splitter, return_artifacts=True)
     assert artifacts is not None
-    assert artifacts["selected_params"].iloc[0] == {"predicted_value": 25}
+    assert list(artifacts["selected_params"].iloc[0].values())[0] == {
+        "predicted_value": 25
+    }

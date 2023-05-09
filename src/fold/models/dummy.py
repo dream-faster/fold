@@ -9,7 +9,7 @@ from ..base import Transformation, Tunable, fit_noop
 from .base import Model
 
 
-class DummyClassifier(Model):
+class DummyClassifier(Model, Tunable):
     """
     A model that predicts a predefined class with predefined probabilities.
 
@@ -54,10 +54,12 @@ class DummyClassifier(Model):
         predicted_value: Union[float, int],
         all_classes: List[int],
         predicted_probabilities: List[float],
+        params_to_try: Optional[dict] = None,
     ) -> None:
         self.predicted_value = predicted_value
         self.all_classes = all_classes
         self.predicted_probabilities = predicted_probabilities
+        self.params_to_try = params_to_try
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         predictions = pd.Series(
@@ -81,6 +83,13 @@ class DummyClassifier(Model):
     predict_in_sample = predict
     fit = fit_noop
     update = fit
+
+    def get_params(self) -> dict:
+        return dict(
+            predicted_value=self.predicted_value,
+            all_classes=self.all_classes,
+            predicted_probabilities=self.predicted_probabilities,
+        )
 
 
 class DummyRegressor(Model, Tunable):
@@ -134,4 +143,4 @@ class DummyRegressor(Model, Tunable):
     update = fit
 
     def get_params(self) -> dict:
-        return {"predicted_value": self.predicted_value}
+        return dict(predicted_value=self.predicted_value)

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import enum
+import uuid
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Callable, Iterable, List, Optional, Tuple, TypeVar, Union
@@ -193,6 +194,11 @@ class InvertibleTransformation(Transformation, ABC):
 
 class Tunable(ABC):
     params_to_try: Optional[dict]
+    id: str
+
+    def __init_subclass__(cls, *args, **kwargs):
+        super().__init_subclass__(*args, **kwargs)
+        cls.id = str(uuid.uuid4())
 
     @abstractmethod
     def get_params(self) -> dict:

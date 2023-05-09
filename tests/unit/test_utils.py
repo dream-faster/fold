@@ -2,11 +2,11 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from fold.composites.common import traverse, traverse_apply
 from fold.composites.target import TransformTarget
 from fold.transformations.dev import Lookahead, Test
 from fold.transformations.difference import Difference
 from fold.transformations.math import TakeLog
+from fold.traverse import traverse, traverse_apply
 from fold.utils.dataframe import to_series
 from fold.utils.trim import (
     get_first_valid_index,
