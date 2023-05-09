@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from inspect import getfullargspec
-from typing import Optional, Tuple, Type
+from typing import Callable, Optional, Tuple, Type
 
 import pandas as pd
 
@@ -87,7 +87,9 @@ class WrapSKLearnTransformation(Transformation, Tunable):
     def get_params(self) -> dict:
         return self.transformation.get_params()
 
-    def clone_with_params(self, **parameters) -> Tunable:
+    def clone_with_params(
+        self, parameters: dict, clone_children: Optional[Callable] = None
+    ) -> Tunable:
         return WrapSKLearnTransformation(
             transformation_class=self.transformation.__class__,
             init_args=parameters,
@@ -151,7 +153,9 @@ class WrapSKLearnFeatureSelector(FeatureSelector, Tunable):
     def get_params(self) -> dict:
         return self.transformation.get_params()
 
-    def clone_with_params(self, **parameters) -> Tunable:
+    def clone_with_params(
+        self, parameters: dict, clone_children: Optional[Callable] = None
+    ) -> Tunable:
         return WrapSKLearnFeatureSelector(
             transformation_class=self.transformation.__class__,
             init_args=parameters,

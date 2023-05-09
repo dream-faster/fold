@@ -62,8 +62,7 @@ class OptimizeGridSearch(Optimizer):
                 if transformation.params_to_try is not None
             }
             self.param_permutations = [
-                to_hierachical_dict(params)
-                for params in list(ParameterGrid(param_grid))
+                to_hierachical_dict(params) for params in ParameterGrid(param_grid)
             ]
 
             def __apply_params(params: dict) -> Callable:
@@ -72,7 +71,7 @@ class OptimizeGridSearch(Optimizer):
                 ) -> Tunable:
                     selected_params = params.get(transformation.id, {})
                     return transformation.clone_with_params(
-                        **{**transformation.get_params(), **selected_params}
+                        {**transformation.get_params(), **selected_params}
                     )
 
                 return __apply_params_to_transformation
@@ -106,9 +105,9 @@ class OptimizeGridSearch(Optimizer):
             {"selected_params": [self.selected_params_]}, index=y.index[-1:]
         )
 
-    def clone(self, clone_child_transformations: Callable) -> OptimizeGridSearch:
+    def clone(self, clone_children: Callable) -> OptimizeGridSearch:
         return OptimizeGridSearch.from_cloned_instance(
-            pipeline=clone_child_transformations(self.pipeline),
+            pipeline=clone_children(self.pipeline),
             scorer=self.scorer,
             is_scorer_loss=self.is_scorer_loss,
             candidates=self.candidates,

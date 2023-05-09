@@ -131,10 +131,10 @@ class ModelResiduals(Composite):
     ) -> Optional[Pipelines]:
         return self.meta
 
-    def clone(self, clone_child_transformations: Callable) -> ModelResiduals:
+    def clone(self, clone_children: Callable) -> ModelResiduals:
         clone = ModelResiduals(
-            primary=clone_child_transformations(self.primary),
-            meta=clone_child_transformations(self.meta),
+            primary=clone_children(self.primary),
+            meta=clone_children(self.meta),
             primary_output_included=self.primary_output_included,
         )
         clone.properties = self.properties

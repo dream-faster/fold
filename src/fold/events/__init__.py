@@ -70,10 +70,10 @@ class _CreateEvents(Composite):
             axis="columns",
         )
 
-    def clone(self, clone_child_transformations: Callable) -> _CreateEvents:
+    def clone(self, clone_children: Callable) -> _CreateEvents:
         clone = _CreateEvents(
-            clone_child_transformations(self.wrapped_pipeline),
-            clone_child_transformations(self.transformation),
+            clone_children(self.wrapped_pipeline),
+            clone_children(self.transformation),
         )
         clone.properties = self.properties
         return clone

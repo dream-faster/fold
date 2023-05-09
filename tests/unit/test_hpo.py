@@ -6,6 +6,7 @@ from fold.loop import backtest, train, train_backtest
 from fold.models.dummy import DummyClassifier, DummyRegressor
 from fold.models.sklearn import WrapSKLearnRegressor
 from fold.splitters import ExpandingWindowSplitter
+from fold.transformations import Difference
 from fold.utils.tests import generate_monotonous_data
 
 
@@ -29,6 +30,7 @@ def test_grid_hpo() -> None:
                     predicted_value=3.0,
                     params_to_try=dict(predicted_value=[22.0, 32.0]),
                 ),
+                Difference(),
             ],
             scorer=mean_squared_error,
         )

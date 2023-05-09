@@ -11,7 +11,7 @@ def traverse_apply(pipeline: Pipeline, apply_func: Callable) -> Pipeline:
             return [_traverse_apply(t) for t in pipeline]
         elif isinstance(pipeline, Composite):
             composite = pipeline
-            return composite.clone(clone_child_transformations=_traverse_apply)
+            return composite.clone(clone_children=_traverse_apply)
         elif isinstance(pipeline, Optimizer):
             raise ValueError("Optimizer is not supported within an Optimizer.")
         elif isinstance(pipeline, Transformation):

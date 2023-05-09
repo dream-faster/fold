@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Optional, Type, Union
+from typing import Callable, Optional, Type, Union
 
 import pandas as pd
 
@@ -80,7 +80,9 @@ class WrapSKLearnClassifier(Model, Tunable):
     def get_params(self) -> dict:
         return self.model.get_params()
 
-    def clone_with_params(self, **parameters) -> Tunable:
+    def clone_with_params(
+        self, parameters: dict, clone_children: Optional[Callable] = None
+    ) -> Tunable:
         return WrapSKLearnClassifier(
             model_class=self.model.__class__,
             init_args=parameters,
@@ -149,7 +151,9 @@ class WrapSKLearnRegressor(Model, Tunable):
     def get_params(self) -> dict:
         return self.model.get_params()
 
-    def clone_with_params(self, **parameters) -> Tunable:
+    def clone_with_params(
+        self, parameters: dict, clone_children: Optional[Callable] = None
+    ) -> Tunable:
         return WrapSKLearnRegressor(
             model_class=self.model.__class__,
             init_args=parameters,
