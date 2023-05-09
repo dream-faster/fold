@@ -8,11 +8,11 @@ from typing import Callable, Iterable, List, Optional
 import pandas as pd
 from sklearn.model_selection import ParameterGrid
 
-from fold.splitters import SingleWindowSplitter
-from fold.traverse import traverse, traverse_apply
-from fold.utils.list import to_hierachical_dict, wrap_in_list
-
 from ..base import Artifact, Optimizer, Pipeline, Tunable
+from ..splitters import SingleWindowSplitter
+from ..transformations.dev import Identity
+from ..traverse import traverse, traverse_apply
+from ..utils.list import to_hierachical_dict, wrap_in_list
 from .common import get_concatenated_names
 
 
@@ -66,7 +66,9 @@ class OptimizeGridSearch(Optimizer):
             param_grid = {
                 f"{transformation.id}.{key}": value
                 for transformation in tunables
-                for key, value in transformation.get_params_to_try().items()
+                for key, value in _process_params(
+                    transformation.get_params_to_try()
+                ).items()
             }
             self.param_permutations = [
                 to_hierachical_dict(params) for params in ParameterGrid(param_grid)
@@ -77,6 +79,8 @@ class OptimizeGridSearch(Optimizer):
                     tunable: Tunable, clone_children: Callable
                 ) -> Tunable:
                     selected_params = params.get(tunable.id, {})
+                    if "passthrough" in selected_params:
+                        return Identity()  # type: ignore
                     return tunable.clone_with_params(
                         parameters={**tunable.get_params(), **selected_params},
                         clone_children=clone_children,
@@ -124,3 +128,9 @@ class OptimizeGridSearch(Optimizer):
             selected_pipeline_=self.selected_pipeline_,
             scores_=self.scores_,
         )
+
+
+def _process_params(params_to_try: dict) -> dict:
+    if "passthrough" in params_to_try:
+        params_to_try["passthrough"] = [True, False]
+    return params_to_try
