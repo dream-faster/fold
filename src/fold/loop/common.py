@@ -8,18 +8,18 @@ from typing import List, Optional, Tuple
 
 import pandas as pd
 
-from fold.splitters import Fold, SingleWindowSplitter
-
 from ..base import (
     Artifact,
     Composite,
     Optimizer,
     Pipeline,
+    TrainedPipelines,
     Transformation,
     Transformations,
     X,
 )
 from ..models.base import Model
+from ..splitters import Fold, SingleWindowSplitter
 from ..utils.checks import is_prediction, is_X_available
 from ..utils.dataframe import concat_on_columns, concat_on_index
 from ..utils.trim import trim_initial_nans, trim_initial_nans_single
@@ -202,45 +202,6 @@ def _process_optimizer(
         # Optimized needs to run the search
         candidates = optimizer.get_candidates()
 
-        splitter = SingleWindowSplitter(0.8)
-        splits = splitter.splits(length=len(y))
-
-        processed_idx = []
-        processed_pipelines = []
-        processed_pipeline = None
-        processed_artifacts = []
-        for split in splits:
-            (
-                processed_id,
-                processed_pipeline,
-                processed_artifact,
-            ) = _process_pipeline_window(
-                X,
-                y,
-                sample_weights,
-                processed_pipeline,
-                split,
-                False,
-                backend,
-            )
-            processed_idx.append(processed_id)
-            processed_pipelines.append(processed_pipeline)
-            processed_artifacts.append(processed_artifact)
-
-        _, _ = zip(
-            *backend_functions.process_child_transformations(
-                __process_candidates,
-                enumerate(candidates),
-                optimizer,
-                X,
-                y,
-                sample_weights,
-                artifacts,
-                stage,
-                backend,
-                None,
-            )
-        )
         results_primary, _ = zip(
             *backend_functions.process_child_transformations(
                 __process_candidates,
@@ -422,8 +383,41 @@ def __process_candidates(
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
 ) -> Tuple[X, Artifact]:
-    return recursively_transform(
-        X, y, sample_weights, artifacts, child_transform, stage, backend
+    splitter = SingleWindowSplitter(0.8)
+    split = splitter.splits(length=len(y))[0]
+
+    processed_id, processed_pipeline, processed_artifact = _train_on_window(
+        X,
+        y,
+        sample_weights,
+        child_transform,
+        split,
+        False,
+        backend,
+    )
+    trained_pipelines = [
+        pd.Series(
+            transformation_over_time,
+            index=[processed_id],
+            name=transformation_over_time[0].name,
+        )
+        for transformation_over_time in zip(*[processed_pipeline])
+    ]
+
+    results = [
+        _backtest_on_window(
+            trained_pipelines,
+            split,
+            X,
+            y,
+            sample_weights,
+            backend,
+            mutate=False,
+        )
+    ]
+    return (
+        trim_initial_nans_single(pd.concat(results, axis="index")),
+        processed_artifact,
     )
 
 
@@ -474,7 +468,7 @@ def deepcopy_pipelines(transformation: Transformations) -> Transformations:
         return deepcopy(transformation)
 
 
-def _process_pipeline_window(
+def _train_on_window(
     X: pd.DataFrame,
     y: pd.Series,
     sample_weights: Optional[pd.Series],
@@ -506,3 +500,37 @@ def _process_pipeline_window(
     )
 
     return split.model_index, pipeline, artifacts
+
+
+def _backtest_on_window(
+    trained_pipelines: TrainedPipelines,
+    split: Fold,
+    X: pd.DataFrame,
+    y: pd.Series,
+    sample_weights: Optional[pd.Series],
+    backend: Backend,
+    mutate: bool,
+) -> pd.DataFrame:
+    current_pipeline = [
+        pipeline_over_time.loc[split.model_index]
+        for pipeline_over_time in trained_pipelines
+    ]
+    if not mutate:
+        current_pipeline = deepcopy_pipelines(current_pipeline)
+
+    X_test = X.iloc[split.test_window_start : split.test_window_end]
+    y_test = y.iloc[split.test_window_start : split.test_window_end]
+    sample_weights_test = (
+        sample_weights.iloc[split.train_window_start : split.test_window_end]
+        if sample_weights is not None
+        else None
+    )
+    return recursively_transform(
+        X_test,
+        y_test,
+        sample_weights_test,
+        pd.DataFrame(),
+        current_pipeline,
+        stage=Stage.update_online_only,
+        backend=backend,
+    )[0]

@@ -9,7 +9,7 @@ from ..base import Pipeline, TrainedPipelines
 from ..splitters import Splitter
 from ..utils.list import wrap_in_list
 from .checks import check_types_multi_series
-from .training import _process_pipeline_window
+from .training import _train_on_window
 from .types import Backend
 from .wrap import wrap_transformation_if_needed
 
@@ -48,7 +48,7 @@ def _train_global(
     #  - global models are only possible with tabular models, we should throw an exception if one is passed in that we don't support
     for split in splits:
         for X, y, sample_weights in __get_X_y_from_data(data):
-            processed_id, processed_pipeline = _process_pipeline_window(
+            processed_id, processed_pipeline = _train_on_window(
                 processed_pipeline, X, y, sample_weights, split, True, backend, silent
             )
         processed_idx.append(processed_id)

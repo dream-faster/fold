@@ -11,7 +11,7 @@ from ..utils.dataframe import concat_on_index
 from ..utils.list import wrap_in_list
 from .backend import get_backend_dependent_functions
 from .checks import check_types
-from .common import _process_pipeline_window
+from .common import _train_on_window
 from .types import Backend, TrainMethod
 from .wrap import wrap_transformation_if_needed
 
@@ -77,7 +77,7 @@ def train(
             first_batch_index,
             first_batch_transformations,
             first_batch_artifacts,
-        ) = _process_pipeline_window(
+        ) = _train_on_window(
             X,
             y,
             sample_weights,
@@ -89,7 +89,7 @@ def train(
 
         rest_idx, rest_transformations, rest_artifacts = zip(
             *backend_functions.train_transformations(
-                _process_pipeline_window,
+                _train_on_window,
                 first_batch_transformations,
                 X,
                 y,
@@ -107,7 +107,7 @@ def train(
     elif train_method == TrainMethod.parallel and len(splits) > 1:
         processed_idx, processed_pipelines, processed_artifacts = zip(
             *backend_functions.train_transformations(
-                _process_pipeline_window,
+                _train_on_window,
                 pipeline,
                 X,
                 y,
@@ -125,11 +125,7 @@ def train(
         processed_pipeline = pipeline
         processed_artifacts = []
         for split in splits:
-            (
-                processed_id,
-                processed_pipeline,
-                processed_artifact,
-            ) = _process_pipeline_window(
+            (processed_id, processed_pipeline, processed_artifact,) = _train_on_window(
                 X,
                 y,
                 sample_weights,
@@ -167,7 +163,7 @@ def train_for_deployment(
 
     pipeline = wrap_in_list(pipeline)
     pipeline = wrap_transformation_if_needed(pipeline)
-    _, transformations, artifacts = _process_pipeline_window(
+    _, transformations, artifacts = _train_on_window(
         X,
         y,
         sample_weights,
