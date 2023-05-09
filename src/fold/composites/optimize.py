@@ -70,7 +70,7 @@ class OptimizeGridSearch(Optimizer):
                 def __apply_params_to_transformation(
                     transformation: Tunable,
                 ) -> Tunable:
-                    selected_params = params[transformation.id]
+                    selected_params = params.get(transformation.id, {})
                     return transformation.clone_with_params(
                         **{**transformation.get_params(), **selected_params}
                     )

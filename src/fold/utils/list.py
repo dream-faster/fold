@@ -2,7 +2,6 @@
 
 
 import collections
-from collections import defaultdict
 from collections.abc import Iterable
 from typing import Dict, List, Optional, Tuple, TypeVar, Union
 
@@ -67,33 +66,28 @@ def empty_if_none(input: Union[List, None]) -> List:
     return [] if input is None else input
 
 
-def to_hierachical_dict(flat_dict: dict, separator: str = ".") -> dict:
-    dict_ = {}
-    length_of_uuid4 = 36
+def to_hierachical_dict(flat_dict: dict, length_of_uuid4: int = 36) -> dict:
+    hierarchy = {}
     for key, value in flat_dict.items():
-        if separator in key:
-            unraveled_obj_key = key[:length_of_uuid4]
-            unraveled_param_key = key[length_of_uuid4 + 1 :]
-            if unraveled_obj_key in dict_:
-                dict_[unraveled_obj_key][unraveled_param_key] = value
-            else:
-                dict_[unraveled_obj_key] = {unraveled_param_key: value}
-    return dict_
+        unraveled_obj_key = key[:length_of_uuid4]
+        unraveled_param_key = key[length_of_uuid4 + 1 :]
+        if unraveled_obj_key not in hierarchy:
+            hierarchy[unraveled_obj_key] = {}
+        hierarchy[unraveled_obj_key][unraveled_param_key] = value
+    return hierarchy
 
 
-def to_hierachical_dict_recursive(flat_dict: dict, separator: str = ".") -> dict:
-    if not isinstance(flat_dict, dict):
-        return flat_dict
-
-    recur_dict = lambda: defaultdict(recur_dict)  # noqa: E731
-    dict_ = recur_dict()
+def to_hierachical_dict_arbitrary_depth(flat_dict: dict, separator: str = ".") -> dict:
+    hierarchy = {}
     for key, value in flat_dict.items():
-        if separator in key:
-            dict_[key.split(separator)[0]][
-                key.split(separator)[1]
-            ] = to_hierachical_dict(value)
-
-    return dict_
+        current_dict = hierarchy
+        parts = key.split(separator)
+        for part in parts[:-1]:
+            if part not in current_dict:
+                current_dict[part] = {}
+            current_dict = current_dict[part]
+        current_dict[parts[-1]] = value
+    return hierarchy
 
 
 def ensure_dict(dictionary: Optional[Dict]) -> dict:
