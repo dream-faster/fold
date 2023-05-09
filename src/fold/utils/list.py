@@ -68,6 +68,20 @@ def empty_if_none(input: Union[List, None]) -> List:
 
 
 def to_hierachical_dict(flat_dict: dict, separator: str = ".") -> dict:
+    dict_ = {}
+    length_of_uuid4 = 36
+    for key, value in flat_dict.items():
+        if separator in key:
+            unraveled_obj_key = key[:length_of_uuid4]
+            unraveled_param_key = key[length_of_uuid4 + 1 :]
+            if unraveled_obj_key in dict_:
+                dict_[unraveled_obj_key][unraveled_param_key] = value
+            else:
+                dict_[unraveled_obj_key] = {unraveled_param_key: value}
+    return dict_
+
+
+def to_hierachical_dict_recursive(flat_dict: dict, separator: str = ".") -> dict:
     if not isinstance(flat_dict, dict):
         return flat_dict
 
