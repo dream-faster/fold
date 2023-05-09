@@ -11,7 +11,7 @@ from fold.composites.common import get_concatenated_names
 from fold.utils.checks import get_prediction_column
 from fold.utils.list import wrap_in_double_list_if_needed
 
-from ..base import Composite, Pipeline, Pipelines, T
+from ..base import Composite, Pipeline, Pipelines, T, V
 
 
 class ModelResiduals(Composite):
@@ -81,9 +81,9 @@ class ModelResiduals(Composite):
         self.name = "Hybrid-" + get_concatenated_names(self.primary + self.meta)
 
     def preprocess_primary(
-        self, X: pd.DataFrame, index: int, y: T, fit: bool
-    ) -> Tuple[pd.DataFrame, T]:
-        return X, y
+        self, X: pd.DataFrame, index: int, y: T, sample_weights: V, fit: bool
+    ) -> Tuple[pd.DataFrame, T, V]:
+        return X, y, sample_weights
 
     def preprocess_secondary(
         self,

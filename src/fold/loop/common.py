@@ -422,7 +422,9 @@ def __process_primary_child_transform(
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
 ) -> Tuple[X, Artifact]:
-    X, y = composite.preprocess_primary(X, index, y, fit=stage.is_fit_or_update())
+    X, y, sample_weights = composite.preprocess_primary(
+        X, index, y, sample_weights=sample_weights, fit=stage.is_fit_or_update()
+    )
     return recursively_transform(
         X, y, sample_weights, artifacts, child_transform, stage, backend
     )

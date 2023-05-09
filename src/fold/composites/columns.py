@@ -8,7 +8,7 @@ from typing import Callable, List, Optional, Tuple
 
 import pandas as pd
 
-from ..base import Composite, Pipeline, Pipelines, T
+from ..base import Composite, Pipeline, Pipelines, T, V
 from ..utils.checks import all_have_probabilities
 from ..utils.list import unique, wrap_in_double_list_if_needed
 from .common import get_concatenated_names
@@ -58,10 +58,10 @@ class EnsembleEachColumn(Composite):
             self.pipelines_already_cloned = True
 
     def preprocess_primary(
-        self, X: pd.DataFrame, index: int, y: T, fit: bool
-    ) -> Tuple[pd.DataFrame, pd.Series]:
+        self, X: pd.DataFrame, index: int, y: T, sample_weights: V, fit: bool
+    ) -> Tuple[pd.DataFrame, T, V]:
         X = X.iloc[:, index].to_frame()
-        return X, y
+        return X, y, sample_weights
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
@@ -138,9 +138,9 @@ class TransformEachColumn(Composite):
             self.pipeline_already_cloned = True
 
     def preprocess_primary(
-        self, X: pd.DataFrame, index: int, y: T, fit: bool
-    ) -> Tuple[pd.DataFrame, T]:
-        return X.iloc[:, index].to_frame(), y
+        self, X: pd.DataFrame, index: int, y: T, sample_weights: V, fit: bool
+    ) -> Tuple[pd.DataFrame, T, V]:
+        return (X.iloc[:, index].to_frame(), y, sample_weights)
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
@@ -199,11 +199,15 @@ class SkipNA(Composite):
         self.name = "SkipNA-" + get_concatenated_names(self.pipeline)
 
     def preprocess_primary(
-        self, X: pd.DataFrame, index: int, y: T, fit: bool
-    ) -> Tuple[pd.DataFrame, T]:
+        self, X: pd.DataFrame, index: int, y: T, sample_weights: V, fit: bool
+    ) -> Tuple[pd.DataFrame, T, V]:
         self.original_index = X.index.copy()
         self.isna = X.isna().any(axis=1)
-        return X[~self.isna], y[~self.isna] if y is not None else None
+        return (
+            X[~self.isna],
+            y[~self.isna] if y is not None else None,
+            sample_weights[~self.isna] if sample_weights is not None else None,
+        )
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
