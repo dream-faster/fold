@@ -1,3 +1,4 @@
+import pytest
 from sklearn.dummy import DummyRegressor as SklearnDummyRegressor
 from sklearn.metrics import mean_squared_error
 
@@ -63,12 +64,11 @@ def test_selectbest() -> None:
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     pipeline = OptimizeGridSearch(
-        pipeline=[
+        [
             SelectBest(
                 [
                     DummyRegressor(
                         predicted_value=3.0,
-                        params_to_try=dict(predicted_value=[22.0, 32.0]),
                     ),
                     DummyRegressor(
                         predicted_value=0.5,
@@ -82,3 +82,23 @@ def test_selectbest() -> None:
     pred, _ = train_backtest(pipeline, X, y, splitter)
 
     assert pred.squeeze()[0] == 0.5
+
+
+def test_selectbest_invalid():
+    with pytest.raises(ValueError):
+        _ = OptimizeGridSearch(
+            [
+                SelectBest(
+                    [
+                        DummyRegressor(
+                            predicted_value=3.0,
+                            params_to_try=dict(predicted_value=[1, 2]),
+                        ),
+                        DummyRegressor(
+                            predicted_value=0.5,
+                        ),
+                    ],
+                ),
+            ],
+            scorer=mean_squared_error,
+        )

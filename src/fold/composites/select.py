@@ -21,8 +21,8 @@ class SelectBest(Composite, Tunable):
     ) -> None:
         self.choose_from = choose_from
         for i in self.choose_from:
-            if hasattr(i, "ger_params_to_try"):
-                assert i.get_params_to_try() is None, ValueError(
+            if isinstance(i, Tunable) and i.get_params_to_try() is None:
+                raise ValueError(
                     "You can not simulatenously select a model and tune its parameters right now."
                 )
         self.name = "SelectBest"
@@ -40,6 +40,9 @@ class SelectBest(Composite, Tunable):
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
     ) -> pd.DataFrame:
+        assert self.selected_ is not None, ValueError(
+            "SelectBest only works within an `Optimize` class."
+        )
         return results[0]
 
     def get_child_transformations_primary(self) -> Pipelines:
