@@ -19,7 +19,7 @@ from ..base import (
     X,
 )
 from ..models.base import Model
-from ..splitters import Fold, SingleWindowSplitter
+from ..splitters import Fold
 from ..utils.checks import is_prediction, is_X_available
 from ..utils.dataframe import concat_on_columns, concat_on_index
 from ..utils.trim import trim_initial_nans, trim_initial_nans_single
@@ -199,7 +199,6 @@ def _process_optimizer(
     optimized_pipeline = optimizer.get_optimized_pipeline()
     artifact = None
     if optimized_pipeline is None:
-        # Optimized needs to run the search
         candidates = optimizer.get_candidates()
 
         results_primary, _ = zip(
@@ -219,7 +218,9 @@ def _process_optimizer(
         results_primary = [
             trim_initial_nans_single(result) for result in results_primary
         ]
-        artifact = optimizer.process_candidate_results(results_primary, y)
+        artifact = optimizer.process_candidate_results(
+            results_primary, y.loc[results_primary[0].index]
+        )
 
     optimized_pipeline = optimizer.get_optimized_pipeline()
     return recursively_transform(
@@ -383,8 +384,7 @@ def __process_candidates(
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
 ) -> Tuple[X, Artifact]:
-    splitter = SingleWindowSplitter(0.8)
-    splits = splitter.splits(length=len(y))
+    splits = optimizer.splitter.splits(length=len(y))
 
     (
         processed_idx,
@@ -393,21 +393,19 @@ def __process_candidates(
     ) = _sequential_train_on_window(
         child_transform, X, y, splits, sample_weights, backend
     )
-    trained_pipelines = _process_processed_pipelines(processed_idx, processed_pipelines)
+    trained_pipelines = _extract_trained_pipelines(processed_idx, processed_pipelines)
 
-    results = [
-        _backtest_on_window(
-            trained_pipelines,
-            splits[0],
-            X,
-            y,
-            sample_weights,
-            backend,
-            mutate=False,
-        )
-    ]
+    result = _backtest_on_window(
+        trained_pipelines,
+        splits[0],
+        X,
+        y,
+        sample_weights,
+        backend,
+        mutate=False,
+    )
     return (
-        trim_initial_nans_single(pd.concat(results, axis="index")),
+        trim_initial_nans_single(result),
         processed_artifacts[0],
     )
 
@@ -556,10 +554,10 @@ def _sequential_train_on_window(
     return processed_idx, processed_pipelines, processed_artifacts
 
 
-def _process_processed_pipelines(
+def _extract_trained_pipelines(
     processed_idx: List[int], processed_pipelines: List[Pipeline]
 ) -> TrainedPipelines:
-    trained_pipelines = [
+    return [
         pd.Series(
             transformation_over_time,
             index=processed_idx,
@@ -567,4 +565,3 @@ def _process_processed_pipelines(
         )
         for transformation_over_time in zip(*processed_pipelines)
     ]
-    return trained_pipelines
