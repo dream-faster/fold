@@ -10,7 +10,7 @@ import pandas as pd
 from fold.composites.common import get_concatenated_names
 from fold.utils.list import wrap_in_double_list_if_needed
 
-from ..base import Composite, Pipeline, Pipelines, T
+from ..base import Composite, Pipeline, Pipelines, T, V
 
 
 class Sample(Composite):
@@ -62,26 +62,28 @@ class Sample(Composite):
         pipeline: Pipeline,
     ) -> None:
         self.sampler = sampler
-        from imblearn.over_sampling import RandomOverSampler
 
-        if isinstance(sampler, RandomOverSampler):
-            raise ValueError("Oversamplig is not supported.")
         self.pipeline = wrap_in_double_list_if_needed(pipeline)
         self.name = f"Sample-{sampler.__class__.__name__}-{get_concatenated_names(self.pipeline)}"
 
     def preprocess_primary(
-        self, X: pd.DataFrame, index: int, y: T, fit: bool
-    ) -> Tuple[pd.DataFrame, T]:
+        self, X: pd.DataFrame, index: int, y: T, sample_weights: V, fit: bool
+    ) -> Tuple[pd.DataFrame, T, V]:
         if fit:
             X_resampled, y_resampled = self.sampler.fit_resample(X, y)
             X_resampled.columns = X.columns
-            X_resampled.index = X.index[: len(X_resampled)]
+            # X_resampled.index = X.index[: len(X_resampled)]
             if y is not None:
                 y_resampled.name = y.name
-                y_resampled.index = y.index[: len(y_resampled)]
-            return X_resampled, y_resampled
+                # y_resampled.index = y.index[: len(y_resampled)]
+            sample_weights_resampled = (
+                sample_weights.iloc[self.sampler.sample_indices_]
+                if sample_weights is not None
+                else None
+            )
+            return X_resampled, y_resampled, sample_weights_resampled
         else:
-            return X, y
+            return X, y, sample_weights
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]

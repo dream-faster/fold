@@ -7,7 +7,7 @@ from typing import Callable, List, Optional, Tuple, Union
 
 import pandas as pd
 
-from ..base import Composite, InvertibleTransformation, Pipeline, Pipelines, T
+from ..base import Composite, InvertibleTransformation, Pipeline, Pipelines, T, V
 from ..utils.checks import get_prediction_column, get_prediction_column_name
 from ..utils.dataframe import to_series
 from ..utils.list import wrap_in_double_list_if_needed
@@ -73,16 +73,17 @@ class TransformTarget(Composite):
         self.invert_wrapped_output = invert_wrapped_output
 
     def preprocess_primary(
-        self, X: pd.DataFrame, index: int, y: T, fit: bool
-    ) -> Tuple[pd.DataFrame, T]:
+        self, X: pd.DataFrame, index: int, y: T, sample_weights: V, fit: bool
+    ) -> Tuple[pd.DataFrame, T, V]:
         # TransformTarget's primary transformation transforms `y`, not `X`.
         if y is None:
             return (
                 pd.DataFrame(),
                 None,
+                sample_weights,
             )  # at inference time, `y` will be None, and we don't need to use primary transformations at all, so we return a dummy DataFrame.
         else:
-            return y.to_frame(), None
+            return y.to_frame(), None, sample_weights
 
     def preprocess_secondary(
         self,

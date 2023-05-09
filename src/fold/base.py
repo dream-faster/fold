@@ -14,6 +14,7 @@ import pandas as pd
 from fold.splitters import SingleWindowSplitter
 
 T = TypeVar("T", Optional[pd.Series], pd.Series)
+V = TypeVar("V", Optional[pd.Series], pd.Series)
 X = pd.DataFrame
 Artifact = pd.DataFrame
 
@@ -71,9 +72,9 @@ class Composite(ABC):
         pass
 
     def preprocess_primary(
-        self, X: pd.DataFrame, index: int, y: T, fit: bool
-    ) -> Tuple[pd.DataFrame, T]:
-        return X, y
+        self, X: pd.DataFrame, index: int, y: T, sample_weights: V, fit: bool
+    ) -> Tuple[pd.DataFrame, T, V]:
+        return X, y, sample_weights
 
     def preprocess_secondary(
         self,
