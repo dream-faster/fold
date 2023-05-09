@@ -27,7 +27,7 @@ def train_transformations(
             X, y, sample_weights, transformations, split, never_update, backend
         ),
         splits,
-        silent=silent,
+        disable=silent,
     )
 
 
