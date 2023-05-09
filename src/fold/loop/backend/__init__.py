@@ -18,8 +18,8 @@ def get_backend_dependent_functions(backend: Backend) -> BackendDependentFunctio
         from .ray import process_child_transformations, train_transformations
     elif backend == Backend.no:
         from .sequential import process_child_transformations, train_transformations
-    elif backend == Backend.process:
-        from .process import process_child_transformations, train_transformations
+    elif backend == Backend.pathos:
+        from .pathos import process_child_transformations, train_transformations
     elif backend == Backend.thread:
         from .thread import process_child_transformations, train_transformations
     else:

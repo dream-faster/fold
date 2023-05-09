@@ -4,7 +4,7 @@
 from typing import Callable, List, Optional
 
 import pandas as pd
-from tqdm.contrib.concurrent import process_map as p_map
+from p_tqdm import p_map
 
 from ...base import Artifact, Composite, Transformations, X
 from ...splitters import Fold

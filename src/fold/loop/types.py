@@ -15,8 +15,8 @@ class Backend(Enum):
         Uses sequential processing. This is the default.
     ray: string
         Uses `ray` as a backend. Call `ray.init()` before using this backend.
-    process: string
-        Uses `multiprocessing` as a backend (via tqdm.contrib.concurrent.process_map).
+    pathos: string
+        Uses `pathos.multiprocessing` as a backend (via [p_tqdm](https://github.com/swansonk14/p_tqdm)).
     thread: string
         Uses `threading` as a backend (via tqdm.contrib.concurrent.thread_map).
 
@@ -24,7 +24,7 @@ class Backend(Enum):
 
     no = "no"
     ray = "ray"
-    process = "process"
+    pathos = "pathos"
     thread = "thread"
 
     @staticmethod
