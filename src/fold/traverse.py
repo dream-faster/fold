@@ -1,4 +1,3 @@
-from copy import deepcopy
 from typing import Callable, List
 
 from .base import Composite, Optimizer, Pipeline, Transformation
@@ -12,7 +11,7 @@ def traverse_apply(pipeline: Pipeline, apply_func: Callable) -> Pipeline:
         elif isinstance(pipeline, Optimizer):
             raise ValueError("Optimizer is not supported within an Optimizer.")
         elif isinstance(pipeline, Transformation) or isinstance(pipeline, Composite):
-            return apply_func(deepcopy(pipeline), _traverse_apply)
+            return apply_func(pipeline, _traverse_apply)
 
     return _traverse_apply(pipeline)
 

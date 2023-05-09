@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from fold.base import Composite
 from fold.composites.target import TransformTarget
 from fold.transformations.dev import Lookahead, Test
 from fold.transformations.difference import Difference
@@ -90,10 +91,15 @@ def test_traverse_apply():
         y_pipeline=[TakeLog(), Difference()],
     )
 
-    def set_value_on_lookahead(x):
+    def set_value_on_lookahead(x, clone_children):
         if isinstance(x, Lookahead):
+            x = Lookahead()
             x.value = 1
-        return x
+            return x
+        elif isinstance(x, Composite):
+            return x.clone(clone_children)
+        else:
+            return x
 
     modified_pipeline = traverse_apply(pipeline, set_value_on_lookahead)
     assert modified_pipeline.wrapped_pipeline[0][1].value == 1
@@ -110,4 +116,4 @@ def test_traverse():
     )
 
     transformations = list(traverse(pipeline))
-    assert len(transformations) == 4
+    assert len(transformations) == 5
