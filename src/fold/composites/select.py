@@ -23,7 +23,7 @@ class SelectBest(Composite, Tunable):
         for i in self.choose_from:
             if hasattr(i, "ger_params_to_try"):
                 assert i.get_params_to_try() is None, ValueError(
-                    "Cannot optimize SelectBest with a child that has params_to_try defined."
+                    "You can not simulatenously select a model and tune its parameters right now."
                 )
         self.name = "SelectBest"
 
