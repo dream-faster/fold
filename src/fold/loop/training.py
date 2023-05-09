@@ -1,18 +1,18 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
 
-from typing import Optional, Tuple, Union
+from typing import Optional, Union
 
 import pandas as pd
 
-from ..base import Artifact, DeployablePipeline, Pipeline, TrainedPipelines
+from ..base import DeployablePipeline, Pipeline, TrainedPipelines
 from ..splitters import Fold, SlidingWindowSplitter, Splitter
 from ..utils.dataframe import concat_on_index
 from ..utils.list import wrap_in_list
 from .backend import get_backend_dependent_functions
 from .checks import check_types
-from .common import deepcopy_pipelines, recursively_transform
-from .types import Backend, Stage, TrainMethod
+from .common import _process_pipeline_window
+from .types import Backend, TrainMethod
 from .wrap import wrap_transformation_if_needed
 
 
@@ -186,37 +186,3 @@ def train_for_deployment(
         backend=Backend.no,
     )
     return transformations
-
-
-def _process_pipeline_window(
-    X: pd.DataFrame,
-    y: pd.Series,
-    sample_weights: Optional[pd.Series],
-    pipeline: Pipeline,
-    split: Fold,
-    never_update: bool,
-    backend: Backend,
-) -> Tuple[int, Pipeline, Artifact]:
-    stage = Stage.inital_fit if (split.order == 0 or never_update) else Stage.update
-    window_start = (
-        split.update_window_start if stage == Stage.update else split.train_window_start
-    )
-    window_end = (
-        split.update_window_end if stage == Stage.update else split.train_window_end
-    )
-    X_train: pd.DataFrame = X.iloc[window_start:window_end]  # type: ignore
-    y_train = y.iloc[window_start:window_end]
-
-    sample_weights_train = (
-        sample_weights.iloc[window_start:window_end]
-        if sample_weights is not None
-        else None
-    )
-    artifacts = pd.DataFrame()
-
-    pipeline = deepcopy_pipelines(pipeline)
-    X_train, artifacts = recursively_transform(
-        X_train, y_train, sample_weights_train, artifacts, pipeline, stage, backend
-    )
-
-    return split.model_index, pipeline, artifacts

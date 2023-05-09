@@ -8,7 +8,17 @@ from typing import List, Optional, Tuple
 
 import pandas as pd
 
-from ..base import Artifact, Composite, Optimizer, Transformation, Transformations, X
+from fold.splitters import Fold, SingleWindowSplitter
+
+from ..base import (
+    Artifact,
+    Composite,
+    Optimizer,
+    Pipeline,
+    Transformation,
+    Transformations,
+    X,
+)
 from ..models.base import Model
 from ..utils.checks import is_prediction, is_X_available
 from ..utils.dataframe import concat_on_columns, concat_on_index
@@ -192,6 +202,45 @@ def _process_optimizer(
         # Optimized needs to run the search
         candidates = optimizer.get_candidates()
 
+        splitter = SingleWindowSplitter(0.8)
+        splits = splitter.splits(length=len(y))
+
+        processed_idx = []
+        processed_pipelines = []
+        processed_pipeline = None
+        processed_artifacts = []
+        for split in splits:
+            (
+                processed_id,
+                processed_pipeline,
+                processed_artifact,
+            ) = _process_pipeline_window(
+                X,
+                y,
+                sample_weights,
+                processed_pipeline,
+                split,
+                False,
+                backend,
+            )
+            processed_idx.append(processed_id)
+            processed_pipelines.append(processed_pipeline)
+            processed_artifacts.append(processed_artifact)
+
+        _, _ = zip(
+            *backend_functions.process_child_transformations(
+                __process_candidates,
+                enumerate(candidates),
+                optimizer,
+                X,
+                y,
+                sample_weights,
+                artifacts,
+                stage,
+                backend,
+                None,
+            )
+        )
         results_primary, _ = zip(
             *backend_functions.process_child_transformations(
                 __process_candidates,
@@ -423,3 +472,37 @@ def deepcopy_pipelines(transformation: Transformations) -> Transformations:
         return transformation.clone(deepcopy_pipelines)
     else:
         return deepcopy(transformation)
+
+
+def _process_pipeline_window(
+    X: pd.DataFrame,
+    y: pd.Series,
+    sample_weights: Optional[pd.Series],
+    pipeline: Pipeline,
+    split: Fold,
+    never_update: bool,
+    backend: Backend,
+) -> Tuple[int, Pipeline, Artifact]:
+    stage = Stage.inital_fit if (split.order == 0 or never_update) else Stage.update
+    window_start = (
+        split.update_window_start if stage == Stage.update else split.train_window_start
+    )
+    window_end = (
+        split.update_window_end if stage == Stage.update else split.train_window_end
+    )
+    X_train: pd.DataFrame = X.iloc[window_start:window_end]  # type: ignore
+    y_train = y.iloc[window_start:window_end]
+
+    sample_weights_train = (
+        sample_weights.iloc[window_start:window_end]
+        if sample_weights is not None
+        else None
+    )
+    artifacts = pd.DataFrame()
+
+    pipeline = deepcopy_pipelines(pipeline)
+    X_train, artifacts = recursively_transform(
+        X_train, y_train, sample_weights_train, artifacts, pipeline, stage, backend
+    )
+
+    return split.model_index, pipeline, artifacts
