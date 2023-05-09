@@ -110,13 +110,13 @@ def test_selectbest_nested():
                 [
                     TransformTarget(
                         DummyRegressor(
-                            predicted_value=0.5,
+                            predicted_value=1.0,
                         ),
                         Identity(),
                     ),
                     TransformTarget(
                         DummyRegressor(
-                            predicted_value=1.0,
+                            predicted_value=0.5,
                         ),
                         Identity(),
                     ),

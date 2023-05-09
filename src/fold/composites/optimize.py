@@ -3,12 +3,12 @@
 
 from __future__ import annotations
 
-from typing import Callable, Iterable, List, Optional
+from typing import Callable, Iterable, List, Optional, Union
 
 import pandas as pd
 from sklearn.model_selection import ParameterGrid
 
-from ..base import Artifact, Optimizer, Pipeline, Tunable
+from ..base import Artifact, Composite, Optimizer, Pipeline, Transformation, Tunable
 from ..splitters import SingleWindowSplitter
 from ..transformations.dev import Identity
 from ..traverse import traverse, traverse_apply
@@ -76,13 +76,15 @@ class OptimizeGridSearch(Optimizer):
 
             def __apply_params(params: dict) -> Callable:
                 def __apply_params_to_transformation(
-                    tunable: Tunable, clone_children: Callable
-                ) -> Tunable:
-                    selected_params = params.get(tunable.id, {})
+                    item: Union[Composite, Transformation], clone_children: Callable
+                ) -> Union[Composite, Transformation]:
+                    if not isinstance(item, Tunable):
+                        return item
+                    selected_params = params.get(item.id, {})
                     if "passthrough" in selected_params:
                         return Identity()  # type: ignore
-                    return tunable.clone_with_params(
-                        parameters={**tunable.get_params(), **selected_params},
+                    return item.clone_with_params(
+                        parameters={**item.get_params(), **selected_params},
                         clone_children=clone_children,
                     )
 
