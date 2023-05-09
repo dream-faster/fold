@@ -35,10 +35,8 @@ def test_grid_hpo() -> None:
         scorer=mean_squared_error,
     )
 
-    pred, _ = train_backtest(pipeline, X, y, splitter)
-
-    assert pred is not None
-    assert len(pred) == 600
+    pred, trained_pipelines = train_backtest(pipeline, X, y, splitter)
+    assert len(trained_pipelines[0].iloc[0].param_permutations) > 4
 
 
 def test_gridsearch_sklearn() -> None:
