@@ -62,8 +62,7 @@ class OptimizeGridSearch(Optimizer):
                 if transformation.params_to_try is not None
             }
             self.param_permutations = [
-                to_hierachical_dict(params)
-                for params in list(ParameterGrid(param_grid))
+                to_hierachical_dict(params) for params in ParameterGrid(param_grid)
             ]
 
             def __apply_params(params: dict) -> Callable:
