@@ -3,72 +3,66 @@
 
 from __future__ import annotations
 
-from typing import Callable, Iterable, List, Optional
+from typing import Callable, List, Optional, Union
 
 import pandas as pd
 
-from fold.splitters import SingleWindowSplitter
-
-from ..base import Artifact, Optimizer, Pipeline, Pipelines
-from .common import get_concatenated_names
+from ..base import Composite, Pipelines, Transformation, Tunable
+from ..utils.list import wrap_in_list
 
 
-class SelectBest(Optimizer):
-    selected_pipeline: Optional[Pipeline] = None
-    splitter = SingleWindowSplitter(0.7)
+class SelectBest(Composite, Tunable):
+    properties = Composite.Properties()
+    selected_: Optional[int] = None
 
     def __init__(
         self,
-        pipelines: Pipelines,
-        scorer: Callable,
-        is_scorer_loss: bool = True,
+        choose_from: List[Union[Transformation, Composite]],
     ) -> None:
-        self.pipelines = pipelines
-        self.name = "SelectBest-" + get_concatenated_names(pipelines)
-        self.scorer = scorer
-        self.is_scorer_loss = is_scorer_loss
+        self.choose_from = choose_from
+        for i in self.choose_from:
+            if hasattr(i, "ger_params_to_try"):
+                assert i.get_params_to_try() is None, ValueError(
+                    "Cannot optimize SelectBest with a child that has params_to_try defined."
+                )
+        self.name = "SelectBest"
 
     @classmethod
     def from_cloned_instance(
         cls,
-        pipelines: Pipelines,
-        scorer: Callable,
-        is_scorer_loss: bool,
-        selected_pipeline: Optional[Pipeline],
+        choose_from: List[Union[Transformation, Composite]],
+        selected_: Optional[int],
     ) -> SelectBest:
-        instance = cls(pipelines, scorer, is_scorer_loss)
-        instance.selected_pipeline = selected_pipeline
+        instance = cls(choose_from)
+        instance.selected_ = selected_
         return instance
 
-    def get_candidates(self) -> Iterable["Pipeline"]:
-        return self.pipelines
+    def postprocess_result_primary(
+        self, results: List[pd.DataFrame], y: Optional[pd.Series]
+    ) -> pd.DataFrame:
+        return results[0]
 
-    def get_optimized_pipeline(self) -> Optional["Pipeline"]:
-        return self.selected_pipeline
-
-    def process_candidate_results(
-        self, results: List[pd.DataFrame], y: pd.Series
-    ) -> Optional[Artifact]:
-        if self.selected_pipeline is not None:
-            raise ValueError("Optimizer is already fitted.")
-
-        scores = [self.scorer(y, result) for result in results]
-        selected_index = (
-            scores.index(min(scores))
-            if self.is_scorer_loss
-            else scores.index(max(scores))
-        )
-        self.selected_pipeline = [self.pipelines[selected_index]]
-        return pd.DataFrame(
-            {"selected_pipeline_index": selected_index}, index=y.index[-1:]
+    def get_child_transformations_primary(self) -> Pipelines:
+        return wrap_in_list(
+            self.choose_from[self.selected_ if self.selected_ is not None else 0]
         )
 
     def clone(self, clone_children: Callable) -> SelectBest:
         return SelectBest.from_cloned_instance(
-            pipelines=clone_children(self.pipelines),
-            scorer=self.scorer,
-            is_scorer_loss=self.is_scorer_loss,
-            selected_pipeline=clone_children(self.selected_pipeline)
-            if self.selected_pipeline is not None
-            else None,
+            choose_from=clone_children(self.choose_from), selected_=self.selected_
+        )
+
+    def get_params(self) -> dict:
+        return {"selected_": self.selected_}
+
+    def get_params_to_try(self) -> Optional[dict]:
+        return {"selected_": list(range(len(self.choose_from)))}
+
+    def clone_with_params(
+        self, parameters: dict, clone_children: Optional[Callable] = None
+    ) -> Tunable:
+        assert clone_children is not None
+        return SelectBest.from_cloned_instance(
+            choose_from=clone_children(self.choose_from),
+            selected_=parameters["selected_"],
         )
