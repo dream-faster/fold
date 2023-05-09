@@ -75,7 +75,7 @@ def to_hierachical_dict(flat_dict: dict, separator: str = ".") -> dict:
     dict_ = recur_dict()
     for key, value in flat_dict.items():
         if separator in key:
-            dict_[int(key.split(separator)[0])][
+            dict_[key.split(separator)[0]][
                 key.split(separator)[1]
             ] = to_hierachical_dict(value)
 
