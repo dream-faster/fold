@@ -11,7 +11,11 @@ from ..utils.dataframe import concat_on_index
 from ..utils.list import wrap_in_list
 from .backend import get_backend_dependent_functions
 from .checks import check_types
-from .common import _train_on_window
+from .common import (
+    _process_processed_pipelines,
+    _sequential_train_on_window,
+    _train_on_window,
+)
 from .types import Backend, TrainMethod
 from .wrap import wrap_transformation_if_needed
 
@@ -120,33 +124,13 @@ def train(
         )
 
     else:
-        processed_idx = []
-        processed_pipelines = []
-        processed_pipeline = pipeline
-        processed_artifacts = []
-        for split in splits:
-            (processed_id, processed_pipeline, processed_artifact,) = _train_on_window(
-                X,
-                y,
-                sample_weights,
-                processed_pipeline,
-                split,
-                False,
-                backend,
-            )
-            processed_idx.append(processed_id)
-            processed_pipelines.append(processed_pipeline)
-            processed_artifacts.append(processed_artifact)
+        (
+            processed_idx,
+            processed_pipelines,
+            processed_artifacts,
+        ) = _sequential_train_on_window(pipeline, X, y, splits, sample_weights, backend)
 
-    trained_pipelines = [
-        pd.Series(
-            transformation_over_time,
-            index=processed_idx,
-            name=transformation_over_time[0].name,
-        )
-        for transformation_over_time in zip(*processed_pipelines)
-    ]
-
+    trained_pipelines = _process_processed_pipelines(processed_idx, processed_pipelines)
     if return_artifacts is True:
         return trained_pipelines, concat_on_index(processed_artifacts)
     else:

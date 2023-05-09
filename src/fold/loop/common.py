@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 import pandas as pd
 
@@ -384,30 +384,21 @@ def __process_candidates(
     results_primary: Optional[List[pd.DataFrame]],
 ) -> Tuple[X, Artifact]:
     splitter = SingleWindowSplitter(0.8)
-    split = splitter.splits(length=len(y))[0]
+    splits = splitter.splits(length=len(y))
 
-    processed_id, processed_pipeline, processed_artifact = _train_on_window(
-        X,
-        y,
-        sample_weights,
-        child_transform,
-        split,
-        False,
-        backend,
+    (
+        processed_idx,
+        processed_pipelines,
+        processed_artifacts,
+    ) = _sequential_train_on_window(
+        child_transform, X, y, splits, sample_weights, backend
     )
-    trained_pipelines = [
-        pd.Series(
-            transformation_over_time,
-            index=[processed_id],
-            name=transformation_over_time[0].name,
-        )
-        for transformation_over_time in zip(*[processed_pipeline])
-    ]
+    trained_pipelines = _process_processed_pipelines(processed_idx, processed_pipelines)
 
     results = [
         _backtest_on_window(
             trained_pipelines,
-            split,
+            splits[0],
             X,
             y,
             sample_weights,
@@ -417,7 +408,7 @@ def __process_candidates(
     ]
     return (
         trim_initial_nans_single(pd.concat(results, axis="index")),
-        processed_artifact,
+        processed_artifacts[0],
     )
 
 
@@ -534,3 +525,46 @@ def _backtest_on_window(
         stage=Stage.update_online_only,
         backend=backend,
     )[0]
+
+
+def _sequential_train_on_window(
+    pipeline: Pipeline,
+    X: Optional[pd.DataFrame],
+    y: pd.Series,
+    splits: List[Fold],
+    sample_weights: Optional[pd.Series] = None,
+    backend: Union[Backend, str] = Backend.no,
+) -> Tuple[List[int], List[Pipeline], List[Artifact]]:
+    processed_idx = []
+    processed_pipelines: List[Pipeline] = []
+    processed_pipeline = pipeline
+    processed_artifacts = []
+    for split in splits:
+        processed_id, processed_pipeline, processed_artifact = _train_on_window(
+            X,
+            y,
+            sample_weights,
+            processed_pipeline,
+            split,
+            False,
+            backend,
+        )
+        processed_idx.append(processed_id)
+        processed_pipelines.append(processed_pipeline)
+        processed_artifacts.append(processed_artifact)
+
+    return processed_idx, processed_pipelines, processed_artifacts
+
+
+def _process_processed_pipelines(
+    processed_idx: List[int], processed_pipelines: List[Pipeline]
+) -> TrainedPipelines:
+    trained_pipelines = [
+        pd.Series(
+            transformation_over_time,
+            index=processed_idx,
+            name=transformation_over_time[0].name,
+        )
+        for transformation_over_time in zip(*processed_pipelines)
+    ]
+    return trained_pipelines
