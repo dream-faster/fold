@@ -92,7 +92,7 @@ def test_sklearn_partial_fit() -> None:
         def get_params(self, deep=True):
             return {}
 
-        def clone_with_params(self, **params):
+        def clone_with_params(self, parameters: dict, clone_children=None):
             return self
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)

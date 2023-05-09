@@ -15,7 +15,7 @@ from fold.utils.tests import generate_monotonous_data, generate_sine_wave_data
 
 def test_composite_cloning():
     instance = TransformEachColumn([lambda x: x + 1, lambda x: x + 2])
-    clone = instance.clone(clone_child_transformations=deepcopy_pipelines)
+    clone = instance.clone(clone_children=deepcopy_pipelines)
     assert instance is not clone
     assert instance.pipeline is not clone.pipeline
     assert len(instance.pipeline[0]) == 2

@@ -59,9 +59,9 @@ class Ensemble(Composite):
     def get_child_transformations_primary(self) -> Pipelines:
         return self.pipelines
 
-    def clone(self, clone_child_transformations: Callable) -> Ensemble:
+    def clone(self, clone_children: Callable) -> Ensemble:
         clone = Ensemble(
-            pipelines=clone_child_transformations(self.pipelines),
+            pipelines=clone_children(self.pipelines),
         )
         clone.properties = self.properties
         return clone

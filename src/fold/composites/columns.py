@@ -71,9 +71,9 @@ class EnsembleEachColumn(Composite):
     def get_child_transformations_primary(self) -> Pipelines:
         return self.pipelines
 
-    def clone(self, clone_child_transformations: Callable) -> EnsembleEachColumn:
+    def clone(self, clone_children: Callable) -> EnsembleEachColumn:
         clone = EnsembleEachColumn.from_cloned_instance(
-            pipeline=clone_child_transformations(self.pipelines),
+            pipeline=clone_children(self.pipelines),
             pipelines_already_cloned=self.pipelines_already_cloned,
         )
         clone.properties = self.properties
@@ -150,9 +150,9 @@ class TransformEachColumn(Composite):
     def get_child_transformations_primary(self) -> Pipelines:
         return self.pipeline
 
-    def clone(self, clone_child_transformations: Callable) -> TransformEachColumn:
+    def clone(self, clone_children: Callable) -> TransformEachColumn:
         clone = TransformEachColumn.from_cloned_instance(
-            pipeline=clone_child_transformations(self.pipeline),
+            pipeline=clone_children(self.pipeline),
             pipeline_already_cloned=self.pipeline_already_cloned,
         )
         clone.properties = self.properties
@@ -214,9 +214,9 @@ class SkipNA(Composite):
     def get_child_transformations_primary(self) -> Pipelines:
         return self.pipeline
 
-    def clone(self, clone_child_transformations: Callable) -> SkipNA:
+    def clone(self, clone_children: Callable) -> SkipNA:
         clone = SkipNA(
-            pipeline=clone_child_transformations(self.pipeline),
+            pipeline=clone_children(self.pipeline),
         )
         clone.properties = self.properties
         return clone

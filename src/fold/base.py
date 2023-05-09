@@ -64,7 +64,7 @@ class Composite(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def clone(self, clone_child_transformations: Callable) -> Composite:
+    def clone(self, clone_children: Callable) -> Composite:
         raise NotImplementedError
 
     def before_fit(self, X: pd.DataFrame) -> None:
@@ -118,7 +118,7 @@ class Optimizer(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def clone(self, clone_child_transformations: Callable) -> Optimizer:
+    def clone(self, clone_children: Callable) -> Optimizer:
         raise NotImplementedError
 
 
@@ -207,7 +207,9 @@ class Tunable(ABC):
     def get_params_to_try(self) -> Optional[dict]:
         self.params_to_try
 
-    def clone_with_params(self, **parameters) -> Tunable:
+    def clone_with_params(
+        self, parameters: dict, clone_children: Optional[Callable] = None
+    ) -> Tunable:
         """
         The default implementation only works for Transformations, when parameters and the init parameters match 100%.
         """

@@ -60,12 +60,12 @@ class SelectBest(Optimizer):
             {"selected_pipeline_index": selected_index}, index=y.index[-1:]
         )
 
-    def clone(self, clone_child_transformations: Callable) -> SelectBest:
+    def clone(self, clone_children: Callable) -> SelectBest:
         return SelectBest.from_cloned_instance(
-            pipelines=clone_child_transformations(self.pipelines),
+            pipelines=clone_children(self.pipelines),
             scorer=self.scorer,
             is_scorer_loss=self.is_scorer_loss,
-            selected_pipeline=clone_child_transformations(self.selected_pipeline)
+            selected_pipeline=clone_children(self.selected_pipeline)
             if self.selected_pipeline is not None
             else None,
         )
