@@ -36,10 +36,19 @@ class WrapSKLearnTransformation(Transformation, Tunable):
             self.transformation = self.transformation.set_output(transform="pandas")
         self.name = self.transformation.__class__.__name__
         self.params_to_try = params_to_try
+        super().__init__()
 
     @classmethod
-    def from_model(cls, model) -> WrapSKLearnTransformation:
-        return cls(transformation_class=model.__class__, init_args=model.get_params())
+    def from_model(
+        cls,
+        model,
+        params_to_try: Optional[dict] = None,
+    ) -> WrapSKLearnTransformation:
+        return cls(
+            transformation_class=model.__class__,
+            init_args=model.get_params(),
+            params_to_try=params_to_try,
+        )
 
     def fit(
         self,
@@ -123,10 +132,19 @@ class WrapSKLearnFeatureSelector(FeatureSelector, Tunable):
             self.transformation = self.transformation.set_output(transform="pandas")
         self.name = self.transformation.__class__.__name__
         self.params_to_try = params_to_try
+        super().__init__()
 
     @classmethod
-    def from_model(cls, model) -> WrapSKLearnFeatureSelector:
-        return cls(transformation_class=model.__class__, init_args=model.get_params())
+    def from_model(
+        cls,
+        model,
+        params_to_try: Optional[dict] = None,
+    ) -> WrapSKLearnFeatureSelector:
+        return cls(
+            transformation_class=model.__class__,
+            init_args=model.get_params(),
+            params_to_try=params_to_try,
+        )
 
     def fit(
         self,

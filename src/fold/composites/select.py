@@ -26,6 +26,7 @@ class SelectBest(Composite, Tunable):
                     "You can not simulatenously select a model and tune its parameters right now."
                 )
         self.name = "SelectBest"
+        super().__init__()
 
     @classmethod
     def from_cloned_instance(

@@ -63,6 +63,7 @@ class Difference(InvertibleTransformation, Tunable):
     def __init__(self, lag: int = 1, params_to_try: Optional[dict] = None) -> None:
         self.lag = lag
         self.params_to_try = params_to_try
+        super().__init__()
 
     def fit(
         self,

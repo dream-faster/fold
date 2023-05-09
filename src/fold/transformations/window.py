@@ -100,6 +100,7 @@ class AddWindowFeatures(Transformation, Tunable):
             requires_X=True, memory_size=max_memory
         )
         self.params_to_try = params_to_try
+        super().__init__()
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool

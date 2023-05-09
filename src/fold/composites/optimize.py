@@ -35,6 +35,7 @@ class OptimizeGridSearch(Optimizer):
         self.scorer = scorer
         self.is_scorer_loss = is_scorer_loss
         self.splitter = splitter
+        super().__init__()
 
     @classmethod
     def from_cloned_instance(

@@ -60,6 +60,7 @@ class DummyClassifier(Model, Tunable):
         self.all_classes = all_classes
         self.predicted_probabilities = predicted_probabilities
         self.params_to_try = params_to_try
+        super().__init__()
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         predictions = pd.Series(
@@ -131,6 +132,7 @@ class DummyRegressor(Model, Tunable):
     ) -> None:
         self.predicted_value = predicted_value
         self.params_to_try = params_to_try
+        super().__init__()
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         return pd.Series(

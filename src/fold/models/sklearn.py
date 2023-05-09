@@ -29,6 +29,7 @@ class WrapSKLearnClassifier(Model, Tunable):
         self.model = model_class(**init_args)
         self.name = self.model.__class__.__name__
         self.params_to_try = params_to_try
+        super().__init__()
 
     @classmethod
     def from_model(
@@ -108,6 +109,7 @@ class WrapSKLearnRegressor(Model, Tunable):
         self.model = model_class(**init_args)
         self.name = self.model.__class__.__name__
         self.params_to_try = params_to_try
+        super().__init__()
 
     @classmethod
     def from_model(
@@ -172,6 +174,7 @@ class WrapSKLearnPipeline(Model):
     def __init__(self, pipeline) -> None:
         self.pipeline = pipeline
         self.name = pipeline.__class__.__name__
+        super().__init__()
 
     def fit(
         self,
