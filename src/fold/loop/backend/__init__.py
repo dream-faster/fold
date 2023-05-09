@@ -16,15 +16,16 @@ class BackendDependentFunctions:
 def get_backend_dependent_functions(backend: Backend) -> BackendDependentFunctions:
     if backend == Backend.ray:
         from .ray import process_child_transformations, train_transformations
-
-        return BackendDependentFunctions(
-            process_child_transformations,
-            train_transformations,
-        )
     elif backend == Backend.no:
         from .sequential import process_child_transformations, train_transformations
+    elif backend == Backend.pathos:
+        from .pathos import process_child_transformations, train_transformations
+    elif backend == Backend.thread:
+        from .thread import process_child_transformations, train_transformations
+    else:
+        raise ValueError(f"Backend {backend} not supported.")
 
-        return BackendDependentFunctions(
-            process_child_transformations,
-            train_transformations,
-        )
+    return BackendDependentFunctions(
+        process_child_transformations,
+        train_transformations,
+    )
