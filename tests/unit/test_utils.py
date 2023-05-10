@@ -1,12 +1,14 @@
 import numpy as np
 import pandas as pd
 import pytest
+from sklearn.feature_selection import SelectKBest, VarianceThreshold, f_regression
 
 from fold.base import Composite
 from fold.composites.target import TransformTarget
 from fold.transformations.dev import Lookahead, Test
 from fold.transformations.difference import Difference
 from fold.transformations.math import TakeLog
+from fold.transformations.sklearn import WrapSKLearnFeatureSelector
 from fold.traverse import traverse, traverse_apply
 from fold.utils.dataframe import to_series
 from fold.utils.trim import (
@@ -117,3 +119,13 @@ def test_traverse():
 
     transformations = list(traverse(pipeline))
     assert len(transformations) == 5
+
+
+def test_unique_id_per_instance() -> None:
+    transformations = [
+        WrapSKLearnFeatureSelector.from_model(VarianceThreshold()),
+        WrapSKLearnFeatureSelector.from_model(
+            SelectKBest(score_func=f_regression, k=1),
+        ),
+    ]
+    assert transformations[0].id != transformations[1].id
