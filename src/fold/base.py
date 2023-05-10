@@ -197,9 +197,10 @@ class Tunable(ABC):
     params_to_try: Optional[dict]
     id: str
 
-    def __init_subclass__(cls, *args, **kwargs):
-        super().__init_subclass__(*args, **kwargs)
-        cls.id = str(uuid.uuid4())
+    def __new__(cls, *args, **kwargs):
+        instance = super().__new__(cls)
+        instance.id = str(uuid.uuid4())
+        return instance
 
     @abstractmethod
     def get_params(self) -> dict:
