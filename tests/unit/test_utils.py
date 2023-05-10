@@ -123,6 +123,12 @@ def test_traverse():
 
 def test_unique_id_per_instance() -> None:
     transformations = [
+        Difference(),
+        Difference(),
+    ]
+    assert transformations[0].id != transformations[1].id
+
+    transformations = [
         WrapSKLearnFeatureSelector.from_model(VarianceThreshold()),
         WrapSKLearnFeatureSelector.from_model(
             SelectKBest(score_func=f_regression, k=1),
