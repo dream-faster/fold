@@ -33,6 +33,7 @@ class SelectColumns(Transformation, Tunable):
         self.columns: List[str] = wrap_in_list(columns)
         self.params_to_try = params_to_try
         self.name = f"SelectColumns-{columns}"
+        super().__init__()
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -66,6 +67,7 @@ class DropColumns(Transformation, Tunable):
         self.columns = wrap_in_list(columns)
         self.params_to_try = params_to_try
         self.name = f"DropColumns-{columns}"
+        super().__init__()
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -117,6 +119,7 @@ class RenameColumns(Transformation):
     def __init__(self, columns_mapper: dict) -> None:
         self.columns_mapper = columns_mapper
         self.name = "RenameColumns"
+        super().__init__()
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -158,6 +161,7 @@ class OnlyPredictions(Transformation):
 
     def __init__(self) -> None:
         self.name = "OnlyPredictions"
+        super().__init__()
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -204,6 +208,7 @@ class OnlyProbabilities(Transformation):
 
     def __init__(self) -> None:
         self.name = "OnlyProbabilities"
+        super().__init__()
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool

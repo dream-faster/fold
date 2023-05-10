@@ -62,9 +62,9 @@ class Sample(Composite):
         pipeline: Pipeline,
     ) -> None:
         self.sampler = sampler
-
         self.pipeline = wrap_in_double_list_if_needed(pipeline)
         self.name = f"Sample-{sampler.__class__.__name__}-{get_concatenated_names(self.pipeline)}"
+        super().__init__()
 
     def preprocess_primary(
         self, X: pd.DataFrame, index: int, y: T, sample_weights: V, fit: bool

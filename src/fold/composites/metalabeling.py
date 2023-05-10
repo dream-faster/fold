@@ -88,6 +88,7 @@ class MetaLabeling(Composite):
         )
         self.primary_output_included = primary_output_included
         self.name = "MetaLabeling-" + get_concatenated_names(self.primary + self.meta)
+        super().__init__()
 
     def preprocess_secondary(
         self,

@@ -93,6 +93,7 @@ class Concat(Composite):
         self.pipelines = pipelines
         self.if_duplicate_keep = ResolutionStrategy.from_str(if_duplicate_keep)
         self.name = "Concat-" + get_concatenated_names(pipelines)
+        super().__init__()
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
@@ -155,6 +156,7 @@ class Pipeline(Composite):
     ) -> None:
         self.pipeline = wrap_in_double_list_if_needed(pipeline)
         self.name = "Pipeline-" + get_concatenated_names(pipeline)
+        super().__init__()
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]

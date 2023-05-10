@@ -32,6 +32,7 @@ class _CreateEvents(Composite):
     ) -> None:
         self.wrapped_pipeline = wrap_in_list(wrapped_pipeline)
         self.transformation = wrap_in_list(event_label_wrapper)
+        super().__init__()
 
     def get_child_transformations_primary(self) -> Pipelines:
         return self.transformation
@@ -92,6 +93,7 @@ class _EventLabelWrapper(Transformation):
     def __init__(self, event_filter: EventFilter, labeler: Labeler) -> None:
         self.filter = event_filter
         self.labeler = labeler
+        super().__init__()
 
     fit = fit_noop
     update = fit

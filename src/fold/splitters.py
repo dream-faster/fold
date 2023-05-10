@@ -70,6 +70,7 @@ class SlidingWindowSplitter(Splitter):
         self.embargo = embargo
         self.start = start
         self.end = end
+        super().__init__()
 
     def splits(self, length: int) -> List[Fold]:
         end = self.end if self.end is not None else length
@@ -127,6 +128,7 @@ class ExpandingWindowSplitter(Splitter):
         self.embargo = embargo
         self.start = start
         self.end = end
+        super().__init__()
 
     def splits(self, length: int) -> List[Fold]:
         end = self.end if self.end is not None else length
@@ -171,6 +173,7 @@ class SingleWindowSplitter(Splitter):
     ) -> None:
         self.window_size = train_window
         self.embargo = embargo
+        super().__init__()
 
     def splits(self, length: int) -> List[Fold]:
         window_size = translate_float_if_needed(self.window_size, length)

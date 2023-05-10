@@ -26,6 +26,7 @@ class Breakpoint(Transformation):
         self.stop_at_fit = stop_at_fit
         self.stop_at_update = stop_at_update
         self.stop_at_transform = stop_at_transform
+        super().__init__()
 
     def fit(
         self,
@@ -90,6 +91,7 @@ class Test(InvertibleTransformation):
         self.transform_func = transform_func
         self.update_func = update_func
         self.inverse_transform_func = inverse_transform_func
+        super().__init__()
 
     def fit(
         self,

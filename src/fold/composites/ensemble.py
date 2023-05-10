@@ -50,6 +50,7 @@ class Ensemble(Composite):
     def __init__(self, pipelines: Pipelines) -> None:
         self.pipelines = pipelines
         self.name = "Ensemble-" + get_concatenated_names(pipelines)
+        super().__init__()
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]

@@ -46,6 +46,7 @@ class RandomClassifier(Model):
     def __init__(self, all_classes: List[int], probability_mean: float = 0.5) -> None:
         self.all_classes = all_classes
         self.probability_mean = probability_mean
+        super().__init__()
 
     fit = fit_noop
 

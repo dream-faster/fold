@@ -111,6 +111,7 @@ class AddHolidayFeatures(Transformation, Tunable):
             for country_code in self.country_codes
         ]
         self.params_to_try = params_to_try
+        super().__init__()
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool

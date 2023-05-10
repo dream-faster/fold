@@ -14,6 +14,7 @@ class DontUpdate(Transformation):
     def __init__(self, transformation: Transformation) -> None:
         self.transformation = transformation
         self.name = f"DontUpdate-{transformation.name}"
+        super().__init__()
 
     def fit(
         self,

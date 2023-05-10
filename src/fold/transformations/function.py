@@ -19,6 +19,7 @@ class WrapFunction(Transformation):
         self.properties = Transformation.Properties(
             requires_X=True, memory_size=past_window_size
         )
+        super().__init__()
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool

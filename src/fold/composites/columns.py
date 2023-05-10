@@ -43,6 +43,7 @@ class EnsembleEachColumn(Composite):
     def __init__(self, pipeline: Pipeline) -> None:
         self.pipelines: Pipelines = wrap_in_double_list_if_needed(pipeline)
         self.name = "PerColumnEnsemble-" + get_concatenated_names(self.pipelines)
+        super().__init__()
 
     @classmethod
     def from_cloned_instance(
@@ -123,6 +124,7 @@ class TransformEachColumn(Composite):
     def __init__(self, pipeline: Pipeline) -> None:
         self.pipeline = wrap_in_double_list_if_needed(pipeline)
         self.name = "PerColumnTransform-" + get_concatenated_names(self.pipeline)
+        super().__init__()
 
     @classmethod
     def from_cloned_instance(
@@ -197,6 +199,7 @@ class SkipNA(Composite):
     def __init__(self, pipeline: Pipeline) -> None:
         self.pipeline = wrap_in_double_list_if_needed(pipeline)
         self.name = "SkipNA-" + get_concatenated_names(self.pipeline)
+        super().__init__()
 
     def preprocess_primary(
         self, X: pd.DataFrame, index: int, y: T, sample_weights: V, fit: bool

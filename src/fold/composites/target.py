@@ -71,6 +71,7 @@ class TransformTarget(Composite):
             self.wrapped_pipeline + self.y_pipeline
         )
         self.invert_wrapped_output = invert_wrapped_output
+        super().__init__()
 
     def preprocess_primary(
         self, X: pd.DataFrame, index: int, y: T, sample_weights: V, fit: bool

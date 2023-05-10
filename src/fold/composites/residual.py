@@ -79,6 +79,7 @@ class ModelResiduals(Composite):
         self.meta = wrap_in_double_list_if_needed(meta)
         self.primary_output_included = primary_output_included
         self.name = "Hybrid-" + get_concatenated_names(self.primary + self.meta)
+        super().__init__()
 
     def preprocess_primary(
         self, X: pd.DataFrame, index: int, y: T, sample_weights: V, fit: bool
