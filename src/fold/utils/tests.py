@@ -116,6 +116,7 @@ def tuneability_test(
     the kwargs are used to set the parameters of the transformation, which should be different to the init parameters of the `instance`.
     """
     assert isinstance(instance, Tunable)
+    assert instance.id is not None
 
     params = instance.get_params()
     different_instance = (

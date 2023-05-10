@@ -45,10 +45,16 @@ def test_gridsearch_sklearn() -> None:
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     pipeline = [
         OptimizeGridSearch(
-            pipeline=WrapSKLearnRegressor.from_model(
-                SklearnDummyRegressor(strategy="constant", constant=1),
-                params_to_try=dict(constant=[1, 2]),
-            ),
+            pipeline=[
+                WrapSKLearnRegressor.from_model(
+                    SklearnDummyRegressor(strategy="constant", constant=1),
+                    params_to_try=dict(constant=[1, 2]),
+                ),
+                WrapSKLearnRegressor.from_model(
+                    SklearnDummyRegressor(strategy="constant", constant=1),
+                    params_to_try=dict(constant=[1, 2]),
+                ),
+            ],
             scorer=mean_squared_error,
             is_scorer_loss=True,
         )
