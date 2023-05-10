@@ -86,6 +86,7 @@ class AddDateTimeFeatures(Transformation, Tunable):
     ) -> None:
         self.features = [DateTimeFeature(f) for f in wrap_in_list(features)]
         self.params_to_try = params_to_try
+        super().__init__()
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool

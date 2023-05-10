@@ -60,6 +60,7 @@ class TakeLog(InvertibleTransformation, Tunable):
             raise ValueError("base should be either 'e', np.e, '10', 10, '2', 2.")
         self.base = base
         self.params_to_try = params_to_try
+        super().__init__()
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -154,6 +155,7 @@ class AddConstant(InvertibleTransformation, Tunable):
 
         self.constant = constant
         self.params_to_try = params_to_try
+        super().__init__()
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -269,6 +271,7 @@ class MultiplyBy(InvertibleTransformation, Tunable):
     ) -> None:
         self.constant = constant
         self.params_to_try = params_to_try
+        super().__init__()
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool

@@ -56,6 +56,7 @@ class AddLagsY(Transformation, Tunable):
             _internal_supports_minibatch_backtesting=True,
         )
         self.params_to_try = params_to_try
+        super().__init__()
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -146,6 +147,7 @@ class AddLagsX(Transformation, Tunable):
             requires_X=True,
             memory_size=max(flatten([l for _, l in self.columns_and_lags])),
         )
+        super().__init__()
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
