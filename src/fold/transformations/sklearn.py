@@ -92,7 +92,7 @@ class WrapSKLearnTransformation(Transformation, Tunable):
                 columns = [f"{self.name}_{i}" for i in range(result.shape[1])]
             else:
                 columns = X.columns
-            return pd.DataFrame(result, columns=columns), None
+            return pd.DataFrame(result, index=X.index, columns=columns), None
 
     def get_params(self) -> dict:
         return self.transformation.get_params()
