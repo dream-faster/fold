@@ -66,7 +66,7 @@ def test_sklearn_transformation_variable_columns() -> None:
         PCA(n_components=2),
     ]
     pred, _ = train_backtest(pipeline, X, y, splitter)
-    assert pred.shape[0] == X.shape[0]
+    assert pred.shape[1] == 2
 
 
 def test_sklearn_pipeline() -> None:
