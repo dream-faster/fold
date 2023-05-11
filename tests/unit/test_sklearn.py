@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn.base import TransformerMixin
+from sklearn.decomposition import PCA
 from sklearn.dummy import DummyClassifier, DummyRegressor
 from sklearn.feature_selection import SelectKBest, VarianceThreshold, f_regression
 from sklearn.pipeline import Pipeline
@@ -53,6 +54,19 @@ def test_sklearn_regressor() -> None:
             DummyRegressor(**kwargs)
         ),
     )
+
+
+def test_sklearn_transformation_variable_columns() -> None:
+    X, y = generate_sine_wave_data()
+    X["sine1"] = X["sine"].shift(1)
+    X["sine2"] = X["sine"].shift(2)
+    X["sine3"] = X["sine"].shift(3)
+    splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
+    pipeline = [
+        PCA(n_components=2),
+    ]
+    pred, _ = train_backtest(pipeline, X, y, splitter)
+    assert pred.shape[1] == 2
 
 
 def test_sklearn_pipeline() -> None:

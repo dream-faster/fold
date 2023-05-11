@@ -84,13 +84,15 @@ class WrapSKLearnTransformation(Transformation, Tunable):
     def transform(
         self, X: pd.DataFrame, in_sample: bool
     ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
+        result = self.transformation.transform(X)
         if hasattr(self.transformation, "set_output"):
-            return self.transformation.transform(X), None
+            return result, None
         else:
-            return (
-                pd.DataFrame(self.transformation.transform(X), columns=X.columns),
-                None,
-            )
+            if result.shape[1] != len(X.columns):
+                columns = [f"{self.name}_{i}" for i in range(result.shape[1])]
+            else:
+                columns = X.columns
+            return pd.DataFrame(result, index=X.index, columns=columns), None
 
     def get_params(self) -> dict:
         return self.transformation.get_params()
