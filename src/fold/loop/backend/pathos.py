@@ -43,8 +43,8 @@ def process_child_transformations(
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
 ):
-    return p_map(
-        lambda index, child_transformation: func(
+    return [
+        func(
             composite,
             index,
             child_transformation,
@@ -55,6 +55,6 @@ def process_child_transformations(
             stage,
             backend,
             results_primary,
-        ),
-        list_of_child_transformations_with_index,
-    )
+        )
+        for index, child_transformation in list_of_child_transformations_with_index
+    ]
