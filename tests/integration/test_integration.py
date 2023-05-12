@@ -3,9 +3,11 @@ import pandas as pd
 import pytest
 from sklearn.ensemble import HistGradientBoostingRegressor
 
+from fold.composites import Concat
 from fold.loop import train_evaluate
 from fold.loop.encase import train_backtest
 from fold.splitters import ExpandingWindowSplitter
+from fold.transformations import AddWindowFeatures
 from fold.transformations.lags import AddLagsX, AddLagsY
 from fold.utils.dataset import get_preprocessed_dataset
 
@@ -36,12 +38,18 @@ def test_on_weather_data_backends(backend: str) -> None:
     )
     splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.2)
     pipeline = [
-        AddLagsX(columns_and_lags=[("pressure", list(range(1, 3)))]),
-        AddLagsY(list(range(1, 10))),
+        Concat(
+            [
+                AddLagsX(columns_and_lags=[("pressure", list(range(1, 3)))]),
+                AddLagsY(list(range(1, 10))),
+                AddWindowFeatures(("pressure", 14, "mean")),
+            ]
+        ),
         HistGradientBoostingRegressor(),
     ]
 
-    _, _ = train_backtest(pipeline, X, y, splitter, backend=backend)
+    pred, _ = train_backtest(pipeline, X, y, splitter, backend=backend)
+    assert len(pred) == 80
 
 
 def test_train_evaluate() -> None:
