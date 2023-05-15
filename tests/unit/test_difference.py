@@ -53,3 +53,14 @@ def test_returns():
     splitter = SingleWindowSplitter(train_window=50)
     pred, _ = train_backtest(TakeReturns(), X, y, splitter)
     assert pred.squeeze().equals(X.squeeze().pct_change().loc[pred.index])
+
+
+def test_log_returns():
+    X, y = generate_sine_wave_data(length=100)
+    X = X + 2
+    y = y + 2
+    splitter = SingleWindowSplitter(train_window=50)
+    pred, _ = train_backtest(TakeReturns(log_returns=True), X, y, splitter)
+    assert np.isclose(
+        pred.squeeze(), np.log(X.squeeze()).diff().loc[pred.index], atol=1e-3
+    ).all()
