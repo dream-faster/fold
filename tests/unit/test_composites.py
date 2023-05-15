@@ -3,7 +3,7 @@ import pandas as pd
 from fold.composites import Concat, TransformEachColumn
 from fold.composites.residual import ModelResiduals
 from fold.loop import backtest, train
-from fold.loop.common import deepcopy_pipelines
+from fold.loop.utils import deepcopy_pipelines
 from fold.models.dummy import DummyRegressor
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.columns import DropColumns, OnlyPredictions, RenameColumns

@@ -7,10 +7,8 @@ from typing import Any, Callable, List, Optional, Tuple
 
 import pandas as pd
 
-from fold.composites.common import get_concatenated_names
-from fold.utils.list import wrap_in_double_list_if_needed
-
-from ..base import Composite, Pipeline, Pipelines, T, V
+from ..base import Composite, Pipeline, Pipelines, T, V, get_concatenated_names
+from ..utils.list import wrap_in_double_list_if_needed
 
 
 class Sample(Composite):
@@ -88,7 +86,7 @@ class Sample(Composite):
     ) -> pd.DataFrame:
         return results[0]
 
-    def get_child_transformations_primary(self) -> Pipelines:
+    def get_children_primary(self) -> Pipelines:
         return self.pipeline
 
     def clone(self, clone_children: Callable) -> Sample:

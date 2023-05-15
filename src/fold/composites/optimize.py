@@ -8,12 +8,20 @@ from typing import Callable, Iterable, List, Optional, Union
 import pandas as pd
 from sklearn.model_selection import ParameterGrid
 
-from ..base import Artifact, Composite, Optimizer, Pipeline, Transformation, Tunable
+from ..base import (
+    Artifact,
+    Composite,
+    Optimizer,
+    Pipeline,
+    Transformation,
+    Tunable,
+    get_concatenated_names,
+    traverse,
+    traverse_apply,
+)
 from ..splitters import SingleWindowSplitter
 from ..transformations.dev import Identity
-from ..traverse import traverse, traverse_apply
 from ..utils.list import to_hierachical_dict, wrap_in_list
-from .common import get_concatenated_names
 
 
 class OptimizeGridSearch(Optimizer):

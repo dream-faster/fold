@@ -1,7 +1,14 @@
 from typing import Callable, List
 
-from .base import Composite, Optimizer, Pipeline, Transformation
-from .utils.list import empty_if_none
+from ..utils.list import empty_if_none
+from .classes import (
+    Composite,
+    Optimizer,
+    Pipeline,
+    Pipelines,
+    Transformation,
+    Transformations,
+)
 
 
 def traverse_apply(pipeline: Pipeline, apply_func: Callable) -> Pipeline:
@@ -28,8 +35,8 @@ def traverse(
             yield from traverse(i)
     elif isinstance(pipeline, Composite):
         yield pipeline
-        items = pipeline.get_child_transformations_primary() + empty_if_none(
-            pipeline.get_child_transformations_secondary()
+        items = pipeline.get_children_primary() + empty_if_none(
+            pipeline.get_children_secondary()
         )
         for i in items:
             yield from traverse(i)
@@ -37,3 +44,18 @@ def traverse(
         raise ValueError("Optimizer is not supported within an Optimizer.")
     else:
         yield pipeline
+
+
+def get_flat_list_of_transformations(
+    transformations: Pipelines,
+) -> List[Transformations]:
+    return [t for t in traverse(transformations) if isinstance(t, Transformation)]
+
+
+def get_concatenated_names(transformations: Pipelines) -> str:
+    return "-".join(
+        [
+            transformation.name if hasattr(transformation, "name") else ""
+            for transformation in get_flat_list_of_transformations(transformations)
+        ]
+    )

@@ -7,11 +7,9 @@ from typing import Callable, List, Optional, Tuple
 
 import pandas as pd
 
-from fold.composites.common import get_concatenated_names
-from fold.utils.checks import get_prediction_column
-from fold.utils.list import wrap_in_double_list_if_needed
-
-from ..base import Composite, Pipeline, Pipelines, T, V
+from ..base import Composite, Pipeline, Pipelines, T, V, get_concatenated_names
+from ..utils.checks import get_prediction_column
+from ..utils.list import wrap_in_double_list_if_needed
 
 
 class ModelResiduals(Composite):
@@ -123,10 +121,10 @@ class ModelResiduals(Composite):
             .to_frame()
         )
 
-    def get_child_transformations_primary(self) -> Pipelines:
+    def get_children_primary(self) -> Pipelines:
         return self.primary
 
-    def get_child_transformations_secondary(
+    def get_children_secondary(
         self,
     ) -> Optional[Pipelines]:
         return self.meta

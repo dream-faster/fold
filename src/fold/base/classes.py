@@ -1,6 +1,3 @@
-# Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
-
-
 from __future__ import annotations
 
 import enum
@@ -19,7 +16,16 @@ X = pd.DataFrame
 Artifact = pd.DataFrame
 
 
-class Composite(ABC):
+class Block(ABC):
+    id: str
+
+    def __new__(cls, *args, **kwargs):
+        instance = super().__new__(cls)
+        instance.id = str(uuid.uuid4())
+        return instance
+
+
+class Composite(Block, ABC):
     """
     A Composite contains other transformations.
     """
@@ -42,10 +48,10 @@ class Composite(ABC):
     properties: Properties
 
     @abstractmethod
-    def get_child_transformations_primary(self) -> Pipelines:
+    def get_children_primary(self) -> Pipelines:
         raise NotImplementedError
 
-    def get_child_transformations_secondary(
+    def get_children_secondary(
         self,
     ) -> Optional[Pipelines]:
         return None
@@ -101,7 +107,7 @@ class Composite(ABC):
         )
 
 
-class Optimizer(ABC):
+class Optimizer(Block, ABC):
     splitter: SingleWindowSplitter
 
     @abstractmethod
@@ -123,7 +129,7 @@ class Optimizer(ABC):
         raise NotImplementedError
 
 
-class Transformation(ABC):
+class Transformation(Block, ABC):
     """
     A transformation is a single step in a pipeline.
     """
@@ -195,12 +201,6 @@ class InvertibleTransformation(Transformation, ABC):
 
 class Tunable(ABC):
     params_to_try: Optional[dict]
-    id: str
-
-    def __new__(cls, *args, **kwargs):
-        instance = super().__new__(cls)
-        instance.id = str(uuid.uuid4())
-        return instance
 
     @abstractmethod
     def get_params(self) -> dict:
@@ -235,6 +235,7 @@ Pipeline = Union[
 Pipelines = List[Pipeline]
 """Multiple, independent `Pipeline`s."""
 
+TrainedPipeline = Pipeline
 TrainedPipelines = List[pd.Series]
 """A list of trained `Pipeline`s, to be used for backtesting."""
 OutOfSamplePredictions = pd.DataFrame

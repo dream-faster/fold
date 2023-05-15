@@ -3,13 +3,12 @@ import pandas as pd
 import pytest
 from sklearn.feature_selection import SelectKBest, VarianceThreshold, f_regression
 
-from fold.base import Composite
+from fold.base import Composite, traverse, traverse_apply
 from fold.composites.target import TransformTarget
 from fold.transformations.dev import Lookahead, Test
 from fold.transformations.difference import Difference
 from fold.transformations.math import TakeLog
 from fold.transformations.sklearn import WrapSKLearnFeatureSelector
-from fold.traverse import traverse, traverse_apply
 from fold.utils.dataframe import to_series
 from fold.utils.trim import (
     get_first_valid_index,

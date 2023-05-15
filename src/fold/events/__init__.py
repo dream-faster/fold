@@ -33,10 +33,10 @@ class _CreateEvents(Composite):
         self.wrapped_pipeline = wrap_in_list(wrapped_pipeline)
         self.transformation = wrap_in_list(event_label_wrapper)
 
-    def get_child_transformations_primary(self) -> Pipelines:
+    def get_children_primary(self) -> Pipelines:
         return self.transformation
 
-    def get_child_transformations_secondary(self) -> Optional[Pipelines]:
+    def get_children_secondary(self) -> Optional[Pipelines]:
         return self.wrapped_pipeline
 
     def preprocess_secondary(

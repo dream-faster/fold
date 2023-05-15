@@ -8,10 +8,9 @@ from typing import Callable, List, Optional, Tuple
 
 import pandas as pd
 
-from ..base import Composite, Pipeline, Pipelines, T, V
+from ..base import Composite, Pipeline, Pipelines, T, V, get_concatenated_names
 from ..utils.checks import all_have_probabilities
 from ..utils.list import unique, wrap_in_double_list_if_needed
-from .common import get_concatenated_names
 
 
 class EnsembleEachColumn(Composite):
@@ -68,7 +67,7 @@ class EnsembleEachColumn(Composite):
     ) -> pd.DataFrame:
         return postprocess_results(results, self.name)
 
-    def get_child_transformations_primary(self) -> Pipelines:
+    def get_children_primary(self) -> Pipelines:
         return self.pipelines
 
     def clone(self, clone_children: Callable) -> EnsembleEachColumn:
@@ -147,7 +146,7 @@ class TransformEachColumn(Composite):
     ) -> pd.DataFrame:
         return pd.concat(results, axis="columns")
 
-    def get_child_transformations_primary(self) -> Pipelines:
+    def get_children_primary(self) -> Pipelines:
         return self.pipeline
 
     def clone(self, clone_children: Callable) -> TransformEachColumn:
@@ -193,6 +192,7 @@ class SkipNA(Composite):
     """
 
     properties = Composite.Properties()
+    original_index: Optional[pd.Index] = None
 
     def __init__(self, pipeline: Pipeline) -> None:
         self.pipeline = wrap_in_double_list_if_needed(pipeline)
@@ -215,7 +215,7 @@ class SkipNA(Composite):
         results = [result.reindex(self.original_index) for result in results]
         return pd.concat(results, axis="columns")
 
-    def get_child_transformations_primary(self) -> Pipelines:
+    def get_children_primary(self) -> Pipelines:
         return self.pipeline
 
     def clone(self, clone_children: Callable) -> SkipNA:
@@ -223,6 +223,7 @@ class SkipNA(Composite):
             pipeline=clone_children(self.pipeline),
         )
         clone.properties = self.properties
+        clone.original_index = self.original_index
         return clone
 
 
