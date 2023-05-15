@@ -89,7 +89,8 @@ def backtest_score(
         y = artifacts["label"].reindex(pred.index).dropna()
 
     if len(y) != len(pred_point):
-        probabilities = probabilities[: len(y)]
+        if probabilities is not None:
+            probabilities = probabilities[: len(y)]
         pred_point = pred_point[: len(y)]
 
     if importlib.util.find_spec("krisi") is not None:
