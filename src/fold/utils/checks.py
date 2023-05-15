@@ -42,6 +42,22 @@ def get_prediction_column(input: pd.DataFrame) -> pd.Series:
     return to_series(input[get_prediction_column_name(input)])
 
 
+def get_probabilities_column(input: pd.DataFrame) -> pd.Series:
+    return to_series(input[get_probabilities_column_name(input)])
+
+
+def get_probabilities_column_name(input: pd.DataFrame) -> str:
+    candidates = [col for col in input.columns if col.startswith("probabilities_")]
+    if len(candidates) == 0:
+        if len(input.columns) == 1:
+            return input.columns[0]
+        else:
+            raise ValueError(
+                f"Could not find a probabilities column in {input.columns}."
+            )
+    return candidates[0]
+
+
 def get_prediction_column_name(input: pd.DataFrame) -> str:
     candidates = [col for col in input.columns if col.startswith("predictions_")]
     if len(candidates) == 0:
