@@ -7,6 +7,12 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, Optional, Tuple, Union
 import pandas as pd
 from sklearn.metrics import mean_squared_error
 
+from fold.utils.checks import (
+    all_have_probabilities,
+    get_prediction_column,
+    get_probabilities_columns,
+)
+
 from ..base import OutOfSamplePredictions, Pipeline, TrainedPipelines
 from ..splitters import Splitter
 from .backtesting import backtest
@@ -77,14 +83,23 @@ def backtest_score(
     if importlib.util.find_spec("krisi") is not None:
         from krisi import score
 
+        probabilities = (
+            get_probabilities_columns(pred) if all_have_probabilities([pred]) else None
+        )
+        pred_ = get_prediction_column(pred)
+
         scorecard = score(
-            y[pred.index],
-            pred.squeeze(),
+            y=y[pred_.index],
+            predictions=pred_,
+            probabilities=probabilities,
             **(krisi_args if krisi_args is not None else {}),
         )
     else:
+        pred_ = get_prediction_column(pred)
         scorecard = {
-            "mean_squared_error": evaluation_func(y[pred.index], pred.squeeze())
+            evaluation_func.__class__.__name__: evaluation_func(
+                y[pred_.index], pred_.squeeze()
+            )
         }
     return scorecard, pred
 
