@@ -1,7 +1,10 @@
+import pandas as pd
 import pytest
-from sklearn.ensemble import HistGradientBoostingRegressor
+from sklearn.ensemble import HistGradientBoostingRegressor, RandomForestClassifier
 
 from fold.composites import Concat
+from fold.events import CreateEvents
+from fold.events.labeling.fixed import BinarizeFixedForwardHorizon
 from fold.loop import train_evaluate
 from fold.loop.encase import train_backtest
 from fold.splitters import ExpandingWindowSplitter
@@ -51,3 +54,30 @@ def test_train_evaluate() -> None:
     scorecard, pred, trained_trained_pipelines = train_evaluate(
         pipeline, X, y, splitter
     )
+
+
+def test_train_evaluate_probabilities() -> None:
+    X, y = get_preprocessed_dataset(
+        "weather/historical_hourly_la",
+        target_col="temperature",
+        shorten=1000,
+    )
+
+    splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.2)
+
+    def mutate_X(X: pd.DataFrame) -> pd.DataFrame:
+        X.iloc[-1] = 1.0
+        return X
+
+    pipeline = [
+        AddLagsX(columns_and_lags=[("pressure", list(range(1, 3)))]),
+        AddLagsY(list(range(1, 10))),
+        CreateEvents(RandomForestClassifier(), BinarizeFixedForwardHorizon(1)),
+        lambda X: mutate_X(X),
+    ]
+
+    splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.2)
+    scorecard, pred, trained_trained_pipelines = train_evaluate(
+        pipeline, X, y, splitter
+    )
+    print()
