@@ -45,7 +45,7 @@ class SelectBest(Composite, Tunable):
         )
         return results[0]
 
-    def get_child_transformations_primary(self) -> Pipelines:
+    def get_children_primary(self) -> Pipelines:
         return wrap_in_list(
             self.choose_from[self.selected_ if self.selected_ is not None else 0]
         )

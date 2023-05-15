@@ -7,11 +7,18 @@ from typing import Callable, List, Optional, Tuple, Union
 
 import pandas as pd
 
-from ..base import Composite, InvertibleTransformation, Pipeline, Pipelines, T, V
+from ..base import (
+    Composite,
+    InvertibleTransformation,
+    Pipeline,
+    Pipelines,
+    T,
+    V,
+    get_concatenated_names,
+)
 from ..utils.checks import get_prediction_column, get_prediction_column_name
 from ..utils.dataframe import to_series
 from ..utils.list import wrap_in_double_list_if_needed
-from .common import get_concatenated_names
 
 
 class TransformTarget(Composite):
@@ -111,10 +118,10 @@ class TransformTarget(Composite):
         results[get_prediction_column_name(results)] = to_series(predictions)
         return results
 
-    def get_child_transformations_primary(self) -> Pipelines:
+    def get_children_primary(self) -> Pipelines:
         return self.y_pipeline
 
-    def get_child_transformations_secondary(
+    def get_children_secondary(
         self,
     ) -> Optional[Pipelines]:
         return self.wrapped_pipeline

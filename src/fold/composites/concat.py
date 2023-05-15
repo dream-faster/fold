@@ -8,7 +8,7 @@ from typing import Callable, List, Optional, Union
 
 import pandas as pd
 
-from ..base import Composite, Pipelines, Transformations
+from ..base import Composite, Pipelines, Transformations, get_concatenated_names
 from ..transformations.columns import SelectColumns
 from ..transformations.dev import Identity
 from ..utils.list import (
@@ -18,7 +18,6 @@ from ..utils.list import (
     wrap_in_double_list_if_needed,
     wrap_in_list,
 )
-from .common import get_concatenated_names
 
 
 class ResolutionStrategy(Enum):
@@ -122,7 +121,7 @@ class Concat(Composite):
         else:
             return pd.concat(results, axis="columns")
 
-    def get_child_transformations_primary(self) -> Pipelines:
+    def get_children_primary(self) -> Pipelines:
         return self.pipelines
 
     def clone(self, clone_children: Callable) -> Concat:
@@ -161,7 +160,7 @@ class Pipeline(Composite):
     ) -> pd.DataFrame:
         return results[0]
 
-    def get_child_transformations_primary(self) -> Pipelines:
+    def get_children_primary(self) -> Pipelines:
         return self.pipeline
 
     def clone(self, clone_children: Callable) -> Pipeline:

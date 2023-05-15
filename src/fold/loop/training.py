@@ -11,12 +11,9 @@ from ..utils.dataframe import concat_on_index
 from ..utils.list import wrap_in_list
 from .backend import get_backend_dependent_functions
 from .checks import check_types
-from .common import (
-    _extract_trained_pipelines,
-    _sequential_train_on_window,
-    _train_on_window,
-)
+from .common import _sequential_train_on_window, _train_on_window
 from .types import Backend, TrainMethod
+from .utils import _extract_trained_pipelines
 from .wrap import wrap_transformation_if_needed
 
 

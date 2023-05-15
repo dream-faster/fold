@@ -7,9 +7,8 @@ from typing import Callable, List, Optional
 
 import pandas as pd
 
-from ..base import Composite, Pipelines
+from ..base import Composite, Pipelines, get_concatenated_names
 from .columns import postprocess_results
-from .common import get_concatenated_names
 
 
 class Ensemble(Composite):
@@ -56,7 +55,7 @@ class Ensemble(Composite):
     ) -> pd.DataFrame:
         return postprocess_results(results, self.name)
 
-    def get_child_transformations_primary(self) -> Pipelines:
+    def get_children_primary(self) -> Pipelines:
         return self.pipelines
 
     def clone(self, clone_children: Callable) -> Ensemble:
