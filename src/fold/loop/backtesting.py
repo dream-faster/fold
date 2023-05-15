@@ -1,13 +1,14 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
 
-from typing import Optional, Union
+from typing import Optional, Tuple, Union
 
 import pandas as pd
 from tqdm.auto import tqdm
 
-from ..base import OutOfSamplePredictions, TrainedPipelines
+from ..base import Artifact, OutOfSamplePredictions, TrainedPipelines
 from ..splitters import Splitter
+from ..utils.dataframe import concat_on_index
 from ..utils.trim import trim_initial_nans_single
 from .checks import check_types
 from .common import _backtest_on_window
@@ -23,7 +24,8 @@ def backtest(
     sample_weights: Optional[pd.Series] = None,
     silent: bool = False,
     mutate: bool = False,
-) -> OutOfSamplePredictions:
+    return_artifacts: bool = False,
+) -> Union[OutOfSamplePredictions, Tuple[OutOfSamplePredictions, Artifact]]:
     """
     Run backtest on TrainedPipelines and given data.
 
@@ -55,16 +57,22 @@ def backtest(
     backend = Backend.from_str(backend)
     X, y = check_types(X, y)
 
-    results = [
-        _backtest_on_window(
-            trained_pipelines,
-            split,
-            X,
-            y,
-            sample_weights,
-            backend,
-            mutate=mutate,
-        )
-        for split in tqdm(splitter.splits(length=len(X)), disable=silent)
-    ]
-    return trim_initial_nans_single(pd.concat(results, axis="index"))
+    results, artifacts = zip(
+        *[
+            _backtest_on_window(
+                trained_pipelines,
+                split,
+                X,
+                y,
+                sample_weights,
+                backend,
+                mutate=mutate,
+            )
+            for split in tqdm(splitter.splits(length=len(X)), disable=silent)
+        ]
+    )
+    results = trim_initial_nans_single(concat_on_index(results))
+    if return_artifacts:
+        return results, concat_on_index(artifacts)
+    else:
+        return results

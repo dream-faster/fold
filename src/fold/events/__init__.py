@@ -59,6 +59,9 @@ class _CreateEvents(Composite):
     ) -> pd.DataFrame:
         return secondary_results[0].reindex(y.index)
 
+    def postprocess_artifacts_primary(self, artifacts: List[Artifact]) -> pd.DataFrame:
+        return pd.concat(artifacts, axis="columns")
+
     def postprocess_artifacts_secondary(
         self, primary_artifacts: pd.DataFrame, secondary_artifacts: List[Artifact]
     ) -> pd.DataFrame:

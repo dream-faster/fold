@@ -284,7 +284,7 @@ def __process_candidates(
         sample_weights,
         backend,
         mutate=False,
-    )
+    )[0]
     return (
         trained_pipelines,
         trim_initial_nans_single(result),
@@ -340,7 +340,7 @@ def _backtest_on_window(
     sample_weights: Optional[pd.Series],
     backend: Backend,
     mutate: bool,
-) -> pd.DataFrame:
+) -> Tuple[X, Artifact]:
     current_pipeline = [
         pipeline_over_time.loc[split.model_index]
         for pipeline_over_time in trained_pipelines
@@ -355,7 +355,7 @@ def _backtest_on_window(
         if sample_weights is not None
         else None
     )
-    return recursively_transform(
+    results, artifacts = recursively_transform(
         X_test,
         y_test,
         sample_weights_test,
@@ -363,7 +363,8 @@ def _backtest_on_window(
         current_pipeline,
         stage=Stage.update_online_only,
         backend=backend,
-    )[1]
+    )[1:]
+    return results, artifacts.loc[X.index[split.test_window_start - 1] :]
 
 
 def _train_on_window(
