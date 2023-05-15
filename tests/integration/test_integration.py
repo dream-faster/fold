@@ -73,7 +73,7 @@ def test_train_evaluate_probabilities() -> None:
         AddLagsX(columns_and_lags=[("pressure", list(range(1, 3)))]),
         AddLagsY(list(range(1, 10))),
         CreateEvents(RandomForestClassifier(), BinarizeFixedForwardHorizon(1)),
-        lambda X: mutate_X(X),
+        # lambda X: mutate_X(X),
     ]
 
     splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.2)

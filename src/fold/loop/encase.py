@@ -69,7 +69,7 @@ def backtest_score(
         Predictions for all folds, concatenated.
     """
 
-    pred = backtest(
+    pred, artifacts = backtest(
         trained_pipelines,
         X,
         y,
@@ -77,28 +77,35 @@ def backtest_score(
         backend,
         sample_weights,
         silent,
-        mutate=False,
+        return_artifacts=True,
     )
+
+    probabilities = (
+        get_probabilities_columns(pred) if all_have_probabilities([pred]) else None
+    )
+    pred_point = get_prediction_column(pred)
+
+    if artifacts is not None and "label" in artifacts.columns:
+        y = artifacts["label"].reindex(pred.index).dropna()
+
+    if len(y) != len(pred_point):
+        probabilities = probabilities[: len(y)]
+        pred_point = pred_point[: len(y)]
 
     if importlib.util.find_spec("krisi") is not None:
         from krisi import score
 
-        probabilities = (
-            get_probabilities_columns(pred) if all_have_probabilities([pred]) else None
-        )
-        pred_ = get_prediction_column(pred)
-
         scorecard = score(
-            y=y[pred_.index],
-            predictions=pred_,
+            y=y[pred_point.index],
+            predictions=pred_point,
             probabilities=probabilities,
             **(krisi_args if krisi_args is not None else {}),
         )
     else:
-        pred_ = get_prediction_column(pred)
+        pred_point = get_prediction_column(pred)
         scorecard = {
             evaluation_func.__class__.__name__: evaluation_func(
-                y[pred_.index], pred_.squeeze()
+                y[pred_point.index], pred_point.squeeze()
             )
         }
     return scorecard, pred
