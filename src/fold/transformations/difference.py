@@ -3,6 +3,7 @@
 
 from typing import Optional, Tuple, Union
 
+import numpy as np
 import pandas as pd
 
 from ..base import Artifact, InvertibleTransformation, Transformation, Tunable
@@ -110,9 +111,14 @@ class Difference(InvertibleTransformation, Tunable):
         return {"lag": self.lag}
 
 
-class TakeReturns(Transformation):
+class TakeReturns(Transformation, Tunable):
     """
     Takes the returns (percentage change between the current and a prior element).
+
+    Parameters
+    ----------
+    log_returns : bool, optional, default False.
+        If True, computes the log returns instead of the simple returns, default False.
 
     Examples
     --------
@@ -152,6 +158,9 @@ class TakeReturns(Transformation):
 
     last_values_X: Optional[Union[pd.DataFrame, pd.Series]] = None
 
+    def __init__(self, log_returns: bool = False) -> None:
+        self.log_returns = log_returns
+
     def fit(
         self,
         X: pd.DataFrame,
@@ -171,9 +180,18 @@ class TakeReturns(Transformation):
     def transform(
         self, X: pd.DataFrame, in_sample: bool
     ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
+        def operation(df):
+            if self.log_returns:
+                return np.log(df).diff()
+            else:
+                return df.pct_change()
+
         if in_sample:
-            return X.pct_change(), None
+            return operation(X), None
         else:
             return (
-                pd.concat([self.last_values_X, X], axis="index").pct_change().iloc[1:]
+                operation(pd.concat([self.last_values_X, X], axis="index")).iloc[1:]
             ), None
+
+    def get_params(self) -> dict:
+        return {"log_returns": self.log_returns}
