@@ -10,7 +10,7 @@ from sklearn.metrics import mean_squared_error
 from fold.utils.checks import (
     all_have_probabilities,
     get_prediction_column,
-    get_probabilities_column,
+    get_probabilities_columns,
 )
 
 from ..base import OutOfSamplePredictions, Pipeline, TrainedPipelines
@@ -84,7 +84,7 @@ def backtest_score(
         from krisi import score
 
         probabilities = (
-            get_probabilities_column(pred) if all_have_probabilities([pred]) else None
+            get_probabilities_columns(pred) if all_have_probabilities([pred]) else None
         )
         pred_ = get_prediction_column(pred)
 
