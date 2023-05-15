@@ -364,7 +364,7 @@ def _backtest_on_window(
         stage=Stage.update_online_only,
         backend=backend,
     )[1:]
-    return results, artifacts[X.index[split.test_window_start - 1] :]
+    return results, artifacts.loc[X.index[split.test_window_start - 1] :]
 
 
 def _train_on_window(
