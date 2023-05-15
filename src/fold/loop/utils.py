@@ -40,7 +40,7 @@ def replace_with(transformations: List[Block]) -> Callable:
             else:
                 return transformation
 
-    return deepcopy_pipelines
+    return replace
 
 
 def _extract_trained_pipelines(

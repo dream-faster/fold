@@ -132,7 +132,7 @@ def _process_composite(
     composite.before_fit(X)
     primary_transformations = composite.get_children_primary()
 
-    (primary_transformations, results_primary, artifacts_primary,) = zip(
+    primary_transformations, results_primary, artifacts_primary = zip(
         *backend_functions.process_child_transformations(
             __process_primary_child_transform,
             enumerate(primary_transformations),
@@ -146,7 +146,7 @@ def _process_composite(
             None,
         )
     )
-    composite = composite.clone(replace_with(primary_transformations))
+    composite = composite.clone(replace_with(primary_transformations[0]))
 
     if composite.properties.primary_only_single_pipeline:
         assert len(results_primary) == 1, ValueError(
@@ -182,7 +182,7 @@ def _process_composite(
             results_primary,
         )
     )
-    composite = composite.clone(replace_with(secondary_transformations))
+    composite = composite.clone(replace_with(secondary_transformations[0]))
 
     if composite.properties.secondary_only_single_pipeline:
         assert len(results_secondary) == 1, ValueError(

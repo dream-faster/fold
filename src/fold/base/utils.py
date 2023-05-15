@@ -1,6 +1,6 @@
 from typing import Callable, List
 
-from ..utils.list import empty_if_none
+from ..utils.list import empty_if_none, flatten
 from .classes import (
     Composite,
     Optimizer,
@@ -49,7 +49,9 @@ def traverse(
 def get_flat_list_of_transformations(
     transformations: Pipelines,
 ) -> List[Transformations]:
-    return [t for t in traverse(transformations) if isinstance(t, Transformation)]
+    return flatten(
+        [t for t in traverse(transformations) if isinstance(t, Transformation)]
+    )
 
 
 def get_concatenated_names(transformations: Pipelines) -> str:
