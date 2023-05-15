@@ -95,8 +95,11 @@ def backtest_score(
             **(krisi_args if krisi_args is not None else {}),
         )
     else:
+        pred_ = get_prediction_column(pred)
         scorecard = {
-            "mean_squared_error": evaluation_func(y[pred.index], pred.squeeze())
+            evaluation_func.__class__.__name__: evaluation_func(
+                y[pred_.index], pred_.squeeze()
+            )
         }
     return scorecard, pred
 
