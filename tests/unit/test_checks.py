@@ -4,6 +4,7 @@ import pytest
 from fold.utils.checks import (
     all_have_probabilities,
     get_prediction_column,
+    get_prediction_column_name,
     get_probabilities_column_names,
     get_probabilities_columns,
     is_prediction,
@@ -122,17 +123,10 @@ def test_get_probabilities_column_name():
         get_probabilities_column_names(X_first_column_prediction_other_not_probs)
 
 
-# def test_get_prediction_column_name():
-#     pass
-
-
-# def test_is_X_available():
-#     pass
-
-
-# def test_is_columns_all():
-#     pass
-
-
-# def test_check_get_columns():
-#     pass
+def test_get_prediction_column_name():
+    assert (
+        get_prediction_column_name(X_first_column_prediction_other_probability)
+        == "predictions_a"
+    ), "get_prediction_column_name does not return the prediction column name."
+    with pytest.raises(ValueError):
+        get_prediction_column_name(X_first_column_not_prediction_two_probabilities)
