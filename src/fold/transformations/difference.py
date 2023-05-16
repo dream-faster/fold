@@ -1,13 +1,15 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
+from __future__ import annotations
 
+from enum import Enum
 from typing import Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
 
-from ..base import Artifact, InvertibleTransformation, Transformation, Tunable
-from ..utils.dataframe import to_series
+from ..base import Artifact, InvertibleTransformation, Transformation, Tunable, fit_noop
+from ..utils.dataframe import concat_on_columns, to_series
 
 
 class Difference(InvertibleTransformation, Tunable):
@@ -195,3 +197,80 @@ class TakeReturns(Transformation, Tunable):
 
     def get_params(self) -> dict:
         return {"log_returns": self.log_returns}
+
+
+class StationaryMethod(Enum):
+    difference = "difference"
+    log_returns = "log_returns"
+    returns = "returns"
+
+    @staticmethod
+    def from_str(value: Union[str, StationaryMethod]) -> StationaryMethod:
+        if isinstance(value, StationaryMethod):
+            return value
+        for strategy in StationaryMethod:
+            if strategy.value == value:
+                return strategy
+        else:
+            raise ValueError(f"Unknown TransformationMethod: {value}")
+
+    def transform_func(self):
+        if self == StationaryMethod.difference:
+            return lambda x: x.diff()
+        elif self == StationaryMethod.log_returns:
+            return lambda x: np.log(x).diff()
+        elif self == StationaryMethod.returns:
+            return lambda x: x.pct_change()
+        else:
+            raise ValueError(f"Unknown TransformationMethod: {self}")
+
+
+class MakeStationary(Transformation, Tunable):
+    """
+    Differences each column separately, if needed.
+
+    It can not be updated after the initial training, as that'd change the underlying distribution of the data.
+    """
+
+    name = "MakeStationary"
+    properties = InvertibleTransformation.Properties(requires_X=True)
+
+    def __init__(
+        self,
+        p_threshold: float = 0.05,
+        method: Union[StationaryMethod, str] = StationaryMethod.returns,
+    ) -> None:
+        self.p_threshold = p_threshold
+        self.method = StationaryMethod.from_str(method)
+
+    def fit(
+        self,
+        X: pd.DataFrame,
+        y: pd.Series,
+        sample_weights: Optional[pd.Series] = None,
+    ) -> Optional[Artifact]:
+        from statsmodels.tsa.stattools import adfuller
+
+        self.is_stationary = {
+            col: adfuller(x=X[col], regression="c")[1] <= self.p_threshold
+            for col in X.columns
+        }
+
+    def transform(
+        self, X: pd.DataFrame, in_sample: bool
+    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
+        func = self.method.transform_func()
+
+        def make_stationary(series):
+            if not self.is_stationary[series.name]:
+                return func(series)
+            else:
+                return series
+
+        columns = [make_stationary(X[col]) for col in X.columns]
+        return concat_on_columns(columns), None
+
+    update = fit_noop
+
+    def get_params(self) -> dict:
+        return {"p_threshold": self.p_threshold, "method": self.method}
