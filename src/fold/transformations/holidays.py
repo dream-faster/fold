@@ -1,5 +1,6 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
+from __future__ import annotations
 
 from datetime import date
 from enum import Enum
@@ -38,7 +39,7 @@ class LabelingMethod(Enum):
     weekday_weekend_uniqueholiday_string = "weekday_weekend_uniqueholiday_string"
 
     @staticmethod
-    def from_str(value: Union[str, "LabelingMethod"]) -> "LabelingMethod":
+    def from_str(value: Union[str, LabelingMethod]) -> LabelingMethod:
         if isinstance(value, LabelingMethod):
             return value
         for strategy in LabelingMethod:
