@@ -57,6 +57,7 @@ ray = {version = ">=1.4", optional = true}
 fold-models = {version = "~=0.1.2", optional = true}
 fold-wrappers = {version = "~=0.1", optional = true}
 p_tqdm = {version = ">=1.3", optional = true}
+statsmodels = {version = ">=0.12.1", optional = true}
 
 [project.urls]
 Documentation = "https://dream-faster.github.io/fold"
@@ -75,6 +76,7 @@ tests = [
   "pytest-cov",
   "imbalanced-learn",
   "holidays",
+  "statsmodels",
 ]
 docs = [
   "mkdocs-material",
@@ -94,6 +96,7 @@ all = [
   "fold-core",
   "fold-wrappers",
   "p_tqdm",
+  "statsmodels",
 ]
 
 
