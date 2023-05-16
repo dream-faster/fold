@@ -6,7 +6,8 @@ from typing import Callable, List, Optional, Tuple
 import pandas as pd
 
 from ..base import Artifact, Composite, Pipeline, Pipelines, T, Transformation, fit_noop
-from ..utils.list import wrap_in_list
+from ..utils.dataframe import concat_on_columns
+from ..utils.list import wrap_in_double_list_if_needed, wrap_in_list
 from .base import EventFilter, Labeler
 from .filters import EveryNth, NoFilter
 from .labeling import BinarizeFixedForwardHorizon
@@ -30,7 +31,7 @@ class _CreateEvents(Composite):
         wrapped_pipeline: Pipeline,
         event_label_wrapper: _EventLabelWrapper,
     ) -> None:
-        self.wrapped_pipeline = wrap_in_list(wrapped_pipeline)
+        self.wrapped_pipeline = wrap_in_double_list_if_needed(wrapped_pipeline)
         self.transformation = wrap_in_list(event_label_wrapper)
 
     def get_children_primary(self) -> Pipelines:
@@ -60,17 +61,13 @@ class _CreateEvents(Composite):
         return secondary_results[0].reindex(y.index)
 
     def postprocess_artifacts_primary(self, artifacts: List[Artifact]) -> pd.DataFrame:
-        return pd.concat(artifacts, axis="columns")
+        return concat_on_columns(artifacts)
 
     def postprocess_artifacts_secondary(
         self, primary_artifacts: pd.DataFrame, secondary_artifacts: List[Artifact]
     ) -> pd.DataFrame:
-        return pd.concat(
-            [
-                primary_artifacts,
-                pd.concat(secondary_artifacts, axis="columns"),
-            ],
-            axis="columns",
+        return concat_on_columns(
+            [primary_artifacts, concat_on_columns(secondary_artifacts)],
         )
 
     def clone(self, clone_children: Callable) -> _CreateEvents:
