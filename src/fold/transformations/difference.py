@@ -150,9 +150,6 @@ class TakeReturns(Transformation, Tunable):
 
     ```
 
-    References
-    ----------
-
     """
 
     name = "TakeReturns"
@@ -160,8 +157,13 @@ class TakeReturns(Transformation, Tunable):
 
     last_values_X: Optional[Union[pd.DataFrame, pd.Series]] = None
 
-    def __init__(self, log_returns: bool = False) -> None:
+    def __init__(
+        self,
+        log_returns: bool = False,
+        params_to_try: Optional[dict] = None,
+    ) -> None:
         self.log_returns = log_returns
+        self.params_to_try = params_to_try
 
     def fit(
         self,
@@ -239,9 +241,11 @@ class MakeStationary(Transformation, Tunable):
         self,
         p_threshold: float = 0.05,
         method: Union[StationaryMethod, str] = StationaryMethod.returns,
+        params_to_try: Optional[dict] = None,
     ) -> None:
         self.p_threshold = p_threshold
         self.method = StationaryMethod.from_str(method)
+        self.params_to_try = params_to_try
 
     def fit(
         self,

@@ -65,6 +65,10 @@ def test_log_returns():
         pred.squeeze(), np.log(X.squeeze()).diff().loc[pred.index], atol=1e-3
     ).all()
 
+    tuneability_test(
+        TakeReturns(log_returns=True), dict(log_returns=False), tolerance=0.001
+    )
+
 
 def test_make_stationary():
     X, y = generate_sine_wave_data(length=200)
@@ -80,3 +84,7 @@ def test_make_stationary():
         atol=1e-3,
     ).all()
     assert pred["stationary"].equals(X["stationary"].loc[pred.index])
+
+    tuneability_test(
+        MakeStationary(method="log_returns"), dict(method="returns"), tolerance=0.001
+    )
