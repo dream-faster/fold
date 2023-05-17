@@ -5,11 +5,10 @@ from __future__ import annotations
 from enum import Enum
 from typing import Optional, Tuple, Union
 
-import numpy as np
 import pandas as pd
 
 from ..base import Artifact, InvertibleTransformation, Transformation, Tunable, fit_noop
-from ..utils.dataframe import concat_on_columns, to_series
+from ..utils.dataframe import take_log, to_series
 
 
 class Difference(InvertibleTransformation, Tunable):
@@ -186,7 +185,7 @@ class TakeReturns(Transformation, Tunable):
     ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
         def operation(df):
             if self.log_returns:
-                return np.log(df).diff()
+                return take_log(df).diff()
             else:
                 return df.pct_change()
 
@@ -220,7 +219,7 @@ class StationaryMethod(Enum):
         if self == StationaryMethod.difference:
             return lambda x: x.diff()
         elif self == StationaryMethod.log_returns:
-            return lambda x: np.log(x).diff()
+            return lambda x: take_log(x).diff()
         elif self == StationaryMethod.returns:
             return lambda x: x.pct_change()
         else:
@@ -272,7 +271,7 @@ class MakeStationary(Transformation, Tunable):
                 return series
 
         columns = [make_stationary(X[col]) for col in X.columns]
-        return concat_on_columns(columns), None
+        return pd.concat(columns, axis="columns"), None
 
     update = fit_noop
 

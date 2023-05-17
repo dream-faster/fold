@@ -110,6 +110,7 @@ def tuneability_test(
     init_function: Optional[Callable] = None,
     classification: bool = False,
     tolerance: Optional[float] = None,
+    modify_X_func: Optional[Callable] = None,
 ):
     """
     Used to test the general structure and implementation of get_params() and clone_with_params() methods.
@@ -130,6 +131,8 @@ def tuneability_test(
         if classification
         else generate_sine_wave_data(length=500)
     )
+    if modify_X_func is not None:
+        X = modify_X_func(X)
     splitter = SingleWindowSplitter(train_window=0.5)
     preds_orig, _ = train_backtest(instance, X, y, splitter)
     preds_different, _ = train_backtest(different_instance, X, y, splitter)
@@ -147,6 +150,6 @@ def tuneability_test(
         )
     else:
         assert np.isclose(preds_orig, preds_reconstructed, atol=tolerance).all(), (
-            "The output of the two instances with different parameters should be the"
+            "The output of the two instances with the same parameters should be the"
             " close"
         )
