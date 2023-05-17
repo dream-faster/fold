@@ -1,5 +1,6 @@
 from typing import Callable, List, Optional, Union
 
+import numpy as np
 import pandas as pd
 
 from fold.utils.list import filter_none
@@ -34,3 +35,15 @@ def __concat_on_axis(axis: str) -> Callable:
 
 concat_on_columns = __concat_on_axis("columns")
 concat_on_index = __concat_on_axis("index")
+
+
+def take_log(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    If you use np.log() on a DataFrame with a single column, it'll turn it into a pd.Series.
+    This function retains the original instance type (pd.DataFrame).
+    """
+    result = np.log(df)
+    if isinstance(df, pd.Series):
+        return result.to_frame()
+    else:
+        return result

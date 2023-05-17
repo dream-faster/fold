@@ -51,7 +51,7 @@ def test_difference_inverse(lag: int):
 def test_returns():
     X, y = generate_sine_wave_data(length=100)
     splitter = SingleWindowSplitter(train_window=50)
-    pred, _ = train_backtest(TakeReturns(), X, y, splitter)
+    pred, _ = train_backtest(TakeReturns(fill_na=False), X, y, splitter)
     assert pred.squeeze().equals(X.squeeze().pct_change().loc[pred.index])
 
 
@@ -65,6 +65,8 @@ def test_log_returns():
         pred.squeeze(), np.log(X.squeeze()).diff().loc[pred.index], atol=1e-3
     ).all()
 
+    tuneability_test(TakeReturns(log_returns=True), dict(log_returns=False))
+
 
 def test_make_stationary():
     X, y = generate_sine_wave_data(length=200)
@@ -73,10 +75,21 @@ def test_make_stationary():
     X["trend"] = X["sine"].cumsum()
     y = y + 2
     splitter = SingleWindowSplitter(train_window=100)
-    pred, _ = train_backtest(MakeStationary(), X, y, splitter)
+    pred, _ = train_backtest(MakeStationary(fill_na=False), X, y, splitter)
     assert np.isclose(
         pred["trend"].squeeze(),
         X["trend"].squeeze().pct_change().loc[pred.index],
         atol=1e-3,
     ).all()
     assert pred["stationary"].equals(X["stationary"].loc[pred.index])
+
+    def modify_X(X):
+        X["stationary"] = X["sine"].diff()
+        X["trend"] = np.linspace(0, 100, num=len(X))
+        return X
+
+    tuneability_test(
+        MakeStationary(method="log_returns"),
+        dict(method="returns"),
+        modify_X_func=modify_X,
+    )

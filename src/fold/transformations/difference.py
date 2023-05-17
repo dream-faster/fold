@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 
 from ..base import Artifact, InvertibleTransformation, Transformation, Tunable, fit_noop
-from ..utils.dataframe import concat_on_columns, to_series
+from ..utils.dataframe import take_log, to_series
 
 
 class Difference(InvertibleTransformation, Tunable):
@@ -142,16 +142,13 @@ class TakeReturns(Transformation, Tunable):
     Freq: T, Name: sine, dtype: float64
     >>> preds["sine"].head()
     2021-12-31 15:40:00   -1.000000
-    2021-12-31 15:41:00        -inf
+    2021-12-31 15:41:00    0.000000
     2021-12-31 15:42:00    0.992063
     2021-12-31 15:43:00    0.501992
     2021-12-31 15:44:00    0.331565
     Freq: T, Name: sine, dtype: float64
 
     ```
-
-    References
-    ----------
 
     """
 
@@ -160,8 +157,15 @@ class TakeReturns(Transformation, Tunable):
 
     last_values_X: Optional[Union[pd.DataFrame, pd.Series]] = None
 
-    def __init__(self, log_returns: bool = False) -> None:
+    def __init__(
+        self,
+        log_returns: bool = False,
+        fill_na: bool = True,
+        params_to_try: Optional[dict] = None,
+    ) -> None:
         self.log_returns = log_returns
+        self.fill_na = fill_na
+        self.params_to_try = params_to_try
 
     def fit(
         self,
@@ -184,15 +188,19 @@ class TakeReturns(Transformation, Tunable):
     ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
         def operation(df):
             if self.log_returns:
-                return np.log(df).diff()
+                return take_log(df).diff()
             else:
                 return df.pct_change()
 
+        fill_na = fill_na_inf if self.fill_na else lambda x: x
+
         if in_sample:
-            return operation(X), None
+            return fill_na(operation(X)), None
         else:
             return (
-                operation(pd.concat([self.last_values_X, X], axis="index")).iloc[1:]
+                fill_na(
+                    operation(pd.concat([self.last_values_X, X], axis="index"))
+                ).iloc[1:]
             ), None
 
     def get_params(self) -> dict:
@@ -218,7 +226,7 @@ class StationaryMethod(Enum):
         if self == StationaryMethod.difference:
             return lambda x: x.diff()
         elif self == StationaryMethod.log_returns:
-            return lambda x: np.log(x).diff()
+            return lambda x: take_log(x).diff()
         elif self == StationaryMethod.returns:
             return lambda x: x.pct_change()
         else:
@@ -239,9 +247,13 @@ class MakeStationary(Transformation, Tunable):
         self,
         p_threshold: float = 0.05,
         method: Union[StationaryMethod, str] = StationaryMethod.returns,
+        fill_na: bool = True,
+        params_to_try: Optional[dict] = None,
     ) -> None:
         self.p_threshold = p_threshold
         self.method = StationaryMethod.from_str(method)
+        self.fill_na = fill_na
+        self.params_to_try = params_to_try
 
     def fit(
         self,
@@ -267,10 +279,16 @@ class MakeStationary(Transformation, Tunable):
             else:
                 return series
 
-        columns = [make_stationary(X[col]) for col in X.columns]
-        return concat_on_columns(columns), None
+        fill_na = fill_na_inf if self.fill_na else lambda x: x
+
+        columns = [fill_na(make_stationary(X[col])) for col in X.columns]
+        return pd.concat(columns, axis="columns"), None
 
     update = fit_noop
 
     def get_params(self) -> dict:
         return {"p_threshold": self.p_threshold, "method": self.method}
+
+
+def fill_na_inf(df: pd.DataFrame) -> pd.DataFrame:
+    return df.replace([np.inf, -np.inf], np.nan).fillna(0.0)
