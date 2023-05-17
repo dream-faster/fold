@@ -5,6 +5,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Optional, Tuple, Union
 
+import numpy as np
 import pandas as pd
 
 from ..base import Artifact, InvertibleTransformation, Transformation, Tunable, fit_noop
@@ -159,9 +160,11 @@ class TakeReturns(Transformation, Tunable):
     def __init__(
         self,
         log_returns: bool = False,
+        fill_na: bool = True,
         params_to_try: Optional[dict] = None,
     ) -> None:
         self.log_returns = log_returns
+        self.fill_na = fill_na
         self.params_to_try = params_to_try
 
     def fit(
@@ -189,11 +192,15 @@ class TakeReturns(Transformation, Tunable):
             else:
                 return df.pct_change()
 
+        fill_na = fill_na_inf if self.fill_na else lambda x: x
+
         if in_sample:
-            return operation(X), None
+            return fill_na(operation(X)), None
         else:
             return (
-                operation(pd.concat([self.last_values_X, X], axis="index")).iloc[1:]
+                fill_na(
+                    operation(pd.concat([self.last_values_X, X], axis="index"))
+                ).iloc[1:]
             ), None
 
     def get_params(self) -> dict:
@@ -240,10 +247,12 @@ class MakeStationary(Transformation, Tunable):
         self,
         p_threshold: float = 0.05,
         method: Union[StationaryMethod, str] = StationaryMethod.returns,
+        fill_na: bool = True,
         params_to_try: Optional[dict] = None,
     ) -> None:
         self.p_threshold = p_threshold
         self.method = StationaryMethod.from_str(method)
+        self.fill_na = fill_na
         self.params_to_try = params_to_try
 
     def fit(
@@ -270,10 +279,16 @@ class MakeStationary(Transformation, Tunable):
             else:
                 return series
 
-        columns = [make_stationary(X[col]) for col in X.columns]
+        fill_na = fill_na_inf if self.fill_na else lambda x: x
+
+        columns = [fill_na(make_stationary(X[col])) for col in X.columns]
         return pd.concat(columns, axis="columns"), None
 
     update = fit_noop
 
     def get_params(self) -> dict:
         return {"p_threshold": self.p_threshold, "method": self.method}
+
+
+def fill_na_inf(df: pd.DataFrame) -> pd.DataFrame:
+    return df.replace([np.inf, -np.inf], np.nan).fillna(0.0)
