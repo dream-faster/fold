@@ -53,6 +53,8 @@ class SlidingWindowSplitter(Splitter):
         The start index of the first fold, by default 0.
     end : int, optional
         The end index of the last fold, by default None.
+    merge_threshold: float, optional, default 0.01
+        The percentage threshold for merging the last fold with the previous one if it is too small.
     """
 
     def __init__(
@@ -64,18 +66,21 @@ class SlidingWindowSplitter(Splitter):
         embargo: int = 0,
         start: int = 0,
         end: Optional[int] = None,
+        merge_threshold: float = 0.01,
     ) -> None:
         self.window_size = train_window
         self.step = step
         self.embargo = embargo
         self.start = start
         self.end = end
+        self.merge_threshold = merge_threshold
 
     def splits(self, length: int) -> List[Fold]:
+        merge_threshold = int(length * self.merge_threshold)
         end = self.end if self.end is not None else length
         window_size = translate_float_if_needed(self.window_size, length)
         step = translate_float_if_needed(self.step, length)
-        return [
+        folds = [
             Fold(
                 order=order,
                 model_index=index,
@@ -88,6 +93,7 @@ class SlidingWindowSplitter(Splitter):
             )
             for order, index in enumerate(range(self.start + window_size, end, step))
         ]
+        return merge_last_fold_if_too_small(folds, merge_threshold)
 
 
 class ExpandingWindowSplitter(Splitter):
@@ -110,6 +116,8 @@ class ExpandingWindowSplitter(Splitter):
         The start index of the first fold, by default 0.
     end : int, optional
         The end index of the last fold, by default None.
+    merge_threshold: float, optional, default 0.01
+        The percentage threshold for merging the last fold with the previous one if it is too small.
     """
 
     def __init__(
@@ -121,19 +129,22 @@ class ExpandingWindowSplitter(Splitter):
         embargo: int = 0,
         start: int = 0,
         end: Optional[int] = None,
+        merge_threshold: float = 0.01,
     ) -> None:
         self.window_size = initial_train_window
         self.step = step
         self.embargo = embargo
         self.start = start
         self.end = end
+        self.merge_threshold = merge_threshold
 
     def splits(self, length: int) -> List[Fold]:
+        merge_threshold = int(length * self.merge_threshold)
         end = self.end if self.end is not None else length
         window_size = translate_float_if_needed(self.window_size, length)
         step = translate_float_if_needed(self.step, length)
 
-        return [
+        folds = [
             Fold(
                 order=order,
                 model_index=index,
@@ -147,6 +158,7 @@ class ExpandingWindowSplitter(Splitter):
             )
             for order, index in enumerate(range(self.start + window_size, end, step))
         ]
+        return merge_last_fold_if_too_small(folds, merge_threshold)
 
 
 class SingleWindowSplitter(Splitter):
@@ -187,3 +199,22 @@ class SingleWindowSplitter(Splitter):
                 test_window_end=length,
             ),
         ]
+
+
+def merge_last_fold_if_too_small(splits: List[Fold], threshold: int) -> List[Fold]:
+    last_fold = splits[-1]
+    if last_fold.test_window_end - last_fold.test_window_start > threshold:
+        return splits
+
+    previous_fold = splits[-2]
+    merged_fold = Fold(
+        order=previous_fold.order,
+        model_index=previous_fold.model_index,
+        train_window_start=previous_fold.train_window_start,
+        train_window_end=previous_fold.train_window_end,
+        update_window_start=previous_fold.update_window_start,
+        update_window_end=previous_fold.update_window_end,
+        test_window_start=previous_fold.test_window_start,
+        test_window_end=last_fold.test_window_end,
+    )
+    return splits[:-2] + [merged_fold]
