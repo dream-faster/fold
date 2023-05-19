@@ -5,11 +5,13 @@ from sklearn.feature_selection import SelectKBest, VarianceThreshold, f_regressi
 
 from fold.base import Composite, traverse, traverse_apply
 from fold.composites.target import TransformTarget
+from fold.models.base import postpostprocess_output
 from fold.transformations.dev import Lookahead, Test
 from fold.transformations.difference import Difference
 from fold.transformations.math import TakeLog
 from fold.transformations.sklearn import WrapSKLearnFeatureSelector
 from fold.utils.dataframe import to_series
+from fold.utils.tests import generate_all_zeros
 from fold.utils.trim import (
     get_first_valid_index,
     trim_initial_nans,
@@ -134,3 +136,17 @@ def test_unique_id_per_instance() -> None:
         ),
     ]
     assert transformations[0].id != transformations[1].id
+
+
+def test_sort_probabilities_columns() -> None:
+    X, y = generate_all_zeros()
+    X["predicitions_a"] = y
+    X["probabilities_a_1"] = y
+    X["probabilities_a_0"] = y
+    assert X.columns[2] == "probabilities_a_1"
+    assert X.columns[3] == "probabilities_a_0"
+    X.columns = list(map(str, X.columns))
+
+    result = postpostprocess_output(X, name="a")
+    assert result.columns[2] == "probabilities_a_0"
+    assert result.columns[3] == "probabilities_a_1"
