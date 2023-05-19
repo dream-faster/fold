@@ -34,7 +34,7 @@ class RandomClassifier(Model):
     >>> X, y  = generate_sine_wave_data()
     >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> np.random.seed(42)
-    >>> pipeline = RandomClassifier([0,1], 0.5)
+    >>> pipeline = RandomClassifier([0,1], [0.5, 0.5])
     >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
 
     ```
