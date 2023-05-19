@@ -38,6 +38,19 @@ def all_have_probabilities(results: List[pd.DataFrame]) -> bool:
     )
 
 
+def has_probabilities(df: pd.DataFrame) -> bool:
+    """
+    Check if all the DataFrames have probabilities columns,
+    or if their values are all NaN, indicating an empty DataFrame
+    being passed around, as SkipNA filtered out all data.
+    """
+    return (
+        any([True for col in df.columns if str(col).startswith("probabilities_")])
+        or len(df.columns) == 0
+        or (len(df.columns) == 1 and df.isna().sum()[0] == len(df))
+    )
+
+
 def get_prediction_column(input: pd.DataFrame) -> pd.Series:
     return to_series(input[get_prediction_column_name(input)])
 
@@ -47,10 +60,14 @@ def get_probabilities_columns(input: pd.DataFrame) -> pd.DataFrame:
 
 
 def get_probabilities_column_names(input: pd.DataFrame) -> List[str]:
-    candidates = [col for col in input.columns if col.startswith("probabilities_")]
+    candidates = [col for col in input.columns if str(col).startswith("probabilities_")]
     if len(candidates) == 0:
         raise ValueError(f"Could not find any probabilities column in {input.columns}.")
     return candidates
+
+
+def get_classes_from_probabilies_column_names(columns: List[str]) -> List[str]:
+    return [col.split("_")[-1] for col in columns]
 
 
 def get_prediction_column_name(input: pd.DataFrame) -> str:

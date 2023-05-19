@@ -7,6 +7,12 @@ from typing import Optional, Tuple, Union
 import numpy as np
 import pandas as pd
 
+from fold.utils.checks import (
+    get_classes_from_probabilies_column_names,
+    get_probabilities_column_names,
+    has_probabilities,
+)
+
 from ..base import Artifact, Transformation
 
 
@@ -30,11 +36,11 @@ class Model(Transformation):
     ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
         if in_sample:
             return (
-                postpostprocess_prediction(self.predict_in_sample(X), self.name),
+                postpostprocess_output(self.predict_in_sample(X), self.name),
                 None,
             )
         else:
-            return postpostprocess_prediction(self.predict(X), self.name), None
+            return postpostprocess_output(self.predict(X), self.name), None
 
 
 class TimeSeriesModel(Transformation):
@@ -67,14 +73,14 @@ class TimeSeriesModel(Transformation):
     ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
         if in_sample:
             return (
-                postpostprocess_prediction(
+                postpostprocess_output(
                     self.predict_in_sample(X, self._state.memory_y.shift(1)), self.name
                 ),
                 None,
             )
         else:
             return (
-                postpostprocess_prediction(
+                postpostprocess_output(
                     self.predict(
                         X[-(self.properties.memory_size + 1) : None],
                         pd.Series(
@@ -95,7 +101,7 @@ class TimeSeriesModel(Transformation):
             )
 
 
-def postpostprocess_prediction(
+def postpostprocess_output(
     dataframe_or_series: Union[pd.DataFrame, pd.Series], name: str
 ) -> pd.DataFrame:
     if isinstance(dataframe_or_series, pd.Series):
@@ -103,7 +109,19 @@ def postpostprocess_prediction(
     elif isinstance(dataframe_or_series, pd.DataFrame):
         if len(dataframe_or_series.columns) == 1:
             dataframe_or_series.columns = [f"predictions_{name}"]
-        return dataframe_or_series
+            return dataframe_or_series
+        elif has_probabilities(dataframe_or_series):
+            # Sort probabilities columns if necessary
+            prob_columns = get_probabilities_column_names(dataframe_or_series)
+            prob_columns_sorted = sorted(
+                get_classes_from_probabilies_column_names(prob_columns)
+            )
+            if prob_columns == prob_columns_sorted:
+                return dataframe_or_series
+            else:
+                return dataframe_or_series.sort_index(axis="columns")
+        else:
+            return dataframe_or_series
     else:
         raise ValueError(
             f"Expected dataframe or series, got {type(dataframe_or_series)} instead."
