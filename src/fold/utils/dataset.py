@@ -7,7 +7,7 @@ from typing import Optional, Tuple, Union
 
 import pandas as pd
 
-from ..utils.enums import ParsableEnum
+from .enums import ParsableEnum
 
 
 def load_dataset(
