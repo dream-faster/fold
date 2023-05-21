@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-from enum import Enum
 from typing import Callable, List, Optional, Union
 
 import pandas as pd
@@ -11,6 +10,7 @@ import pandas as pd
 from ..base import Composite, Pipelines, Transformations, get_concatenated_names
 from ..transformations.columns import SelectColumns
 from ..transformations.dev import Identity
+from ..utils.enums import ParsableEnum
 from ..utils.list import (
     flatten,
     has_intersection,
@@ -20,7 +20,7 @@ from ..utils.list import (
 )
 
 
-class ResolutionStrategy(Enum):
+class ResolutionStrategy(ParsableEnum):
     """
     Parameters
     ----------
@@ -35,16 +35,6 @@ class ResolutionStrategy(Enum):
     first = "first"
     last = "last"
     both = "both"
-
-    @staticmethod
-    def from_str(value: Union[str, ResolutionStrategy]) -> ResolutionStrategy:
-        if isinstance(value, ResolutionStrategy):
-            return value
-        for strategy in ResolutionStrategy:
-            if strategy.value == value:
-                return strategy
-        else:
-            raise ValueError(f"Unknown ResolutionStrategy: {value}")
 
 
 class Concat(Composite):

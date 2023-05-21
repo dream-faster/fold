@@ -3,16 +3,16 @@
 from __future__ import annotations
 
 from datetime import date
-from enum import Enum
 from typing import List, Optional, Tuple, Union
 
 import pandas as pd
 
 from ..base import Artifact, Transformation, Tunable, fit_noop
+from ..utils.enums import ParsableEnum
 from ..utils.list import swap_tuples, wrap_in_list
 
 
-class LabelingMethod(Enum):
+class LabelingMethod(ParsableEnum):
     """
     Parameters
     ----------
@@ -37,16 +37,6 @@ class LabelingMethod(Enum):
     weekday_weekend_holiday = "weekday_weekend_holiday"
     weekday_weekend_uniqueholiday = "weekday_weekend_uniqueholiday"
     weekday_weekend_uniqueholiday_string = "weekday_weekend_uniqueholiday_string"
-
-    @staticmethod
-    def from_str(value: Union[str, LabelingMethod]) -> LabelingMethod:
-        if isinstance(value, LabelingMethod):
-            return value
-        for strategy in LabelingMethod:
-            if strategy.value == value:
-                return strategy
-        else:
-            raise ValueError(f"Unknown HolidayType: {value}")
 
 
 class AddHolidayFeatures(Transformation, Tunable):

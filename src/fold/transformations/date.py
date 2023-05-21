@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-from enum import Enum
 from typing import Callable, List, Optional, Tuple, Union
 
 import pandas as pd
@@ -15,10 +14,11 @@ from ..base import (
     Tunable,
     fit_noop,
 )
+from ..utils.enums import ParsableEnum
 from ..utils.list import wrap_in_list
 
 
-class DateTimeFeature(Enum):
+class DateTimeFeature(ParsableEnum):
     second = "second"
     minute = "minute"
     hour = "hour"
@@ -30,16 +30,6 @@ class DateTimeFeature(Enum):
     month = "month"
     quarter = "quarter"
     year = "year"
-
-    @staticmethod
-    def from_str(value: Union[str, DateTimeFeature]) -> DateTimeFeature:
-        if isinstance(value, DateTimeFeature):
-            return value
-        for strategy in DateTimeFeature:
-            if strategy.value == value:
-                return strategy
-        else:
-            raise ValueError(f"Unknown DateTimeFeature: {value}")
 
 
 class AddDateTimeFeatures(Transformation, Tunable):
