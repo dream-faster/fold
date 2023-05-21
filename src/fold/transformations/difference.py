@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from enum import Enum
 from typing import Optional, Tuple, Union
 
 import numpy as np
@@ -10,6 +9,7 @@ import pandas as pd
 
 from ..base import Artifact, InvertibleTransformation, Transformation, Tunable, fit_noop
 from ..utils.dataframe import take_log, to_series
+from ..utils.enums import ParsableEnum
 
 
 class Difference(InvertibleTransformation, Tunable):
@@ -207,20 +207,10 @@ class TakeReturns(Transformation, Tunable):
         return {"log_returns": self.log_returns}
 
 
-class StationaryMethod(Enum):
+class StationaryMethod(ParsableEnum):
     difference = "difference"
     log_returns = "log_returns"
     returns = "returns"
-
-    @staticmethod
-    def from_str(value: Union[str, StationaryMethod]) -> StationaryMethod:
-        if isinstance(value, StationaryMethod):
-            return value
-        for strategy in StationaryMethod:
-            if strategy.value == value:
-                return strategy
-        else:
-            raise ValueError(f"Unknown TransformationMethod: {value}")
 
     def transform_func(self):
         if self == StationaryMethod.difference:

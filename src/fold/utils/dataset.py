@@ -3,10 +3,11 @@
 
 from __future__ import annotations
 
-from enum import Enum
 from typing import Optional, Tuple, Union
 
 import pandas as pd
+
+from ..utils.enums import ParsableEnum
 
 
 def load_dataset(
@@ -16,19 +17,9 @@ def load_dataset(
     return pd.read_csv(f"{base_path}/{dataset_name}.csv", parse_dates=True, index_col=0)
 
 
-class DeduplicationStrategy(Enum):
+class DeduplicationStrategy(ParsableEnum):
     first = "first"
     last = "last"
-
-    @staticmethod
-    def from_str(value: Union[str, DeduplicationStrategy]) -> DeduplicationStrategy:
-        if isinstance(value, DeduplicationStrategy):
-            return value
-        for strategy in DeduplicationStrategy:
-            if strategy.value == value:
-                return strategy
-        else:
-            raise ValueError(f"Unknown DeduplicationStrategy: {value}")
 
 
 def __process_dataset(
