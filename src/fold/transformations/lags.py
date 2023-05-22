@@ -43,12 +43,14 @@ class AddLagsY(Transformation, Tunable):
     """
 
     def __init__(
-        self, lags: Union[List[int], range], params_to_try: Optional[dict] = None
+        self,
+        lags: Union[List[int], range],
+        name: Optional[str] = None,
+        params_to_try: Optional[dict] = None,
     ) -> None:
         if not isinstance(lags, range) and not isinstance(lags, List):
             raise ValueError("lags must be a range or a List")
         self.lags = sorted(transform_range_to_list(lags))
-        self.name = f"AddLagsY-{self.lags}"
         self.properties = Transformation.Properties(
             requires_X=False,
             mode=Transformation.Properties.Mode.online,
@@ -56,6 +58,7 @@ class AddLagsY(Transformation, Tunable):
             _internal_supports_minibatch_backtesting=True,
         )
         self.params_to_try = params_to_try
+        self.name = name if name is not None else f"AddLagsY-{self.lags}"
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -118,6 +121,7 @@ class AddLagsX(Transformation, Tunable):
     def __init__(
         self,
         columns_and_lags: Union[List[ColumnAndLag], ColumnAndLag],
+        name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> None:
         self.columns_and_lags = wrap_in_list(columns_and_lags)
@@ -141,11 +145,11 @@ class AddLagsX(Transformation, Tunable):
         self.columns_and_lags = list(
             map(check_and_transform_if_needed, self.columns_and_lags)
         )
-        self.name = f"AddLagsX-{self.columns_and_lags}"
         self.properties = Transformation.Properties(
             requires_X=True,
             memory_size=max(flatten([l for _, l in self.columns_and_lags])),
         )
+        self.name = name if name is not None else f"AddLagsX-{self.columns_and_lags}"
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool

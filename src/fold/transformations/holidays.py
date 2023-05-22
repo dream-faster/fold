@@ -64,12 +64,12 @@ class AddHolidayFeatures(Transformation, Tunable):
         self,
         country_codes: Union[List[str], str],
         labeling: Union[str, LabelingMethod] = LabelingMethod.weekday_weekend_holiday,
+        name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> None:
         self.country_codes = [
             country_code.upper() for country_code in wrap_in_list(country_codes)
         ]
-        self.name = f"AddHolidayFeatures-{self.country_codes}"
         self.labeling = LabelingMethod.from_str(labeling)
         from holidays import country_holidays, list_supported_countries
 
@@ -102,6 +102,9 @@ class AddHolidayFeatures(Transformation, Tunable):
             for country_code in self.country_codes
         ]
         self.params_to_try = params_to_try
+        self.name = (
+            name if name is not None else f"AddHolidayFeatures-{self.country_codes}"
+        )
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool

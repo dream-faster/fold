@@ -57,15 +57,20 @@ class Difference(InvertibleTransformation, Tunable):
     [Stationarity and differencing](https://otexts.com/fpp2/stationarity.html)
     """
 
-    name = "Difference"
     properties = InvertibleTransformation.Properties(requires_X=False)
 
     first_values_X: Optional[Union[pd.DataFrame, pd.Series]] = None
     last_values_X: Optional[Union[pd.DataFrame, pd.Series]] = None
 
-    def __init__(self, lag: int = 1, params_to_try: Optional[dict] = None) -> None:
+    def __init__(
+        self,
+        lag: int = 1,
+        name: Optional[str] = None,
+        params_to_try: Optional[dict] = None,
+    ) -> None:
         self.lag = lag
         self.params_to_try = params_to_try
+        self.name = name if name is not None else "Difference"
 
     def fit(
         self,
@@ -152,7 +157,6 @@ class TakeReturns(Transformation, Tunable):
 
     """
 
-    name = "TakeReturns"
     properties = InvertibleTransformation.Properties(requires_X=False)
 
     last_values_X: Optional[Union[pd.DataFrame, pd.Series]] = None
@@ -161,11 +165,13 @@ class TakeReturns(Transformation, Tunable):
         self,
         log_returns: bool = False,
         fill_na: bool = True,
+        name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> None:
         self.log_returns = log_returns
         self.fill_na = fill_na
         self.params_to_try = params_to_try
+        self.name = name if name is not None else "TakeReturns"
 
     def fit(
         self,
@@ -230,7 +236,6 @@ class MakeStationary(Transformation, Tunable):
     It can not be updated after the initial training, as that'd change the underlying distribution of the data.
     """
 
-    name = "MakeStationary"
     properties = InvertibleTransformation.Properties(requires_X=True)
 
     def __init__(
@@ -238,12 +243,14 @@ class MakeStationary(Transformation, Tunable):
         p_threshold: float = 0.05,
         method: Union[StationaryMethod, str] = StationaryMethod.returns,
         fill_na: bool = True,
+        name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> None:
         self.p_threshold = p_threshold
         self.method = StationaryMethod.from_str(method)
         self.fill_na = fill_na
         self.params_to_try = params_to_try
+        self.name = name if name is not None else f"MakeStationary-{self.method.value}"
 
     def fit(
         self,

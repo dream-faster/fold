@@ -48,18 +48,19 @@ class TakeLog(InvertibleTransformation, Tunable):
     ```
     """
 
-    name = "TakeLog"
     properties = InvertibleTransformation.Properties(requires_X=True)
 
     def __init__(
         self,
         base: Union[int, str] = "e",
+        name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> None:
         if base not in ["e", np.e, "10", 10, "2", 2]:
             raise ValueError("base should be either 'e', np.e, '10', 10, '2', 2.")
         self.base = base
         self.params_to_try = params_to_try
+        self.name = name if name is not None else f"TakeLog-{self.base}"
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -138,12 +139,12 @@ class AddConstant(InvertibleTransformation, Tunable):
     ```
     """
 
-    name = "AddConstant"
     properties = InvertibleTransformation.Properties(requires_X=True)
 
     def __init__(
         self,
         constant: Union[int, float, Dict[str, Union[float, int]]],
+        name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> None:
         if not isinstance(constant, (int, float, dict)):
@@ -154,6 +155,7 @@ class AddConstant(InvertibleTransformation, Tunable):
 
         self.constant = constant
         self.params_to_try = params_to_try
+        self.name = name if name is not None else "AddConstant"
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -258,17 +260,18 @@ class MultiplyBy(InvertibleTransformation, Tunable):
     Multiplies the data by a constant.
     """
 
-    name = "MultiplyBy"
     properties = InvertibleTransformation.Properties(requires_X=True)
     constant: float
 
     def __init__(
         self,
         constant: float,
+        name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> None:
         self.constant = constant
         self.params_to_try = params_to_try
+        self.name = name if name is not None else f"MultiplyBy-{constant}"
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool

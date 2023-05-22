@@ -67,12 +67,10 @@ class AddWindowFeatures(Transformation, Tunable):
     ```
     """
 
-    name = "AddWindowFeatures"
-
     def __init__(
         self,
         column_window_func: Union[ColumnWindowFunction, List[ColumnWindowFunction]],
-        engine: str = "pandas",
+        name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> None:
         self.column_window_func = [
@@ -90,6 +88,7 @@ class AddWindowFeatures(Transformation, Tunable):
             requires_X=True, memory_size=max_memory
         )
         self.params_to_try = params_to_try
+        self.name = name if name is not None else "AddWindowFeatures"
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool

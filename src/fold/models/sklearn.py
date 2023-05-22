@@ -24,16 +24,18 @@ class WrapSKLearnClassifier(Model, Tunable):
         self,
         model_class: Type,
         init_args: dict,
+        name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> None:
         self.model = model_class(**init_args)
-        self.name = self.model.__class__.__name__
         self.params_to_try = params_to_try
+        self.name = name if name is not None else self.model.__class__.__name__
 
     @classmethod
     def from_model(
         cls,
         model,
+        name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> WrapSKLearnClassifier:
         return cls(
@@ -103,16 +105,18 @@ class WrapSKLearnRegressor(Model, Tunable):
         self,
         model_class: Type,
         init_args: dict,
+        name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> None:
         self.model = model_class(**init_args)
-        self.name = self.model.__class__.__name__
         self.params_to_try = params_to_try
+        self.name = name if name is not None else self.model.__class__.__name__
 
     @classmethod
     def from_model(
         cls,
         model,
+        name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> WrapSKLearnRegressor:
         return cls(

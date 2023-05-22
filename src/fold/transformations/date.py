@@ -67,14 +67,19 @@ class AddDateTimeFeatures(Transformation, Tunable):
     """
 
     properties = Transformation.Properties(requires_X=False)
-    name = "AddDateTimeFeatures"
 
     def __init__(
         self,
         features: List[Union[DateTimeFeature, str]],
+        name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> None:
         self.features = [DateTimeFeature(f) for f in wrap_in_list(features)]
+        self.name = (
+            name
+            if name is not None
+            else f"AddDateTimeFeatures-{'-'.join([i.value for i in self.features])}"
+        )
         self.params_to_try = params_to_try
 
     def transform(
