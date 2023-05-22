@@ -28,11 +28,14 @@ class SelectColumns(Transformation, Tunable):
     properties = Transformation.Properties(requires_X=True)
 
     def __init__(
-        self, columns: Union[List[str], str], params_to_try: Optional[dict] = None
+        self,
+        columns: Union[List[str], str],
+        name: Optional[str] = None,
+        params_to_try: Optional[dict] = None,
     ) -> None:
         self.columns: List[str] = wrap_in_list(columns)
         self.params_to_try = params_to_try
-        self.name = f"SelectColumns-{columns}"
+        self.name = name if name is not None else f"SelectColumns-{columns}"
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -61,11 +64,14 @@ class DropColumns(Transformation, Tunable):
     properties = Transformation.Properties(requires_X=True)
 
     def __init__(
-        self, columns: Union[List[str], str], params_to_try: Optional[dict] = None
+        self,
+        columns: Union[List[str], str],
+        name: Optional[str] = None,
+        params_to_try: Optional[dict] = None,
     ) -> None:
         self.columns = wrap_in_list(columns)
         self.params_to_try = params_to_try
-        self.name = f"DropColumns-{columns}"
+        self.name = self.name = name if name is not None else f"DropColumns-{columns}"
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
