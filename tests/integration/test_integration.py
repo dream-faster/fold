@@ -3,8 +3,10 @@ from sklearn.ensemble import HistGradientBoostingRegressor, RandomForestClassifi
 
 from fold.composites import Concat
 from fold.events import CreateEvents
+from fold.events.filters.everynth import EveryNth
 from fold.events.labeling.fixed import BinarizeFixedForwardHorizon
-from fold.loop import train_evaluate
+from fold.loop import train, train_evaluate
+from fold.loop.backtesting import backtest
 from fold.loop.encase import train_backtest
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations import AddWindowFeatures
@@ -61,12 +63,13 @@ def test_train_evaluate_probabilities() -> None:
         target_col="temperature",
         shorten=1000,
     )
+    y = y.pct_change()
 
     splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.2)
 
     pipeline = [
         AddLagsX(columns_and_lags=[("pressure", list(range(1, 3)))]),
-        AddLagsY(list(range(1, 10))),
+        AddLagsY(list(range(1, 3))),
         CreateEvents(RandomForestClassifier(), BinarizeFixedForwardHorizon(1)),
     ]
 
@@ -74,4 +77,33 @@ def test_train_evaluate_probabilities() -> None:
     scorecard, pred, trained_trained_pipelines = train_evaluate(
         pipeline, X, y, splitter
     )
-    print()
+
+
+def test_integration_events() -> None:
+    X, y = get_preprocessed_dataset(
+        "weather/historical_hourly_la",
+        target_col="temperature",
+        shorten=500,
+    )
+    y = y.pct_change()
+
+    splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.1)
+    pipeline = CreateEvents(
+        [
+            # AddLagsX(columns_and_lags=[("pressure", list(range(1, 10)))]),
+            AddLagsY(list(range(1, 3))),
+            RandomForestClassifier(),
+        ],
+        BinarizeFixedForwardHorizon(5),
+        EveryNth(2),
+    )
+    trained_pipeline = train(
+        pipeline,
+        X,
+        y,
+        splitter,
+    )
+    pred, artifacts = backtest(trained_pipeline, X, y, splitter, return_artifacts=True)
+    # assert len(artifacts["label"]) == 184
+    # assert len(pred) == 400
+    # assert len(pred.dropna()) == 200
