@@ -171,7 +171,8 @@ class TakeReturns(Transformation, Tunable):
         self.log_returns = log_returns
         self.fill_na = fill_na
         self.params_to_try = params_to_try
-        self.name = name or "TakeReturns"
+        description = "log" if log_returns else "arithmetic"
+        self.name = name or f"TakeReturns-{description}"
 
     def fit(
         self,
