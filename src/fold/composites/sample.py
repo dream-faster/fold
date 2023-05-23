@@ -7,7 +7,7 @@ from typing import Any, Callable, List, Optional, Tuple
 
 import pandas as pd
 
-from ..base import Composite, Pipeline, Pipelines, T, V, get_concatenated_names
+from ..base import Composite, Extras, Pipeline, Pipelines, T, get_concatenated_names
 from ..utils.list import wrap_in_double_list_if_needed
 
 
@@ -65,21 +65,17 @@ class Sample(Composite):
         self.name = f"Sample-{sampler.__class__.__name__}-{get_concatenated_names(self.pipeline)}"
 
     def preprocess_primary(
-        self, X: pd.DataFrame, index: int, y: T, sample_weights: V, fit: bool
-    ) -> Tuple[pd.DataFrame, T, V]:
+        self, X: pd.DataFrame, index: int, y: T, extras: Extras, fit: bool
+    ) -> Tuple[pd.DataFrame, T, Extras]:
         if fit:
             X_resampled, y_resampled = self.sampler.fit_resample(X, y)
             X_resampled.columns = X.columns
             if y is not None:
                 y_resampled.name = y.name
-            sample_weights_resampled = (
-                sample_weights.iloc[self.sampler.sample_indices_]
-                if sample_weights is not None
-                else None
-            )
-            return X_resampled, y_resampled, sample_weights_resampled
+            extras_resampled = extras.iloc(self.sampler.sample_indices_)
+            return X_resampled, y_resampled, extras_resampled
         else:
-            return X, y, sample_weights
+            return X, y, extras
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]

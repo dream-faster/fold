@@ -7,7 +7,7 @@ from typing import Optional, Tuple
 
 import pandas as pd
 
-from ...base import Artifact, Transformation, X
+from ...base import Artifact, Extras, Transformation, X
 from ...utils.checks import is_X_available
 from ...utils.dataframe import concat_on_columns
 from ...utils.trim import trim_initial_nans
@@ -19,11 +19,11 @@ def _process_minibatch_transformation(
     transformation: Transformation,
     X: pd.DataFrame,
     y: Optional[pd.Series],
-    sample_weights: Optional[pd.Series],
+    extras: Extras,
     artifacts: Artifact,
     stage: Stage,
 ) -> Tuple[Transformation, X, Artifact]:
-    X, y, sample_weights = trim_initial_nans(X, y, sample_weights)
+    X, y, extras = trim_initial_nans(X, y, extras)
 
     if not is_X_available(X) and transformation.properties.requires_X:
         raise ValueError(
@@ -37,7 +37,7 @@ def _process_minibatch_transformation(
         y_with_memory,
         sample_weights_with_memory,
     ) = preprocess_X_y_with_memory(
-        transformation, X, y, sample_weights, in_sample=in_sample
+        transformation, X, y, extras.sample_weights, in_sample=in_sample
     )
     # The order is:
     # 1. fit (if we're in the initial_fit stage)
@@ -60,7 +60,7 @@ def _process_minibatch_transformation(
         y_with_memory,
         sample_weights_with_memory,
     ) = preprocess_X_y_with_memory(
-        transformation, X, y, sample_weights, in_sample=False
+        transformation, X, y, extras.sample_weights, in_sample=False
     )
     return_value, artifact = transformation.transform(
         X_with_memory, in_sample=in_sample
@@ -68,9 +68,11 @@ def _process_minibatch_transformation(
     artifacts = concat_on_columns([artifact, artifacts])
     # 3. update (if we're in the update stage)
     if stage == Stage.update:
-        artifact = transformation.update(X_with_memory, y_with_memory, sample_weights)
+        artifact = transformation.update(
+            X_with_memory, y_with_memory, extras.sample_weights
+        )
         artifacts = concat_on_columns([artifact, artifacts])
-        postprocess_X_y_into_memory_(transformation, X, y, sample_weights, False)
+        postprocess_X_y_into_memory_(transformation, X, y, extras.sample_weights, False)
     return transformation, return_value.loc[X.index], artifacts
 
 
@@ -78,23 +80,27 @@ def _process_internal_online_model_minibatch_inference_and_update(
     transformation: Transformation,
     X: pd.DataFrame,
     y: Optional[pd.Series],
-    sample_weights: Optional[pd.Series],
+    extras: Extras,
     artifacts: Artifact,
 ) -> Tuple[Transformation, X, Artifact]:
-    X, y, sample_weights = trim_initial_nans(X, y, sample_weights)
+    X, y, extras = trim_initial_nans(X, y, extras)
     (
         X_with_memory,
         y_with_memory,
         sample_weights_with_memory,
-    ) = preprocess_X_y_with_memory(transformation, X, y, sample_weights, in_sample=True)
+    ) = preprocess_X_y_with_memory(
+        transformation, X, y, extras.sample_weights, in_sample=True
+    )
     postprocess_X_y_into_memory_(
         transformation, X_with_memory, y_with_memory, sample_weights_with_memory, True
     )
     return_value, artifact = transformation.transform(X_with_memory, in_sample=True)
     artifacts = concat_on_columns([artifact, artifacts])
 
-    artifact = transformation.update(X_with_memory, y_with_memory, sample_weights)
-    postprocess_X_y_into_memory_(transformation, X, y, sample_weights, False)
+    artifact = transformation.update(
+        X_with_memory, y_with_memory, extras.sample_weights
+    )
+    postprocess_X_y_into_memory_(transformation, X, y, extras.sample_weights, False)
     return (
         transformation,
         return_value.loc[X.index],

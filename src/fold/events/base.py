@@ -3,21 +3,7 @@ from typing import List
 
 import pandas as pd
 
-
-class EventDataFrame(pd.DataFrame):
-    start: pd.Series
-    end: pd.Series
-    label: pd.Series
-    raw: pd.Series
-
-    def __init__(
-        self,
-        start: pd.DatetimeIndex,
-        end: pd.DatetimeIndex,
-        label: pd.Series,
-        raw: pd.Series,
-    ):
-        super().__init__(data={"start": start, "end": end, "label": label, "raw": raw})
+from ..base import EventDataFrame
 
 
 class EventFilter(ABC):

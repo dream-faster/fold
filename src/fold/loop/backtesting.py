@@ -6,7 +6,7 @@ from typing import Optional, Tuple, Union
 import pandas as pd
 from tqdm.auto import tqdm
 
-from ..base import Artifact, OutOfSamplePredictions, TrainedPipelines
+from ..base import Artifact, Extras, OutOfSamplePredictions, TrainedPipelines
 from ..splitters import Splitter
 from ..utils.dataframe import concat_on_index
 from ..utils.trim import trim_initial_nans_single
@@ -56,6 +56,7 @@ def backtest(
     """
     backend = Backend.from_str(backend)
     X, y = check_types(X, y)
+    extras = Extras(events=None, sample_weights=sample_weights)
 
     results, artifacts = zip(
         *[
@@ -64,7 +65,7 @@ def backtest(
                 split,
                 X,
                 y,
-                sample_weights,
+                extras,
                 backend,
                 mutate=mutate,
             )

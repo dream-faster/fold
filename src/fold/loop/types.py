@@ -5,6 +5,8 @@ from __future__ import annotations
 
 from enum import Enum
 
+import pandas as pd
+
 from ..utils.enums import ParsableEnum
 
 
@@ -55,3 +57,19 @@ class Stage(Enum):
 
     def is_fit_or_update(self) -> bool:
         return self in [Stage.inital_fit, Stage.update]
+
+
+class EventDataFrame(pd.DataFrame):
+    start: pd.Series
+    end: pd.Series
+    label: pd.Series
+    raw: pd.Series
+
+    def __init__(
+        self,
+        start: pd.DatetimeIndex,
+        end: pd.DatetimeIndex,
+        label: pd.Series,
+        raw: pd.Series,
+    ):
+        super().__init__(data={"start": start, "end": end, "label": label, "raw": raw})

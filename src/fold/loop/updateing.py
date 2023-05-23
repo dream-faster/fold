@@ -2,7 +2,7 @@ from typing import Optional
 
 import pandas as pd
 
-from ..base import DeployablePipeline
+from ..base import DeployablePipeline, Extras
 from .checks import check_types
 from .common import deepcopy_pipelines, recursively_transform
 from .types import Backend, Stage
@@ -19,12 +19,13 @@ def update(
     Returns a new set of Transformations, does not mutate the original.
     """
     X, y = check_types(X, y)
+    extras = Extras(events=None, sample_weights=sample_weights)
 
     transformations = deepcopy_pipelines(pipeline)
     _ = recursively_transform(
         X,
         y,
-        sample_weights,
+        extras,
         pd.DataFrame(),
         transformations,
         stage=Stage.update,
