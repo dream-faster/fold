@@ -17,6 +17,7 @@ Artifact = pd.DataFrame
 
 class Block(ABC):
     id: str
+    name: str
 
     def __new__(cls, *args, **kwargs):
         instance = super().__new__(cls)
@@ -28,8 +29,6 @@ class Composite(Block, ABC):
     """
     A Composite contains other transformations.
     """
-
-    name: str
 
     @dataclass
     class Properties:
@@ -202,7 +201,7 @@ class InvertibleTransformation(Transformation, ABC):
         raise NotImplementedError
 
 
-class Tunable(ABC):
+class Tunable(Block, ABC):
     params_to_try: Optional[dict]
 
     @abstractmethod

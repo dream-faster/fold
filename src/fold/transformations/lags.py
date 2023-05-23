@@ -58,7 +58,7 @@ class AddLagsY(Transformation, Tunable):
             _internal_supports_minibatch_backtesting=True,
         )
         self.params_to_try = params_to_try
-        self.name = name if name is not None else f"AddLagsY-{self.lags}"
+        self.name = name or f"AddLagsY-{self.lags}"
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -82,7 +82,7 @@ class AddLagsY(Transformation, Tunable):
     update = fit_noop
 
     def get_params(self) -> dict:
-        return {"lags": self.lags}
+        return {"lags": self.lags, "name": self.name}
 
 
 class AddLagsX(Transformation, Tunable):
@@ -149,7 +149,7 @@ class AddLagsX(Transformation, Tunable):
             requires_X=True,
             memory_size=max(flatten([l for _, l in self.columns_and_lags])),
         )
-        self.name = name if name is not None else f"AddLagsX-{self.columns_and_lags}"
+        self.name = name or f"AddLagsX-{self.columns_and_lags}"
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -170,4 +170,4 @@ class AddLagsX(Transformation, Tunable):
     update = fit_noop
 
     def get_params(self) -> dict:
-        return {"columns_and_lags": self.columns_and_lags}
+        return {"columns_and_lags": self.columns_and_lags, "name": self.name}

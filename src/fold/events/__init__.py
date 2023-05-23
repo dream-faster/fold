@@ -80,6 +80,7 @@ class _CreateEvents(Composite):
             clone_children(self.transformation),
         )
         clone.properties = self.properties
+        clone.name = self.name
         return clone
 
 
@@ -121,6 +122,7 @@ class UsePredefinedEvents(Composite):
             clone_children(self.wrapped_pipeline),
         )
         clone.properties = self.properties
+        clone.name = self.name
         return clone
 
 

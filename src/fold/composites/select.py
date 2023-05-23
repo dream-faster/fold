@@ -7,7 +7,7 @@ from typing import Callable, List, Optional, Union
 
 import pandas as pd
 
-from ..base import Composite, Pipelines, Transformation, Tunable
+from ..base import Composite, Pipelines, Transformation, Tunable, get_concatenated_names
 from ..utils.list import wrap_in_list
 
 
@@ -18,6 +18,7 @@ class SelectBest(Composite, Tunable):
     def __init__(
         self,
         choose_from: List[Union[Transformation, Composite]],
+        name: Optional[str] = None,
     ) -> None:
         self.choose_from = choose_from
         for i in self.choose_from:
@@ -28,16 +29,18 @@ class SelectBest(Composite, Tunable):
         names = [i.name for i in self.choose_from]
         if len(set(names)) != len(names):
             raise ValueError("Duplicate names in `choose_from` are not allowed.")
-        self.name = "SelectBest"
+        self.name = name or "SelectBest" + get_concatenated_names(self.choose_from)
 
     @classmethod
     def from_cloned_instance(
         cls,
         choose_from: List[Union[Transformation, Composite]],
         selected_: Optional[str],
+        name: Optional[str],
     ) -> SelectBest:
         instance = cls(choose_from)
         instance.selected_ = selected_
+        instance.name = name
         return instance
 
     def postprocess_result_primary(
@@ -57,11 +60,13 @@ class SelectBest(Composite, Tunable):
 
     def clone(self, clone_children: Callable) -> SelectBest:
         return SelectBest.from_cloned_instance(
-            choose_from=clone_children(self.choose_from), selected_=self.selected_
+            choose_from=clone_children(self.choose_from),
+            selected_=self.selected_,
+            name=self.name,
         )
 
     def get_params(self) -> dict:
-        return {"selected_": self.selected_}
+        return {"selected_": self.selected_, "name": self.name}
 
     def get_params_to_try(self) -> Optional[dict]:
         return {"selected_": [i.name for i in self.choose_from]}
@@ -73,6 +78,7 @@ class SelectBest(Composite, Tunable):
         return SelectBest.from_cloned_instance(
             choose_from=clone_children(self.choose_from),
             selected_=parameters["selected_"],
+            name=self.name,
         )
 
 

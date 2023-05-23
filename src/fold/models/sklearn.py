@@ -6,7 +6,7 @@ from typing import Callable, Optional, Type, Union
 
 import pandas as pd
 
-from ..base import Artifact, Transformation, Tunable, fit_noop
+from ..base import Artifact, Tunable
 from .base import Model
 
 
@@ -29,7 +29,7 @@ class WrapSKLearnClassifier(Model, Tunable):
     ) -> None:
         self.model = model_class(**init_args)
         self.params_to_try = params_to_try
-        self.name = name if name is not None else self.model.__class__.__name__
+        self.name = name or self.model.__class__.__name__
 
     @classmethod
     def from_model(
@@ -42,6 +42,7 @@ class WrapSKLearnClassifier(Model, Tunable):
             model_class=model.__class__,
             init_args=model.get_params(),
             params_to_try=params_to_try,
+            name=name,
         )
 
     def fit(
@@ -88,6 +89,7 @@ class WrapSKLearnClassifier(Model, Tunable):
         return WrapSKLearnClassifier(
             model_class=self.model.__class__,
             init_args=parameters,
+            name=self.name,
         )
 
 
@@ -110,7 +112,7 @@ class WrapSKLearnRegressor(Model, Tunable):
     ) -> None:
         self.model = model_class(**init_args)
         self.params_to_try = params_to_try
-        self.name = name if name is not None else self.model.__class__.__name__
+        self.name = name or self.model.__class__.__name__
 
     @classmethod
     def from_model(
@@ -122,6 +124,7 @@ class WrapSKLearnRegressor(Model, Tunable):
         return cls(
             model_class=model.__class__,
             init_args=model.get_params(),
+            name=name,
             params_to_try=params_to_try,
         )
 
@@ -161,36 +164,5 @@ class WrapSKLearnRegressor(Model, Tunable):
         return WrapSKLearnRegressor(
             model_class=self.model.__class__,
             init_args=parameters,
+            name=self.name,
         )
-
-
-class WrapSKLearnPipeline(Model):
-    """
-    Wraps an scikit-learn Pipeline.
-    It's usage is discouraged, as it's not possible to update an scikit-learn Pipeline with new data.
-    Fold has all the primitives that scikit-learn Pipelines provide, just wrap your Transformations into an array.
-    """
-
-    properties = Transformation.Properties(requires_X=True)
-
-    def __init__(self, pipeline) -> None:
-        self.pipeline = pipeline
-        self.name = pipeline.__class__.__name__
-
-    def fit(
-        self,
-        X: pd.DataFrame,
-        y: pd.Series,
-        sample_weights: Optional[pd.Series] = None,
-    ) -> Optional[Artifact]:
-        self.pipeline.fit(X, y)
-
-    def predict(self, X: pd.DataFrame) -> pd.DataFrame:
-        return pd.Series(
-            data=self.pipeline.predict(X).squeeze(),
-            index=X.index,
-            name=f"predictions_{self.name}",
-        ).to_frame()
-
-    predict_in_sample = predict
-    update = fit_noop

@@ -37,9 +37,12 @@ class OptimizeGridSearch(Optimizer):
         scorer: Callable,
         is_scorer_loss: bool = True,
         splitter: SingleWindowSplitter = SingleWindowSplitter(0.7),
+        name: Optional[str] = None,
     ) -> None:
         self.pipeline = wrap_in_list(pipeline)
-        self.name = "GridSearchOptimizer-" + get_concatenated_names(self.pipeline)
+        self.name = name or "OptimizeGridSearch-" + get_concatenated_names(
+            self.pipeline
+        )
         self.scorer = scorer
         self.is_scorer_loss = is_scorer_loss
         self.splitter = splitter
@@ -55,12 +58,14 @@ class OptimizeGridSearch(Optimizer):
         selected_params_: Optional[dict],
         selected_pipeline_: Optional[Tunable],
         scores_: Optional[List[float]],
+        name: Optional[str],
     ) -> OptimizeGridSearch:
         instance = cls(pipeline, scorer, is_scorer_loss, splitter)
         instance.candidates = candidates
         instance.selected_params_ = selected_params_
         instance.selected_pipeline_ = selected_pipeline_
         instance.scores_ = scores_
+        instance.name = name
         return instance
 
     def get_candidates(self) -> Iterable[Pipeline]:
@@ -68,7 +73,7 @@ class OptimizeGridSearch(Optimizer):
             tunables = [
                 i
                 for i in traverse(self.pipeline)
-                if hasattr(i, "get_params_to_try") and i.get_params_to_try() is not None
+                if isinstance(i, Tunable) and i.get_params_to_try() is not None
             ]
 
             param_grid = {
@@ -137,6 +142,7 @@ class OptimizeGridSearch(Optimizer):
             selected_params_=self.selected_params_,
             selected_pipeline_=self.selected_pipeline_,
             scores_=self.scores_,
+            name=self.name,
         )
 
 

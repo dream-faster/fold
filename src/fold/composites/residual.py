@@ -72,11 +72,14 @@ class ModelResiduals(Composite):
         primary: Pipeline,
         meta: Pipeline,
         primary_output_included: bool = False,
+        name: Optional[str] = None,
     ) -> None:
         self.primary = wrap_in_double_list_if_needed(primary)
         self.meta = wrap_in_double_list_if_needed(meta)
         self.primary_output_included = primary_output_included
-        self.name = "Hybrid-" + get_concatenated_names(self.primary + self.meta)
+        self.name = name or "ModelResidual-" + get_concatenated_names(
+            self.primary + self.meta
+        )
 
     def preprocess_primary(
         self, X: pd.DataFrame, index: int, y: T, extras: Extras, fit: bool
@@ -135,5 +138,6 @@ class ModelResiduals(Composite):
             meta=clone_children(self.meta),
             primary_output_included=self.primary_output_included,
         )
+        clone.name = self.name
         clone.properties = self.properties
         return clone

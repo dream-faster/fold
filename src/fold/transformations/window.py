@@ -88,7 +88,7 @@ class AddWindowFeatures(Transformation, Tunable):
             requires_X=True, memory_size=max_memory
         )
         self.params_to_try = params_to_try
-        self.name = name if name is not None else "AddWindowFeatures"
+        self.name = name or "AddWindowFeatures"
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -121,4 +121,4 @@ class AddWindowFeatures(Transformation, Tunable):
     update = fit
 
     def get_params(self) -> dict:
-        return {"column_window_func": self.column_window_func}
+        return {"column_window_func": self.column_window_func, "name": self.name}

@@ -102,9 +102,7 @@ class AddHolidayFeatures(Transformation, Tunable):
             for country_code in self.country_codes
         ]
         self.params_to_try = params_to_try
-        self.name = (
-            name if name is not None else f"AddHolidayFeatures-{self.country_codes}"
-        )
+        self.name = name or f"AddHolidayFeatures-{self.country_codes}"
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -154,6 +152,7 @@ class AddHolidayFeatures(Transformation, Tunable):
         return {
             "country_codes": self.country_codes,
             "labeling": self.labeling,
+            "name": self.name,
         }
 
 

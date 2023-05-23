@@ -61,7 +61,7 @@ class DummyClassifier(Model, Tunable):
         self.all_classes = all_classes
         self.predicted_probabilities = predicted_probabilities
         self.params_to_try = params_to_try
-        self.name = name if name is not None else "DummyClassifier"
+        self.name = name or "DummyClassifier"
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         predictions = pd.Series(
@@ -91,6 +91,7 @@ class DummyClassifier(Model, Tunable):
             predicted_value=self.predicted_value,
             all_classes=self.all_classes,
             predicted_probabilities=self.predicted_probabilities,
+            name=self.name,
         )
 
 
@@ -136,7 +137,7 @@ class DummyRegressor(Model, Tunable):
     ) -> None:
         self.predicted_value = predicted_value
         self.params_to_try = params_to_try
-        self.name = name if name is not None else self.name
+        self.name = name or self.name
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         return pd.Series(
@@ -149,4 +150,4 @@ class DummyRegressor(Model, Tunable):
     update = fit
 
     def get_params(self) -> dict:
-        return dict(predicted_value=self.predicted_value)
+        return dict(predicted_value=self.predicted_value, name=self.name)

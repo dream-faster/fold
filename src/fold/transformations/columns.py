@@ -35,7 +35,7 @@ class SelectColumns(Transformation, Tunable):
     ) -> None:
         self.columns: List[str] = wrap_in_list(columns)
         self.params_to_try = params_to_try
-        self.name = name if name is not None else f"SelectColumns-{columns}"
+        self.name = name or f"SelectColumns-{columns}"
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -46,7 +46,7 @@ class SelectColumns(Transformation, Tunable):
     update = fit
 
     def get_params(self) -> dict:
-        return {"columns": self.columns}
+        return dict(columns=self.columns, name=self.name)
 
 
 class DropColumns(Transformation, Tunable):
@@ -71,7 +71,7 @@ class DropColumns(Transformation, Tunable):
     ) -> None:
         self.columns = wrap_in_list(columns)
         self.params_to_try = params_to_try
-        self.name = self.name = name if name is not None else f"DropColumns-{columns}"
+        self.name = name or f"DropColumns-{columns}"
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -82,7 +82,7 @@ class DropColumns(Transformation, Tunable):
     update = fit
 
     def get_params(self) -> dict:
-        return {"columns": self.columns}
+        return {"columns": self.columns, "name": self.name}
 
 
 class RenameColumns(Transformation):

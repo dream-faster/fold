@@ -46,9 +46,9 @@ class Ensemble(Composite):
 
     properties = Composite.Properties()
 
-    def __init__(self, pipelines: Pipelines) -> None:
+    def __init__(self, pipelines: Pipelines, name: Optional[str] = None) -> None:
         self.pipelines = pipelines
-        self.name = "Ensemble-" + get_concatenated_names(pipelines)
+        self.name = name or "Ensemble-" + get_concatenated_names(pipelines)
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
@@ -63,4 +63,5 @@ class Ensemble(Composite):
             pipelines=clone_children(self.pipelines),
         )
         clone.properties = self.properties
+        clone.name = self.name
         return clone

@@ -70,7 +70,7 @@ class Difference(InvertibleTransformation, Tunable):
     ) -> None:
         self.lag = lag
         self.params_to_try = params_to_try
-        self.name = name if name is not None else "Difference"
+        self.name = name or "Difference"
 
     def fit(
         self,
@@ -115,7 +115,7 @@ class Difference(InvertibleTransformation, Tunable):
             return X.iloc[self.lag :]
 
     def get_params(self) -> dict:
-        return {"lag": self.lag}
+        return {"lag": self.lag, "name": self.name}
 
 
 class TakeReturns(Transformation, Tunable):
@@ -171,7 +171,7 @@ class TakeReturns(Transformation, Tunable):
         self.log_returns = log_returns
         self.fill_na = fill_na
         self.params_to_try = params_to_try
-        self.name = name if name is not None else "TakeReturns"
+        self.name = name or "TakeReturns"
 
     def fit(
         self,
@@ -210,7 +210,7 @@ class TakeReturns(Transformation, Tunable):
             ), None
 
     def get_params(self) -> dict:
-        return {"log_returns": self.log_returns}
+        return {"log_returns": self.log_returns, "name": self.name}
 
 
 class StationaryMethod(ParsableEnum):
@@ -250,7 +250,7 @@ class MakeStationary(Transformation, Tunable):
         self.method = StationaryMethod.from_str(method)
         self.fill_na = fill_na
         self.params_to_try = params_to_try
-        self.name = name if name is not None else f"MakeStationary-{self.method.value}"
+        self.name = name or f"MakeStationary-{self.method.value}"
 
     def fit(
         self,
@@ -284,7 +284,11 @@ class MakeStationary(Transformation, Tunable):
     update = fit_noop
 
     def get_params(self) -> dict:
-        return {"p_threshold": self.p_threshold, "method": self.method}
+        return {
+            "p_threshold": self.p_threshold,
+            "method": self.method,
+            "name": self.name,
+        }
 
 
 def fill_na_inf(df: pd.DataFrame) -> pd.DataFrame:
