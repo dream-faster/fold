@@ -2,7 +2,7 @@ from typing import Optional
 
 import pandas as pd
 
-from ..base import DeployablePipeline, OutOfSamplePredictions
+from ..base import DeployablePipeline, Extras, OutOfSamplePredictions
 from .common import recursively_transform
 from .types import Backend, Stage
 
@@ -23,6 +23,12 @@ def infer(
         assert type(X) is pd.DataFrame, "X must be a pandas DataFrame."
 
     _, results, _ = recursively_transform(
-        X, None, None, pd.DataFrame(), pipeline, stage=Stage.infer, backend=Backend.no
+        X,
+        None,
+        Extras(),
+        pd.DataFrame(),
+        pipeline,
+        stage=Stage.infer,
+        backend=Backend.no,
     )
     return results

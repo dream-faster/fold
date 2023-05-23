@@ -144,13 +144,14 @@ def train_for_deployment(
     sample_weights: Optional[pd.Series] = None,
 ) -> DeployablePipeline:
     X, y = check_types(X, y)
+    extras = Extras(events=None, sample_weights=sample_weights)
 
     pipeline = wrap_in_list(pipeline)
     pipeline = wrap_transformation_if_needed(pipeline)
     _, transformations, artifacts = _train_on_window(
         X,
         y,
-        sample_weights,
+        extras,
         pipeline,
         Fold(
             order=0,
