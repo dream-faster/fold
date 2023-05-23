@@ -159,7 +159,9 @@ def _process_composite(
 
     secondary_transformations = composite.get_children_secondary()
 
-    artifacts_primary = composite.postprocess_artifacts_primary(artifacts_primary)
+    artifacts_primary = composite.postprocess_artifacts_primary(
+        artifacts_primary, extras=extras
+    )
     if secondary_transformations is None:
         return (
             composite,

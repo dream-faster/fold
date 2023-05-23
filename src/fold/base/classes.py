@@ -91,7 +91,9 @@ class Composite(Block, ABC):
     ) -> Tuple[pd.DataFrame, T]:
         return X, y
 
-    def postprocess_artifacts_primary(self, artifacts: List[Artifact]) -> pd.DataFrame:
+    def postprocess_artifacts_primary(
+        self, artifacts: List[Artifact], extras: Extras
+    ) -> pd.DataFrame:
         return pd.concat(artifacts, axis="columns").add_prefix("primary_")
 
     def postprocess_artifacts_secondary(

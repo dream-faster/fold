@@ -97,6 +97,8 @@ def backtest_score(
 
     if artifacts is not None and "label" in artifacts.columns:
         y = artifacts["label"].reindex(pred.index).dropna()
+        pred_point = pred_point.dropna()
+        probabilities = probabilities.dropna()
 
     if len(y) != len(pred_point):
         if probabilities is not None:

@@ -62,7 +62,9 @@ class _CreateEvents(Composite):
     ) -> pd.DataFrame:
         return secondary_results[0].reindex(y.index)
 
-    def postprocess_artifacts_primary(self, artifacts: List[Artifact]) -> pd.DataFrame:
+    def postprocess_artifacts_primary(
+        self, artifacts: List[Artifact], extras: Extras
+    ) -> pd.DataFrame:
         return concat_on_columns(artifacts)
 
     def postprocess_artifacts_secondary(
@@ -109,8 +111,10 @@ class UsePredefinedEvents(Composite):
     ) -> pd.DataFrame:
         return results[0].reindex(y.index)
 
-    def postprocess_artifacts_primary(self, artifacts: List[Artifact]) -> pd.DataFrame:
-        return artifacts[0]
+    def postprocess_artifacts_primary(
+        self, artifacts: List[Artifact], extras: Extras
+    ) -> pd.DataFrame:
+        return extras.events
 
     def clone(self, clone_children: Callable) -> UsePredefinedEvents:
         clone = UsePredefinedEvents(
