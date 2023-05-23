@@ -7,17 +7,17 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, Optional, Tuple, Union
 import pandas as pd
 from sklearn.metrics import mean_squared_error
 
-from fold.utils.checks import (
+from ..base import Artifact, OutOfSamplePredictions, Pipeline, TrainedPipelines
+from ..splitters import Splitter
+from ..utils.checks import (
     all_have_probabilities,
     get_prediction_column,
     get_probabilities_columns,
 )
-
-from ..base import OutOfSamplePredictions, Pipeline, TrainedPipelines
-from ..splitters import Splitter
+from ..utils.dataframe import concat_on_index
 from .backtesting import backtest
 from .training import train
-from .types import Backend, TrainMethod
+from .types import Backend, EventDataFrame, TrainMethod
 
 if TYPE_CHECKING:
     from krisi import ScoreCard
@@ -30,10 +30,15 @@ def backtest_score(
     splitter: Splitter,
     backend: Union[str, Backend] = Backend.no,
     sample_weights: Optional[pd.Series] = None,
+    events: Optional[EventDataFrame] = None,
     silent: bool = False,
+    return_artifacts: bool = False,
     krisi_args: Optional[Dict[str, Any]] = None,
     evaluation_func: Callable = mean_squared_error,
-) -> Tuple[Union["ScoreCard", Dict[str, float]], OutOfSamplePredictions]:
+) -> Union[
+    Tuple[Union["ScoreCard", Dict[str, float]], OutOfSamplePredictions],
+    Tuple[Union["ScoreCard", Dict[str, float]], OutOfSamplePredictions, Artifact],
+]:
     """
     Run backtest then scoring.
     If [`krisi`](https://github.com/dream-faster/krisi) is installed it will use it to generate a ScoreCard,
@@ -53,8 +58,12 @@ def backtest_score(
         The library/service to use for parallelization / distributed computing, by default `no`.
     sample_weights: Optional[pd.Series] = None
         Weights assigned to each sample/timestamp, that are passed into models that support it, by default None.
+    events: EventDataFrame, optional = None
+        Events that should be passed into the pipeline, by default None.
     silent: bool = False
         Wether the pipeline should print to the console, by default False.
+    return_artifacts: bool = False
+        Whether to return the artifacts of the training process, by default False.
     krisi_args: Optional[Dict[str, Any]] = None
         Arguments that will be passed into `krisi` score function, by default None.
     evaluation_func: Callable = mean_squared_error
@@ -74,9 +83,10 @@ def backtest_score(
         X,
         y,
         splitter,
-        backend,
-        sample_weights,
-        silent,
+        backend=backend,
+        sample_weights=sample_weights,
+        events=events,
+        silent=silent,
         return_artifacts=True,
     )
 
@@ -109,7 +119,10 @@ def backtest_score(
                 y[pred_point.index], pred_point.squeeze()
             )
         }
-    return scorecard, pred
+    if return_artifacts:
+        return scorecard, pred, artifacts
+    else:
+        return scorecard, pred
 
 
 def train_backtest(
@@ -119,9 +132,14 @@ def train_backtest(
     splitter: Splitter,
     backend: Union[Backend, str] = Backend.no,
     sample_weights: Optional[pd.Series] = None,
+    events: Optional[EventDataFrame] = None,
     train_method: Union[TrainMethod, str] = TrainMethod.parallel,
     silent: bool = False,
-) -> Tuple[OutOfSamplePredictions, TrainedPipelines]:
+    return_artifacts: bool = False,
+) -> Union[
+    Tuple[OutOfSamplePredictions, TrainedPipelines],
+    Tuple[OutOfSamplePredictions, TrainedPipelines, Artifact],
+]:
     """
     Run train and backtest.
 
@@ -139,10 +157,14 @@ def train_backtest(
         The library/service to use for parallelization / distributed computing, by default `no`.
     sample_weights: Optional[pd.Series] = None
         Weights assigned to each sample/timestamp, that are passed into models that support it, by default None.
+    events: EventDataFrame, optional = None
+        Events that should be passed into the pipeline, by default None.
     train_method: TrainMethod, str = TrainMethod.parallel
         The training methodology, by default `parallel`.
     silent: bool = False
         Wether the pipeline should print to the console, by default False.
+    return_artifacts: bool = False
+        Whether to return the artifacts of the process, by default False.
 
     Returns
     -------
@@ -151,21 +173,39 @@ def train_backtest(
     TrainedPipelines
         The fitted pipelines, for all folds.
     """
-    trained_pipelines = train(
-        pipeline, X, y, splitter, sample_weights, train_method, backend, silent
+    trained_pipelines, train_artifacts = train(
+        pipeline,
+        X,
+        y,
+        splitter,
+        sample_weights,
+        events=events,
+        train_method=train_method,
+        backend=backend,
+        silent=silent,
+        return_artifacts=True,
     )
 
-    pred = backtest(
+    pred, backtest_artifacts = backtest(
         trained_pipelines,
         X,
         y,
         splitter,
-        backend,
-        sample_weights,
-        silent,
+        backend=backend,
+        sample_weights=sample_weights,
+        events=events,
+        silent=silent,
+        return_artifacts=True,
     )
 
-    return pred, trained_pipelines
+    if return_artifacts:
+        return (
+            pred,
+            trained_pipelines,
+            concat_on_index([train_artifacts, backtest_artifacts]),
+        )
+    else:
+        return pred, trained_pipelines
 
 
 def train_evaluate(
@@ -175,14 +215,24 @@ def train_evaluate(
     splitter: Splitter,
     backend: Backend = Backend.no,
     sample_weights: Optional[pd.Series] = None,
+    events: Optional[EventDataFrame] = None,
     train_method: Union[TrainMethod, str] = TrainMethod.parallel,
     silent: bool = False,
+    return_artifacts: bool = False,
     krisi_args: Optional[Dict[str, Any]] = None,
     evaluation_func: Callable = mean_squared_error,
-) -> Tuple[
-    Union["ScoreCard", Dict[str, float]],
-    OutOfSamplePredictions,
-    TrainedPipelines,
+) -> Union[
+    Tuple[
+        Union["ScoreCard", Dict[str, float]],
+        OutOfSamplePredictions,
+        TrainedPipelines,
+    ],
+    Tuple[
+        Union["ScoreCard", Dict[str, float]],
+        OutOfSamplePredictions,
+        TrainedPipelines,
+        Artifact,
+    ],
 ]:
     """
     Run train, backtest then run scoring.
@@ -203,6 +253,8 @@ def train_evaluate(
         The library/service to use for parallelization / distributed computing, by default `no`.
     sample_weights: pd.Series, optional = None
         Weights assigned to each sample/timestamp, that are passed into models that support it, by default None.
+    events: EventDataFrame, optional = None
+        Events that should be passed into the pipeline, by default None.
     train_method: TrainMethod, str = TrainMethod.parallel
         The training methodology, by default `parallel`.
     silent: bool = False
@@ -221,20 +273,39 @@ def train_evaluate(
     TrainedPipelines
         The fitted pipelines, for all folds.
     """
-    trained_pipelines = train(
-        pipeline, X, y, splitter, sample_weights, train_method, backend, silent
+    trained_pipelines, train_artifacts = train(
+        pipeline,
+        X,
+        y,
+        splitter,
+        sample_weights,
+        events=events,
+        train_method=train_method,
+        backend=backend,
+        silent=silent,
+        return_artifacts=True,
     )
 
-    scorecard, pred = backtest_score(
+    scorecard, pred, backtest_artifacts = backtest_score(
         trained_pipelines,
         X,
         y,
         splitter,
-        backend,
-        sample_weights,
-        silent,
-        krisi_args,
-        evaluation_func,
+        backend=backend,
+        sample_weights=sample_weights,
+        events=events,
+        silent=silent,
+        return_artifacts=True,
+        krisi_args=krisi_args,
+        evaluation_func=evaluation_func,
     )
 
-    return scorecard, pred, trained_pipelines
+    if return_artifacts:
+        return (
+            scorecard,
+            pred,
+            trained_pipelines,
+            concat_on_index([train_artifacts, backtest_artifacts]),
+        )
+    else:
+        return scorecard, pred, trained_pipelines

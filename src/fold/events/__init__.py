@@ -5,6 +5,8 @@ from typing import Callable, List, Optional, Tuple
 
 import pandas as pd
 
+from fold.base.classes import Extras
+
 from ..base import Artifact, Composite, Pipeline, Pipelines, T, Transformation, fit_noop
 from ..utils.dataframe import concat_on_columns
 from ..utils.list import wrap_in_double_list_if_needed, wrap_in_list
@@ -23,7 +25,7 @@ def CreateEvents(
 
 class _CreateEvents(Composite):
     properties = Composite.Properties(primary_only_single_pipeline=True)
-    name = "_CreateEvents"
+    name = "CreateEvents"
     transformation: List[_EventLabelWrapper]
 
     def __init__(
@@ -79,6 +81,45 @@ class _CreateEvents(Composite):
         return clone
 
 
+class UsePredefinedEvents(Composite):
+    properties = Composite.Properties(primary_only_single_pipeline=True)
+    name = "UsePredefinedEvents"
+
+    def __init__(
+        self,
+        wrapped_pipeline: Pipeline,
+    ) -> None:
+        self.wrapped_pipeline = wrap_in_double_list_if_needed(wrapped_pipeline)
+
+    def get_children_primary(self) -> Pipelines:
+        return self.wrapped_pipeline
+
+    def preprocess_primary(
+        self, X: pd.DataFrame, index: int, y: T, extras: Extras, fit: bool
+    ) -> Tuple[pd.DataFrame, T, Extras]:
+        if extras.events is None:
+            raise ValueError(
+                "You need to pass in `events` for `UsePredefinedEvents` to use when calling train() / backtest()."
+            )
+        events = extras.events.dropna()
+        return X.loc[events.index], y[events.index], extras
+
+    def postprocess_result_primary(
+        self, results: List[pd.DataFrame], y: Optional[pd.Series]
+    ) -> pd.DataFrame:
+        return results[0].reindex(y.index)
+
+    def postprocess_artifacts_primary(self, artifacts: List[Artifact]) -> pd.DataFrame:
+        return artifacts[0]
+
+    def clone(self, clone_children: Callable) -> UsePredefinedEvents:
+        clone = UsePredefinedEvents(
+            clone_children(self.wrapped_pipeline),
+        )
+        clone.properties = self.properties
+        return clone
+
+
 class _EventLabelWrapper(Transformation):
     name = "EventLabelWrapper"
     properties = Transformation.Properties(
@@ -92,6 +133,9 @@ class _EventLabelWrapper(Transformation):
     def __init__(self, event_filter: EventFilter, labeler: Labeler) -> None:
         self.filter = event_filter
         self.labeler = labeler
+        self.name = (
+            f"{self.filter.__class__.__name__}-{self.labeler.__class__.__name__}"
+        )
 
     fit = fit_noop
     update = fit
