@@ -6,7 +6,13 @@ from typing import Optional, Tuple, Union
 import pandas as pd
 from tqdm.auto import tqdm
 
-from ..base import Artifact, Extras, OutOfSamplePredictions, TrainedPipelines
+from ..base import (
+    Artifact,
+    EventDataFrame,
+    Extras,
+    OutOfSamplePredictions,
+    TrainedPipelines,
+)
 from ..splitters import Splitter
 from ..utils.dataframe import concat_on_index
 from ..utils.trim import trim_initial_nans_single
@@ -22,6 +28,7 @@ def backtest(
     splitter: Splitter,
     backend: Union[Backend, str] = Backend.no,
     sample_weights: Optional[pd.Series] = None,
+    events: Optional[EventDataFrame] = None,
     silent: bool = False,
     mutate: bool = False,
     return_artifacts: bool = False,
@@ -44,10 +51,14 @@ def backtest(
         The library/service to use for parallelization / distributed computing, by default `no`.
     sample_weights: pd.Series, optional = None
         Weights assigned to each sample/timestamp, that are passed into models that support it, by default None.
+    events: EventDataFrame, optional = None
+        Events that should be passed into the pipeline, by default None.
     silent: bool = False
         Wether the pipeline should print to the console, by default False.
     mutate: bool = False
         Whether `trained_pipelines` should be mutated, by default False. This is discouraged.
+    return_artifacts: bool = False
+        Whether to return the artifacts of the backtesting process, by default False.
 
     Returns
     -------
@@ -56,7 +67,7 @@ def backtest(
     """
     backend = Backend.from_str(backend)
     X, y = check_types(X, y)
-    extras = Extras(events=None, sample_weights=sample_weights)
+    extras = Extras(events=events, sample_weights=sample_weights)
 
     results, artifacts = zip(
         *[
