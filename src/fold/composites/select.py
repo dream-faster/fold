@@ -13,7 +13,7 @@ from ..utils.list import wrap_in_list
 
 class SelectBest(Composite, Tunable):
     properties = Composite.Properties()
-    selected_: Optional[int] = None
+    selected_: Optional[str] = None
 
     def __init__(
         self,
@@ -25,13 +25,16 @@ class SelectBest(Composite, Tunable):
                 raise ValueError(
                     "You can not simulatenously select a model and tune its parameters right now."
                 )
+        names = [i.name for i in self.choose_from]
+        if len(set(names)) != len(names):
+            raise ValueError("Duplicate names in `choose_from` are not allowed.")
         self.name = "SelectBest"
 
     @classmethod
     def from_cloned_instance(
         cls,
         choose_from: List[Union[Transformation, Composite]],
-        selected_: Optional[int],
+        selected_: Optional[str],
     ) -> SelectBest:
         instance = cls(choose_from)
         instance.selected_ = selected_
@@ -46,9 +49,11 @@ class SelectBest(Composite, Tunable):
         return results[0]
 
     def get_children_primary(self) -> Pipelines:
-        return wrap_in_list(
-            self.choose_from[self.selected_ if self.selected_ is not None else 0]
-        )
+        selected = get_candidate_by_name(self.choose_from, self.selected_)
+        if selected is None:
+            return wrap_in_list(self.choose_from[0])
+        else:
+            return wrap_in_list(selected)
 
     def clone(self, clone_children: Callable) -> SelectBest:
         return SelectBest.from_cloned_instance(
@@ -59,7 +64,7 @@ class SelectBest(Composite, Tunable):
         return {"selected_": self.selected_}
 
     def get_params_to_try(self) -> Optional[dict]:
-        return {"selected_": list(range(len(self.choose_from)))}
+        return {"selected_": [i.name for i in self.choose_from]}
 
     def clone_with_params(
         self, parameters: dict, clone_children: Optional[Callable] = None
@@ -69,3 +74,12 @@ class SelectBest(Composite, Tunable):
             choose_from=clone_children(self.choose_from),
             selected_=parameters["selected_"],
         )
+
+
+def get_candidate_by_name(
+    candidates: List[Union[Transformation, Composite]], name: str
+) -> Optional[Union[Transformation, Composite]]:
+    for candidate in candidates:
+        if candidate.name == name:
+            return candidate
+    return None

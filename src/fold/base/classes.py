@@ -29,6 +29,8 @@ class Composite(Block, ABC):
     A Composite contains other transformations.
     """
 
+    name: str
+
     @dataclass
     class Properties:
         primary_requires_predictions: bool = (
