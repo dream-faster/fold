@@ -11,7 +11,6 @@ import pandas as pd
 from fold.splitters import SingleWindowSplitter
 
 T = TypeVar("T", Optional[pd.Series], pd.Series)
-V = TypeVar("V", Optional[pd.Series], pd.Series)
 X = pd.DataFrame
 Artifact = pd.DataFrame
 
@@ -78,9 +77,9 @@ class Composite(Block, ABC):
         pass
 
     def preprocess_primary(
-        self, X: pd.DataFrame, index: int, y: T, sample_weights: V, fit: bool
-    ) -> Tuple[pd.DataFrame, T, V]:
-        return X, y, sample_weights
+        self, X: pd.DataFrame, index: int, y: T, extras: Extras, fit: bool
+    ) -> Tuple[pd.DataFrame, T, Extras]:
+        return X, y, extras
 
     def preprocess_secondary(
         self,
@@ -266,3 +265,52 @@ class SingleFunctionTransformation(Transformation):
         self, X: pd.DataFrame, in_sample: bool
     ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
         return pd.concat([X, self.get_function()(X)], axis="columns"), None
+
+
+class EventDataFrame(pd.DataFrame):
+    start: pd.Series
+    end: pd.Series
+    label: pd.Series
+    raw: pd.Series
+
+    def __init__(
+        self,
+        start: pd.DatetimeIndex,
+        end: pd.DatetimeIndex,
+        label: pd.Series,
+        raw: pd.Series,
+    ):
+        super().__init__(data={"start": start, "end": end, "label": label, "raw": raw})
+
+
+@dataclass
+class Extras:
+    events: Optional[EventDataFrame]
+    sample_weights: Optional[pd.Series]
+
+    def __init__(
+        self,
+        events: Optional[EventDataFrame] = None,
+        sample_weights: Optional[pd.Series] = None,
+    ):
+        self.events = events
+        self.sample_weights = sample_weights
+
+    def loc(self, s) -> Extras:
+        return Extras(
+            events=self.events.loc[s] if self.events is not None else None,
+            sample_weights=self.sample_weights.loc[s]
+            if self.sample_weights is not None
+            else None,
+        )
+
+    def iloc(self, s) -> Extras:
+        return Extras(
+            events=self.events.iloc[s] if self.events is not None else None,
+            sample_weights=self.sample_weights.iloc[s]
+            if self.sample_weights is not None
+            else None,
+        )
+
+    def __len__(self) -> int:
+        return len(self.events) if self.events is not None else 0

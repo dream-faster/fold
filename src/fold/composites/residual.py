@@ -7,7 +7,7 @@ from typing import Callable, List, Optional, Tuple
 
 import pandas as pd
 
-from ..base import Composite, Pipeline, Pipelines, T, V, get_concatenated_names
+from ..base import Composite, Extras, Pipeline, Pipelines, T, get_concatenated_names
 from ..utils.checks import get_prediction_column
 from ..utils.list import wrap_in_double_list_if_needed
 
@@ -79,9 +79,9 @@ class ModelResiduals(Composite):
         self.name = "Hybrid-" + get_concatenated_names(self.primary + self.meta)
 
     def preprocess_primary(
-        self, X: pd.DataFrame, index: int, y: T, sample_weights: V, fit: bool
-    ) -> Tuple[pd.DataFrame, T, V]:
-        return X, y, sample_weights
+        self, X: pd.DataFrame, index: int, y: T, extras: Extras, fit: bool
+    ) -> Tuple[pd.DataFrame, T, Extras]:
+        return X, y, extras
 
     def preprocess_secondary(
         self,

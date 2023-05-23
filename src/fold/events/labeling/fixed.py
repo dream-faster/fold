@@ -2,8 +2,9 @@ from typing import List
 
 import pandas as pd
 
+from ...base import EventDataFrame
 from ...utils.forward import create_forward_rolling_sum
-from ..base import EventDataFrame, Labeler
+from ..base import Labeler
 
 
 class BinarizeFixedForwardHorizon(Labeler):

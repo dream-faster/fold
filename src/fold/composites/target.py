@@ -9,11 +9,11 @@ import pandas as pd
 
 from ..base import (
     Composite,
+    Extras,
     InvertibleTransformation,
     Pipeline,
     Pipelines,
     T,
-    V,
     get_concatenated_names,
 )
 from ..utils.checks import get_prediction_column, get_prediction_column_name
@@ -80,17 +80,17 @@ class TransformTarget(Composite):
         self.invert_wrapped_output = invert_wrapped_output
 
     def preprocess_primary(
-        self, X: pd.DataFrame, index: int, y: T, sample_weights: V, fit: bool
-    ) -> Tuple[pd.DataFrame, T, V]:
+        self, X: pd.DataFrame, index: int, y: T, extras: Extras, fit: bool
+    ) -> Tuple[pd.DataFrame, T, Extras]:
         # TransformTarget's primary transformation transforms `y`, not `X`.
         if y is None:
             return (
                 pd.DataFrame(),
                 None,
-                sample_weights,
+                extras,
             )  # at inference time, `y` will be None, and we don't need to use primary transformations at all, so we return a dummy DataFrame.
         else:
-            return y.to_frame(), None, sample_weights
+            return y.to_frame(), None, extras
 
     def preprocess_secondary(
         self,
