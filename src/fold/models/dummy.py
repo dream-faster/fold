@@ -34,20 +34,17 @@ class DummyClassifier(Model, Tunable):
     >>> pipeline = DummyClassifier(1, [0, 1], [0.5, 0.5])
     >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
     >>> preds.head()
-                         predictions_DummyClassifier  ...  probabilities_DummyClassifier_1
-    2021-12-31 15:40:00                            1  ...                              0.5
-    2021-12-31 15:41:00                            1  ...                              0.5
-    2021-12-31 15:42:00                            1  ...                              0.5
-    2021-12-31 15:43:00                            1  ...                              0.5
-    2021-12-31 15:44:00                            1  ...                              0.5
-    <BLANKLINE>
-    [5 rows x 3 columns]
+                         predictions_DummyClassifier  probabilities_DummyClassifier_0  probabilities_DummyClassifier_1
+    2021-12-31 15:40:00                            1                              0.5                              0.5
+    2021-12-31 15:41:00                            1                              0.5                              0.5
+    2021-12-31 15:42:00                            1                              0.5                              0.5
+    2021-12-31 15:43:00                            1                              0.5                              0.5
+    2021-12-31 15:44:00                            1                              0.5                              0.5
 
     ```
     """
 
     properties = Transformation.Properties(requires_X=False)
-    name = ""
 
     def __init__(
         self,
@@ -61,7 +58,7 @@ class DummyClassifier(Model, Tunable):
         self.all_classes = all_classes
         self.predicted_probabilities = predicted_probabilities
         self.params_to_try = params_to_try
-        self.name = name or "DummyClassifier"
+        self.name = name or f"DummyClassifier-{str(self.predicted_value)}"
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         predictions = pd.Series(
@@ -116,12 +113,12 @@ class DummyRegressor(Model, Tunable):
     >>> pipeline = DummyRegressor(0.1)
     >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
     >>> preds.head()
-                         predictions_DummyRegressor
-    2021-12-31 15:40:00                         0.1
-    2021-12-31 15:41:00                         0.1
-    2021-12-31 15:42:00                         0.1
-    2021-12-31 15:43:00                         0.1
-    2021-12-31 15:44:00                         0.1
+                         predictions_DummyRegressor-0.1
+    2021-12-31 15:40:00                             0.1
+    2021-12-31 15:41:00                             0.1
+    2021-12-31 15:42:00                             0.1
+    2021-12-31 15:43:00                             0.1
+    2021-12-31 15:44:00                             0.1
 
     ```
     """

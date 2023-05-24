@@ -41,7 +41,7 @@ class Ensemble(Composite):
         2021-12-31 15:42:00    0.5
         2021-12-31 15:43:00    0.5
         2021-12-31 15:44:00    0.5
-        Freq: T, Name: predictions_Ensemble-DummyRegressor-DummyRegressor, dtype: float64
+        Freq: T, Name: predictions_Ensemble-DummyRegressor-0.1-DummyRegressor-0.9, dtype: float64
     """
 
     properties = Composite.Properties()
