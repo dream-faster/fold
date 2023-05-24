@@ -22,11 +22,6 @@ class SelectBest(Composite, Tunable):
         name: Optional[str] = None,
     ) -> None:
         self.choose_from = choose_from
-        for i in self.choose_from:
-            if isinstance(i, Tunable) and i.get_params_to_try() is not None:
-                raise ValueError(
-                    "You can not simulatenously select a model and tune its parameters right now."
-                )
         _check_for_duplicate_names(self.choose_from)
         self.name = name or "SelectBest"
 

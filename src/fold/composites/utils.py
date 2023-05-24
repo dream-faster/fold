@@ -52,7 +52,7 @@ def _check_for_duplicate_names(pipeline: Pipeline):
         raise ValueError("Duplicate names in pipeline are not allowed.")
 
 
-def _extract_param_grid(pipeline: Pipeline, divider: str = "¦¦"):
+def _extract_param_grid(pipeline: Pipeline, divider: str = "¦"):
     tunables = _get_tunables_with_params_to_try(pipeline)
 
     param_grid = {

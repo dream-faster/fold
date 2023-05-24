@@ -20,7 +20,7 @@ from ..splitters import SingleWindowSplitter
 from ..utils.list import to_hierachical_dict, wrap_in_list
 from .utils import _apply_params, _check_for_duplicate_names, _extract_param_grid
 
-_divider = "¦¦"
+_divider = "¦"
 
 
 class OptimizeGridSearch(Optimizer):
