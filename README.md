@@ -48,7 +48,7 @@ The<b> <a href="https://dream-faster.github.io/fold/concepts/adaptive-ml/">Adapt
 
 ## Installation
 
-- Prerequisites: `python >= 3.7` and `pip`
+- Prerequisites: `python >= 3.8` and `pip`
 
 - Install from pypi:
   ```
