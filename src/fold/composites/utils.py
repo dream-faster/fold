@@ -47,6 +47,6 @@ def _clean_params(params_to_try: dict) -> dict:
 
 
 def _check_for_duplicate_names(pipeline: Pipeline):
-    names = [i.name for i in traverse(pipeline)]
+    names = [i.name for i in traverse(_get_tunables_with_params_to_try(pipeline))]
     if len(set(names)) != len(names):
         raise ValueError("Duplicate names in pipeline are not allowed.")

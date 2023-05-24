@@ -49,10 +49,12 @@ def test_gridsearch_sklearn() -> None:
                 WrapSKLearnRegressor.from_model(
                     SklearnDummyRegressor(strategy="constant", constant=1),
                     params_to_try=dict(constant=[1, 2]),
+                    name="dummy",
                 ),
                 WrapSKLearnRegressor.from_model(
                     SklearnDummyRegressor(strategy="constant", constant=1),
                     params_to_try=dict(constant=[1, 2]),
+                    name="dummy2",
                 ),
             ],
             scorer=mean_squared_error,
