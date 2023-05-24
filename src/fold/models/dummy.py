@@ -34,12 +34,14 @@ class DummyClassifier(Model, Tunable):
     >>> pipeline = DummyClassifier(1, [0, 1], [0.5, 0.5])
     >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
     >>> preds.head()
-                         predictions_DummyClassifier  probabilities_DummyClassifier_0  probabilities_DummyClassifier_1
-    2021-12-31 15:40:00                            1                              0.5                              0.5
-    2021-12-31 15:41:00                            1                              0.5                              0.5
-    2021-12-31 15:42:00                            1                              0.5                              0.5
-    2021-12-31 15:43:00                            1                              0.5                              0.5
-    2021-12-31 15:44:00                            1                              0.5                              0.5
+                         predictions_DummyClassifier  ...  probabilities_DummyClassifier_1
+    2021-12-31 15:40:00                            1  ...                              0.5
+    2021-12-31 15:41:00                            1  ...                              0.5
+    2021-12-31 15:42:00                            1  ...                              0.5
+    2021-12-31 15:43:00                            1  ...                              0.5
+    2021-12-31 15:44:00                            1  ...                              0.5
+    <BLANKLINE>
+    [5 rows x 3 columns]
 
     ```
     """
