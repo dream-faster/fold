@@ -79,6 +79,7 @@ def to_hierachical_dict(flat_dict: dict, seperator: str = "¦¦") -> dict:
 
 
 def to_hierachical_dict_arbitrary_depth(flat_dict: dict, separator: str = "¦¦") -> dict:
+    # This is not used or tested
     hierarchy = {}
     for key, value in flat_dict.items():
         current_dict = hierarchy

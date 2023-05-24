@@ -18,12 +18,7 @@ from ..base import (
 )
 from ..splitters import SingleWindowSplitter
 from ..utils.list import to_hierachical_dict, wrap_in_list
-from .utils import (
-    _apply_params,
-    _check_for_duplicate_names,
-    _get_tunables_with_params_to_try,
-    _process_params,
-)
+from .utils import _apply_params, _check_for_duplicate_names, _extract_param_grid
 
 _divider = "¦¦"
 
@@ -75,15 +70,8 @@ class OptimizeGridSearch(Optimizer):
 
     def get_candidates(self) -> List[Pipeline]:
         if self.candidates is None:
-            tunables = _get_tunables_with_params_to_try(self.pipeline)
+            param_grid = _extract_param_grid(self.pipeline, _divider)
 
-            param_grid = {
-                f"{transformation.name}{_divider}{key}": value
-                for transformation in tunables
-                for key, value in _process_params(
-                    transformation.get_params_to_try()
-                ).items()
-            }
             self.param_permutations = [
                 to_hierachical_dict(params, _divider)
                 for params in ParameterGrid(param_grid)

@@ -50,3 +50,14 @@ def _check_for_duplicate_names(pipeline: Pipeline):
     names = [i.name for i in traverse(_get_tunables_with_params_to_try(pipeline))]
     if len(set(names)) != len(names):
         raise ValueError("Duplicate names in pipeline are not allowed.")
+
+
+def _extract_param_grid(pipeline: Pipeline, divider: str = "¦¦"):
+    tunables = _get_tunables_with_params_to_try(pipeline)
+
+    param_grid = {
+        f"{transformation.name}{divider}{key}": value
+        for transformation in tunables
+        for key, value in _process_params(transformation.get_params_to_try()).items()
+    }
+    return param_grid
