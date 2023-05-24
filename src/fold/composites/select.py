@@ -7,8 +7,9 @@ from typing import Callable, List, Optional, Union
 
 import pandas as pd
 
-from ..base import Composite, Pipelines, Transformation, Tunable, get_concatenated_names
+from ..base import Composite, Pipelines, Transformation, Tunable
 from ..utils.list import wrap_in_list
+from .utils import _check_for_duplicate_names
 
 
 class SelectBest(Composite, Tunable):
@@ -21,15 +22,8 @@ class SelectBest(Composite, Tunable):
         name: Optional[str] = None,
     ) -> None:
         self.choose_from = choose_from
-        for i in self.choose_from:
-            if isinstance(i, Tunable) and i.get_params_to_try() is not None:
-                raise ValueError(
-                    "You can not simulatenously select a model and tune its parameters right now."
-                )
-        names = [i.name for i in self.choose_from]
-        if len(set(names)) != len(names):
-            raise ValueError("Duplicate names in `choose_from` are not allowed.")
-        self.name = name or "SelectBest-" + get_concatenated_names(self.choose_from)
+        _check_for_duplicate_names(self.choose_from)
+        self.name = name or "SelectBest"
 
     @classmethod
     def from_cloned_instance(

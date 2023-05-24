@@ -66,18 +66,19 @@ def empty_if_none(input: Union[List, None]) -> List:
     return [] if input is None else input
 
 
-def to_hierachical_dict(flat_dict: dict, length_of_uuid4: int = 36) -> dict:
+def to_hierachical_dict(flat_dict: dict, seperator: str = "¦") -> dict:
     hierarchy = {}
     for key, value in flat_dict.items():
-        unraveled_obj_key = key[:length_of_uuid4]
-        unraveled_param_key = key[length_of_uuid4 + 1 :]
+        name_and_param = key.split(seperator)
+        unraveled_obj_key = name_and_param[0]
+        unraveled_param_key = name_and_param[1]
         if unraveled_obj_key not in hierarchy:
             hierarchy[unraveled_obj_key] = {}
         hierarchy[unraveled_obj_key][unraveled_param_key] = value
     return hierarchy
 
 
-def to_hierachical_dict_arbitrary_depth(flat_dict: dict, separator: str = ".") -> dict:
+def to_hierachical_dict_arbitrary_depth(flat_dict: dict, separator: str = "¦") -> dict:
     hierarchy = {}
     for key, value in flat_dict.items():
         current_dict = hierarchy

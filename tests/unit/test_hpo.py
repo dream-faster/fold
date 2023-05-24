@@ -49,10 +49,12 @@ def test_gridsearch_sklearn() -> None:
                 WrapSKLearnRegressor.from_model(
                     SklearnDummyRegressor(strategy="constant", constant=1),
                     params_to_try=dict(constant=[1, 2]),
+                    name="dummy",
                 ),
                 WrapSKLearnRegressor.from_model(
                     SklearnDummyRegressor(strategy="constant", constant=1),
                     params_to_try=dict(constant=[1, 2]),
+                    name="dummy2",
                 ),
             ],
             scorer=mean_squared_error,
@@ -120,14 +122,14 @@ def test_selectbest_nested():
                         DummyRegressor(
                             predicted_value=1.0,
                         ),
-                        Identity(),
+                        Identity(name="identity-1.0"),
                         name="1.0",
                     ),
                     TransformTarget(
                         DummyRegressor(
                             predicted_value=0.5,
                         ),
-                        Identity(),
+                        Identity(name="identity-0.5"),
                         name="0.5",
                     ),
                 ]

@@ -47,7 +47,6 @@ class DummyClassifier(Model, Tunable):
     """
 
     properties = Transformation.Properties(requires_X=False)
-    name = ""
 
     def __init__(
         self,
@@ -61,7 +60,7 @@ class DummyClassifier(Model, Tunable):
         self.all_classes = all_classes
         self.predicted_probabilities = predicted_probabilities
         self.params_to_try = params_to_try
-        self.name = name or "DummyClassifier"
+        self.name = name or f"DummyClassifier-{str(self.predicted_value)}"
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         predictions = pd.Series(
@@ -116,18 +115,17 @@ class DummyRegressor(Model, Tunable):
     >>> pipeline = DummyRegressor(0.1)
     >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
     >>> preds.head()
-                         predictions_DummyRegressor
-    2021-12-31 15:40:00                         0.1
-    2021-12-31 15:41:00                         0.1
-    2021-12-31 15:42:00                         0.1
-    2021-12-31 15:43:00                         0.1
-    2021-12-31 15:44:00                         0.1
+                         predictions_DummyRegressor-0.1
+    2021-12-31 15:40:00                             0.1
+    2021-12-31 15:41:00                             0.1
+    2021-12-31 15:42:00                             0.1
+    2021-12-31 15:43:00                             0.1
+    2021-12-31 15:44:00                             0.1
 
     ```
     """
 
     properties = Transformation.Properties(requires_X=False)
-    name = "DummyRegressor"
 
     def __init__(
         self,
@@ -137,7 +135,7 @@ class DummyRegressor(Model, Tunable):
     ) -> None:
         self.predicted_value = predicted_value
         self.params_to_try = params_to_try
-        self.name = name or self.name
+        self.name = name or f"DummyRegressor-{str(self.predicted_value)}"
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         return pd.Series(
