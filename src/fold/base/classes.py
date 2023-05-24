@@ -4,7 +4,7 @@ import enum
 import uuid
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Callable, Iterable, List, Optional, Tuple, TypeVar, Union
+from typing import Callable, List, Optional, Tuple, TypeVar, Union
 
 import pandas as pd
 
@@ -113,7 +113,7 @@ class Optimizer(Block, ABC):
     splitter: SingleWindowSplitter
 
     @abstractmethod
-    def get_candidates(self) -> Iterable[Pipeline]:
+    def get_candidates(self) -> List[Pipeline]:
         """
         Called iteratively, until an array with a length of zero is returned.
         Then the loop finishes the candidate evaluation process.

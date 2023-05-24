@@ -221,7 +221,8 @@ def _process_optimizer(
     optimized_pipeline = optimizer.get_optimized_pipeline()
     artifact = None
     if optimized_pipeline is None:
-        for candidates in optimizer.get_candidates():
+        while True:
+            candidates = optimizer.get_candidates()
             if len(candidates) == 0:
                 break
 

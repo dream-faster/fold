@@ -84,7 +84,7 @@ class OptimizeGridSearch(Optimizer):
                 traverse_apply(self.pipeline, _apply_params(params))
                 for params in self.param_permutations
             ]
-            yield self.candidates
+            return self.candidates
         else:
             return []
 
