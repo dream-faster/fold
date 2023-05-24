@@ -18,7 +18,14 @@ from ..base import (
 )
 from ..splitters import SingleWindowSplitter
 from ..utils.list import to_hierachical_dict, wrap_in_list
-from .utils import _apply_params, _get_tunables_with_params_to_try, _process_params
+from .utils import (
+    _apply_params,
+    _check_for_duplicate_names,
+    _get_tunables_with_params_to_try,
+    _process_params,
+)
+
+_divider = "¦¦"
 
 
 class OptimizeGridSearch(Optimizer):
@@ -43,6 +50,7 @@ class OptimizeGridSearch(Optimizer):
         self.scorer = scorer
         self.is_scorer_loss = is_scorer_loss
         self.splitter = splitter
+        _check_for_duplicate_names(self.pipeline)
 
     @classmethod
     def from_cloned_instance(
@@ -70,14 +78,15 @@ class OptimizeGridSearch(Optimizer):
             tunables = _get_tunables_with_params_to_try(self.pipeline)
 
             param_grid = {
-                f"{transformation.id}.{key}": value
+                f"{transformation.name}{_divider}{key}": value
                 for transformation in tunables
                 for key, value in _process_params(
                     transformation.get_params_to_try()
                 ).items()
             }
             self.param_permutations = [
-                to_hierachical_dict(params) for params in ParameterGrid(param_grid)
+                to_hierachical_dict(params, _divider)
+                for params in ParameterGrid(param_grid)
             ]
 
             self.candidates = [

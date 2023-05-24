@@ -28,7 +28,7 @@ def _apply_params(params: dict) -> Callable:
                 return item.clone(clone_children)
             else:
                 return item
-        selected_params = params.get(item.id, {})
+        selected_params = params.get(item.name, {})
         if "passthrough" in selected_params and selected_params["passthrough"] is True:
             return Identity()  # type: ignore
         return item.clone_with_params(
@@ -44,3 +44,9 @@ def _clean_params(params_to_try: dict) -> dict:
         params_to_try = copy(params_to_try)
         del params_to_try["passthrough"]
     return params_to_try
+
+
+def _check_for_duplicate_names(pipeline: Pipeline):
+    names = [i.name for i in traverse(pipeline)]
+    if len(set(names)) != len(names):
+        raise ValueError("Duplicate names in pipeline are not allowed.")

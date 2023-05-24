@@ -55,7 +55,12 @@ class Breakpoint(Transformation):
 
 class Identity(InvertibleTransformation):
     properties = Transformation.Properties(requires_X=False)
-    name = "Identity"
+
+    def __init__(
+        self,
+        name: Optional[str] = None,
+    ) -> None:
+        self.name = name or "Identity"
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool

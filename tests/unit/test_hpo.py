@@ -120,14 +120,14 @@ def test_selectbest_nested():
                         DummyRegressor(
                             predicted_value=1.0,
                         ),
-                        Identity(),
+                        Identity(name="identity-1.0"),
                         name="1.0",
                     ),
                     TransformTarget(
                         DummyRegressor(
                             predicted_value=0.5,
                         ),
-                        Identity(),
+                        Identity(name="identity-0.5"),
                         name="0.5",
                     ),
                 ]
