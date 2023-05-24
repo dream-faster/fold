@@ -29,7 +29,7 @@ class SelectBest(Composite, Tunable):
         names = [i.name for i in self.choose_from]
         if len(set(names)) != len(names):
             raise ValueError("Duplicate names in `choose_from` are not allowed.")
-        self.name = name or "SelectBest" + get_concatenated_names(self.choose_from)
+        self.name = name or "SelectBest-" + get_concatenated_names(self.choose_from)
 
     @classmethod
     def from_cloned_instance(
