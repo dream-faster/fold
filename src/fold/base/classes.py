@@ -113,11 +113,15 @@ class Optimizer(Block, ABC):
     splitter: SingleWindowSplitter
 
     @abstractmethod
-    def get_candidates(self) -> Iterable["Pipeline"]:
+    def get_candidates(self) -> Iterable[Pipeline]:
+        """
+        Called iteratively, until an array with a length of zero is returned.
+        Then the loop finishes the candidate evaluation process.
+        """
         raise NotImplementedError
 
     @abstractmethod
-    def get_optimized_pipeline(self) -> Optional["Pipeline"]:
+    def get_optimized_pipeline(self) -> Optional[Pipeline]:
         raise NotImplementedError
 
     @abstractmethod

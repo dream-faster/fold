@@ -54,7 +54,7 @@ class SelectBest(Composite, Tunable):
     def get_children_primary(self) -> Pipelines:
         selected = get_candidate_by_name(self.choose_from, self.selected_)
         if selected is None:
-            return wrap_in_list(self.choose_from[0])
+            return self.choose_from
         else:
             return wrap_in_list(selected)
 
