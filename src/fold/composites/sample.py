@@ -55,14 +55,15 @@ class Sample(Composite):
     )
 
     def __init__(
-        self,
-        sampler: Any,
-        pipeline: Pipeline,
+        self, sampler: Any, pipeline: Pipeline, name: Optional[str] = None
     ) -> None:
         self.sampler = sampler
 
         self.pipeline = wrap_in_double_list_if_needed(pipeline)
-        self.name = f"Sample-{sampler.__class__.__name__}-{get_concatenated_names(self.pipeline)}"
+        self.name = (
+            name
+            or f"Sample-{sampler.__class__.__name__}-{get_concatenated_names(self.pipeline)}"
+        )
 
     def preprocess_primary(
         self, X: pd.DataFrame, index: int, y: T, extras: Extras, fit: bool
@@ -91,4 +92,5 @@ class Sample(Composite):
             pipeline=clone_children(self.pipeline),
         )
         clone.properties = self.properties
+        clone.name = self.name
         return clone

@@ -71,13 +71,14 @@ class TransformTarget(Composite):
         wrapped_pipeline: Pipeline,
         y_pipeline: Union[List[InvertibleTransformation], InvertibleTransformation],
         invert_wrapped_output: bool = True,
+        name: Optional[str] = None,
     ) -> None:
         self.wrapped_pipeline = wrap_in_double_list_if_needed(wrapped_pipeline)
         self.y_pipeline = wrap_in_double_list_if_needed(y_pipeline)
-        self.name = "TransformTarget-" + get_concatenated_names(
+        self.invert_wrapped_output = invert_wrapped_output
+        self.name = name or "TransformTarget-" + get_concatenated_names(
             self.wrapped_pipeline + self.y_pipeline
         )
-        self.invert_wrapped_output = invert_wrapped_output
 
     def preprocess_primary(
         self, X: pd.DataFrame, index: int, y: T, extras: Extras, fit: bool
@@ -133,4 +134,5 @@ class TransformTarget(Composite):
             invert_wrapped_output=self.invert_wrapped_output,
         )
         clone.properties = self.properties
+        clone.name = self.name
         return clone

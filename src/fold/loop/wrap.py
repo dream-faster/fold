@@ -6,13 +6,8 @@ from typing import Callable, List
 
 from sklearn.base import ClassifierMixin, RegressorMixin, TransformerMixin
 from sklearn.feature_selection import SelectorMixin
-from sklearn.pipeline import Pipeline as SKLearnPipeline
 
-from fold.models.sklearn import (
-    WrapSKLearnClassifier,
-    WrapSKLearnPipeline,
-    WrapSKLearnRegressor,
-)
+from fold.models.sklearn import WrapSKLearnClassifier, WrapSKLearnRegressor
 from fold.transformations.sklearn import (
     WrapSKLearnFeatureSelector,
     WrapSKLearnTransformation,
@@ -37,8 +32,6 @@ def wrap_transformation_if_needed(
         return WrapSKLearnFeatureSelector.from_model(transformation)
     elif isinstance(transformation, TransformerMixin):
         return WrapSKLearnTransformation.from_model(transformation)
-    elif isinstance(transformation, SKLearnPipeline):
-        return WrapSKLearnPipeline(transformation)
     elif isinstance(transformation, Composite):
         return transformation.clone(wrap_transformation_if_needed)
     elif isinstance(transformation, Optimizer):

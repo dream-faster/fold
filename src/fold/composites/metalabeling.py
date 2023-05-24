@@ -78,6 +78,7 @@ class MetaLabeling(Composite):
         meta: Pipeline,
         positive_class: Union[int, float],
         primary_output_included: bool = False,
+        name: Optional[str] = None,
     ) -> None:
         self.primary = wrap_in_double_list_if_needed(primary)
         self.meta = wrap_in_double_list_if_needed(meta)
@@ -85,7 +86,9 @@ class MetaLabeling(Composite):
             int(positive_class) if isinstance(positive_class, float) else positive_class
         )
         self.primary_output_included = primary_output_included
-        self.name = "MetaLabeling-" + get_concatenated_names(self.primary + self.meta)
+        self.name = name or "MetaLabeling-" + get_concatenated_names(
+            self.primary + self.meta
+        )
 
     def preprocess_secondary(
         self,
@@ -157,6 +160,7 @@ class MetaLabeling(Composite):
             primary_output_included=self.primary_output_included,
         )
         clone.properties = self.properties
+        clone.name = self.name
         return clone
 
 

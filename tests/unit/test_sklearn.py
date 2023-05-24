@@ -3,8 +3,6 @@ from sklearn.base import TransformerMixin
 from sklearn.decomposition import PCA
 from sklearn.dummy import DummyClassifier, DummyRegressor
 from sklearn.feature_selection import SelectKBest, VarianceThreshold, f_regression
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
 
 from fold.composites.concat import TransformColumn
 from fold.loop import backtest, train, train_backtest
@@ -67,24 +65,6 @@ def test_sklearn_transformation_variable_columns() -> None:
     ]
     pred, _ = train_backtest(pipeline, X, y, splitter)
     assert pred.shape[1] == 2
-
-
-def test_sklearn_pipeline() -> None:
-    X, y = generate_all_zeros(1000)
-
-    splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    transformations = [
-        Pipeline(
-            [
-                ("scaler", StandardScaler()),
-                ("dummy", DummyRegressor(strategy="constant", constant=0)),
-            ]
-        ),
-        OnlyPredictions(),
-    ]
-    trained_pipelines = train(transformations, X, y, splitter)
-    pred = backtest(trained_pipelines, X, y, splitter)
-    assert (pred.squeeze() == y[pred.index]).all()
 
 
 def test_sklearn_partial_fit() -> None:

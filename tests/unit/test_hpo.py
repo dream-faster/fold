@@ -94,9 +94,11 @@ def test_selectbest() -> None:
                 [
                     DummyRegressor(
                         predicted_value=3.0,
+                        name="3.0",
                     ),
                     DummyRegressor(
                         predicted_value=0.5,
+                        name="0.5",
                     ),
                 ]
             ),
@@ -119,12 +121,14 @@ def test_selectbest_nested():
                             predicted_value=1.0,
                         ),
                         Identity(),
+                        name="1.0",
                     ),
                     TransformTarget(
                         DummyRegressor(
                             predicted_value=0.5,
                         ),
                         Identity(),
+                        name="0.5",
                     ),
                 ]
             ),
@@ -144,9 +148,11 @@ def test_selectbest_invalid():
                         DummyRegressor(
                             predicted_value=3.0,
                             params_to_try=dict(predicted_value=[1, 2]),
+                            name="first",
                         ),
                         DummyRegressor(
                             predicted_value=0.5,
+                            name="0.5",
                         ),
                     ],
                 ),

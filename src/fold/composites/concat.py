@@ -78,10 +78,11 @@ class Concat(Composite):
         self,
         pipelines: Pipelines,
         if_duplicate_keep: Union[ResolutionStrategy, str] = ResolutionStrategy.first,
+        name: Optional[str] = None,
     ) -> None:
         self.pipelines = pipelines
         self.if_duplicate_keep = ResolutionStrategy.from_str(if_duplicate_keep)
-        self.name = "Concat-" + get_concatenated_names(pipelines)
+        self.name = name or "Concat-" + get_concatenated_names(pipelines)
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
@@ -120,6 +121,7 @@ class Concat(Composite):
             if_duplicate_keep=self.if_duplicate_keep,
         )
         clone.properties = self.properties
+        clone.name = self.name
         return clone
 
 
@@ -138,12 +140,9 @@ class Pipeline(Composite):
 
     properties = Composite.Properties(primary_only_single_pipeline=True)
 
-    def __init__(
-        self,
-        pipeline: "Pipeline",
-    ) -> None:
+    def __init__(self, pipeline: Pipeline, name: Optional[str] = None) -> None:
         self.pipeline = wrap_in_double_list_if_needed(pipeline)
-        self.name = "Pipeline-" + get_concatenated_names(pipeline)
+        self.name = name or "Pipeline-" + get_concatenated_names(pipeline)
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
@@ -156,11 +155,14 @@ class Pipeline(Composite):
     def clone(self, clone_children: Callable) -> Pipeline:
         clone = Pipeline(pipeline=clone_children(self.pipeline))
         clone.properties = self.properties
+        clone.name = self.name
         return clone
 
 
 def TransformColumn(
-    columns: Union[List[str], str], pipeline: Transformations
+    columns: Union[List[str], str],
+    pipeline: Transformations,
+    name: Optional[str] = None,
 ) -> Composite:
     """
     Transforms a single or multiple columns using the given pipeline.
@@ -171,4 +173,5 @@ def TransformColumn(
             Identity(),
         ],
         if_duplicate_keep=ResolutionStrategy.first,
+        name=name,
     )

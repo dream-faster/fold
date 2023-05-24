@@ -60,7 +60,7 @@ class TakeLog(InvertibleTransformation, Tunable):
             raise ValueError("base should be either 'e', np.e, '10', 10, '2', 2.")
         self.base = base
         self.params_to_try = params_to_try
-        self.name = name if name is not None else f"TakeLog-{self.base}"
+        self.name = name or f"TakeLog-{self.base}"
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -97,7 +97,7 @@ class TakeLog(InvertibleTransformation, Tunable):
     update = fit_noop
 
     def get_params(self) -> dict:
-        return {"base": self.base}
+        return {"base": self.base, "name": self.name}
 
 
 class AddConstant(InvertibleTransformation, Tunable):
@@ -155,7 +155,7 @@ class AddConstant(InvertibleTransformation, Tunable):
 
         self.constant = constant
         self.params_to_try = params_to_try
-        self.name = name if name is not None else "AddConstant"
+        self.name = name or "AddConstant"
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -184,7 +184,7 @@ class AddConstant(InvertibleTransformation, Tunable):
     update = fit_noop
 
     def get_params(self) -> dict:
-        return {"constant": self.constant}
+        return {"constant": self.constant, "name": self.name}
 
 
 class TurnPositive(InvertibleTransformation):
@@ -271,7 +271,7 @@ class MultiplyBy(InvertibleTransformation, Tunable):
     ) -> None:
         self.constant = constant
         self.params_to_try = params_to_try
-        self.name = name if name is not None else f"MultiplyBy-{constant}"
+        self.name = name or f"MultiplyBy-{constant}"
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -285,4 +285,4 @@ class MultiplyBy(InvertibleTransformation, Tunable):
     update = fit_noop
 
     def get_params(self) -> dict:
-        return {"constant": self.constant}
+        return {"constant": self.constant, "name": self.name}

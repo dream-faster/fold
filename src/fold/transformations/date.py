@@ -120,7 +120,7 @@ class AddDateTimeFeatures(Transformation, Tunable):
     update = fit_noop
 
     def get_params(self) -> dict:
-        return {"features": self.features}
+        return {"features": self.features, "name": self.name}
 
 
 class AddSecond(SingleFunctionTransformation):

@@ -36,7 +36,7 @@ class WrapSKLearnTransformation(Transformation, Tunable):
         if hasattr(self.transformation, "set_output"):
             self.transformation = self.transformation.set_output(transform="pandas")
         self.params_to_try = params_to_try
-        self.name = name if name is not None else self.transformation.__class__.__name__
+        self.name = name or self.transformation.__class__.__name__
 
     @classmethod
     def from_model(
@@ -48,6 +48,7 @@ class WrapSKLearnTransformation(Transformation, Tunable):
         return cls(
             transformation_class=model.__class__,
             init_args=model.get_params(),
+            name=name,
             params_to_try=params_to_try,
         )
 
@@ -105,6 +106,7 @@ class WrapSKLearnTransformation(Transformation, Tunable):
         return WrapSKLearnTransformation(
             transformation_class=self.transformation.__class__,
             init_args=parameters,
+            name=self.name,
         )
 
 
@@ -135,7 +137,7 @@ class WrapSKLearnFeatureSelector(FeatureSelector, Tunable):
         if hasattr(self.transformation, "set_output"):
             self.transformation = self.transformation.set_output(transform="pandas")
         self.params_to_try = params_to_try
-        self.name = name if name is not None else self.transformation.__class__.__name__
+        self.name = name or self.transformation.__class__.__name__
 
     @classmethod
     def from_model(
@@ -147,6 +149,7 @@ class WrapSKLearnFeatureSelector(FeatureSelector, Tunable):
         return cls(
             transformation_class=model.__class__,
             init_args=model.get_params(),
+            name=name,
             params_to_try=params_to_try,
         )
 
@@ -181,6 +184,7 @@ class WrapSKLearnFeatureSelector(FeatureSelector, Tunable):
         return WrapSKLearnFeatureSelector(
             transformation_class=self.transformation.__class__,
             init_args=parameters,
+            name=self.name,
         )
 
     update = fit_noop

@@ -39,16 +39,19 @@ class EnsembleEachColumn(Composite):
     properties = Composite.Properties()
     pipelines_already_cloned = False
 
-    def __init__(self, pipeline: Pipeline) -> None:
+    def __init__(self, pipeline: Pipeline, name: Optional[str] = None) -> None:
         self.pipelines: Pipelines = wrap_in_double_list_if_needed(pipeline)
-        self.name = "PerColumnEnsemble-" + get_concatenated_names(self.pipelines)
+        self.name = name or "PerColumnEnsemble-" + get_concatenated_names(
+            self.pipelines
+        )
 
     @classmethod
     def from_cloned_instance(
-        cls, pipeline: Pipeline, pipelines_already_cloned: bool
+        cls, pipeline: Pipeline, pipelines_already_cloned: bool, name: Optional[str]
     ) -> EnsembleEachColumn:
         instance = cls(pipeline=pipeline)
         instance.pipelines_already_cloned = pipelines_already_cloned
+        instance.name = name
         return instance
 
     def before_fit(self, X: pd.DataFrame) -> None:
@@ -74,8 +77,10 @@ class EnsembleEachColumn(Composite):
         clone = EnsembleEachColumn.from_cloned_instance(
             pipeline=clone_children(self.pipelines),
             pipelines_already_cloned=self.pipelines_already_cloned,
+            name=self.name,
         )
         clone.properties = self.properties
+        clone.name = self.name
         return clone
 
 
@@ -119,9 +124,11 @@ class TransformEachColumn(Composite):
     properties = Composite.Properties()
     pipeline_already_cloned = False
 
-    def __init__(self, pipeline: Pipeline) -> None:
+    def __init__(self, pipeline: Pipeline, name: Optional[str] = None) -> None:
         self.pipeline = wrap_in_double_list_if_needed(pipeline)
-        self.name = "PerColumnTransform-" + get_concatenated_names(self.pipeline)
+        self.name = name or "PerColumnTransform-" + get_concatenated_names(
+            self.pipeline
+        )
 
     @classmethod
     def from_cloned_instance(
@@ -155,6 +162,7 @@ class TransformEachColumn(Composite):
             pipeline_already_cloned=self.pipeline_already_cloned,
         )
         clone.properties = self.properties
+        clone.name = self.name
         return clone
 
 
@@ -194,9 +202,9 @@ class SkipNA(Composite):
     properties = Composite.Properties()
     original_index: Optional[pd.Index] = None
 
-    def __init__(self, pipeline: Pipeline) -> None:
+    def __init__(self, pipeline: Pipeline, name: Optional[str] = None) -> None:
         self.pipeline = wrap_in_double_list_if_needed(pipeline)
-        self.name = "SkipNA-" + get_concatenated_names(self.pipeline)
+        self.name = name or "SkipNA-" + get_concatenated_names(self.pipeline)
 
     def preprocess_primary(
         self, X: pd.DataFrame, index: int, y: T, extras: Extras, fit: bool
@@ -224,6 +232,7 @@ class SkipNA(Composite):
         )
         clone.properties = self.properties
         clone.original_index = self.original_index
+        clone.name = self.name
         return clone
 
 
