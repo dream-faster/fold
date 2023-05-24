@@ -105,7 +105,7 @@ def test_selectbest() -> None:
         ],
         scorer=mean_squared_error,
     )
-    pred, _ = train_backtest(pipeline, X, y, splitter)
+    pred, trained_pipelines = train_backtest(pipeline, X, y, splitter)
     assert pred.squeeze()[0] == 0.5
 
 

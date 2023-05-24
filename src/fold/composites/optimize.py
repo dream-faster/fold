@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from typing import Callable, Iterable, List, Optional, Union
+from typing import Callable, List, Optional, Union
 
 import pandas as pd
 from sklearn.model_selection import ParameterGrid
@@ -16,12 +16,12 @@ from ..base import (
     Transformation,
     Tunable,
     get_concatenated_names,
-    traverse,
     traverse_apply,
 )
 from ..splitters import SingleWindowSplitter
 from ..transformations.dev import Identity
 from ..utils.list import to_hierachical_dict, wrap_in_list
+from .utils import _get_tunables_with_params_to_try, _process_params
 
 
 class OptimizeGridSearch(Optimizer):
@@ -68,13 +68,9 @@ class OptimizeGridSearch(Optimizer):
         instance.name = name
         return instance
 
-    def get_candidates(self) -> Iterable[Pipeline]:
+    def get_candidates(self) -> List[Pipeline]:
         if self.candidates is None:
-            tunables = [
-                i
-                for i in traverse(self.pipeline)
-                if isinstance(i, Tunable) and i.get_params_to_try() is not None
-            ]
+            tunables = _get_tunables_with_params_to_try(self.pipeline)
 
             param_grid = {
                 f"{transformation.id}.{key}": value
@@ -87,27 +83,13 @@ class OptimizeGridSearch(Optimizer):
                 to_hierachical_dict(params) for params in ParameterGrid(param_grid)
             ]
 
-            def __apply_params(params: dict) -> Callable:
-                def __apply_params_to_transformation(
-                    item: Union[Composite, Transformation], clone_children: Callable
-                ) -> Union[Composite, Transformation]:
-                    if not isinstance(item, Tunable):
-                        return item
-                    selected_params = params.get(item.id, {})
-                    if "passthrough" in selected_params:
-                        return Identity()  # type: ignore
-                    return item.clone_with_params(
-                        parameters={**item.get_params(), **selected_params},
-                        clone_children=clone_children,
-                    )
-
-                return __apply_params_to_transformation
-
             self.candidates = [
-                traverse_apply(self.pipeline, __apply_params(params))
+                traverse_apply(self.pipeline, _apply_params(params))
                 for params in self.param_permutations
             ]
-        return self.candidates
+            yield self.candidates
+        else:
+            return []
 
     def get_optimized_pipeline(self) -> Optional[Tunable]:
         return self.selected_pipeline_
@@ -115,9 +97,6 @@ class OptimizeGridSearch(Optimizer):
     def process_candidate_results(
         self, results: List[pd.DataFrame], y: pd.Series
     ) -> Optional[Artifact]:
-        if self.selected_params_ is not None:
-            raise ValueError("Optimizer is already fitted.")
-
         scores = [self.scorer(y[-len(result) :], result) for result in results]
         selected_index = (
             scores.index(min(scores))
@@ -146,7 +125,18 @@ class OptimizeGridSearch(Optimizer):
         )
 
 
-def _process_params(params_to_try: dict) -> dict:
-    if "passthrough" in params_to_try:
-        params_to_try["passthrough"] = [True, False]
-    return params_to_try
+def _apply_params(params: dict) -> Callable:
+    def __apply_params_to_transformation(
+        item: Union[Composite, Transformation], clone_children: Callable
+    ) -> Union[Composite, Transformation]:
+        if not isinstance(item, Tunable):
+            return item
+        selected_params = params.get(item.id, {})
+        if "passthrough" in selected_params:
+            return Identity()  # type: ignore
+        return item.clone_with_params(
+            parameters={**item.get_params(), **selected_params},
+            clone_children=clone_children,
+        )  # type: ignore
+
+    return __apply_params_to_transformation

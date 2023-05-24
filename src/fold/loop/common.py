@@ -221,25 +221,28 @@ def _process_optimizer(
     optimized_pipeline = optimizer.get_optimized_pipeline()
     artifact = None
     if optimized_pipeline is None:
-        candidates = optimizer.get_candidates()
+        for candidates in optimizer.get_candidates():
+            if len(candidates) == 0:
+                break
 
-        processed_candidates, results, _ = zip(
-            *backend_functions.process_child_transformations(
-                __process_candidates,
-                enumerate(candidates),
-                optimizer,
-                X,
-                y,
-                extras,
-                artifacts,
-                stage,
-                backend,
-                None,
+            _, results, _ = zip(
+                *backend_functions.process_child_transformations(
+                    __process_candidates,
+                    enumerate(candidates),
+                    optimizer,
+                    X,
+                    y,
+                    extras,
+                    artifacts,
+                    stage,
+                    backend,
+                    None,
+                )
             )
-        )
-        # TODO: set processed candidates on optimizer
-        results = [trim_initial_nans_single(result) for result in results]
-        artifact = optimizer.process_candidate_results(results, y.loc[results[0].index])
+            results = [trim_initial_nans_single(result) for result in results]
+            artifact = optimizer.process_candidate_results(
+                results, y.loc[results[0].index]
+            )
 
     optimized_pipeline = optimizer.get_optimized_pipeline()[0]
     processed_optimized_pipeline, X, artifact = recursively_transform(
