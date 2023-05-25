@@ -1,19 +1,16 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
 
-import importlib.util
 from typing import TYPE_CHECKING, Any, Callable, Dict, Optional, Tuple, Union
 
 import pandas as pd
 from sklearn.metrics import mean_squared_error
 
+from fold.base.classes import Extras
+from fold.base.scoring import score_results
+
 from ..base import Artifact, OutOfSamplePredictions, Pipeline, TrainedPipelines
 from ..splitters import Splitter
-from ..utils.checks import (
-    all_have_probabilities,
-    get_prediction_column,
-    get_probabilities_columns,
-)
 from ..utils.dataframe import concat_on_index
 from .backtesting import backtest
 from .training import train
@@ -33,7 +30,7 @@ def backtest_score(
     events: Optional[EventDataFrame] = None,
     silent: bool = False,
     return_artifacts: bool = False,
-    krisi_args: Optional[Dict[str, Any]] = None,
+    krisi_args: Optional[dict] = None,
     evaluation_func: Callable = mean_squared_error,
 ) -> Union[
     Tuple[Union["ScoreCard", Dict[str, float]], OutOfSamplePredictions],
@@ -90,37 +87,15 @@ def backtest_score(
         return_artifacts=True,
     )
 
-    probabilities = (
-        get_probabilities_columns(pred) if all_have_probabilities([pred]) else None
+    extras = Extras(events=events, sample_weights=sample_weights)
+    scorecard = score_results(
+        pred,
+        y,
+        extras=extras,
+        artifacts=artifacts,
+        evaluation_func=evaluation_func,
+        krisi_args=krisi_args,
     )
-    pred_point = get_prediction_column(pred)
-
-    if artifacts is not None and "label" in artifacts.columns:
-        y = artifacts["label"].reindex(pred.index).dropna()
-        pred_point = pred_point.dropna()
-        probabilities = probabilities.dropna()
-
-    if len(y) != len(pred_point):
-        if probabilities is not None:
-            probabilities = probabilities[: len(y)]
-        pred_point = pred_point[: len(y)]
-
-    if importlib.util.find_spec("krisi") is not None:
-        from krisi import score
-
-        scorecard = score(
-            y=y[pred_point.index],
-            predictions=pred_point,
-            probabilities=probabilities,
-            **(krisi_args if krisi_args is not None else {}),
-        )
-    else:
-        pred_point = get_prediction_column(pred)
-        scorecard = {
-            evaluation_func.__class__.__name__: evaluation_func(
-                y[pred_point.index], pred_point.squeeze()
-            )
-        }
     if return_artifacts:
         return scorecard, pred, artifacts
     else:
