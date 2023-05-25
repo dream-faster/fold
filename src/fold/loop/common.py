@@ -226,7 +226,7 @@ def _process_optimizer(
             if len(candidates) == 0:
                 break
 
-            _, results, _ = zip(
+            _, results, candidate_artifacts = zip(
                 *backend_functions.process_child_transformations(
                     __process_candidates,
                     enumerate(candidates),
@@ -242,7 +242,10 @@ def _process_optimizer(
             )
             results = [trim_initial_nans_single(result) for result in results]
             artifact = optimizer.process_candidate_results(
-                results, y.loc[results[0].index]
+                results,
+                y=y.loc[results[0].index],
+                extras=extras.loc(results[0].index),
+                artifacts=candidate_artifacts,
             )
 
     optimized_pipeline = optimizer.get_optimized_pipeline()[0]

@@ -8,6 +8,8 @@ from typing import Callable, List, Optional
 import pandas as pd
 from sklearn.model_selection import ParameterGrid
 
+from fold.base.classes import Extras
+
 from ..base import (
     Artifact,
     Optimizer,
@@ -89,7 +91,11 @@ class OptimizeGridSearch(Optimizer):
         return self.selected_pipeline_
 
     def process_candidate_results(
-        self, results: List[pd.DataFrame], y: pd.Series
+        self,
+        results: List[pd.DataFrame],
+        y: pd.Series,
+        extras: Extras,
+        artifacts: List[pd.DataFrame],
     ) -> Optional[Artifact]:
         scores = [self.scorer(y[-len(result) :], result) for result in results]
         selected_index = (
