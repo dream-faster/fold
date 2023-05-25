@@ -19,7 +19,7 @@ from ..base import (
     traverse_apply,
 )
 from ..splitters import SingleWindowSplitter
-from ..utils.list import to_hierachical_dict, wrap_in_list
+from ..utils.list import to_hierachical_dict, wrap_in_double_list_if_needed
 from .utils import _apply_params, _check_for_duplicate_names, _extract_param_grid
 
 _divider = "¦"
@@ -40,7 +40,7 @@ class OptimizeGridSearch(Optimizer):
         splitter: SingleWindowSplitter = SingleWindowSplitter(0.7),
         name: Optional[str] = None,
     ) -> None:
-        self.pipeline = wrap_in_list(pipeline)
+        self.pipeline = wrap_in_double_list_if_needed(pipeline)
         self.name = name or "OptimizeGridSearch-" + get_concatenated_names(
             self.pipeline
         )
