@@ -1,6 +1,8 @@
 from copy import copy
 from typing import Callable, List, Union
 
+from deepmerge import always_merger
+
 from ..base import Composite, Pipeline, Transformation, Tunable, traverse
 from ..transformations.dev import Identity
 
@@ -32,7 +34,9 @@ def _apply_params(params: dict) -> Callable:
         if "passthrough" in selected_params and selected_params["passthrough"] is True:
             return Identity()  # type: ignore
         return item.clone_with_params(
-            parameters={**item.get_params(), **_clean_params(selected_params)},
+            parameters=always_merger.merge(
+                item.get_params(), _clean_params(selected_params)
+            ),
             clone_children=clone_children,
         )  # type: ignore
 
