@@ -8,8 +8,7 @@ from typing import Callable, List, Optional, Tuple, TypeVar, Union
 
 import pandas as pd
 
-from fold.splitters import SingleWindowSplitter
-
+from ..splitters import SingleWindowSplitter
 from ..utils.introspection import get_initialization_parameters
 
 T = TypeVar("T", Optional[pd.Series], pd.Series)
