@@ -248,7 +248,7 @@ def _process_optimizer(
                 artifacts=candidate_artifacts,
             )
 
-    optimized_pipeline = optimizer.get_optimized_pipeline()[0]
+    optimized_pipeline = optimizer.get_optimized_pipeline()
     processed_optimized_pipeline, X, artifact = recursively_transform(
         X,
         y,
