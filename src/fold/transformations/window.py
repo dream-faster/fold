@@ -119,6 +119,3 @@ class AddWindowFeatures(Transformation, Tunable):
 
     fit = fit_noop
     update = fit
-
-    def get_params(self) -> dict:
-        return {"column_window_func": self.column_window_func, "name": self.name}

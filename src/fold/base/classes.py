@@ -8,7 +8,8 @@ from typing import Callable, List, Optional, Tuple, TypeVar, Union
 
 import pandas as pd
 
-from fold.splitters import SingleWindowSplitter
+from ..splitters import SingleWindowSplitter
+from ..utils.introspection import get_initialization_parameters
 
 T = TypeVar("T", Optional[pd.Series], pd.Series)
 X = pd.DataFrame
@@ -212,9 +213,13 @@ class InvertibleTransformation(Transformation, ABC):
 class Tunable(Block, ABC):
     params_to_try: Optional[dict]
 
-    @abstractmethod
     def get_params(self) -> dict:
-        raise NotImplementedError
+        """
+        The default implementation assumes that:
+        1. All init parameters are stored on the object as property (with the same name/key).
+        2. There are no modifications/conversions of the init parameters that'd prevent them from being used again (reconstructing the object from them).
+        """
+        return get_initialization_parameters(self)
 
     def get_params_to_try(self) -> Optional[dict]:
         return self.params_to_try
