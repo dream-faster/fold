@@ -81,9 +81,6 @@ class AddLagsY(Transformation, Tunable):
     fit = fit_noop
     update = fit_noop
 
-    def get_params(self) -> dict:
-        return {"lags": self.lags, "name": self.name}
-
 
 class AddLagsX(Transformation, Tunable):
     """
@@ -168,6 +165,3 @@ class AddLagsX(Transformation, Tunable):
 
     fit = fit_noop
     update = fit_noop
-
-    def get_params(self) -> dict:
-        return {"columns_and_lags": self.columns_and_lags, "name": self.name}

@@ -114,9 +114,6 @@ class Difference(InvertibleTransformation, Tunable):
                 X.iloc[i :: self.lag] = X.iloc[i :: self.lag].cumsum()
             return X.iloc[self.lag :]
 
-    def get_params(self) -> dict:
-        return {"lag": self.lag, "name": self.name}
-
 
 class TakeReturns(Transformation, Tunable):
     """
@@ -210,9 +207,6 @@ class TakeReturns(Transformation, Tunable):
                 ).iloc[1:]
             ), None
 
-    def get_params(self) -> dict:
-        return {"log_returns": self.log_returns, "name": self.name}
-
 
 class StationaryMethod(ParsableEnum):
     difference = "difference"
@@ -283,13 +277,6 @@ class MakeStationary(Transformation, Tunable):
         return pd.concat(columns, axis="columns"), None
 
     update = fit_noop
-
-    def get_params(self) -> dict:
-        return {
-            "p_threshold": self.p_threshold,
-            "method": self.method,
-            "name": self.name,
-        }
 
 
 def fill_na_inf(df: pd.DataFrame) -> pd.DataFrame:

@@ -45,9 +45,6 @@ class SelectColumns(Transformation, Tunable):
     fit = fit_noop
     update = fit
 
-    def get_params(self) -> dict:
-        return dict(columns=self.columns, name=self.name)
-
 
 class DropColumns(Transformation, Tunable):
     """
@@ -80,9 +77,6 @@ class DropColumns(Transformation, Tunable):
 
     fit = fit_noop
     update = fit
-
-    def get_params(self) -> dict:
-        return {"columns": self.columns, "name": self.name}
 
 
 class RenameColumns(Transformation):

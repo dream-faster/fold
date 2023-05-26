@@ -96,9 +96,6 @@ class TakeLog(InvertibleTransformation, Tunable):
     fit = fit_noop
     update = fit_noop
 
-    def get_params(self) -> dict:
-        return {"base": self.base, "name": self.name}
-
 
 class AddConstant(InvertibleTransformation, Tunable):
 
@@ -182,9 +179,6 @@ class AddConstant(InvertibleTransformation, Tunable):
 
     fit = fit_noop
     update = fit_noop
-
-    def get_params(self) -> dict:
-        return {"constant": self.constant, "name": self.name}
 
 
 class TurnPositive(InvertibleTransformation):
@@ -283,6 +277,3 @@ class MultiplyBy(InvertibleTransformation, Tunable):
 
     fit = fit_noop
     update = fit_noop
-
-    def get_params(self) -> dict:
-        return {"constant": self.constant, "name": self.name}

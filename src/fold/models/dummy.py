@@ -85,14 +85,6 @@ class DummyClassifier(Model, Tunable):
     fit = fit_noop
     update = fit
 
-    def get_params(self) -> dict:
-        return dict(
-            predicted_value=self.predicted_value,
-            all_classes=self.all_classes,
-            predicted_probabilities=self.predicted_probabilities,
-            name=self.name,
-        )
-
 
 class DummyRegressor(Model, Tunable):
     """
@@ -146,6 +138,3 @@ class DummyRegressor(Model, Tunable):
     predict_in_sample = predict
     fit = fit_noop
     update = fit
-
-    def get_params(self) -> dict:
-        return dict(predicted_value=self.predicted_value, name=self.name)

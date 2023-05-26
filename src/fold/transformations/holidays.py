@@ -148,13 +148,6 @@ class AddHolidayFeatures(Transformation, Tunable):
     fit = fit_noop
     update = fit_noop
 
-    def get_params(self) -> dict:
-        return {
-            "country_codes": self.country_codes,
-            "labeling": self.labeling,
-            "name": self.name,
-        }
-
 
 def _get_weekends(dates: pd.DatetimeIndex) -> pd.Series:
     return pd.Series((dates.weekday > 4).astype(int), index=dates)

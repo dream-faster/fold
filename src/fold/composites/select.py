@@ -60,7 +60,11 @@ class SelectBest(Composite, Tunable):
         )
 
     def get_params(self) -> dict:
-        return {"selected_": self.selected_, "name": self.name}
+        return dict(
+            choose_from=self.choose_from,
+            selected_=self.selected_,
+            name=self.name,
+        )
 
     def get_params_to_try(self) -> Optional[dict]:
         return {"selected_": [i.name for i in self.choose_from]}
