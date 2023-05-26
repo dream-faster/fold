@@ -45,6 +45,7 @@ def test_gridsearch_sklearn() -> None:
     pipeline = [
         OptimizeGridSearch(
             pipeline=[
+                Identity(),
                 WrapSKLearnRegressor.from_model(
                     SklearnDummyRegressor(strategy="constant", constant=1),
                     params_to_try=dict(constant=[1, 2]),
@@ -71,6 +72,7 @@ def test_grid_passthrough():
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     pipeline = OptimizeGridSearch(
         pipeline=[
+            Identity(),
             DummyRegressor(
                 predicted_value=3.0,
                 params_to_try=dict(
@@ -91,6 +93,7 @@ def test_selectbest() -> None:
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     pipeline = OptimizeGridSearch(
         [
+            Identity(),
             SelectBest(
                 [
                     DummyRegressor(
@@ -103,6 +106,7 @@ def test_selectbest() -> None:
                     ),
                 ]
             ),
+            Identity(),
         ],
         scorer=mean_squared_error,
     )
@@ -115,6 +119,7 @@ def test_selectbest_nested():
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     pipeline = OptimizeGridSearch(
         [
+            Identity(),
             SelectBest(
                 [
                     TransformTarget(
@@ -133,6 +138,7 @@ def test_selectbest_nested():
                     ),
                 ]
             ),
+            Identity(),
         ],
         scorer=mean_squared_error,
     )
