@@ -73,8 +73,19 @@ class SelectBest(Composite, Tunable):
         self, parameters: dict, clone_children: Optional[Callable] = None
     ) -> Tunable:
         assert clone_children is not None
+        # This is a bit hacky, we "peak" into the new params, and check if selected_ has been set,
+        # if yes, we already only clone the selected candidate, not all, to enable conditional hyperparameter optimization.
+        # This is our way of filtering out objects that should not be tuned during this round.
+        if "selected_" in parameters:
+            children = (
+                self.choose_from
+                if parameters["selected_"] is None
+                else [get_candidate_by_name(self.choose_from, parameters["selected_"])]
+            )
+        else:
+            children = self.choose_from
         return SelectBest.from_cloned_instance(
-            choose_from=clone_children(self.choose_from),
+            choose_from=clone_children(children),
             selected_=parameters["selected_"],
             name=self.name,
         )
