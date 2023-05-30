@@ -46,11 +46,11 @@ def _apply_params(params: dict) -> Callable:
 def _clean_params(
     params_to_try: dict, keys: List[str] = ["passthrough", "_conditional"]
 ) -> dict:
-    params_to_try = deepcopy(params_to_try)
-    for key in keys:
-        if key in params_to_try:
-            del params_to_try[key]
-    return params_to_try
+    return {
+        k: _clean_params(deepcopy(v)) if isinstance(v, dict) else deepcopy(v)
+        for k, v in params_to_try.items()
+        if k not in keys
+    }
 
 
 def _check_for_duplicate_names(pipeline: Pipeline):
