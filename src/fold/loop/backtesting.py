@@ -80,7 +80,9 @@ def backtest(
                 backend,
                 mutate=mutate,
             )
-            for split in tqdm(splitter.splits(length=len(X)), disable=silent)
+            for split in tqdm(
+                splitter.splits(length=len(X)), desc="Backtesting", disable=silent
+            )
         ]
     )
     results = trim_initial_nans_single(concat_on_index(results))
