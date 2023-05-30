@@ -47,7 +47,7 @@ def _clean_params(
     params_to_try: dict, keys: List[str] = ["passthrough", "_conditional"]
 ) -> dict:
     return {
-        k: _clean_params(deepcopy(v)) if isinstance(v, dict) else deepcopy(v)
+        k: _clean_params(v) if isinstance(v, dict) else deepcopy(v)
         for k, v in params_to_try.items()
         if k not in keys
     }
