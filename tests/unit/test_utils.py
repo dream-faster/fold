@@ -6,6 +6,7 @@ from sklearn.feature_selection import SelectKBest, VarianceThreshold, f_regressi
 from fold.base import Composite, traverse, traverse_apply
 from fold.base.classes import Extras
 from fold.composites.target import TransformTarget
+from fold.composites.utils import _clean_params
 from fold.models.base import postpostprocess_output
 from fold.transformations.dev import Lookahead, Test
 from fold.transformations.difference import Difference
@@ -151,3 +152,32 @@ def test_sort_probabilities_columns() -> None:
     result = postpostprocess_output(X, name="a")
     assert result.columns[2] == "probabilities_a_0"
     assert result.columns[3] == "probabilities_a_1"
+
+
+def test_clean_params():
+    dummy_dict = dict(
+        a=1,
+        b=2,
+        c=dict(
+            d=3, _conditional="something", f=(dict(passthrough=True, hello="world"))
+        ),
+        _conditional="conditional",
+        passthrough=True,
+    )
+    cleaned_dict = _clean_params(dummy_dict)
+
+    assert cleaned_dict != dummy_dict, "Cleaned dict is the same as dummy dict."
+    assert "passthrough" not in cleaned_dict, "Passthrough not removed."
+    assert "_conditional" not in cleaned_dict, "_conditional not removed."
+    assert (
+        "_conditional" not in cleaned_dict["c"]
+    ), "_conditional not removed from within dictionary."
+    assert (
+        "passthrough" not in cleaned_dict["c"]
+    ), "passthrough not removed from within dictionary."
+    assert (
+        "passthrough" not in cleaned_dict["c"]["f"]
+    ), "passthrough not removed from within dictionary."
+    assert "a" in cleaned_dict, "missing value in cleaned dict"
+    assert "b" in cleaned_dict, "missing value in cleaned dict"
+    assert "hello" in cleaned_dict["c"]["f"], "missing value in cleaned dict"
