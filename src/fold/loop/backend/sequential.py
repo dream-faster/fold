@@ -24,7 +24,7 @@ def train_transformations(
 ):
     return [
         func(X, y, sample_weights, transformations, split, never_update, backend)
-        for split in tqdm(splits, disable=silent)
+        for split in tqdm(splits, desc="Training", disable=silent)
     ]
 
 
