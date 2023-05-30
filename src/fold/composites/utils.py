@@ -1,4 +1,4 @@
-from copy import copy
+from copy import deepcopy
 from typing import Callable, List, Union
 
 from deepmerge import always_merger
@@ -43,11 +43,14 @@ def _apply_params(params: dict) -> Callable:
     return __apply_params_to_transformation
 
 
-def _clean_params(params_to_try: dict) -> dict:
-    if "passthrough" in params_to_try:
-        params_to_try = copy(params_to_try)
-        del params_to_try["passthrough"]
-    return params_to_try
+def _clean_params(
+    params_to_try: dict, keys: List[str] = ["passthrough", "_conditional"]
+) -> dict:
+    return {
+        k: _clean_params(v) if isinstance(v, dict) else deepcopy(v)
+        for k, v in params_to_try.items()
+        if k not in keys
+    }
 
 
 def _check_for_duplicate_names(pipeline: Pipeline):
