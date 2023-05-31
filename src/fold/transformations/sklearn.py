@@ -127,6 +127,8 @@ class WrapSKLearnFeatureSelector(FeatureSelector, Tunable):
         params_to_try: Optional[dict] = None,
     ) -> None:
         self.transformation = transformation_class(**init_args)
+        self.transformation_class = transformation_class
+        self.init_args = init_args
         if hasattr(self.transformation, "set_output"):
             self.transformation = self.transformation.set_output(transform="pandas")
         self.params_to_try = params_to_try
