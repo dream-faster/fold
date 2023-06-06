@@ -1,5 +1,6 @@
 import pandas as pd
 import pytest
+from sklearn.metrics import accuracy_score
 
 from fold.base import Transformations
 from fold.base.classes import Extras
@@ -119,7 +120,7 @@ def test_score_results():
 
     results = pd.DataFrame({"x_predictions": y.squeeze()})
     sc = score_results(
-        results, y, Extras(), artifacts=pd.DataFrame(), evaluation_func=None
+        results, y, Extras(), artifacts=pd.DataFrame(), evaluation_func=accuracy_score
     )
     assert sc["accuracy"].result == 1.0
 
@@ -135,7 +136,7 @@ def test_score_results():
         pd.Series(0, index=y.index),
         extras,
         artifacts=pd.DataFrame(),
-        evaluation_func=None,
+        evaluation_func=accuracy_score,
     )
     assert sc["accuracy"].result == 1.0
 
@@ -145,7 +146,7 @@ def test_score_results():
         pd.Series(0, index=y.index),
         Extras(),
         artifacts=extras.events,
-        evaluation_func=None,
+        evaluation_func=accuracy_score,
     )
     assert sc["accuracy"].result == 1.0
 
@@ -154,7 +155,7 @@ def test_score_results():
         pd.Series(0, index=y.index),
         extras,
         artifacts=pd.DataFrame(),
-        evaluation_func=None,
+        evaluation_func=accuracy_score,
     )
     assert sc["accuracy"].result == 1.0
     assert len(sc.y) == len(extras.events) - 200
