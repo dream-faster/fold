@@ -141,6 +141,9 @@ def train(
         ) = _sequential_train_on_window(pipeline, X, y, splits, extras, backend)
 
     trained_pipelines = _extract_trained_pipelines(processed_idx, processed_pipelines)
+    # processed_artifacts = [
+    #     a.add_suffix(str(index)) for index, a in enumerate(processed_artifacts)
+    # ]
     if return_artifacts is True:
         return trained_pipelines, concat_on_index(processed_artifacts)
     else:

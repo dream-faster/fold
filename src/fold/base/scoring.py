@@ -34,7 +34,8 @@ def score_results(
     if labels is not None:
         y = labels.reindex(result.index).dropna()
         pred_point = pred_point.dropna()
-        probabilities = probabilities.dropna()
+        if probabilities is not None:
+            probabilities = probabilities.dropna()
 
     if len(y) != len(pred_point):
         if probabilities is not None:
