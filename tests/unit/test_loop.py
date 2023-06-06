@@ -128,7 +128,7 @@ def test_score_results():
         if "accuracy" in obj:
             return obj["accuracy"].result
         else:
-            return obj["accuracy_score"]
+            return obj["function"]
 
     assert get_acc(sc) == 1.0
 
