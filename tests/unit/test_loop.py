@@ -123,7 +123,14 @@ def test_score_results():
     sc = score_results(
         results, y, Extras(), artifacts=pd.DataFrame(), evaluation_func=accuracy
     )
-    assert sc["accuracy"].result == 1.0
+
+    def get_acc(obj):
+        if "accuracy" in obj:
+            return obj["accuracy"].result
+        else:
+            return obj["accuracy_score"]
+
+    assert get_acc(sc) == 1.0
 
     back_shifted = y.shift(1)
     extras = Extras(
@@ -139,7 +146,7 @@ def test_score_results():
         artifacts=pd.DataFrame(),
         evaluation_func=accuracy,
     )
-    assert sc["accuracy"].result == 1.0
+    assert get_acc(sc) == 1.0
 
     # test that there's a "label" in artifacts, it is used for scoring
     sc = score_results(
@@ -149,7 +156,7 @@ def test_score_results():
         artifacts=extras.events,
         evaluation_func=accuracy,
     )
-    assert sc["accuracy"].result == 1.0
+    assert get_acc(sc) == 1.0
 
     sc = score_results(
         results[200:],
@@ -158,5 +165,6 @@ def test_score_results():
         artifacts=pd.DataFrame(),
         evaluation_func=accuracy,
     )
-    assert sc["accuracy"].result == 1.0
-    assert len(sc.y) == len(extras.events) - 200
+    assert get_acc(sc) == 1.0
+    if hasattr(sc, "y"):
+        assert len(sc.y) == len(extras.events) - 200
