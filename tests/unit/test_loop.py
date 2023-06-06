@@ -1,6 +1,10 @@
+import pandas as pd
 import pytest
 
 from fold.base import Transformations
+from fold.base.classes import Extras
+from fold.base.scoring import score_results
+from fold.events.labeling.fixed import SumFixedForwardHorizon
 from fold.loop import train
 from fold.loop.backtesting import backtest
 from fold.loop.types import Backend, TrainMethod
@@ -8,7 +12,11 @@ from fold.models.baseline import Naive
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.dev import Test
 from fold.transformations.lags import AddLagsY
-from fold.utils.tests import generate_all_zeros, generate_sine_wave_data
+from fold.utils.tests import (
+    generate_all_zeros,
+    generate_sine_wave_data,
+    generate_zeros_and_ones,
+)
 
 
 def run_loop(
@@ -104,3 +112,49 @@ def test_sameple_weights() -> None:
         test_sample_weights_exist,
     ]
     _ = train(transformations, X, y, splitter, sample_weights=sample_weights)
+
+
+def test_score_results():
+    X, y = generate_zeros_and_ones(length=1000)
+
+    results = pd.DataFrame({"x_predictions": y.squeeze()})
+    sc = score_results(
+        results, y, Extras(), artifacts=pd.DataFrame(), evaluation_func=None
+    )
+    assert sc["accuracy"].result == 1.0
+
+    back_shifted = y.shift(1)
+    extras = Extras(
+        events=SumFixedForwardHorizon(1).label_events(back_shifted.index, back_shifted)
+    )
+    assert (y[:-1] == extras.events.label).all()
+
+    # test that if extras.events is not None, it is used for scoring
+    sc = score_results(
+        results,
+        pd.Series(0, index=y.index),
+        extras,
+        artifacts=pd.DataFrame(),
+        evaluation_func=None,
+    )
+    assert sc["accuracy"].result == 1.0
+
+    # test that there's a "label" in artifacts, it is used for scoring
+    sc = score_results(
+        results,
+        pd.Series(0, index=y.index),
+        Extras(),
+        artifacts=extras.events,
+        evaluation_func=None,
+    )
+    assert sc["accuracy"].result == 1.0
+
+    sc = score_results(
+        results[200:],
+        pd.Series(0, index=y.index),
+        extras,
+        artifacts=pd.DataFrame(),
+        evaluation_func=None,
+    )
+    assert sc["accuracy"].result == 1.0
+    assert len(sc.t) == len(extras.events) - 200
