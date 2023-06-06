@@ -118,9 +118,10 @@ def test_sameple_weights() -> None:
 def test_score_results():
     X, y = generate_zeros_and_ones(length=1000)
 
+    accuracy = accuracy_score
     results = pd.DataFrame({"x_predictions": y.squeeze()})
     sc = score_results(
-        results, y, Extras(), artifacts=pd.DataFrame(), evaluation_func=accuracy_score
+        results, y, Extras(), artifacts=pd.DataFrame(), evaluation_func=accuracy
     )
     assert sc["accuracy"].result == 1.0
 
@@ -136,7 +137,7 @@ def test_score_results():
         pd.Series(0, index=y.index),
         extras,
         artifacts=pd.DataFrame(),
-        evaluation_func=accuracy_score,
+        evaluation_func=accuracy,
     )
     assert sc["accuracy"].result == 1.0
 
@@ -146,7 +147,7 @@ def test_score_results():
         pd.Series(0, index=y.index),
         Extras(),
         artifacts=extras.events,
-        evaluation_func=accuracy_score,
+        evaluation_func=accuracy,
     )
     assert sc["accuracy"].result == 1.0
 
@@ -155,7 +156,7 @@ def test_score_results():
         pd.Series(0, index=y.index),
         extras,
         artifacts=pd.DataFrame(),
-        evaluation_func=accuracy_score,
+        evaluation_func=accuracy,
     )
     assert sc["accuracy"].result == 1.0
     assert len(sc.y) == len(extras.events) - 200
