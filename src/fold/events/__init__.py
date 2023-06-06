@@ -115,7 +115,7 @@ class UsePredefinedEvents(Composite):
     def postprocess_artifacts_primary(
         self, artifacts: List[Artifact], extras: Extras
     ) -> pd.DataFrame:
-        return extras.events
+        return concat_on_columns([extras.events, concat_on_columns(artifacts)])
 
     def clone(self, clone_children: Callable) -> UsePredefinedEvents:
         clone = UsePredefinedEvents(
