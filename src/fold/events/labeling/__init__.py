@@ -1,1 +1,1 @@
-from .fixed import BinarizeFixedForwardHorizon
+from .fixed import BinarizeFixedForwardHorizon, SumFixedForwardHorizon

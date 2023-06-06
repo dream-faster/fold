@@ -34,7 +34,8 @@ def score_results(
     if labels is not None:
         y = labels.reindex(result.index).dropna()
         pred_point = pred_point.dropna()
-        probabilities = probabilities.dropna()
+        if probabilities is not None:
+            probabilities = probabilities.dropna()
 
     if len(y) != len(pred_point):
         if probabilities is not None:
@@ -51,7 +52,6 @@ def score_results(
             **(krisi_args if krisi_args is not None else {}),
         )
     else:
-        pred_point = get_prediction_column(result)
         return {
             evaluation_func.__class__.__name__: evaluation_func(
                 y[pred_point.index], pred_point.squeeze()

@@ -63,9 +63,12 @@ class _CreateEvents(Composite):
         return secondary_results[0].reindex(y.index)
 
     def postprocess_artifacts_primary(
-        self, artifacts: List[Artifact], extras: Extras
+        self, artifacts: List[Artifact], extras: Extras, fit: bool
     ) -> pd.DataFrame:
-        return concat_on_columns(artifacts)
+        if fit is True:
+            return pd.DataFrame()
+        else:
+            return concat_on_columns(artifacts)
 
     def postprocess_artifacts_secondary(
         self, primary_artifacts: pd.DataFrame, secondary_artifacts: List[Artifact]
@@ -113,9 +116,12 @@ class UsePredefinedEvents(Composite):
         return results[0].reindex(y.index)
 
     def postprocess_artifacts_primary(
-        self, artifacts: List[Artifact], extras: Extras
+        self, artifacts: List[Artifact], extras: Extras, fit: bool
     ) -> pd.DataFrame:
-        return extras.events
+        if fit is True:
+            return concat_on_columns(artifacts)
+        else:
+            return concat_on_columns([extras.events, concat_on_columns(artifacts)])
 
     def clone(self, clone_children: Callable) -> UsePredefinedEvents:
         clone = UsePredefinedEvents(

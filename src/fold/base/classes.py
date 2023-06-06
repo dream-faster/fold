@@ -94,7 +94,7 @@ class Composite(Block, ABC):
         return X, y
 
     def postprocess_artifacts_primary(
-        self, artifacts: List[Artifact], extras: Extras
+        self, artifacts: List[Artifact], extras: Extras, fit: bool
     ) -> pd.DataFrame:
         return pd.concat(artifacts, axis="columns").add_prefix("primary_")
 
