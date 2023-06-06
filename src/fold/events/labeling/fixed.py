@@ -1,4 +1,4 @@
-from typing import List
+from typing import Callable, List
 
 import pandas as pd
 
@@ -7,8 +7,15 @@ from ...utils.forward import create_forward_rolling_sum
 from ..base import Labeler
 
 
+def map_to_binary(series: pd.Series) -> pd.Series:
+    series.loc[series >= 0.0] = 1
+    series.loc[series < 0.0] = -1
+    return series
+
+
 class BinarizeFixedForwardHorizon(Labeler):
     time_horizon: int
+    _mapping: Callable
 
     def __init__(self, time_horizon: int):
         self.time_horizon = time_horizon
@@ -21,12 +28,7 @@ class BinarizeFixedForwardHorizon(Labeler):
         event_start_times = event_start_times[event_start_times < cutoff_point]
         event_candidates = forward_rolling_sum[event_start_times]
 
-        def map_to_binary(series: pd.Series) -> pd.Series:
-            series.loc[series >= 0.0] = 1
-            series.loc[series < 0.0] = -1
-            return series
-
-        labels = map_to_binary(event_candidates)
+        labels = self._mapping(event_candidates)
 
         offset = pd.Timedelta(value=self.time_horizon, unit=y.index.freqstr)
         events = EventDataFrame(
@@ -40,29 +42,12 @@ class BinarizeFixedForwardHorizon(Labeler):
     def get_labels(self) -> List[int]:
         return [-1, 1]
 
+    _mapping = map_to_binary
 
-class SumFixedForwardHorizon(Labeler):
-    time_horizon: int
 
-    def __init__(self, time_horizon: int):
-        self.time_horizon = time_horizon
+def noop_mapping(series: pd.Series) -> pd.Series:
+    return series
 
-    def label_events(
-        self, event_start_times: pd.DatetimeIndex, y: pd.Series
-    ) -> EventDataFrame:
-        forward_rolling_sum = create_forward_rolling_sum(y, self.time_horizon)
-        cutoff_point = y.index[-self.time_horizon]
-        event_start_times = event_start_times[event_start_times < cutoff_point]
-        labels = forward_rolling_sum[event_start_times]
 
-        offset = pd.Timedelta(value=self.time_horizon, unit=y.index.freqstr)
-        events = EventDataFrame(
-            start=event_start_times,
-            end=event_start_times + offset,
-            label=labels,
-            raw=forward_rolling_sum[event_start_times],
-        )
-        return events
-
-    def get_labels(self) -> List[int]:
-        return [-1, 1]
+class SumFixedForwardHorizon(BinarizeFixedForwardHorizon):
+    _mapping = noop_mapping
