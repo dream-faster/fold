@@ -46,12 +46,13 @@ class _CreateEvents(Composite):
         self,
         X: pd.DataFrame,
         y: T,
+        extras: Extras,
         results_primary: List[pd.DataFrame],
         index: int,
         fit: bool,
     ) -> Tuple[pd.DataFrame, T]:
         events = results_primary[0].dropna()
-        return X.loc[events.index], events["label"]
+        return X.loc[events.index], events["label"], events["sample_weights"]
 
     def postprocess_result_secondary(
         self,

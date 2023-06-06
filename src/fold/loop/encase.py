@@ -93,6 +93,7 @@ def backtest_score(
         y,
         extras=extras,
         artifacts=artifacts,
+        sample_weights=sample_weights,
         evaluation_func=evaluation_func,
         krisi_args=krisi_args,
     )

@@ -90,6 +90,7 @@ class ModelResiduals(Composite):
         self,
         X: pd.DataFrame,
         y: T,
+        extras: Extras,
         results_primary: List[pd.DataFrame],
         index: int,
         fit: bool,
@@ -101,7 +102,7 @@ class ModelResiduals(Composite):
         )
         predictions = get_prediction_column(results_primary[0])
         residuals = y - predictions
-        return X, residuals
+        return X, residuals, None
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]

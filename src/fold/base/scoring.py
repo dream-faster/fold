@@ -22,6 +22,7 @@ def score_results(
     y: pd.Series,
     extras: Extras,
     artifacts: Artifact,
+    sample_weights: Optional[pd.Series],
     evaluation_func: Callable,
     krisi_args: Optional[dict] = None,
 ):
