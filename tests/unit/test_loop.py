@@ -157,4 +157,4 @@ def test_score_results():
         evaluation_func=None,
     )
     assert sc["accuracy"].result == 1.0
-    assert len(sc.t) == len(extras.events) - 200
+    assert len(sc.y) == len(extras.events) - 200
