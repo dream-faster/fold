@@ -7,7 +7,7 @@ from ...utils.forward import create_forward_rolling_sum
 from ..base import Labeler
 
 
-def map_to_binary(series: pd.Series) -> pd.Series:
+def map_to_binary(self, series: pd.Series) -> pd.Series:
     series.loc[series >= 0.0] = 1
     series.loc[series < 0.0] = -1
     return series
@@ -45,7 +45,7 @@ class BinarizeFixedForwardHorizon(Labeler):
     _mapping = map_to_binary
 
 
-def noop_mapping(series: pd.Series) -> pd.Series:
+def noop_mapping(self, series: pd.Series) -> pd.Series:
     return series
 
 
