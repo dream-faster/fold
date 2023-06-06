@@ -69,6 +69,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install ".[tests]"
           pip install ".[all]"
+          pip install --upgrade --no-deps --force-reinstall --no-cache-dir https://github.com/dream-faster/krisi/archive/main.zip
 
       - name: run-tests
         run: pytest tests/integration -s --durations 0
@@ -92,6 +93,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install ".[tests]"
           pip install ".[all]"
+          pip install --upgrade --no-deps --force-reinstall --no-cache-dir https://github.com/dream-faster/krisi/archive/main.zip
 
       - name: run-tests
         run: pytest src/ -s --durations 0
