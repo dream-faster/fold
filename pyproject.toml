@@ -79,6 +79,7 @@ tests = [
   "imbalanced-learn",
   "holidays",
   "statsmodels",
+  "krisi",
 ]
 docs = [
   "mkdocs-material",
