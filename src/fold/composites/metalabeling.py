@@ -7,7 +7,7 @@ from typing import Callable, List, Optional, Tuple, Union
 
 import pandas as pd
 
-from ..base import Composite, Pipeline, Pipelines, T, get_concatenated_names
+from ..base import Composite, Extras, Pipeline, Pipelines, T, get_concatenated_names
 from ..utils.checks import get_prediction_column
 from ..utils.list import wrap_in_double_list_if_needed
 
@@ -94,10 +94,11 @@ class MetaLabeling(Composite):
         self,
         X: pd.DataFrame,
         y: T,
+        extras: Extras,
         results_primary: List[pd.DataFrame],
         index: int,
         fit: bool,
-    ) -> Tuple[pd.DataFrame, T]:
+    ) -> Tuple[pd.DataFrame, T, Optional[pd.Series]]:
         X = (
             pd.concat([X] + results_primary, axis="columns")
             if self.primary_output_included
@@ -105,7 +106,7 @@ class MetaLabeling(Composite):
         )
         predictions = get_prediction_column(results_primary[0])
         y = y.astype(int) == predictions.astype(int)
-        return X, y
+        return X, y, None
 
     def postprocess_result_secondary(
         self,

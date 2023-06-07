@@ -121,14 +121,16 @@ def test_score_results():
     accuracy = accuracy_score
     results = pd.DataFrame({"x_predictions": y.squeeze()})
     sc = score_results(
-        results, y, Extras(), artifacts=pd.DataFrame(), evaluation_func=accuracy
+        results,
+        y,
+        Extras(),
+        artifacts=pd.DataFrame(),
+        sample_weights=None,
+        evaluation_func=accuracy,
     )
 
     def get_acc(obj):
-        if "accuracy" in obj:
-            return obj["accuracy"].result
-        else:
-            return obj["function"]
+        return obj["accuracy"].result
 
     assert get_acc(sc) == 1.0
 
@@ -144,6 +146,7 @@ def test_score_results():
         pd.Series(0, index=y.index),
         extras,
         artifacts=pd.DataFrame(),
+        sample_weights=None,
         evaluation_func=accuracy,
     )
     assert get_acc(sc) == 1.0
@@ -154,6 +157,7 @@ def test_score_results():
         pd.Series(0, index=y.index),
         Extras(),
         artifacts=extras.events,
+        sample_weights=None,
         evaluation_func=accuracy,
     )
     assert get_acc(sc) == 1.0
@@ -163,6 +167,7 @@ def test_score_results():
         pd.Series(0, index=y.index),
         extras,
         artifacts=pd.DataFrame(),
+        sample_weights=None,
         evaluation_func=accuracy,
     )
     assert get_acc(sc) == 1.0

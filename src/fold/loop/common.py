@@ -160,7 +160,10 @@ def _process_composite(
     secondary_transformations = composite.get_children_secondary()
 
     artifacts_primary = composite.postprocess_artifacts_primary(
-        artifacts_primary, extras=extras, fit=stage.is_fit_or_update()
+        artifacts=artifacts_primary,
+        extras=extras,
+        results=results_primary,
+        fit=stage.is_fit_or_update(),
     )
     if secondary_transformations is None:
         return (
@@ -330,11 +333,22 @@ def __process_secondary_child_transform(
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
 ) -> Tuple[Transformations, X, Artifact]:
-    X, y = composite.preprocess_secondary(
-        X, y, results_primary, index, fit=stage.is_fit_or_update()
+    X, y, sample_weights = composite.preprocess_secondary(
+        X,
+        y,
+        extras,
+        results_primary,
+        index,
+        fit=stage.is_fit_or_update(),
     )
     return recursively_transform(
-        X, y, extras, artifacts, child_transform, stage, backend
+        X,
+        y,
+        Extras(events=extras.events, sample_weights=sample_weights),
+        artifacts,
+        child_transform,
+        stage,
+        backend,
     )
 
 

@@ -87,14 +87,19 @@ class Composite(Block, ABC):
         self,
         X: pd.DataFrame,
         y: T,
+        extras: Extras,
         results_primary: List[pd.DataFrame],
         index: int,
         fit: bool,
-    ) -> Tuple[pd.DataFrame, T]:
-        return X, y
+    ) -> Tuple[pd.DataFrame, T, Optional[pd.Series]]:
+        return X, y, extras.sample_weights
 
     def postprocess_artifacts_primary(
-        self, artifacts: List[Artifact], extras: Extras, fit: bool
+        self,
+        artifacts: List[Artifact],
+        extras: Extras,
+        results: List[pd.DataFrame],
+        fit: bool,
     ) -> pd.DataFrame:
         return pd.concat(artifacts, axis="columns").add_prefix("primary_")
 
@@ -288,6 +293,7 @@ class EventDataFrame(pd.DataFrame):
     end: pd.Series
     label: pd.Series
     raw: pd.Series
+    sample_weights: pd.Series
 
     def __init__(
         self,
@@ -295,8 +301,19 @@ class EventDataFrame(pd.DataFrame):
         end: pd.DatetimeIndex,
         label: pd.Series,
         raw: pd.Series,
+        sample_weights: Optional[pd.Series] = None,
     ):
-        super().__init__(data={"start": start, "end": end, "label": label, "raw": raw})
+        super().__init__(
+            data={
+                "start": start,
+                "end": end,
+                "label": label,
+                "raw": raw,
+                "sample_weights": pd.Series(1.0, index=start)
+                if sample_weights is None
+                else sample_weights,
+            }
+        )
 
 
 @dataclass

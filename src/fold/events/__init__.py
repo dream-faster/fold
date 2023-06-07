@@ -46,12 +46,13 @@ class _CreateEvents(Composite):
         self,
         X: pd.DataFrame,
         y: T,
+        extras: Extras,
         results_primary: List[pd.DataFrame],
         index: int,
         fit: bool,
-    ) -> Tuple[pd.DataFrame, T]:
+    ) -> Tuple[pd.DataFrame, T, Optional[pd.Series]]:
         events = results_primary[0].dropna()
-        return X.loc[events.index], events["label"]
+        return X.loc[events.index], events["label"], events["sample_weights"]
 
     def postprocess_result_secondary(
         self,
@@ -63,12 +64,16 @@ class _CreateEvents(Composite):
         return secondary_results[0].reindex(y.index)
 
     def postprocess_artifacts_primary(
-        self, artifacts: List[Artifact], extras: Extras, fit: bool
+        self,
+        artifacts: List[Artifact],
+        extras: Extras,
+        results: List[pd.DataFrame],
+        fit: bool,
     ) -> pd.DataFrame:
         if fit is True:
             return pd.DataFrame()
         else:
-            return concat_on_columns(artifacts)
+            return results[0]
 
     def postprocess_artifacts_secondary(
         self, primary_artifacts: pd.DataFrame, secondary_artifacts: List[Artifact]
@@ -116,7 +121,11 @@ class UsePredefinedEvents(Composite):
         return results[0].reindex(y.index)
 
     def postprocess_artifacts_primary(
-        self, artifacts: List[Artifact], extras: Extras, fit: bool
+        self,
+        artifacts: List[Artifact],
+        extras: Extras,
+        results: List[pd.DataFrame],
+        fit: bool,
     ) -> pd.DataFrame:
         if fit is True:
             return concat_on_columns(artifacts)
@@ -162,4 +171,4 @@ class _EventLabelWrapper(Transformation):
             self.properties.memory_size += 1
         elif in_sample is False and not events.dropna().empty:
             self.properties.memory_size = 1
-        return events["label"].to_frame().reindex(X.index), events
+        return events.reindex(X.index), None
