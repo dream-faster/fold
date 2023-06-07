@@ -163,4 +163,4 @@ class _EventLabelWrapper(Transformation):
             self.properties.memory_size += 1
         elif in_sample is False and not events.dropna().empty:
             self.properties.memory_size = 1
-        return events["label"].to_frame().reindex(X.index), events
+        return events.reindex(X.index), None
