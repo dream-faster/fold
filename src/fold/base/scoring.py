@@ -35,12 +35,12 @@ def score_results(
     if labels is not None:
         y = labels.reindex(result.index).dropna()
         pred_point = pred_point.dropna()
-        if probabilities is not None:
-            probabilities = probabilities.dropna()
+        probabilities = probabilities.dropna() if probabilities is not None else None
+        sample_weights = sample_weights.dropna() if sample_weights is not None else None
     if len(y) != len(pred_point):
-        if probabilities is not None:
-            probabilities = probabilities[: len(y)]
         pred_point = pred_point[: len(y)]
+        probabilities = probabilities[: len(y)] if probabilities is not None else None
+    sample_weights = sample_weights[y.index] if sample_weights is not None else None
 
     if importlib.util.find_spec("krisi") is not None:
         from krisi import score
