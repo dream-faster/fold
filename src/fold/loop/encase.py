@@ -33,8 +33,8 @@ def backtest_score(
     krisi_args: Optional[dict] = None,
     evaluation_func: Callable = mean_squared_error,
 ) -> Union[
-    Tuple[Union["ScoreCard", Dict[str, float]], OutOfSamplePredictions],
-    Tuple[Union["ScoreCard", Dict[str, float]], OutOfSamplePredictions, Artifact],
+    Tuple["ScoreCard", OutOfSamplePredictions],
+    Tuple["ScoreCard", OutOfSamplePredictions, Artifact],
 ]:
     """
     Run backtest then scoring.
@@ -69,8 +69,8 @@ def backtest_score(
 
     Returns
     -------
-    "ScoreCard", Dict[str, float]
-        A ScoreCard if `krisi` is available, else the result of the `evaluation_func` in a dict
+    "ScoreCard"
+        A ScoreCard from `krisi`.
     OutOfSamplePredictions
         Predictions for all folds, concatenated.
     """
@@ -201,12 +201,12 @@ def train_evaluate(
     evaluation_func: Callable = mean_squared_error,
 ) -> Union[
     Tuple[
-        Union["ScoreCard", Dict[str, float]],
+        "ScoreCard",
         OutOfSamplePredictions,
         TrainedPipelines,
     ],
     Tuple[
-        Union["ScoreCard", Dict[str, float]],
+        "ScoreCard",
         OutOfSamplePredictions,
         TrainedPipelines,
         Artifact,
@@ -244,8 +244,8 @@ def train_evaluate(
 
     Returns
     -------
-    "ScoreCard", Dict[str, float]
-        A ScoreCard if `krisi` is available, else the result of the `evaluation_func` in a dict
+    "ScoreCard"
+        A ScoreCard from `krisi`.
     OutOfSamplePredictions
         Predictions for all folds, concatenated.
     TrainedPipelines

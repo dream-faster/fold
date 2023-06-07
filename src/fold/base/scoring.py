@@ -52,11 +52,9 @@ def score_results(
             **(krisi_args if krisi_args is not None else {}),
         )
     else:
-        return {
-            evaluation_func.__class__.__name__: evaluation_func(
-                y[pred_point.index], pred_point.squeeze()
-            )
-        }
+        raise ImportError(
+            "krisi not installed. Please install krisi to use this function."
+        )
 
 
 def get_labels(extras: Extras, artifacts: Artifact) -> Optional[pd.Series]:

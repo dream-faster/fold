@@ -130,10 +130,7 @@ def test_score_results():
     )
 
     def get_acc(obj):
-        if isinstance(obj, "ScoreCard"):
-            return obj["accuracy"].result
-        else:
-            return obj["function"]
+        return obj["accuracy"].result
 
     assert get_acc(sc) == 1.0
 
