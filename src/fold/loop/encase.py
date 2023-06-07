@@ -1,10 +1,9 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
 
-from typing import TYPE_CHECKING, Any, Callable, Dict, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple, Union
 
 import pandas as pd
-from sklearn.metrics import mean_squared_error
 
 from fold.base.classes import Extras
 from fold.base.scoring import score_results
@@ -31,15 +30,13 @@ def backtest_score(
     silent: bool = False,
     return_artifacts: bool = False,
     krisi_args: Optional[dict] = None,
-    evaluation_func: Callable = mean_squared_error,
 ) -> Union[
     Tuple["ScoreCard", OutOfSamplePredictions],
     Tuple["ScoreCard", OutOfSamplePredictions, Artifact],
 ]:
     """
     Run backtest then scoring.
-    If [`krisi`](https://github.com/dream-faster/krisi) is installed it will use it to generate a ScoreCard,
-    otherwise it will run the `evaluation_func` passed in.
+    [`krisi`](https://github.com/dream-faster/krisi) is required to be installed.
 
     Parameters
     ----------
@@ -63,9 +60,6 @@ def backtest_score(
         Whether to return the artifacts of the training process, by default False.
     krisi_args: Optional[Dict[str, Any]] = None
         Arguments that will be passed into `krisi` score function, by default None.
-    evaluation_func: Callable = mean_squared_error
-        Function to evaluate with if `krisi` is not available, by default `mean_squared_error`.
-
 
     Returns
     -------
@@ -94,7 +88,6 @@ def backtest_score(
         extras=extras,
         artifacts=artifacts,
         sample_weights=sample_weights,
-        evaluation_func=evaluation_func,
         krisi_args=krisi_args,
     )
     if return_artifacts:
@@ -198,7 +191,6 @@ def train_evaluate(
     silent: bool = False,
     return_artifacts: bool = False,
     krisi_args: Optional[Dict[str, Any]] = None,
-    evaluation_func: Callable = mean_squared_error,
 ) -> Union[
     Tuple[
         "ScoreCard",
@@ -214,8 +206,7 @@ def train_evaluate(
 ]:
     """
     Run train, backtest then run scoring.
-    If [`krisi`](https://github.com/dream-faster/krisi) is installed it will use it to generate a ScoreCard,
-    otherwise it will run the `evaluation_func` passed in.
+    [`krisi`](https://github.com/dream-faster/krisi) needs to be installed.
 
     Parameters
     ----------
@@ -239,8 +230,6 @@ def train_evaluate(
         Wether the pipeline should print to the console, by default False.
     krisi_args: Dict[str, Any], optional = None
         Arguments that will be passed into `krisi` score function, by default None.
-    evaluation_func: Callable = mean_squared_error
-        Function to evaluate with if `krisi` is not available, by default `mean_squared_error`.
 
     Returns
     -------
@@ -275,7 +264,6 @@ def train_evaluate(
         silent=silent,
         return_artifacts=True,
         krisi_args=krisi_args,
-        evaluation_func=evaluation_func,
     )
 
     if return_artifacts:

@@ -1,5 +1,5 @@
 import importlib
-from typing import Callable, Optional
+from typing import Optional, Tuple
 
 import pandas as pd
 
@@ -23,25 +23,15 @@ def score_results(
     extras: Extras,
     artifacts: Artifact,
     sample_weights: Optional[pd.Series],
-    evaluation_func: Callable,
     krisi_args: Optional[dict] = None,
 ):
-    probabilities = (
-        get_probabilities_columns(result) if all_have_probabilities([result]) else None
+    y, pred_point, probabilities, sample_weights = align_result_with_events(
+        y=y,
+        sample_weights=sample_weights,
+        result=result,
+        extras=extras,
+        artifacts=artifacts,
     )
-    pred_point = get_prediction_column(result)
-
-    labels = get_labels(extras, artifacts)
-    if labels is not None:
-        y = labels.reindex(result.index).dropna()
-        pred_point = pred_point.dropna()
-        probabilities = probabilities.dropna() if probabilities is not None else None
-        sample_weights = sample_weights.dropna() if sample_weights is not None else None
-    if len(y) != len(pred_point):
-        pred_point = pred_point[: len(y)]
-        probabilities = probabilities[: len(y)] if probabilities is not None else None
-    sample_weights = sample_weights[y.index] if sample_weights is not None else None
-
     if importlib.util.find_spec("krisi") is not None:
         from krisi import score
 
@@ -58,10 +48,50 @@ def score_results(
         )
 
 
-def get_labels(extras: Extras, artifacts: Artifact) -> Optional[pd.Series]:
+def align_result_with_events(
+    y: pd.Series,
+    sample_weights: Optional[pd.Series],
+    result: pd.DataFrame,
+    extras: Extras,
+    artifacts: Artifact,
+) -> Tuple[pd.Series, pd.Series, Optional[pd.DataFrame], Optional[pd.Series]]:
+    labels = __get_labels(extras, artifacts)
+    # TODO: override sample_weights if passed in
+
+    probabilities = (
+        get_probabilities_columns(result) if all_have_probabilities([result]) else None
+    )
+    pred_point = get_prediction_column(result)
+
+    if labels is not None:
+        y = labels.reindex(result.index).dropna()
+        sample_weights = (
+            __get_sample_weights(extras, artifacts).reindex(result.index).dropna()
+        )
+        pred_point = pred_point.dropna()
+        probabilities = probabilities.dropna() if probabilities is not None else None
+        sample_weights = sample_weights.dropna() if sample_weights is not None else None
+    if len(y) != len(pred_point):
+        pred_point = pred_point[: len(y)]
+        probabilities = probabilities[: len(y)] if probabilities is not None else None
+    sample_weights = sample_weights[y.index] if sample_weights is not None else None
+
+    return y, pred_point, probabilities, sample_weights
+
+
+def __get_labels(extras: Extras, artifacts: Artifact) -> Optional[pd.Series]:
     if artifacts is not None and "label" in artifacts.columns:
         return artifacts["label"]
     elif extras.events is not None:
         return extras.events["label"]
     else:
         return None
+
+
+def __get_sample_weights(extras: Extras, artifacts: Artifact) -> Optional[pd.Series]:
+    if artifacts is not None and "sample_weights" in artifacts.columns:
+        return artifacts["sample_weights"]
+    elif extras.events is not None:
+        return extras.events["sample_weights"]
+    else:
+        raise ValueError("No sample weights found in extras or artifacts")

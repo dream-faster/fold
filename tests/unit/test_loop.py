@@ -1,6 +1,5 @@
 import pandas as pd
 import pytest
-from sklearn.metrics import accuracy_score
 
 from fold.base import Transformations
 from fold.base.classes import Extras
@@ -118,7 +117,6 @@ def test_sameple_weights() -> None:
 def test_score_results():
     X, y = generate_zeros_and_ones(length=1000)
 
-    accuracy = accuracy_score
     results = pd.DataFrame({"x_predictions": y.squeeze()})
     sc = score_results(
         results,
@@ -126,7 +124,6 @@ def test_score_results():
         Extras(),
         artifacts=pd.DataFrame(),
         sample_weights=None,
-        evaluation_func=accuracy,
     )
 
     def get_acc(obj):
@@ -147,7 +144,6 @@ def test_score_results():
         extras,
         artifacts=pd.DataFrame(),
         sample_weights=None,
-        evaluation_func=accuracy,
     )
     assert get_acc(sc) == 1.0
 
@@ -158,7 +154,6 @@ def test_score_results():
         Extras(),
         artifacts=extras.events,
         sample_weights=None,
-        evaluation_func=accuracy,
     )
     assert get_acc(sc) == 1.0
 
@@ -168,7 +163,6 @@ def test_score_results():
         extras,
         artifacts=pd.DataFrame(),
         sample_weights=None,
-        evaluation_func=accuracy,
     )
     assert get_acc(sc) == 1.0
     if hasattr(sc, "y"):
