@@ -94,7 +94,7 @@ class ModelResiduals(Composite):
         results_primary: List[pd.DataFrame],
         index: int,
         fit: bool,
-    ) -> Tuple[pd.DataFrame, T]:
+    ) -> Tuple[pd.DataFrame, T, Optional[pd.Series]]:
         X = (
             pd.concat([X] + results_primary, axis="columns")
             if self.primary_output_included
