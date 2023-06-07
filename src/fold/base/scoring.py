@@ -37,7 +37,7 @@ def score_results(
         pred_point = pred_point.dropna()
         if probabilities is not None:
             probabilities = probabilities.dropna()
-    elif len(y) != len(pred_point):
+    if len(y) != len(pred_point):
         if probabilities is not None:
             probabilities = probabilities[: len(y)]
         pred_point = pred_point[: len(y)]
