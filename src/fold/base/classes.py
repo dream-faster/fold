@@ -305,7 +305,7 @@ class EventDataFrame(pd.DataFrame):
                 "end": end,
                 "label": label,
                 "raw": raw,
-                "sample_weights": pd.Series(1.0, index=start.index)
+                "sample_weights": pd.Series(1.0, index=start)
                 if sample_weights is None
                 else sample_weights,
             }
