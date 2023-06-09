@@ -4,10 +4,10 @@ from abc import ABC, abstractmethod
 from typing import List, Optional, Union
 
 import pandas as pd
-from fold_extensions.labeling.sample_weight import calculate_sample_weights
 
-from fold.events.base import EventDataFrame, Labeler
-from fold.utils.forward import create_forward_rolling_sum
+from ...utils.forward import create_forward_rolling_sum
+from ..base import EventDataFrame, Labeler
+from ..weights import calculate_sample_weights
 
 
 class LabelingStrategy(ABC):
