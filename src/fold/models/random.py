@@ -119,7 +119,7 @@ def generate_synthetic_predictions_binary(
 ) -> pd.DataFrame:
     target = target.copy()
     target[target == 0.0] = -1
-    prob_mean_class_1 = (target * sample_weights).mean() * 2 + 0.5
+    prob_mean_class_1 = (target * sample_weights).mean() / 2 + 0.5
     prob_class_1 = np.random.normal(prob_mean_class_1, 0.1, len(index)).clip(0, 1)
     prob_class_0 = 1 - prob_class_1
     return pd.DataFrame(
