@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 
 import pandas as pd
 
@@ -7,7 +7,7 @@ from ..utils import calculate_rolling_window_size
 
 
 class WeightByMax(WeighingStrategy):
-    def __init__(self, window_size: Optional[int]):
+    def __init__(self, window_size: Optional[Union[int, float]]):
         self.window_size = window_size
 
     def calculate(self, series: pd.Series) -> pd.Series:

@@ -124,11 +124,11 @@ def generate_synthetic_predictions_binary(
     prob_class_0 = 1 - prob_class_1
     return pd.DataFrame(
         {
-            "probabilities_RandomClassifier_0": prob_class_0,
-            "probabilities_RandomClassifier_1": prob_class_1,
             "predictions_RandomClassifier": (prob_class_1 > prob_mean_class_1).astype(
                 "int"
             ),
+            "probabilities_RandomClassifier_0": prob_class_0,
+            "probabilities_RandomClassifier_1": prob_class_1,
         },
         index=index,
     )
