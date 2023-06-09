@@ -23,12 +23,11 @@ def score_results(
     extras: Extras,
     artifacts: Artifact,
     sample_weights: Optional[pd.Series],
-    test_sample_weights: Optional[pd.Series],
     krisi_args: Optional[dict] = None,
 ):
     y, pred_point, probabilities, test_sample_weights = align_result_with_events(
         y=y,
-        sample_weights=test_sample_weights,
+        sample_weights=sample_weights,
         result=result,
         extras=extras,
         artifacts=artifacts,
