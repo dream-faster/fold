@@ -1,5 +1,6 @@
-from fold.events import BinarizeFixedForwardHorizon, CreateEvents, UsePredefinedEvents
+from fold.events import CreateEvents, FixedForwardHorizon, UsePredefinedEvents
 from fold.events.filters.everynth import EveryNth
+from fold.events.labeling.fixed import BinarizeSign
 from fold.loop import backtest, train
 from fold.loop.encase import train_backtest
 from fold.splitters import ExpandingWindowSplitter
@@ -10,13 +11,17 @@ from fold.utils.tests import generate_sine_wave_data
 def test_create_event() -> None:
     X, y = generate_sine_wave_data(length=1100)
     splitter = ExpandingWindowSplitter(initial_train_window=100, step=200)
-    pipeline = CreateEvents(Identity(), BinarizeFixedForwardHorizon(1), EveryNth(5))
+    pipeline = CreateEvents(
+        Identity(), FixedForwardHorizon(1, strategy=BinarizeSign()), EveryNth(5)
+    )
     trained_pipeline, artifacts = train(pipeline, X, y, splitter, return_artifacts=True)
     pred = backtest(trained_pipeline, X, y, splitter)
     assert len(pred) == 1000
     assert len(pred.dropna()) == 200
 
-    pipeline = CreateEvents(Identity(), BinarizeFixedForwardHorizon(10), EveryNth(5))
+    pipeline = CreateEvents(
+        Identity(), FixedForwardHorizon(10, strategy=BinarizeSign()), EveryNth(5)
+    )
     trained_pipeline, artifacts = train(pipeline, X, y, splitter, return_artifacts=True)
     pred = backtest(trained_pipeline, X, y, splitter)
     assert len(pred) == 1000
@@ -28,7 +33,7 @@ def test_predefined_events() -> None:
     splitter = ExpandingWindowSplitter(initial_train_window=100, step=200)
 
     event_filter = EveryNth(5)
-    labeler = BinarizeFixedForwardHorizon(2)
+    labeler = FixedForwardHorizon(2, strategy=BinarizeSign())
 
     original_start_times = event_filter.get_event_start_times(y)
     events = labeler.label_events(original_start_times, y).reindex(y.index)
