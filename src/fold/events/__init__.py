@@ -10,8 +10,8 @@ from fold.base.classes import Extras
 from ..base import Artifact, Composite, Pipeline, Pipelines, T, Transformation, fit_noop
 from ..utils.dataframe import concat_on_columns
 from ..utils.list import wrap_in_double_list_if_needed, wrap_in_list
-from .base import EventFilter, Labeler
-from .filters import EveryNth, NoFilter
+from .base import EventFilter, Labeler, LabelingStrategy, WeighingStrategy
+from .filters import EveryNth, FilterZero, NoFilter
 from .labeling import *  # noqa
 from .weights import *  # noqa
 
