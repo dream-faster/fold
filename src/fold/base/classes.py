@@ -294,6 +294,7 @@ class EventDataFrame(pd.DataFrame):
     label: pd.Series
     raw: pd.Series
     sample_weights: pd.Series
+    test_sample_weights: pd.Series
 
     def __init__(
         self,
@@ -302,6 +303,7 @@ class EventDataFrame(pd.DataFrame):
         label: pd.Series,
         raw: pd.Series,
         sample_weights: Optional[pd.Series] = None,
+        test_sample_weights: Optional[pd.Series] = None,
     ):
         super().__init__(
             data={
@@ -312,6 +314,9 @@ class EventDataFrame(pd.DataFrame):
                 "sample_weights": pd.Series(1.0, index=start)
                 if sample_weights is None
                 else sample_weights,
+                "test_sample_weights": pd.Series(1.0, index=start)
+                if test_sample_weights is None
+                else test_sample_weights,
             }
         )
 

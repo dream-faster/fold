@@ -4,7 +4,8 @@ import pytest
 from fold.base import Transformations
 from fold.base.classes import Extras
 from fold.base.scoring import score_results
-from fold.events.labeling.fixed import FixedForwardHorizon, Noop
+from fold.events.labeling.fixed import FixedForwardHorizon
+from fold.events.labeling.strategies import NoLabel
 from fold.loop import train
 from fold.loop.backtesting import backtest
 from fold.loop.types import Backend, TrainMethod
@@ -133,9 +134,9 @@ def test_score_results():
 
     back_shifted = y.shift(1)
     extras = Extras(
-        events=FixedForwardHorizon(time_horizon=1, strategy=Noop()).label_events(
-            back_shifted.index, back_shifted
-        )
+        events=FixedForwardHorizon(
+            time_horizon=1, labeling_strategy=NoLabel(), weighing_strategy=None
+        ).label_events(back_shifted.index, back_shifted)
     )
     assert (y[:-1] == extras.events.label).all()
 

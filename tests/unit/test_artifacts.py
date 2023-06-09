@@ -3,7 +3,7 @@ from sklearn.metrics import mean_squared_error
 
 from fold.composites.optimize import OptimizeGridSearch
 from fold.events import CreateEvents, NoFilter
-from fold.events.labeling.fixed import FixedForwardHorizon, Noop
+from fold.events.labeling import FixedForwardHorizon, NoLabel
 from fold.loop import train, train_evaluate
 from fold.models import DummyRegressor
 from fold.splitters import ExpandingWindowSplitter
@@ -23,7 +23,9 @@ def test_artifacts_transformation_fit() -> None:
                 SelectKBest(score_func=f_regression, k=1),
                 DummyRegressor(predicted_value=1.0),
             ],
-            FixedForwardHorizon(time_horizon=1, strategy=Noop()),
+            FixedForwardHorizon(
+                time_horizon=1, labeling_strategy=NoLabel(), weighing_strategy=None
+            ),
             NoFilter(),
         )
     ]

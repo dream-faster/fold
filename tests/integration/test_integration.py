@@ -70,7 +70,12 @@ def test_train_evaluate_probabilities() -> None:
     pipeline = [
         AddLagsX(columns_and_lags=[("pressure", list(range(1, 3)))]),
         AddLagsY(list(range(1, 3))),
-        CreateEvents(RandomForestClassifier(), FixedForwardHorizon(1, BinarizeSign())),
+        CreateEvents(
+            RandomForestClassifier(),
+            FixedForwardHorizon(
+                1, labeling_strategy=BinarizeSign(), weighing_strategy=None
+            ),
+        ),
     ]
 
     splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.2)
@@ -94,7 +99,9 @@ def test_integration_events() -> None:
             AddLagsY(list(range(1, 3))),
             RandomForestClassifier(),
         ],
-        FixedForwardHorizon(time_horizon=5, strategy=BinarizeSign()),
+        FixedForwardHorizon(
+            time_horizon=5, labeling_strategy=BinarizeSign(), weighing_strategy=None
+        ),
         EveryNth(2),
     )
     trained_pipeline = train(

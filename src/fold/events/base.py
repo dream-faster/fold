@@ -21,3 +21,19 @@ class Labeler(ABC):
 
     def get_all_possible_labels(self) -> List[int]:
         raise NotImplementedError
+
+
+class LabelingStrategy(ABC):
+    @abstractmethod
+    def label(self, series: pd.Series) -> pd.Series:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_all_labels(self) -> List[int]:
+        raise NotImplementedError
+
+
+class WeighingStrategy(ABC):
+    @abstractmethod
+    def calculate(self, series: pd.Series) -> pd.Series:
+        raise NotImplementedError

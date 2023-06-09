@@ -13,6 +13,7 @@ from ..utils.list import wrap_in_double_list_if_needed, wrap_in_list
 from .base import EventFilter, Labeler
 from .filters import EveryNth, NoFilter
 from .labeling import *  # noqa
+from .weights import *  # noqa
 
 
 def CreateEvents(
