@@ -6,6 +6,7 @@ from typing import List, Optional, Union
 
 import numpy as np
 import pandas as pd
+from krisi.utils.data import generate_synthetic_predictions_binary
 
 from fold.base.classes import Artifact
 
@@ -110,25 +111,3 @@ class RandomBinaryClassifier(Model):
 
     predict_in_sample = predict
     update = fit_noop
-
-
-def generate_synthetic_predictions_binary(
-    target: pd.Series,
-    sample_weights: pd.Series,
-    index: pd.Index,
-) -> pd.DataFrame:
-    target = target.copy()
-    target[target == 0.0] = -1
-    prob_mean_class_1 = (target * sample_weights).mean() / 2 + 0.5
-    prob_class_1 = np.random.normal(prob_mean_class_1, 0.1, len(index)).clip(0, 1)
-    prob_class_0 = 1 - prob_class_1
-    return pd.DataFrame(
-        {
-            "predictions_RandomClassifier": (prob_class_1 > prob_mean_class_1).astype(
-                "int"
-            ),
-            "probabilities_RandomClassifier_0": prob_class_0,
-            "probabilities_RandomClassifier_1": prob_class_1,
-        },
-        index=index,
-    )
