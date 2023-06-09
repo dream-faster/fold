@@ -1,10 +1,18 @@
+import numpy as np
+import pandas as pd
+
 from fold.loop import backtest, train, train_backtest
+from fold.loop.encase import train_evaluate
 from fold.models.baseline import Naive
-from fold.models.random import RandomClassifier
-from fold.splitters import ExpandingWindowSplitter
+from fold.models.random import RandomBinaryClassifier, RandomClassifier
+from fold.splitters import ExpandingWindowSplitter, SingleWindowSplitter
 from fold.transformations.columns import OnlyPredictions
 from fold.transformations.dev import Test
-from fold.utils.tests import generate_all_zeros, generate_sine_wave_data
+from fold.utils.tests import (
+    generate_all_zeros,
+    generate_sine_wave_data,
+    generate_zeros_and_ones,
+)
 
 
 def test_random_classifier() -> None:
@@ -15,6 +23,34 @@ def test_random_classifier() -> None:
     trained_pipelines = train(transformations, X, y, splitter)
     pred = backtest(trained_pipelines, X, y, splitter)
     assert pred.squeeze().sum() > 1
+
+
+def test_random_binary_classifier() -> None:
+    X, y = generate_zeros_and_ones(10000)
+    sample_weights = pd.Series(np.random.uniform(0, 1, len(y)), index=y.index)
+
+    splitter = SingleWindowSplitter(0.2)
+    transformations = [RandomBinaryClassifier()]
+    _, preds, _ = train_evaluate(
+        transformations, X, y, splitter, sample_weights=sample_weights
+    )
+    assert 0.4 <= preds.iloc[:, 0].mean() <= 0.6
+    assert 0.4 <= preds.iloc[:, 1].mean() <= 0.6
+    assert 0.4 <= preds.iloc[:, 2].mean() <= 0.6
+
+    pos_noise = np.random.normal(0.65, 0.1, len(y)).clip(0, 1)
+    neg_noise = np.random.normal(0.35, 0.1, len(y)).clip(0, 1)
+    skewed_sample_weights = pd.Series(
+        np.where(y == 1.0, pos_noise, neg_noise), index=y.index
+    )
+
+    splitter = SingleWindowSplitter(0.2)
+    transformations = [RandomBinaryClassifier()]
+    _, preds, _ = train_evaluate(
+        transformations, X, y, splitter, sample_weights=skewed_sample_weights
+    )
+    assert 0.5 <= preds.iloc[:, 2].mean() <= 0.8
+    assert 0.2 <= preds.iloc[:, 1].mean() < 0.5
 
 
 def check_if_not_nan(x):

@@ -39,7 +39,9 @@ def score_results(
             y=y[pred_point.index],
             predictions=pred_point,
             probabilities=probabilities,
-            sample_weight=sample_weights,
+            sample_weight=sample_weights[pred_point.index]
+            if sample_weights is not None
+            else None,
             **(krisi_args if krisi_args is not None else {}),
         )
     else:

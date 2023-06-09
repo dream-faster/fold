@@ -7,6 +7,8 @@ from typing import List, Optional, Union
 import numpy as np
 import pandas as pd
 
+from fold.base.classes import Artifact
+
 from ..base import Transformation, fit_noop
 from .base import Model
 
@@ -55,8 +57,6 @@ class RandomClassifier(Model):
             else probability_mean
         )
 
-    fit = fit_noop
-
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         predictions = pd.Series(
             choices(population=self.all_classes, k=len(X)),
@@ -80,6 +80,55 @@ class RandomClassifier(Model):
 
         return pd.concat([predictions, probabilities], axis="columns")
 
+    fit = fit_noop
     predict_in_sample = predict
-
     update = fit
+
+
+class RandomBinaryClassifier(Model):
+    """
+    A random model that mimics the probability distribution of the target seen during fitting.
+    """
+
+    properties = Transformation.Properties(requires_X=False)
+    name = "RandomBinaryClassifier"
+
+    def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
+        return generate_synthetic_predictions_binary(
+            self.memory_target, self.memory_sample_weights, X.index
+        )
+
+    def fit(
+        self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
+    ) -> Optional[Artifact]:
+        self.memory_target = y
+        self.memory_sample_weights = (
+            sample_weights
+            if sample_weights is not None
+            else pd.Series(1, index=y.index)
+        )
+
+    predict_in_sample = predict
+    update = fit_noop
+
+
+def generate_synthetic_predictions_binary(
+    target: pd.Series,
+    sample_weights: pd.Series,
+    index: pd.Index,
+) -> pd.DataFrame:
+    target = target.copy()
+    target[target == 0.0] = -1
+    prob_mean_class_1 = (target * sample_weights).mean() * 2 + 0.5
+    prob_class_1 = np.random.normal(prob_mean_class_1, 0.1, len(index)).clip(0, 1)
+    prob_class_0 = 1 - prob_class_1
+    return pd.DataFrame(
+        {
+            "probabilities_RandomClassifier_0": prob_class_0,
+            "probabilities_RandomClassifier_1": prob_class_1,
+            "predictions_RandomClassifier": (prob_class_1 > prob_mean_class_1).astype(
+                "int"
+            ),
+        },
+        index=index,
+    )
