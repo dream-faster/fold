@@ -38,8 +38,8 @@ def test_random_binary_classifier() -> None:
     assert 0.4 <= preds.iloc[:, 1].mean() <= 0.6
     assert 0.4 <= preds.iloc[:, 2].mean() <= 0.6
 
-    pos_noise = np.random.normal(0.65, 0.1, len(y)).clip(0, 1)
-    neg_noise = np.random.normal(0.35, 0.1, len(y)).clip(0, 1)
+    pos_noise = np.random.normal(0.65, 0.05, len(y)).clip(0, 1)
+    neg_noise = np.random.normal(0.35, 0.05, len(y)).clip(0, 1)
     skewed_sample_weights = pd.Series(
         np.where(y == 1.0, pos_noise, neg_noise), index=y.index
     )
