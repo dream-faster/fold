@@ -133,9 +133,9 @@ def test_score_results():
 
     back_shifted = y.shift(1)
     extras = Extras(
-        events=FixedForwardHorizon(time_horizon=1, strategy=Noop()).label_events(
-            back_shifted.index, back_shifted
-        )
+        events=FixedForwardHorizon(
+            time_horizon=1, labeling_strategy=Noop(), weighing_strategy=None
+        ).label_events(back_shifted.index, back_shifted)
     )
     assert (y[:-1] == extras.events.label).all()
 

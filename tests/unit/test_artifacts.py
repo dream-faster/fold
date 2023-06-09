@@ -23,7 +23,9 @@ def test_artifacts_transformation_fit() -> None:
                 SelectKBest(score_func=f_regression, k=1),
                 DummyRegressor(predicted_value=1.0),
             ],
-            FixedForwardHorizon(time_horizon=1, strategy=Noop()),
+            FixedForwardHorizon(
+                time_horizon=1, labeling_strategy=Noop(), weighing_strategy=None
+            ),
             NoFilter(),
         )
     ]
