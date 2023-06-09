@@ -2,9 +2,8 @@ from typing import Optional
 
 import pandas as pd
 
-from fold.events.utils import calculate_rolling_window_size
-
 from ..base import WeighingStrategy
+from ..utils import calculate_rolling_window_size
 
 
 class WeightByMax(WeighingStrategy):
