@@ -6,7 +6,7 @@ import pandas as pd
 
 from ...utils.forward import create_forward_rolling_sum
 from ..base import EventDataFrame, Labeler, LabelingStrategy, WeighingStrategy
-from ..weights import NoWeighing, WeightByMaxWithLookahead
+from ..weights import NoWeighing, WeightBySumWithLookahead
 
 
 class FixedForwardHorizon(Labeler):
@@ -17,7 +17,7 @@ class FixedForwardHorizon(Labeler):
         time_horizon: int,
         labeling_strategy: LabelingStrategy,
         weighing_strategy: Optional[WeighingStrategy],
-        weighing_strategy_test: WeighingStrategy = WeightByMaxWithLookahead(),
+        weighing_strategy_test: WeighingStrategy = WeightBySumWithLookahead(),
     ):
         self.time_horizon = time_horizon
         self.labeling_strategy = labeling_strategy
