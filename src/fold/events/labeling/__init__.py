@@ -1,1 +1,1 @@
-from .fixed import BinarizeFixedForwardHorizon, SumFixedForwardHorizon
+from .fixed import *  # noqa

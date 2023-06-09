@@ -4,7 +4,7 @@ from sklearn.ensemble import HistGradientBoostingRegressor, RandomForestClassifi
 from fold.composites import Concat
 from fold.events import CreateEvents
 from fold.events.filters.everynth import EveryNth
-from fold.events.labeling.fixed import BinarizeFixedForwardHorizon
+from fold.events.labeling import BinarizeSign, FixedForwardHorizon
 from fold.loop import train, train_evaluate
 from fold.loop.backtesting import backtest
 from fold.loop.encase import train_backtest
@@ -70,7 +70,7 @@ def test_train_evaluate_probabilities() -> None:
     pipeline = [
         AddLagsX(columns_and_lags=[("pressure", list(range(1, 3)))]),
         AddLagsY(list(range(1, 3))),
-        CreateEvents(RandomForestClassifier(), BinarizeFixedForwardHorizon(1)),
+        CreateEvents(RandomForestClassifier(), FixedForwardHorizon(1, BinarizeSign())),
     ]
 
     splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.2)
@@ -94,7 +94,7 @@ def test_integration_events() -> None:
             AddLagsY(list(range(1, 3))),
             RandomForestClassifier(),
         ],
-        BinarizeFixedForwardHorizon(5),
+        FixedForwardHorizon(time_horizon=5, strategy=BinarizeSign()),
         EveryNth(2),
     )
     trained_pipeline = train(
