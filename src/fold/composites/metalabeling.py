@@ -98,7 +98,7 @@ class MetaLabeling(Composite):
         results_primary: List[pd.DataFrame],
         index: int,
         fit: bool,
-    ) -> Tuple[pd.DataFrame, T, Optional[pd.Series]]:
+    ) -> Tuple[pd.DataFrame, T, Extras]:
         X = (
             pd.concat([X] + results_primary, axis="columns")
             if self.primary_output_included
@@ -106,7 +106,7 @@ class MetaLabeling(Composite):
         )
         predictions = get_prediction_column(results_primary[0])
         y = y.astype(int) == predictions.astype(int)
-        return X, y, None
+        return X, y, Extras()
 
     def postprocess_result_secondary(
         self,

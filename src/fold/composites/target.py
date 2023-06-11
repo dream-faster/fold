@@ -102,7 +102,7 @@ class TransformTarget(Composite):
         index: int,
         fit: bool,
     ) -> Tuple[pd.DataFrame, T, Optional[pd.Series]]:
-        return X, to_series(results_primary[0]), extras.sample_weights
+        return X, to_series(results_primary[0]), extras
 
     def postprocess_result_secondary(
         self,

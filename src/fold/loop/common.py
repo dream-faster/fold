@@ -333,7 +333,7 @@ def __process_secondary_child_transform(
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
 ) -> Tuple[Transformations, X, Artifact]:
-    X, y, sample_weights = composite.preprocess_secondary(
+    X, y, extras = composite.preprocess_secondary(
         X,
         y,
         extras,
@@ -344,7 +344,7 @@ def __process_secondary_child_transform(
     return recursively_transform(
         X,
         y,
-        Extras(events=extras.events, sample_weights=sample_weights),
+        extras,
         artifacts,
         child_transform,
         stage,

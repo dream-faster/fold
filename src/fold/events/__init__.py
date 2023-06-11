@@ -51,9 +51,13 @@ class _CreateEvents(Composite):
         results_primary: List[pd.DataFrame],
         index: int,
         fit: bool,
-    ) -> Tuple[pd.DataFrame, T, Optional[pd.Series]]:
+    ) -> Tuple[pd.DataFrame, T, Extras]:
         events = results_primary[0].dropna()
-        return X.loc[events.index], events["label"], events["sample_weights"]
+        return (
+            X.loc[events.index],
+            events["label"],
+            Extras(events=events, sample_weights=events["sample_weights"]),
+        )
 
     def postprocess_result_secondary(
         self,
@@ -114,7 +118,11 @@ class UsePredefinedEvents(Composite):
                 "You need to pass in `events` for `UsePredefinedEvents` to use when calling train() / backtest()."
             )
         events = extras.events.dropna()
-        return X.loc[events.index], events["label"], Extras(events=events)
+        return (
+            X.loc[events.index],
+            events["label"],
+            Extras(events=events, sample_weights=events["sample_weights"]),
+        )
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
