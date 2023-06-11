@@ -91,8 +91,8 @@ class Composite(Block, ABC):
         results_primary: List[pd.DataFrame],
         index: int,
         fit: bool,
-    ) -> Tuple[pd.DataFrame, T, Optional[pd.Series]]:
-        return X, y, extras.sample_weights
+    ) -> Tuple[pd.DataFrame, T, Extras]:
+        return X, y, extras
 
     def postprocess_artifacts_primary(
         self,

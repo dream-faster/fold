@@ -1,6 +1,7 @@
 from fold.events import CreateEvents, FixedForwardHorizon, UsePredefinedEvents
 from fold.events.filters.everynth import EveryNth
 from fold.events.labeling import BinarizeSign
+from fold.events.weights import NoWeighing
 from fold.loop import backtest, train
 from fold.loop.encase import train_backtest
 from fold.splitters import ExpandingWindowSplitter
@@ -40,12 +41,11 @@ def test_predefined_events() -> None:
     X, y = generate_sine_wave_data(length=1100)
     splitter = ExpandingWindowSplitter(initial_train_window=100, step=200)
 
-    event_filter = EveryNth(5)
     labeler = FixedForwardHorizon(
-        2, labeling_strategy=BinarizeSign(), weighing_strategy=None
+        1, labeling_strategy=BinarizeSign(), weighing_strategy=NoWeighing()
     )
 
-    original_start_times = event_filter.get_event_start_times(y)
+    original_start_times = y.index
     events = labeler.label_events(original_start_times, y).reindex(y.index)
 
     pipeline = UsePredefinedEvents(Identity())
@@ -53,4 +53,4 @@ def test_predefined_events() -> None:
         pipeline, X, y, splitter, events=events, return_artifacts=True
     )
     assert len(pred) == 1000
-    assert len(pred.dropna()) == 200
+    assert len(pred.dropna()) == 999
