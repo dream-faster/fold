@@ -10,7 +10,7 @@ from fold.base.scoring import score_results
 
 from ..base import Artifact, OutOfSamplePredictions, Pipeline, TrainedPipelines
 from ..splitters import Splitter
-from ..utils.dataframe import concat_on_columns
+from ..utils.dataframe import ResolutionStrategy, concat_on_columns_with_duplicates
 from .backtesting import backtest
 from .training import train
 from .types import Backend, EventDataFrame, TrainMethod
@@ -173,7 +173,10 @@ def train_backtest(
         return (
             pred,
             trained_pipelines,
-            concat_on_columns([train_artifacts, backtest_artifacts]),
+            concat_on_columns_with_duplicates(
+                [train_artifacts, backtest_artifacts],
+                strategy=ResolutionStrategy.last,
+            ),
         )
     else:
         return pred, trained_pipelines
@@ -271,7 +274,9 @@ def train_evaluate(
             scorecard,
             pred,
             trained_pipelines,
-            concat_on_columns([train_artifacts, backtest_artifacts]),
+            concat_on_columns_with_duplicates(
+                [train_artifacts, backtest_artifacts], strategy=ResolutionStrategy.last
+            ),
         )
     else:
         return scorecard, pred, trained_pipelines

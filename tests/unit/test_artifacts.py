@@ -1,5 +1,4 @@
 from sklearn.feature_selection import SelectKBest, f_regression
-from sklearn.metrics import mean_squared_error
 
 from fold.composites.optimize import OptimizeGridSearch
 from fold.events import CreateEvents, NoFilter
@@ -46,7 +45,7 @@ def test_artifacts_optimizer() -> None:
             pipeline=DummyRegressor(
                 predicted_value=1, params_to_try=dict(predicted_value=[100, 25, 50])
             ),
-            scorer=mean_squared_error,
+            krisi_metric_key="mse",
             is_scorer_loss=True,
         )
     ]

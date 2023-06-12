@@ -285,7 +285,7 @@ def __process_candidates(
     ) = _sequential_train_on_window(child_transform, X, y, splits, extras, backend)
     trained_pipelines = _extract_trained_pipelines(processed_idx, processed_pipelines)
 
-    result = _backtest_on_window(
+    result, artifact = _backtest_on_window(
         trained_pipelines,
         splits[0],
         X,
@@ -293,11 +293,11 @@ def __process_candidates(
         extras,
         backend,
         mutate=False,
-    )[0]
+    )
     return (
         trained_pipelines,
         trim_initial_nans_single(result),
-        processed_artifacts[0],
+        artifact,
     )
 
 

@@ -75,10 +75,7 @@ class _CreateEvents(Composite):
         results: List[pd.DataFrame],
         fit: bool,
     ) -> pd.DataFrame:
-        if fit is True:
-            return pd.DataFrame()
-        else:
-            return results[0]
+        return results[0]
 
     def postprocess_artifacts_secondary(
         self, primary_artifacts: pd.DataFrame, secondary_artifacts: List[Artifact]
@@ -136,10 +133,7 @@ class UsePredefinedEvents(Composite):
         results: List[pd.DataFrame],
         fit: bool,
     ) -> pd.DataFrame:
-        if fit is True:
-            return concat_on_columns(artifacts)
-        else:
-            return concat_on_columns([extras.events, concat_on_columns(artifacts)])
+        return concat_on_columns([extras.events, concat_on_columns(artifacts)])
 
     def clone(self, clone_children: Callable) -> UsePredefinedEvents:
         clone = UsePredefinedEvents(

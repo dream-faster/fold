@@ -10,31 +10,8 @@ import pandas as pd
 from ..base import Composite, Pipelines, Transformations, get_concatenated_names
 from ..transformations.columns import SelectColumns
 from ..transformations.dev import Identity
-from ..utils.enums import ParsableEnum
-from ..utils.list import (
-    flatten,
-    has_intersection,
-    keep_only_duplicates,
-    wrap_in_double_list_if_needed,
-    wrap_in_list,
-)
-
-
-class ResolutionStrategy(ParsableEnum):
-    """
-    Parameters
-    ----------
-    first : str
-        Only keep the first (leftmost) duplicate column(s).
-    last : str
-        Only keep the last (rightmost) duplicate column(s).
-    both : str
-        Keep both duplicate columns.
-    """
-
-    first = "first"
-    last = "last"
-    both = "both"
+from ..utils.dataframe import ResolutionStrategy, concat_on_columns_with_duplicates
+from ..utils.list import wrap_in_double_list_if_needed, wrap_in_list
 
 
 class Concat(Composite):
@@ -87,30 +64,7 @@ class Concat(Composite):
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
     ) -> pd.DataFrame:
-        columns = flatten([result.columns.to_list() for result in results])
-        duplicates = keep_only_duplicates(columns)
-        if len(duplicates) == 0:
-            return pd.concat(results, axis="columns")
-
-        if len(duplicates) > 0 or self.if_duplicate_keep != ResolutionStrategy.both:
-            duplicate_columns = [
-                result[duplicates]
-                for result in results
-                if has_intersection(result.columns.to_list(), duplicates)
-            ]
-            results = [result.drop(columns=duplicates) for result in results]
-            if self.if_duplicate_keep == ResolutionStrategy.first:
-                return pd.concat(results + [duplicate_columns[0]], axis="columns")
-            elif self.if_duplicate_keep == ResolutionStrategy.last:
-                return pd.concat(results + [duplicate_columns[-1]], axis="columns")
-            elif self.if_duplicate_keep == ResolutionStrategy.both:
-                return pd.concat(results + duplicate_columns, axis="columns")
-            else:
-                raise ValueError(
-                    f"ResolutionStrategy is not valid: {self.if_duplicate_keep}"
-                )
-        else:
-            return pd.concat(results, axis="columns")
+        return concat_on_columns_with_duplicates(results, self.if_duplicate_keep)
 
     def get_children_primary(self) -> Pipelines:
         return self.pipelines
