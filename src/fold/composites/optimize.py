@@ -9,6 +9,7 @@ import pandas as pd
 from sklearn.model_selection import ParameterGrid
 
 from fold.base.classes import Extras
+from fold.base.scoring import score_results
 
 from ..base import (
     Artifact,
@@ -35,7 +36,8 @@ class OptimizeGridSearch(Optimizer):
     def __init__(
         self,
         pipeline: Pipeline,
-        scorer: Callable,
+        krisi_metric_key: str,
+        krisi_args: Optional[dict] = None,
         is_scorer_loss: bool = True,
         splitter: SingleWindowSplitter = SingleWindowSplitter(0.7),
         name: Optional[str] = None,
@@ -44,7 +46,8 @@ class OptimizeGridSearch(Optimizer):
         self.name = name or "OptimizeGridSearch-" + get_concatenated_names(
             self.pipeline
         )
-        self.scorer = scorer
+        self.krisi_metric_key = krisi_metric_key
+        self.krisi_args = krisi_args or {}
         self.is_scorer_loss = is_scorer_loss
         self.splitter = splitter
         _check_for_duplicate_names(self.pipeline)
@@ -53,7 +56,8 @@ class OptimizeGridSearch(Optimizer):
     def from_cloned_instance(
         cls,
         pipeline: Pipeline,
-        scorer: Callable,
+        krisi_metric_key: str,
+        krisi_args: Optional[dict],
         is_scorer_loss: bool,
         splitter: SingleWindowSplitter,
         candidates: Optional[List[Tunable]],
@@ -62,7 +66,13 @@ class OptimizeGridSearch(Optimizer):
         scores_: Optional[List[float]],
         name: Optional[str],
     ) -> OptimizeGridSearch:
-        instance = cls(pipeline, scorer, is_scorer_loss, splitter)
+        instance = cls(
+            pipeline=pipeline,
+            krisi_metric_key=krisi_metric_key,
+            krisi_args=krisi_args,
+            is_scorer_loss=is_scorer_loss,
+            splitter=splitter,
+        )
         instance.candidates = candidates
         instance.selected_params_ = selected_params_
         instance.selected_pipeline_ = selected_pipeline_
@@ -97,7 +107,17 @@ class OptimizeGridSearch(Optimizer):
         extras: Extras,
         artifacts: List[pd.DataFrame],
     ) -> Optional[Artifact]:
-        scores = [self.scorer(y[-len(result) :], result) for result in results]
+        scores = [
+            score_results(
+                result,
+                y[-len(result) :],
+                extras=extras,
+                sample_weights=None,
+                artifacts=artifact,
+                krisi_args=self.krisi_args,
+            )[self.krisi_metric_key].result
+            for result, artifact in zip(results, artifacts)
+        ]
         selected_index = (
             scores.index(min(scores))
             if self.is_scorer_loss
@@ -114,7 +134,8 @@ class OptimizeGridSearch(Optimizer):
     def clone(self, clone_children: Callable) -> OptimizeGridSearch:
         return OptimizeGridSearch.from_cloned_instance(
             pipeline=clone_children(self.pipeline),
-            scorer=self.scorer,
+            krisi_metric_key=self.krisi_metric_key,
+            krisi_args=self.krisi_args,
             is_scorer_loss=self.is_scorer_loss,
             splitter=self.splitter,
             candidates=self.candidates,

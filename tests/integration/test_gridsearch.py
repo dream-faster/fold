@@ -1,5 +1,3 @@
-from sklearn.metrics import mean_squared_error
-
 from fold.composites.concat import Concat
 from fold.composites.optimize import OptimizeGridSearch
 from fold.loop.encase import train_backtest
@@ -28,7 +26,8 @@ def test_on_weather_data() -> None:
                 predicted_value=1.0, params_to_try=dict(predicted_value=[1.0, 2.0])
             ),
         ],
-        scorer=mean_squared_error,
+        krisi_metric_key="mse",
+        is_scorer_loss=False,
     )
 
     _, _ = train_backtest(pipeline, X, y, splitter)

@@ -1,13 +1,17 @@
 import pytest
 from sklearn.ensemble import HistGradientBoostingRegressor, RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 
 from fold.composites import Concat
+from fold.composites.optimize import OptimizeGridSearch
+from fold.composites.select import SelectBest
 from fold.events import CreateEvents
 from fold.events.filters.everynth import EveryNth
 from fold.events.labeling import BinarizeSign, FixedForwardHorizon
 from fold.loop import train, train_evaluate
 from fold.loop.backtesting import backtest
 from fold.loop.encase import train_backtest
+from fold.models import WrapSKLearnClassifier
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations import AddWindowFeatures
 from fold.transformations.lags import AddLagsX, AddLagsY
@@ -93,16 +97,26 @@ def test_integration_events() -> None:
     y = y.pct_change()
 
     splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.1)
-    pipeline = CreateEvents(
+    pipeline = OptimizeGridSearch(
         [
-            # AddLagsX(columns_and_lags=[("pressure", list(range(1, 10)))]),
             AddLagsY(list(range(1, 3))),
-            RandomForestClassifier(),
+            AddLagsX(columns_and_lags=[("pressure", list(range(1, 10)))]),
+            CreateEvents(
+                SelectBest(
+                    [
+                        WrapSKLearnClassifier.from_model(LogisticRegression()),
+                        WrapSKLearnClassifier.from_model(RandomForestClassifier()),
+                    ]
+                ),
+                FixedForwardHorizon(
+                    time_horizon=5,
+                    labeling_strategy=BinarizeSign(),
+                    weighing_strategy=None,
+                ),
+                EveryNth(2),
+            ),
         ],
-        FixedForwardHorizon(
-            time_horizon=5, labeling_strategy=BinarizeSign(), weighing_strategy=None
-        ),
-        EveryNth(2),
+        krisi_metric_key="f_one_score_macro",
     )
     trained_pipeline = train(
         pipeline,

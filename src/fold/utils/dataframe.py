@@ -1,9 +1,11 @@
+from functools import reduce
 from typing import Callable, List, Optional, Union
 
 import numpy as np
 import pandas as pd
 
-from fold.utils.list import filter_none
+from fold.utils.enums import ParsableEnum
+from fold.utils.list import filter_none, flatten, has_intersection, keep_only_duplicates
 
 
 def to_series(dataframe_or_series: Union[pd.DataFrame, pd.Series]) -> pd.Series:
@@ -47,3 +49,70 @@ def take_log(df: pd.DataFrame) -> pd.DataFrame:
         return result.to_frame()
     else:
         return result
+
+
+class ResolutionStrategy(ParsableEnum):
+    """
+    Parameters
+    ----------
+    first : str
+        Only keep the first (leftmost) duplicate column(s).
+    last : str
+        Only keep the last (rightmost) duplicate column(s).
+    both : str
+        Keep both duplicate columns.
+    """
+
+    first = "first"
+    last = "last"
+    both = "both"
+
+
+def concat_on_columns_with_duplicates(
+    dfs: List[pd.DataFrame],
+    strategy: ResolutionStrategy,
+    raise_indices_dont_match: bool = False,
+) -> pd.DataFrame:
+    if all([result.empty for result in dfs]):
+        return pd.DataFrame()
+
+    columns = flatten([result.columns.to_list() for result in dfs])
+    duplicates = keep_only_duplicates(columns)
+    if len(duplicates) == 0:
+        return pd.concat(dfs, axis="columns")
+
+    if len(duplicates) > 0 or strategy is not ResolutionStrategy.both:
+
+        def concat(
+            dfs: List[pd.DataFrame],
+        ) -> pd.DataFrame:
+            if not raise_indices_dont_match and not all(
+                [df.index.equals(dfs[0].index) for df in dfs]
+            ):
+                return reduce(lambda accum, item: accum.combine_first(item), dfs)
+            return pd.concat(dfs, axis="columns")
+
+        duplicate_columns = [
+            result[
+                keep_only_duplicates(flatten([duplicates, result.columns.to_list()]))
+            ]
+            for result in dfs
+            if has_intersection(result.columns.to_list(), duplicates)
+        ]
+        results = [result.drop(columns=duplicates, errors="ignore") for result in dfs]
+        results = [
+            df for df in results if not df.empty
+        ]  # if all of them are empty, create an empty list
+
+        if strategy is ResolutionStrategy.first:
+            return concat(results + [duplicate_columns[0]])
+        elif strategy is ResolutionStrategy.last:
+            return concat(
+                results + [duplicate_columns[-1]],
+            )
+        elif strategy is ResolutionStrategy.both:
+            return concat(results + duplicate_columns)
+        else:
+            raise ValueError(f"ResolutionStrategy is not valid: {strategy}")
+    else:
+        return pd.concat(dfs, axis="columns")

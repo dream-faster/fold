@@ -1,5 +1,4 @@
 from sklearn.dummy import DummyRegressor as SklearnDummyRegressor
-from sklearn.metrics import mean_squared_error
 
 from fold.composites import OptimizeGridSearch, SelectBest, TransformTarget
 from fold.loop import train_backtest
@@ -31,7 +30,8 @@ def test_grid_hpo() -> None:
             ),
             Difference(),
         ],
-        scorer=mean_squared_error,
+        krisi_metric_key="mse",
+        is_scorer_loss=True,
     )
 
     pred, trained_pipelines = train_backtest(pipeline, X, y, splitter)
@@ -57,7 +57,7 @@ def test_gridsearch_sklearn() -> None:
                     name="dummy2",
                 ),
             ],
-            scorer=mean_squared_error,
+            krisi_metric_key="mse",
             is_scorer_loss=True,
         )
     ]
@@ -80,7 +80,8 @@ def test_grid_passthrough():
                 ),
             ),
         ],
-        scorer=mean_squared_error,
+        krisi_metric_key="mse",
+        is_scorer_loss=True,
     )
 
     pred, trained_pipelines = train_backtest(pipeline, X, y, splitter)
@@ -108,7 +109,8 @@ def test_selectbest() -> None:
             ),
             Identity(),
         ],
-        scorer=mean_squared_error,
+        krisi_metric_key="mse",
+        is_scorer_loss=True,
     )
     pred, trained_pipelines = train_backtest(pipeline, X, y, splitter)
     assert pred.squeeze()[0] == 0.5
@@ -140,7 +142,8 @@ def test_selectbest_nested():
             ),
             Identity(),
         ],
-        scorer=mean_squared_error,
+        krisi_metric_key="mse",
+        is_scorer_loss=True,
     )
     pred, _ = train_backtest(pipeline, X, y, splitter)
     assert pred.squeeze()[0] == 0.5

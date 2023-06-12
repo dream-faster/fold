@@ -101,7 +101,7 @@ class Composite(Block, ABC):
         results: List[pd.DataFrame],
         fit: bool,
     ) -> pd.DataFrame:
-        return pd.concat(artifacts, axis="columns").add_prefix("primary_")
+        return pd.concat(artifacts, axis="columns")
 
     def postprocess_artifacts_secondary(
         self, primary_artifacts: pd.DataFrame, secondary_artifacts: List[Artifact]
@@ -109,7 +109,7 @@ class Composite(Block, ABC):
         return pd.concat(
             [
                 primary_artifacts,
-                pd.concat(secondary_artifacts, axis="columns").add_prefix("secondary_"),
+                pd.concat(secondary_artifacts, axis="columns"),
             ],
             axis="columns",
         )
