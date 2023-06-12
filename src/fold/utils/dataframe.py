@@ -89,7 +89,7 @@ def concat_on_columns_with_duplicates(
             if not raise_indices_dont_match and not all(
                 [df.index.equals(dfs[0].index) for df in dfs]
             ):
-                return reduce(lambda l, r: l.combine_first(r), dfs)
+                return reduce(lambda accum, item: accum.combine_first(item), dfs)
             return pd.concat(dfs, axis="columns")
 
         duplicate_columns = [
