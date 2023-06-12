@@ -96,7 +96,7 @@ def test_trim_na() -> None:
     _ = backtest(transformations_over_time, None, y, splitter)
 
 
-def test_sameple_weights() -> None:
+def test_sample_weights() -> None:
     def assert_sample_weights_exist(X, y, sample_weight):
         assert sample_weight is not None
         assert sample_weight[0] == 0

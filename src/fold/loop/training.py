@@ -14,7 +14,7 @@ from ..base import (
     TrainedPipelines,
 )
 from ..splitters import Fold, SlidingWindowSplitter, Splitter
-from ..utils.dataframe import concat_on_index
+from ..utils.dataframe import concat_on_index_override_duplicate_rows
 from ..utils.list import wrap_in_list
 from .backend import get_backend_dependent_functions
 from .checks import check_types
@@ -142,7 +142,9 @@ def train(
 
     trained_pipelines = _extract_trained_pipelines(processed_idx, processed_pipelines)
     if return_artifacts is True:
-        return trained_pipelines, concat_on_index(processed_artifacts)
+        return trained_pipelines, concat_on_index_override_duplicate_rows(
+            processed_artifacts
+        )
     else:
         return trained_pipelines
 

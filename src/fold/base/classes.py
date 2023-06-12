@@ -16,6 +16,12 @@ X = pd.DataFrame
 Artifact = pd.DataFrame
 
 
+def get_sample_weights_from_artifact(artifact: Artifact) -> Optional[pd.Series]:
+    if artifact is None or "sample_weights" not in artifact.columns:
+        return None
+    return artifact["sample_weights"]
+
+
 class Block(ABC):
     id: str
     name: str

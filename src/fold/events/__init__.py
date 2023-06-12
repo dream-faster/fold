@@ -8,7 +8,11 @@ import pandas as pd
 from fold.base.classes import Extras
 
 from ..base import Artifact, Composite, Pipeline, Pipelines, T, Transformation, fit_noop
-from ..utils.dataframe import concat_on_columns
+from ..utils.dataframe import (
+    ResolutionStrategy,
+    concat_on_columns,
+    concat_on_columns_with_duplicates,
+)
 from ..utils.list import wrap_in_double_list_if_needed, wrap_in_list
 from .base import EventFilter, Labeler, LabelingStrategy, WeighingStrategy
 from .filters import EveryNth, FilterZero, NoFilter
@@ -80,8 +84,9 @@ class _CreateEvents(Composite):
     def postprocess_artifacts_secondary(
         self, primary_artifacts: pd.DataFrame, secondary_artifacts: List[Artifact]
     ) -> pd.DataFrame:
-        return concat_on_columns(
+        return concat_on_columns_with_duplicates(
             [primary_artifacts, concat_on_columns(secondary_artifacts)],
+            strategy=ResolutionStrategy.last,
         )
 
     def clone(self, clone_children: Callable) -> _CreateEvents:
@@ -133,7 +138,10 @@ class UsePredefinedEvents(Composite):
         results: List[pd.DataFrame],
         fit: bool,
     ) -> pd.DataFrame:
-        return concat_on_columns([extras.events, concat_on_columns(artifacts)])
+        return concat_on_columns_with_duplicates(
+            [extras.events, concat_on_columns(artifacts)],
+            strategy=ResolutionStrategy.last,
+        )
 
     def clone(self, clone_children: Callable) -> UsePredefinedEvents:
         clone = UsePredefinedEvents(

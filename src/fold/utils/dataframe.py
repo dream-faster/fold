@@ -39,6 +39,15 @@ concat_on_columns = __concat_on_axis("columns")
 concat_on_index = __concat_on_axis("index")
 
 
+def concat_on_index_override_duplicate_rows(dfs: List[pd.DataFrame]) -> pd.DataFrame:
+    if len(dfs) == 0:
+        return pd.DataFrame()
+    elif len(dfs) == 1:
+        return dfs[0]
+    else:
+        return pd.concat(dfs, axis="index").groupby(level=0).last()
+
+
 def take_log(df: pd.DataFrame) -> pd.DataFrame:
     """
     If you use np.log() on a DataFrame with a single column, it'll turn it into a pd.Series.
@@ -90,7 +99,8 @@ def concat_on_columns_with_duplicates(
                 [df.index.equals(dfs[0].index) for df in dfs]
             ):
                 return reduce(lambda accum, item: accum.combine_first(item), dfs)
-            return pd.concat(dfs, axis="columns")
+            else:
+                return pd.concat(dfs, axis="columns")
 
         duplicate_columns = [
             result[
