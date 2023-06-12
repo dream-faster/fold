@@ -93,11 +93,13 @@ def concat_on_columns_with_duplicates(
             return pd.concat(dfs, axis="columns")
 
         duplicate_columns = [
-            result[duplicates]
+            result[
+                keep_only_duplicates(flatten([duplicates, result.columns.to_list()]))
+            ]
             for result in dfs
             if has_intersection(result.columns.to_list(), duplicates)
         ]
-        results = [result.drop(columns=duplicates) for result in dfs]
+        results = [result.drop(columns=duplicates, errors="ignore") for result in dfs]
         results = [
             df for df in results if not df.empty
         ]  # if all of them are empty, create an empty list
