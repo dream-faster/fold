@@ -396,7 +396,7 @@ class Artifact(pd.DataFrame):
     ) -> Artifact:
         if sample_weights is not None:
             sample_weights = sample_weights.rename("sample_weights")
-        if events is not None:
+        if events is not None and not events.columns[0].startswith("event_"):
             events = events.add_prefix("event_")
         result = concat_on_columns_with_duplicates(
             filter_none([events, sample_weights]), strategy=ResolutionStrategy.first

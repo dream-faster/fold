@@ -122,7 +122,7 @@ class UsePredefinedEvents(Composite):
         events = events.dropna()
         return (
             X.loc[events.index],
-            events.label,
+            events.event_label,
             events,
         )
 
