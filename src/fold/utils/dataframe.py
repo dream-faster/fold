@@ -22,6 +22,15 @@ def to_series(dataframe_or_series: Union[pd.DataFrame, pd.Series]) -> pd.Series:
         raise ValueError("Not a pd.Series or pd.DataFrame")
 
 
+def to_dataframe(dataframe_or_series: Union[pd.DataFrame, pd.Series]) -> pd.DataFrame:
+    if isinstance(dataframe_or_series, pd.DataFrame):
+        return dataframe_or_series
+    elif isinstance(dataframe_or_series, pd.Series):
+        return dataframe_or_series.to_frame()
+    else:
+        raise ValueError("Not a pd.Series or pd.DataFrame")
+
+
 def __concat_on_axis(axis: str) -> Callable:
     def concat_on(dfs: List[Optional[Union[pd.DataFrame, pd.Series]]]) -> pd.DataFrame:
         filtered = filter_none(dfs)
@@ -78,13 +87,13 @@ class ResolutionStrategy(ParsableEnum):
 
 
 def concat_on_columns_with_duplicates(
-    dfs: List[pd.DataFrame],
+    dfs: List[Union[pd.DataFrame, pd.Series]],
     strategy: ResolutionStrategy,
     raise_indices_dont_match: bool = False,
 ) -> pd.DataFrame:
     if all([result.empty for result in dfs]):
         return pd.DataFrame()
-
+    dfs = [to_dataframe(df) for df in dfs]
     columns = flatten([result.columns.to_list() for result in dfs])
     duplicates = keep_only_duplicates(columns)
     if len(duplicates) == 0:

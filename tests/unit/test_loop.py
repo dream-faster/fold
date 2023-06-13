@@ -125,10 +125,7 @@ def test_score_results():
         artifacts=Artifact.empty(y.index),
     )
 
-    def get_acc(obj):
-        return obj["accuracy"].result
-
-    assert get_acc(sc) == 1.0
+    assert sc["accuracy"].result == 1.0
 
     back_shifted = y.shift(1)
     events = FixedForwardHorizon(
@@ -142,13 +139,13 @@ def test_score_results():
         pd.Series(0, index=y.index),
         artifacts=events,
     )
-    assert get_acc(sc) == 1.0
+    assert sc["accuracy"].result == 1.0
 
     sc = score_results(
         results[200:],
         pd.Series(0, index=y.index),
         artifacts=Artifact.empty(y.index),
     )
-    assert get_acc(sc) == 1.0
+    assert sc["accuracy"].result == 1.0
     if hasattr(sc, "y"):
         assert len(sc.y) == len(events) - 200
