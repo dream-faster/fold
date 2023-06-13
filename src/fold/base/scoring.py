@@ -72,8 +72,4 @@ def align_result_with_events(
             else None
         )
 
-    if len(y) != len(pred_point):
-        pred_point = pred_point[: len(y)]
-        probabilities = probabilities[: len(y)] if probabilities is not None else None
-
     return y, pred_point, probabilities, test_sample_weights
