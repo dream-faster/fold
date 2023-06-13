@@ -72,5 +72,6 @@ def align_result_with_events(
             if test_sample_weights is not None
             else None
         )
+        y = y[pred_point.index]
 
     return y, pred_point, probabilities, test_sample_weights
