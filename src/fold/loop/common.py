@@ -163,7 +163,7 @@ def _process_composite(
             artifacts_primary,
         )
 
-    (secondary_transformations, results_secondary, artifacts_secondary) = zip(
+    secondary_transformations, results_secondary, artifacts_secondary = zip(
         *backend_functions.process_child_transformations(
             __process_secondary_child_transform,
             enumerate(secondary_transformations),
