@@ -7,9 +7,10 @@ from typing import Callable, List, Optional, Tuple, Union
 
 import pandas as pd
 
+from fold.base.classes import Artifact
+
 from ..base import (
     Composite,
-    Extras,
     InvertibleTransformation,
     Pipeline,
     Pipelines,
@@ -81,28 +82,28 @@ class TransformTarget(Composite):
         )
 
     def preprocess_primary(
-        self, X: pd.DataFrame, index: int, y: T, extras: Extras, fit: bool
-    ) -> Tuple[pd.DataFrame, T, Extras]:
+        self, X: pd.DataFrame, index: int, y: T, artifact: Artifact, fit: bool
+    ) -> Tuple[pd.DataFrame, T, Artifact]:
         # TransformTarget's primary transformation transforms `y`, not `X`.
         if y is None:
             return (
                 pd.DataFrame(),
                 None,
-                extras,
+                artifact,
             )  # at inference time, `y` will be None, and we don't need to use primary transformations at all, so we return a dummy DataFrame.
         else:
-            return y.to_frame(), None, extras
+            return y.to_frame(), None, artifact
 
     def preprocess_secondary(
         self,
         X: pd.DataFrame,
         y: T,
-        extras: Extras,
+        artifact: Artifact,
         results_primary: List[pd.DataFrame],
         index: int,
         fit: bool,
-    ) -> Tuple[pd.DataFrame, T, Optional[pd.Series]]:
-        return X, to_series(results_primary[0]), extras
+    ) -> Tuple[pd.DataFrame, T, Artifact]:
+        return X, to_series(results_primary[0]), artifact
 
     def postprocess_result_secondary(
         self,

@@ -6,30 +6,30 @@ from typing import Optional, Tuple, TypeVar, Union
 import numpy as np
 import pandas as pd
 
-from ..base import Extras
+from ..base import Artifact
 
 T = TypeVar("T", pd.Series, Optional[pd.Series])
 
 
 def trim_initial_nans(
-    X: pd.DataFrame, y: pd.Series, extras: Extras
-) -> Tuple[pd.DataFrame, pd.Series, Extras]:
+    X: pd.DataFrame, y: pd.Series, artifact: Artifact
+) -> Tuple[pd.DataFrame, pd.Series, Artifact]:
     # Optimize for speed, if the first value is not NaN, we can save all the subsequent computation
     if not X.iloc[0].isna().any() and (y is None or not np.isnan(y.iloc[0])):
-        return X, y, extras
+        return X, y, artifact
     first_valid_index_X = get_first_valid_index(X)
     first_valid_index_y = get_first_valid_index(y)
     if first_valid_index_X is None or first_valid_index_y is None:
         return (
             pd.DataFrame(),
             pd.Series(dtype="float64"),
-            Extras(),
+            Artifact.empty(X.index),
         )
     first_valid_index = max(first_valid_index_X, first_valid_index_y)
     return (
         X.iloc[first_valid_index:],
         y.iloc[first_valid_index:],
-        extras.iloc(slice(first_valid_index, None)),
+        artifact.iloc[first_valid_index:],
     )
 
 

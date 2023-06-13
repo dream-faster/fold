@@ -5,8 +5,6 @@ from typing import Callable, List, Optional, Tuple
 
 import pandas as pd
 
-from fold.base.classes import Extras
-
 from ..base import Artifact, Composite, Pipeline, Pipelines, T, Transformation, fit_noop
 from ..utils.dataframe import (
     ResolutionStrategy,
@@ -51,17 +49,13 @@ class _CreateEvents(Composite):
         self,
         X: pd.DataFrame,
         y: T,
-        extras: Extras,
+        artifact: Artifact,
         results_primary: List[pd.DataFrame],
         index: int,
         fit: bool,
-    ) -> Tuple[pd.DataFrame, T, Extras]:
+    ) -> Tuple[pd.DataFrame, T, Artifact]:
         events = results_primary[0].dropna()
-        return (
-            X.loc[events.index],
-            events["label"],
-            Extras(events=events, sample_weights=events["sample_weights"]),
-        )
+        return (X.loc[events.index], events["label"], concat_on_columns(events))
 
     def postprocess_result_secondary(
         self,
@@ -75,7 +69,6 @@ class _CreateEvents(Composite):
     def postprocess_artifacts_primary(
         self,
         artifacts: List[Artifact],
-        extras: Extras,
         results: List[pd.DataFrame],
         fit: bool,
     ) -> pd.DataFrame:
@@ -113,17 +106,18 @@ class UsePredefinedEvents(Composite):
         return self.wrapped_pipeline
 
     def preprocess_primary(
-        self, X: pd.DataFrame, index: int, y: T, extras: Extras, fit: bool
-    ) -> Tuple[pd.DataFrame, T, Extras]:
-        if extras.events is None:
+        self, X: pd.DataFrame, index: int, y: T, artifact: Artifact, fit: bool
+    ) -> Tuple[pd.DataFrame, T, Artifact]:
+        events = artifact.event_df
+        if events is None:
             raise ValueError(
                 "You need to pass in `events` for `UsePredefinedEvents` to use when calling train() / backtest()."
             )
-        events = extras.events.dropna()
+        events = events.dropna()
         return (
             X.loc[events.index],
-            events["label"],
-            Extras(events=events, sample_weights=events["sample_weights"]),
+            events.label,
+            events,
         )
 
     def postprocess_result_primary(
@@ -134,12 +128,11 @@ class UsePredefinedEvents(Composite):
     def postprocess_artifacts_primary(
         self,
         artifacts: List[Artifact],
-        extras: Extras,
         results: List[pd.DataFrame],
         fit: bool,
     ) -> pd.DataFrame:
         return concat_on_columns_with_duplicates(
-            [extras.events, concat_on_columns(artifacts)],
+            artifacts,
             strategy=ResolutionStrategy.last,
         )
 

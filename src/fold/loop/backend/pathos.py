@@ -16,7 +16,7 @@ def train_transformations(
     transformations: Transformations,
     X: pd.DataFrame,
     y: pd.Series,
-    sample_weights: Optional[pd.Series],
+    artifact: Artifact,
     splits: List[Fold],
     never_update: bool,
     backend: Backend,
@@ -24,7 +24,7 @@ def train_transformations(
 ):
     return p_map(
         lambda split: func(
-            X, y, sample_weights, transformations, split, never_update, backend
+            X, y, artifact, transformations, split, never_update, backend
         ),
         splits,
         disable=silent,
@@ -37,7 +37,6 @@ def process_child_transformations(
     composite: Composite,
     X: X,
     y: Optional[pd.Series],
-    sample_weights: Optional[pd.Series],
     artifacts: Artifact,
     stage: Stage,
     backend: Backend,
@@ -50,7 +49,6 @@ def process_child_transformations(
             child_transformation,
             X,
             y,
-            sample_weights,
             artifacts,
             stage,
             backend,

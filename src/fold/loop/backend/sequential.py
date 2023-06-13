@@ -16,14 +16,14 @@ def train_transformations(
     transformations: Transformations,
     X: pd.DataFrame,
     y: pd.Series,
-    sample_weights: Optional[pd.Series],
+    artifact: Artifact,
     splits: List[Fold],
     never_update: bool,
     backend: Backend,
     silent: bool,
 ):
     return [
-        func(X, y, sample_weights, transformations, split, never_update, backend)
+        func(X, y, artifact, transformations, split, never_update, backend)
         for split in tqdm(splits, desc="Training", disable=silent)
     ]
 
@@ -34,7 +34,6 @@ def process_child_transformations(
     composite: Composite,
     X: X,
     y: Optional[pd.Series],
-    sample_weights: Optional[pd.Series],
     artifacts: Artifact,
     stage: Stage,
     backend: Backend,
@@ -47,7 +46,6 @@ def process_child_transformations(
             child_transformation,
             X,
             y,
-            sample_weights,
             artifacts,
             stage,
             backend,

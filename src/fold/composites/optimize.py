@@ -8,7 +8,6 @@ from typing import Callable, List, Optional
 import pandas as pd
 from sklearn.model_selection import ParameterGrid
 
-from fold.base.classes import Extras
 from fold.base.scoring import score_results
 
 from ..base import (
@@ -104,15 +103,12 @@ class OptimizeGridSearch(Optimizer):
         self,
         results: List[pd.DataFrame],
         y: pd.Series,
-        extras: Extras,
         artifacts: List[pd.DataFrame],
     ) -> Optional[Artifact]:
         scores = [
             score_results(
                 result,
-                y[-len(result) :],
-                extras=extras,
-                sample_weights=None,
+                y=y[-len(result) :],
                 artifacts=artifact,
                 krisi_args=self.krisi_args,
             )[self.krisi_metric_key].result

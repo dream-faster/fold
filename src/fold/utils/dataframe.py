@@ -126,3 +126,10 @@ def concat_on_columns_with_duplicates(
             raise ValueError(f"ResolutionStrategy is not valid: {strategy}")
     else:
         return pd.concat(dfs, axis="columns")
+
+
+def get_column_safe(df: pd.DataFrame, column: str) -> Optional[pd.Series]:
+    if column in df.columns:
+        return df[column]
+    else:
+        return None

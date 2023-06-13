@@ -2,7 +2,7 @@ from typing import Optional
 
 import pandas as pd
 
-from ..base import DeployablePipeline, EventDataFrame, Extras
+from ..base import Artifact, DeployablePipeline, EventDataFrame
 from .checks import check_types
 from .common import deepcopy_pipelines, recursively_transform
 from .types import Backend, Stage
@@ -20,14 +20,14 @@ def update(
     Returns a new set of Transformations, does not mutate the original.
     """
     X, y = check_types(X, y)
-    extras = Extras(events=events, sample_weights=sample_weights)
+    artifact = Artifact.from_events_sample_weights(X.index, events, sample_weights)
 
     transformations = deepcopy_pipelines(pipeline)
     _ = recursively_transform(
         X,
         y,
-        extras,
-        pd.DataFrame(),
+        artifact,
+        Artifact.empty(X.index),
         transformations,
         stage=Stage.update,
         backend=Backend.no,

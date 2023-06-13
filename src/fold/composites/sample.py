@@ -7,7 +7,9 @@ from typing import Any, Callable, List, Optional, Tuple
 
 import pandas as pd
 
-from ..base import Composite, Extras, Pipeline, Pipelines, T, get_concatenated_names
+from fold.base.classes import Artifact
+
+from ..base import Composite, Pipeline, Pipelines, T, get_concatenated_names
 from ..utils.list import wrap_in_double_list_if_needed
 
 
@@ -66,17 +68,17 @@ class Sample(Composite):
         )
 
     def preprocess_primary(
-        self, X: pd.DataFrame, index: int, y: T, extras: Extras, fit: bool
-    ) -> Tuple[pd.DataFrame, T, Extras]:
+        self, X: pd.DataFrame, index: int, y: T, artifact: Artifact, fit: bool
+    ) -> Tuple[pd.DataFrame, T, Artifact]:
         if fit:
             X_resampled, y_resampled = self.sampler.fit_resample(X, y)
             X_resampled.columns = X.columns
             if y is not None:
                 y_resampled.name = y.name
-            extras_resampled = extras.iloc(self.sampler.sample_indices_)
-            return X_resampled, y_resampled, extras_resampled
+            artifact_resampled = artifact.iloc[self.sampler.sample_indices_]
+            return X_resampled, y_resampled, artifact_resampled
         else:
-            return X, y, extras
+            return X, y, artifact
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
