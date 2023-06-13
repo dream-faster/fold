@@ -101,17 +101,15 @@ class Composite(Block, ABC):
         results: List[pd.DataFrame],
         fit: bool,
     ) -> pd.DataFrame:
-        return pd.concat(artifacts, axis="columns")
+        return concat_on_columns_with_duplicates(
+            artifacts, strategy=ResolutionStrategy.last
+        )
 
     def postprocess_artifacts_secondary(
         self, primary_artifacts: pd.DataFrame, secondary_artifacts: List[Artifact]
     ) -> pd.DataFrame:
-        return pd.concat(
-            [
-                primary_artifacts,
-                pd.concat(secondary_artifacts, axis="columns"),
-            ],
-            axis="columns",
+        return concat_on_columns_with_duplicates(
+            [primary_artifacts] + secondary_artifacts, strategy=ResolutionStrategy.last
         )
 
 
