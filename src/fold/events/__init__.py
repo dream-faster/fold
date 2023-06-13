@@ -108,7 +108,7 @@ class UsePredefinedEvents(Composite):
     def preprocess_primary(
         self, X: pd.DataFrame, index: int, y: T, artifact: Artifact, fit: bool
     ) -> Tuple[pd.DataFrame, T, Artifact]:
-        events = artifact.event_df
+        events = Artifact.get_events(artifact)
         if events is None:
             raise ValueError(
                 "You need to pass in `events` for `UsePredefinedEvents` to use when calling train() / backtest()."
