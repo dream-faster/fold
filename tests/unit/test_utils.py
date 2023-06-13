@@ -60,7 +60,7 @@ def test_trim_initial_nans():
             index=y.index, events=None, sample_weights=y
         ),
     )
-    assert trimmed_X.equals(X.iloc[3:])
+    assert trimmed_X.equals(X.iloc[2:])
     assert trimmed_X.equals(X.iloc[2:])
     assert trimmed_y.equals(y.iloc[2:])
     assert trim_initial_nans_single(X).equals(X.iloc[2:])
