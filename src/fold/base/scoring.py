@@ -65,11 +65,15 @@ def align_result_with_events(
         test_sample_weights = events.test_sample_weights
         pred_point = pred_point.dropna()
         probabilities = probabilities.dropna() if probabilities is not None else None
+    else:
+        test_sample_weights = (
+            test_sample_weights[pred_point.index]
+            if test_sample_weights is not None
+            else None
+        )
+
     if len(y) != len(pred_point):
         pred_point = pred_point[: len(y)]
         probabilities = probabilities[: len(y)] if probabilities is not None else None
-    test_sample_weights = (
-        test_sample_weights[y.index] if test_sample_weights is not None else None
-    )
 
     return y, pred_point, probabilities, test_sample_weights
