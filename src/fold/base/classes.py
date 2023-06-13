@@ -293,12 +293,29 @@ class SingleFunctionTransformation(Transformation):
 
 
 class EventDataFrame(pd.DataFrame):
-    start: pd.Series
-    end: pd.Series
-    label: pd.Series
-    raw: pd.Series
-    sample_weights: pd.Series
-    test_sample_weights: pd.Series
+    @property
+    def start(self) -> pd.Series:
+        return self["event_start"]
+
+    @property
+    def end(self) -> pd.Series:
+        return self["event_end"]
+
+    @property
+    def label(self) -> pd.Series:
+        return self["event_label"]
+
+    @property
+    def raw(self) -> pd.Series:
+        return self["event_raw"]
+
+    @property
+    def sample_weights(self) -> pd.Series:
+        return self["event_sample_weights"]
+
+    @property
+    def test_sample_weights(self) -> pd.Series:
+        return self["event_test_sample_weights"]
 
     @classmethod
     def from_data(
@@ -312,22 +329,18 @@ class EventDataFrame(pd.DataFrame):
     ) -> EventDataFrame:
         return cls(
             data={
-                "start": start,
-                "end": end,
-                "label": label,
-                "raw": raw,
-                "sample_weights": pd.Series(1.0, index=start)
+                "event_start": start,
+                "event_end": end,
+                "event_label": label,
+                "event_raw": raw,
+                "event_sample_weights": pd.Series(1.0, index=start)
                 if sample_weights is None
                 else sample_weights,
-                "test_sample_weights": pd.Series(1.0, index=start)
+                "event_test_sample_weights": pd.Series(1.0, index=start)
                 if test_sample_weights is None
                 else test_sample_weights,
             }
         )
-
-    @staticmethod
-    def get_columns() -> List[str]:
-        return ["start", "end", "label", "raw", "sample_weights", "test_sample_weights"]
 
 
 class Artifact(pd.DataFrame):
@@ -342,31 +355,37 @@ class Artifact(pd.DataFrame):
         return artifact["sample_weights"]
 
     @staticmethod
+    def get_event_sample_weights(artifact: Artifact) -> Optional[pd.Series]:
+        if "event_sample_weights" not in artifact.columns:
+            return None
+        return artifact["event_sample_weights"]
+
+    @staticmethod
     def get_test_sample_weights(artifact: Artifact) -> Optional[pd.Series]:
-        if "test_sample_weights" not in artifact.columns:
+        if "event_test_sample_weights" not in artifact.columns:
             if "sample_weights" in artifact.columns:
                 return artifact["sample_weights"]
             else:
                 return None
-        return artifact["test_sample_weights"]
+        return artifact["event_test_sample_weights"]
 
     @staticmethod
-    def get_label(artifact: Artifact) -> Optional[pd.Series]:
-        if "label" not in artifact.columns:
+    def get_event_label(artifact: Artifact) -> Optional[pd.Series]:
+        if "event_label" not in artifact.columns:
             return None
-        return artifact["label"]
+        return artifact["event_label"]
 
     @staticmethod
     def get_events(artifact: Artifact) -> Optional[EventDataFrame]:
-        if "start" not in artifact.columns:
+        if "event_start" not in artifact.columns:
             return None
         return EventDataFrame.from_data(
-            start=artifact.start,
-            end=artifact.index,
-            label=artifact.label,
-            raw=artifact.raw,
-            sample_weights=artifact.sample_weights,
-            test_sample_weights=artifact.test_sample_weights,
+            start=artifact.event_start,
+            end=artifact.event_end,
+            label=artifact.event_label,
+            raw=artifact.event_raw,
+            sample_weights=artifact.event_sample_weights,
+            test_sample_weights=artifact.event_test_sample_weights,
         )
 
     @staticmethod
@@ -377,6 +396,8 @@ class Artifact(pd.DataFrame):
     ) -> Artifact:
         if sample_weights is not None:
             sample_weights = sample_weights.rename("sample_weights")
+        if events is not None:
+            events = events.add_prefix("event_")
         result = concat_on_columns_with_duplicates(
             filter_none([events, sample_weights]), strategy=ResolutionStrategy.first
         )

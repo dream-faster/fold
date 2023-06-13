@@ -143,7 +143,7 @@ def test_score_results():
 
     sc = score_results(
         results[200:],
-        pd.Series(0, index=y.index),
+        pd.Series(0, index=results[200:].index),
         artifacts=Artifact.empty(y.index),
     )
     assert sc["accuracy"].result == 1.0

@@ -32,10 +32,10 @@ def score_results(
         from krisi import score
 
         return score(
-            y=y[pred_point.index],
+            y=y,
             predictions=pred_point,
             probabilities=probabilities,
-            sample_weight=test_sample_weights[pred_point.index]
+            sample_weight=test_sample_weights
             if test_sample_weights is not None
             else None,
             **(krisi_args if krisi_args is not None else {}),
@@ -61,10 +61,11 @@ def align_result_with_events(
 
     if events is not None:
         events = events.reindex(result.index).dropna()
-        y = events.label
-        test_sample_weights = events.test_sample_weights
+        y = events.event_label
+        test_sample_weights = events.event_test_sample_weights
         pred_point = pred_point.dropna()
         probabilities = probabilities.dropna() if probabilities is not None else None
+        y = y[pred_point.index]
     else:
         test_sample_weights = (
             test_sample_weights[pred_point.index]
