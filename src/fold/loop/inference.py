@@ -2,7 +2,9 @@ from typing import Optional
 
 import pandas as pd
 
-from ..base import DeployablePipeline, Extras, OutOfSamplePredictions
+from fold.base.classes import Artifact
+
+from ..base import DeployablePipeline, OutOfSamplePredictions
 from .common import recursively_transform
 from .types import Backend, Stage
 
@@ -25,8 +27,7 @@ def infer(
     _, results, _ = recursively_transform(
         X,
         None,
-        Extras(),
-        pd.DataFrame(),
+        Artifact.empty(X.index),
         pipeline,
         stage=Stage.infer,
         backend=Backend.no,

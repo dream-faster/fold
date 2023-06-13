@@ -5,10 +5,12 @@ from typing import Callable, List, Optional, Tuple
 
 import pandas as pd
 
-from fold.base.classes import Extras
-
 from ..base import Artifact, Composite, Pipeline, Pipelines, T, Transformation, fit_noop
-from ..utils.dataframe import concat_on_columns
+from ..utils.dataframe import (
+    ResolutionStrategy,
+    concat_on_columns,
+    concat_on_columns_with_duplicates,
+)
 from ..utils.list import wrap_in_double_list_if_needed, wrap_in_list
 from .base import EventFilter, Labeler, LabelingStrategy, WeighingStrategy
 from .filters import EveryNth, FilterZero, NoFilter
@@ -47,17 +49,13 @@ class _CreateEvents(Composite):
         self,
         X: pd.DataFrame,
         y: T,
-        extras: Extras,
+        artifact: Artifact,
         results_primary: List[pd.DataFrame],
         index: int,
         fit: bool,
-    ) -> Tuple[pd.DataFrame, T, Extras]:
+    ) -> Tuple[pd.DataFrame, T, Artifact]:
         events = results_primary[0].dropna()
-        return (
-            X.loc[events.index],
-            events["label"],
-            Extras(events=events, sample_weights=events["sample_weights"]),
-        )
+        return X.loc[events.index], events.event_label, events
 
     def postprocess_result_secondary(
         self,
@@ -70,18 +68,22 @@ class _CreateEvents(Composite):
 
     def postprocess_artifacts_primary(
         self,
-        artifacts: List[Artifact],
-        extras: Extras,
+        primary_artifacts: List[Artifact],
         results: List[pd.DataFrame],
+        original_artifact: Artifact,
         fit: bool,
     ) -> pd.DataFrame:
         return results[0]
 
     def postprocess_artifacts_secondary(
-        self, primary_artifacts: pd.DataFrame, secondary_artifacts: List[Artifact]
+        self,
+        primary_artifacts: pd.DataFrame,
+        secondary_artifacts: List[Artifact],
+        original_artifact: Artifact,
     ) -> pd.DataFrame:
-        return concat_on_columns(
+        return concat_on_columns_with_duplicates(
             [primary_artifacts, concat_on_columns(secondary_artifacts)],
+            strategy=ResolutionStrategy.last,
         )
 
     def clone(self, clone_children: Callable) -> _CreateEvents:
@@ -95,7 +97,9 @@ class _CreateEvents(Composite):
 
 
 class UsePredefinedEvents(Composite):
-    properties = Composite.Properties(primary_only_single_pipeline=True)
+    properties = Composite.Properties(
+        primary_only_single_pipeline=True, artifacts_length_should_match=False
+    )
     name = "UsePredefinedEvents"
 
     def __init__(
@@ -108,17 +112,18 @@ class UsePredefinedEvents(Composite):
         return self.wrapped_pipeline
 
     def preprocess_primary(
-        self, X: pd.DataFrame, index: int, y: T, extras: Extras, fit: bool
-    ) -> Tuple[pd.DataFrame, T, Extras]:
-        if extras.events is None:
+        self, X: pd.DataFrame, index: int, y: T, artifact: Artifact, fit: bool
+    ) -> Tuple[pd.DataFrame, T, Artifact]:
+        events = Artifact.get_events(artifact)
+        if events is None:
             raise ValueError(
                 "You need to pass in `events` for `UsePredefinedEvents` to use when calling train() / backtest()."
             )
-        events = extras.events.dropna()
+        events = events.dropna()
         return (
             X.loc[events.index],
-            events["label"],
-            Extras(events=events, sample_weights=events["sample_weights"]),
+            events.event_label,
+            events,
         )
 
     def postprocess_result_primary(
@@ -128,12 +133,15 @@ class UsePredefinedEvents(Composite):
 
     def postprocess_artifacts_primary(
         self,
-        artifacts: List[Artifact],
-        extras: Extras,
+        primary_artifacts: List[Artifact],
         results: List[pd.DataFrame],
+        original_artifact: Artifact,
         fit: bool,
     ) -> pd.DataFrame:
-        return concat_on_columns([extras.events, concat_on_columns(artifacts)])
+        return concat_on_columns_with_duplicates(
+            primary_artifacts,
+            strategy=ResolutionStrategy.last,
+        )
 
     def clone(self, clone_children: Callable) -> UsePredefinedEvents:
         clone = UsePredefinedEvents(

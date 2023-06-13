@@ -7,6 +7,8 @@ from typing import Callable, List, Optional, Union
 
 import pandas as pd
 
+from fold.base.classes import Artifact
+
 from ..base import Composite, Pipelines, Transformations, get_concatenated_names
 from ..transformations.columns import SelectColumns
 from ..transformations.dev import Identity
@@ -65,6 +67,17 @@ class Concat(Composite):
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
     ) -> pd.DataFrame:
         return concat_on_columns_with_duplicates(results, self.if_duplicate_keep)
+
+    def postprocess_artifacts_primary(
+        self,
+        primary_artifacts: List[Artifact],
+        results: List[pd.DataFrame],
+        original_artifact: Artifact,
+        fit: bool,
+    ) -> pd.DataFrame:
+        return concat_on_columns_with_duplicates(
+            primary_artifacts, self.if_duplicate_keep
+        )
 
     def get_children_primary(self) -> Pipelines:
         return self.pipelines

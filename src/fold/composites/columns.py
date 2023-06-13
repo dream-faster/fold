@@ -8,7 +8,9 @@ from typing import Callable, List, Optional, Tuple
 
 import pandas as pd
 
-from ..base import Composite, Extras, Pipeline, Pipelines, T, get_concatenated_names
+from fold.base.classes import Artifact
+
+from ..base import Composite, Pipeline, Pipelines, T, get_concatenated_names
 from ..utils.checks import all_have_probabilities
 from ..utils.list import unique, wrap_in_double_list_if_needed
 
@@ -60,10 +62,10 @@ class EnsembleEachColumn(Composite):
             self.pipelines_already_cloned = True
 
     def preprocess_primary(
-        self, X: pd.DataFrame, index: int, y: T, extras: Extras, fit: bool
-    ) -> Tuple[pd.DataFrame, T, Extras]:
+        self, X: pd.DataFrame, index: int, y: T, artifact: Artifact, fit: bool
+    ) -> Tuple[pd.DataFrame, T, Artifact]:
         X = X.iloc[:, index].to_frame()
-        return X, y, extras
+        return X, y, artifact
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
@@ -144,9 +146,9 @@ class TransformEachColumn(Composite):
             self.pipeline_already_cloned = True
 
     def preprocess_primary(
-        self, X: pd.DataFrame, index: int, y: T, extras: Extras, fit: bool
-    ) -> Tuple[pd.DataFrame, T, Extras]:
-        return (X.iloc[:, index].to_frame(), y, extras)
+        self, X: pd.DataFrame, index: int, y: T, artifact: Artifact, fit: bool
+    ) -> Tuple[pd.DataFrame, T, Artifact]:
+        return (X.iloc[:, index].to_frame(), y, artifact)
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
@@ -207,14 +209,14 @@ class SkipNA(Composite):
         self.name = name or "SkipNA-" + get_concatenated_names(self.pipeline)
 
     def preprocess_primary(
-        self, X: pd.DataFrame, index: int, y: T, extras: Extras, fit: bool
-    ) -> Tuple[pd.DataFrame, T, Extras]:
+        self, X: pd.DataFrame, index: int, y: T, artifact: Artifact, fit: bool
+    ) -> Tuple[pd.DataFrame, T, Artifact]:
         self.original_index = X.index.copy()
         self.isna = X.isna().any(axis=1)
         return (
             X[~self.isna],
             y[~self.isna] if y is not None else None,
-            extras.loc(~self.isna),
+            artifact[~self.isna],
         )
 
     def postprocess_result_primary(

@@ -9,11 +9,12 @@ from typing import Callable, List, Optional, Tuple, TypeVar, Union
 import pandas as pd
 
 from ..splitters import SingleWindowSplitter
+from ..utils.dataframe import ResolutionStrategy, concat_on_columns_with_duplicates
 from ..utils.introspection import get_initialization_parameters
+from ..utils.list import filter_none
 
 T = TypeVar("T", Optional[pd.Series], pd.Series)
 X = pd.DataFrame
-Artifact = pd.DataFrame
 
 
 class Block(ABC):
@@ -44,6 +45,9 @@ class Composite(Block, ABC):
         )
         secondary_only_single_pipeline: bool = (
             False  # There should be a single secondary pipeline.
+        )
+        artifacts_length_should_match: bool = (
+            True  # returned Artifacts should be the same length as the input
         )
 
     properties: Properties
@@ -79,39 +83,40 @@ class Composite(Block, ABC):
         pass
 
     def preprocess_primary(
-        self, X: pd.DataFrame, index: int, y: T, extras: Extras, fit: bool
-    ) -> Tuple[pd.DataFrame, T, Extras]:
-        return X, y, extras
+        self, X: pd.DataFrame, index: int, y: T, artifact: Artifact, fit: bool
+    ) -> Tuple[pd.DataFrame, T, Artifact]:
+        return X, y, artifact
 
     def preprocess_secondary(
         self,
         X: pd.DataFrame,
         y: T,
-        extras: Extras,
+        artifact: Artifact,
         results_primary: List[pd.DataFrame],
         index: int,
         fit: bool,
-    ) -> Tuple[pd.DataFrame, T, Extras]:
-        return X, y, extras
+    ) -> Tuple[pd.DataFrame, T, Artifact]:
+        return X, y, artifact
 
     def postprocess_artifacts_primary(
         self,
-        artifacts: List[Artifact],
-        extras: Extras,
+        primary_artifacts: List[Artifact],
         results: List[pd.DataFrame],
+        original_artifact: Artifact,
         fit: bool,
     ) -> pd.DataFrame:
-        return pd.concat(artifacts, axis="columns")
+        return concat_on_columns_with_duplicates(
+            primary_artifacts, strategy=ResolutionStrategy.last
+        )
 
     def postprocess_artifacts_secondary(
-        self, primary_artifacts: pd.DataFrame, secondary_artifacts: List[Artifact]
+        self,
+        primary_artifacts: pd.DataFrame,
+        secondary_artifacts: List[Artifact],
+        original_artifact: Artifact,
     ) -> pd.DataFrame:
-        return pd.concat(
-            [
-                primary_artifacts,
-                pd.concat(secondary_artifacts, axis="columns"),
-            ],
-            axis="columns",
+        return concat_on_columns_with_duplicates(
+            [primary_artifacts] + secondary_artifacts, strategy=ResolutionStrategy.last
         )
 
 
@@ -135,7 +140,6 @@ class Optimizer(Block, ABC):
         self,
         results: List[pd.DataFrame],
         y: pd.Series,
-        extras: Extras,
         artifacts: List[pd.DataFrame],
     ) -> Optional[Artifact]:
         raise NotImplementedError
@@ -289,66 +293,115 @@ class SingleFunctionTransformation(Transformation):
 
 
 class EventDataFrame(pd.DataFrame):
-    start: pd.Series
-    end: pd.Series
-    label: pd.Series
-    raw: pd.Series
-    sample_weights: pd.Series
-    test_sample_weights: pd.Series
+    @property
+    def start(self) -> pd.Series:
+        return self["event_start"]
 
-    def __init__(
-        self,
+    @property
+    def end(self) -> pd.Series:
+        return self["event_end"]
+
+    @property
+    def label(self) -> pd.Series:
+        return self["event_label"]
+
+    @property
+    def raw(self) -> pd.Series:
+        return self["event_raw"]
+
+    @property
+    def sample_weights(self) -> pd.Series:
+        return self["event_sample_weights"]
+
+    @property
+    def test_sample_weights(self) -> pd.Series:
+        return self["event_test_sample_weights"]
+
+    @classmethod
+    def from_data(
+        cls,
         start: pd.DatetimeIndex,
         end: pd.DatetimeIndex,
         label: pd.Series,
         raw: pd.Series,
         sample_weights: Optional[pd.Series] = None,
         test_sample_weights: Optional[pd.Series] = None,
-    ):
-        super().__init__(
+    ) -> EventDataFrame:
+        return cls(
             data={
-                "start": start,
-                "end": end,
-                "label": label,
-                "raw": raw,
-                "sample_weights": pd.Series(1.0, index=start)
+                "event_start": start,
+                "event_end": end,
+                "event_label": label,
+                "event_raw": raw,
+                "event_sample_weights": pd.Series(1.0, index=start)
                 if sample_weights is None
                 else sample_weights,
-                "test_sample_weights": pd.Series(1.0, index=start)
+                "event_test_sample_weights": pd.Series(1.0, index=start)
                 if test_sample_weights is None
                 else test_sample_weights,
             }
         )
 
 
-@dataclass
-class Extras:
-    events: Optional[EventDataFrame]
-    sample_weights: Optional[pd.Series]
+class Artifact(pd.DataFrame):
+    @staticmethod
+    def empty(index: pd.Index) -> Artifact:
+        return pd.DataFrame(index=index)  # type: ignore
 
-    def __init__(
-        self,
-        events: Optional[EventDataFrame] = None,
-        sample_weights: Optional[pd.Series] = None,
-    ):
-        self.events = events
-        self.sample_weights = sample_weights
+    @staticmethod
+    def get_sample_weights(artifact: Artifact) -> Optional[pd.Series]:
+        if "sample_weights" not in artifact.columns:
+            return None
+        return artifact["sample_weights"]
 
-    def loc(self, s) -> Extras:
-        return Extras(
-            events=self.events.loc[s] if self.events is not None else None,
-            sample_weights=self.sample_weights.loc[s]
-            if self.sample_weights is not None
-            else None,
+    @staticmethod
+    def get_event_sample_weights(artifact: Artifact) -> Optional[pd.Series]:
+        if "event_sample_weights" not in artifact.columns:
+            return None
+        return artifact["event_sample_weights"]
+
+    @staticmethod
+    def get_test_sample_weights(artifact: Artifact) -> Optional[pd.Series]:
+        if "event_test_sample_weights" not in artifact.columns:
+            if "sample_weights" in artifact.columns:
+                return artifact["sample_weights"]
+            else:
+                return None
+        return artifact["event_test_sample_weights"]
+
+    @staticmethod
+    def get_event_label(artifact: Artifact) -> Optional[pd.Series]:
+        if "event_label" not in artifact.columns:
+            return None
+        return artifact["event_label"]
+
+    @staticmethod
+    def get_events(artifact: Artifact) -> Optional[EventDataFrame]:
+        if "event_start" not in artifact.columns:
+            return None
+        return EventDataFrame.from_data(
+            start=artifact.event_start,
+            end=artifact.event_end,
+            label=artifact.event_label,
+            raw=artifact.event_raw,
+            sample_weights=artifact.event_sample_weights,
+            test_sample_weights=artifact.event_test_sample_weights,
         )
 
-    def iloc(self, s) -> Extras:
-        return Extras(
-            events=self.events.iloc[s] if self.events is not None else None,
-            sample_weights=self.sample_weights.iloc[s]
-            if self.sample_weights is not None
-            else None,
+    @staticmethod
+    def from_events_sample_weights(
+        index: pd.Index,
+        events: Optional[EventDataFrame],
+        sample_weights: Optional[pd.Series],
+    ) -> Artifact:
+        if sample_weights is not None:
+            sample_weights = sample_weights.rename("sample_weights")
+        if events is not None and not events.columns[0].startswith("event_"):
+            events = events.add_prefix("event_")
+        result = concat_on_columns_with_duplicates(
+            filter_none([events, sample_weights]), strategy=ResolutionStrategy.first
         )
-
-    def __len__(self) -> int:
-        return len(self.events) if self.events is not None else 0
+        if result.empty:
+            return Artifact.empty(index)  # type: ignore
+        else:
+            return result  # type: ignore

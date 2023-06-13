@@ -7,7 +7,9 @@ from typing import Callable, List, Optional, Tuple
 
 import pandas as pd
 
-from ..base import Composite, Extras, Pipeline, Pipelines, T, get_concatenated_names
+from fold.base.classes import Artifact
+
+from ..base import Composite, Pipeline, Pipelines, T, get_concatenated_names
 from ..utils.checks import get_prediction_column
 from ..utils.list import wrap_in_double_list_if_needed
 
@@ -82,19 +84,19 @@ class ModelResiduals(Composite):
         )
 
     def preprocess_primary(
-        self, X: pd.DataFrame, index: int, y: T, extras: Extras, fit: bool
-    ) -> Tuple[pd.DataFrame, T, Extras]:
-        return X, y, extras
+        self, X: pd.DataFrame, index: int, y: T, artifact: Artifact, fit: bool
+    ) -> Tuple[pd.DataFrame, T, Artifact]:
+        return X, y, artifact
 
     def preprocess_secondary(
         self,
         X: pd.DataFrame,
         y: T,
-        extras: Extras,
+        artifact: Artifact,
         results_primary: List[pd.DataFrame],
         index: int,
         fit: bool,
-    ) -> Tuple[pd.DataFrame, T, Extras]:
+    ) -> Tuple[pd.DataFrame, T, Artifact]:
         X = (
             pd.concat([X] + results_primary, axis="columns")
             if self.primary_output_included
@@ -102,7 +104,7 @@ class ModelResiduals(Composite):
         )
         predictions = get_prediction_column(results_primary[0])
         residuals = y - predictions
-        return X, residuals, Extras()
+        return X, residuals, Artifact.empty(X.index)
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
@@ -124,6 +126,14 @@ class ModelResiduals(Composite):
             .rename(f"predictions_{self.name}")
             .to_frame()
         )
+
+    def postprocess_artifacts_secondary(
+        self,
+        primary_artifacts: pd.DataFrame,
+        secondary_artifacts: List[Artifact],
+        original_artifact: Artifact,
+    ) -> pd.DataFrame:
+        return original_artifact
 
     def get_children_primary(self) -> Pipelines:
         return self.primary

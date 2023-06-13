@@ -40,7 +40,7 @@ class FixedForwardHorizon(Labeler):
         test_sample_weights = self.weighing_strategy_test.calculate(raw_returns)
 
         offset = pd.Timedelta(value=self.time_horizon, unit=y.index.freqstr)
-        events = EventDataFrame(
+        return EventDataFrame.from_data(
             start=event_start_times,
             end=event_start_times + offset,
             label=labels,
@@ -48,7 +48,6 @@ class FixedForwardHorizon(Labeler):
             sample_weights=sample_weights,
             test_sample_weights=test_sample_weights,
         )
-        return events
 
     def get_labels(self) -> List[int]:
         return self.labeling_strategy.get_all_labels()

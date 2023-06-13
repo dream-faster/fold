@@ -135,6 +135,9 @@ addopts = [
   "--doctest-modules",
   "--durations=0",
 ]
+# log_cli = true
+# log_cli_level = "DEBUG"
+
 
 [tool.hatch.metadata]
 allow-direct-references = true

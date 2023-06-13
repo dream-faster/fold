@@ -5,15 +5,20 @@ from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple, Union
 
 import pandas as pd
 
-from fold.base.classes import Extras
 from fold.base.scoring import score_results
 
-from ..base import Artifact, OutOfSamplePredictions, Pipeline, TrainedPipelines
+from ..base import (
+    Artifact,
+    EventDataFrame,
+    OutOfSamplePredictions,
+    Pipeline,
+    TrainedPipelines,
+)
 from ..splitters import Splitter
 from ..utils.dataframe import ResolutionStrategy, concat_on_columns_with_duplicates
 from .backtesting import backtest
 from .training import train
-from .types import Backend, EventDataFrame, TrainMethod
+from .types import Backend, TrainMethod
 
 if TYPE_CHECKING:
     from krisi import ScoreCard
@@ -81,13 +86,10 @@ def backtest_score(
         return_artifacts=True,
     )
 
-    extras = Extras(events=events, sample_weights=sample_weights)
     scorecard = score_results(
         pred,
         y,
-        extras=extras,
         artifacts=artifacts,
-        sample_weights=sample_weights,
         krisi_args=krisi_args,
     )
     if return_artifacts:

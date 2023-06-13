@@ -6,15 +6,10 @@ from typing import Optional, Tuple, Union
 import pandas as pd
 from tqdm.auto import tqdm
 
-from ..base import (
-    Artifact,
-    EventDataFrame,
-    Extras,
-    OutOfSamplePredictions,
-    TrainedPipelines,
-)
+from ..base import Artifact, EventDataFrame, OutOfSamplePredictions, TrainedPipelines
 from ..splitters import Splitter
 from ..utils.dataframe import concat_on_index
+from ..utils.list import unpack_list_of_tuples
 from ..utils.trim import trim_initial_nans_single
 from .checks import check_types
 from .common import _backtest_on_window
@@ -67,16 +62,16 @@ def backtest(
     """
     backend = Backend.from_str(backend)
     X, y = check_types(X, y)
-    extras = Extras(events=events, sample_weights=sample_weights)
+    artifact = Artifact.from_events_sample_weights(X.index, events, sample_weights)
 
-    results, artifacts = zip(
-        *[
+    results, artifacts = unpack_list_of_tuples(
+        [
             _backtest_on_window(
                 trained_pipelines,
                 split,
                 X,
                 y,
-                extras,
+                artifact,
                 backend,
                 mutate=mutate,
             )

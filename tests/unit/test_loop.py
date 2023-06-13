@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 
 from fold.base import Transformations
-from fold.base.classes import Extras
+from fold.base.classes import Artifact
 from fold.base.scoring import score_results
 from fold.events.labeling.fixed import FixedForwardHorizon
 from fold.events.labeling.strategies import NoLabel
@@ -96,7 +96,7 @@ def test_trim_na() -> None:
     _ = backtest(transformations_over_time, None, y, splitter)
 
 
-def test_sameple_weights() -> None:
+def test_sample_weights() -> None:
     def assert_sample_weights_exist(X, y, sample_weight):
         assert sample_weight is not None
         assert sample_weight[0] == 0
@@ -122,51 +122,21 @@ def test_score_results():
     sc = score_results(
         results,
         y,
-        Extras(),
-        artifacts=pd.DataFrame(),
-        sample_weights=None,
+        artifacts=Artifact.empty(y.index),
     )
 
-    def get_acc(obj):
-        return obj["accuracy"].result
-
-    assert get_acc(sc) == 1.0
+    assert sc["accuracy"].result == 1.0
 
     back_shifted = y.shift(1)
-    extras = Extras(
-        events=FixedForwardHorizon(
-            time_horizon=1, labeling_strategy=NoLabel(), weighing_strategy=None
-        ).label_events(back_shifted.index, back_shifted)
-    )
-    assert (y[:-1] == extras.events.label).all()
-
-    # test that if extras.events is not None, it is used for scoring
-    sc = score_results(
-        results,
-        pd.Series(0, index=y.index),
-        extras,
-        artifacts=pd.DataFrame(),
-        sample_weights=None,
-    )
-    assert get_acc(sc) == 1.0
+    events = FixedForwardHorizon(
+        time_horizon=1, labeling_strategy=NoLabel(), weighing_strategy=None
+    ).label_events(back_shifted.index, back_shifted)
+    assert (y[:-1] == events.label).all()
 
     # test that there's a "label" in artifacts, it is used for scoring
     sc = score_results(
-        results,
-        pd.Series(0, index=y.index),
-        Extras(),
-        artifacts=extras.events,
-        sample_weights=None,
+        results[:-1],
+        pd.Series(0, index=results[:-1].index),
+        artifacts=events,
     )
-    assert get_acc(sc) == 1.0
-
-    sc = score_results(
-        results[200:],
-        pd.Series(0, index=y.index),
-        extras,
-        artifacts=pd.DataFrame(),
-        sample_weights=None,
-    )
-    assert get_acc(sc) == 1.0
-    if hasattr(sc, "y"):
-        assert len(sc.y) == len(extras.events) - 200
+    assert sc["accuracy"].result == 1.0

@@ -3,8 +3,7 @@ import pandas as pd
 import pytest
 from sklearn.feature_selection import SelectKBest, VarianceThreshold, f_regression
 
-from fold.base import Composite, traverse, traverse_apply
-from fold.base.classes import Extras
+from fold.base import Artifact, Composite, traverse, traverse_apply
 from fold.composites.target import TransformTarget
 from fold.composites.utils import _clean_params
 from fold.models.base import postpostprocess_output
@@ -38,7 +37,11 @@ def test_trim_initial_nans():
         }
     )
     y = pd.Series([1, 2, 3, 4, 5])
-    trimmed_X, trimmed_y, _ = trim_initial_nans(X, y, Extras(sample_weights=y))
+    trimmed_X, trimmed_y, _ = trim_initial_nans(
+        X,
+        y,
+        Artifact.from_events_sample_weights(y.index, events=None, sample_weights=y),
+    )
     assert trimmed_X.equals(X.iloc[3:])
     assert trimmed_y.equals(y.iloc[3:])
     assert trim_initial_nans_single(X).equals(X.iloc[3:])
@@ -50,7 +53,14 @@ def test_trim_initial_nans():
         }
     )
     y = pd.Series([1, 2, 3, 4])
-    trimmed_X, trimmed_y, _ = trim_initial_nans(X, y, Extras(sample_weights=y))
+    trimmed_X, trimmed_y, _ = trim_initial_nans(
+        X,
+        y,
+        Artifact.from_events_sample_weights(
+            index=y.index, events=None, sample_weights=y
+        ),
+    )
+    assert trimmed_X.equals(X.iloc[2:])
     assert trimmed_X.equals(X.iloc[2:])
     assert trimmed_y.equals(y.iloc[2:])
     assert trim_initial_nans_single(X).equals(X.iloc[2:])
@@ -62,7 +72,13 @@ def test_trim_initial_nans():
         }
     )
     y = pd.Series([1, 2, 3, 4])
-    trimmed_X, trimmed_y, _ = trim_initial_nans(X, y, Extras(sample_weights=y))
+    trimmed_X, trimmed_y, _ = trim_initial_nans(
+        X,
+        y,
+        Artifact.from_events_sample_weights(
+            index=y.index, events=None, sample_weights=y
+        ),
+    )
     assert len(trimmed_X) == 0
     assert len(trimmed_y) == 0
 

@@ -42,7 +42,7 @@ def test_predefined_events() -> None:
     splitter = ExpandingWindowSplitter(initial_train_window=100, step=200)
 
     labeler = FixedForwardHorizon(
-        1, labeling_strategy=BinarizeSign(), weighing_strategy=NoWeighing()
+        2, labeling_strategy=BinarizeSign(), weighing_strategy=NoWeighing()
     )
 
     original_start_times = y.index
@@ -53,4 +53,4 @@ def test_predefined_events() -> None:
         pipeline, X, y, splitter, events=events, return_artifacts=True
     )
     assert len(pred) == 1000
-    assert len(pred.dropna()) == 999
+    assert len(pred.dropna()) == 998
