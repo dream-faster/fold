@@ -8,11 +8,10 @@ from typing import Callable, List, Optional, Tuple, TypeVar, Union
 
 import pandas as pd
 
-from fold.utils.dataframe import ResolutionStrategy, concat_on_columns_with_duplicates
-from fold.utils.list import filter_none
-
 from ..splitters import SingleWindowSplitter
+from ..utils.dataframe import ResolutionStrategy, concat_on_columns_with_duplicates
 from ..utils.introspection import get_initialization_parameters
+from ..utils.list import filter_none
 
 T = TypeVar("T", Optional[pd.Series], pd.Series)
 X = pd.DataFrame

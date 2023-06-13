@@ -55,7 +55,7 @@ class _CreateEvents(Composite):
         fit: bool,
     ) -> Tuple[pd.DataFrame, T, Artifact]:
         events = results_primary[0].dropna()
-        return (X.loc[events.index], events["label"], concat_on_columns(events))
+        return (X.loc[events.index], events["label"], events)
 
     def postprocess_result_secondary(
         self,
