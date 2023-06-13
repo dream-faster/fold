@@ -27,7 +27,6 @@ def update(
         X,
         y,
         artifact,
-        Artifact.empty(X.index),
         transformations,
         stage=Stage.update,
         backend=Backend.no,
