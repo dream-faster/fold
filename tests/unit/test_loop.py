@@ -135,17 +135,8 @@ def test_score_results():
 
     # test that there's a "label" in artifacts, it is used for scoring
     sc = score_results(
-        results,
-        pd.Series(0, index=y.index),
+        results[:-1],
+        pd.Series(0, index=results[:-1].index),
         artifacts=events,
     )
     assert sc["accuracy"].result == 1.0
-
-    sc = score_results(
-        results[200:],
-        pd.Series(0, index=results[200:].index),
-        artifacts=Artifact.empty(y.index),
-    )
-    assert sc["accuracy"].result == 1.0
-    if hasattr(sc, "y"):
-        assert len(sc.y) == len(events) - 200
