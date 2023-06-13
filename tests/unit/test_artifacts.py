@@ -53,7 +53,7 @@ def test_artifacts_optimizer() -> None:
     ]
     _, artifacts = train(pipeline, X, y, splitter, return_artifacts=True)
     assert artifacts is not None
-    assert list(artifacts["selected_params"].iloc[0].values())[0] == {
+    assert list(artifacts["selected_params"].dropna().iloc[0].values())[0] == {
         "predicted_value": 25
     }
 
