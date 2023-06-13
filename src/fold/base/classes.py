@@ -305,7 +305,7 @@ class EventDataFrame(pd.DataFrame):
         sample_weights: Optional[pd.Series] = None,
         test_sample_weights: Optional[pd.Series] = None,
     ) -> EventDataFrame:
-        cls(
+        return cls(
             data={
                 "start": start,
                 "end": end,
