@@ -72,7 +72,7 @@ def _process_minibatch_transformation(
     return_value, artifact = transformation.transform(
         X_with_memory, in_sample=in_sample
     )
-    artifacts = concat_on_columns([artifact, artifacts])
+    artifact = concat_on_columns([artifact, artifacts])
     # 3. update (if we're in the update stage)
     if stage == Stage.update:
         artifact = transformation.update(

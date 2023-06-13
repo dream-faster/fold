@@ -147,6 +147,14 @@ class MetaLabeling(Composite):
         meta_probabilities = meta_probabilities.rename(columns=dc)
         return pd.concat([result, meta_probabilities], axis="columns")
 
+    def postprocess_artifacts_secondary(
+        self,
+        primary_artifacts: pd.DataFrame,
+        secondary_artifacts: List[Artifact],
+        original_artifact: Artifact,
+    ) -> pd.DataFrame:
+        return original_artifact
+
     def get_children_primary(self) -> Pipelines:
         return self.primary
 

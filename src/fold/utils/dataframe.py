@@ -91,8 +91,10 @@ def concat_on_columns_with_duplicates(
     strategy: ResolutionStrategy,
     raise_indices_dont_match: bool = False,
 ) -> pd.DataFrame:
-    if all([result.empty for result in dfs]):
+    if len(dfs) == 0:
         return pd.DataFrame()
+    if all([result.empty for result in dfs]):
+        return pd.DataFrame(index=dfs[0].index)
     dfs = [to_dataframe(df) for df in dfs]
     columns = flatten([result.columns.to_list() for result in dfs])
     duplicates = keep_only_duplicates(columns)

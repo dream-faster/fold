@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import logging
 from typing import List, Optional, Tuple, TypeVar, Union
 
 import pandas as pd
@@ -22,6 +23,7 @@ from ..models.base import Model
 from ..splitters import Fold
 from ..utils.checks import is_prediction
 from ..utils.dataframe import concat_on_columns
+from ..utils.list import unpack_list_of_tuples
 from ..utils.trim import trim_initial_nans_single
 from .backend import get_backend_dependent_functions
 from .process.process_inner_loop import _process_with_inner_loop
@@ -31,6 +33,9 @@ from .process.process_minibatch import (
 )
 from .types import Backend, Stage
 from .utils import _extract_trained_pipelines, deepcopy_pipelines, replace_with
+
+logger = logging.getLogger("fold:loop")
+
 
 T = TypeVar(
     "T",
@@ -55,6 +60,10 @@ def recursively_transform(
     The main function to transform (and fit or update) a pipline of transformations.
     `stage` is used to determine whether to run the inner loop for online models.
     """
+    logger.debug(
+        f'called "recursively_transform()" with {transformations.__class__.__name__} with stage {stage}'
+    )
+
     if len(X) != len(artifacts):
         artifacts = artifacts.loc[
             X.index
@@ -124,8 +133,8 @@ def _process_composite(
     composite.before_fit(X)
     primary_transformations = composite.get_children_primary()
 
-    primary_transformations, results_primary, artifacts_primary = zip(
-        *backend_functions.process_child_transformations(
+    primary_transformations, results_primary, artifacts_primary = unpack_list_of_tuples(
+        backend_functions.process_child_transformations(
             __process_primary_child_transform,
             enumerate(primary_transformations),
             composite,
@@ -137,6 +146,9 @@ def _process_composite(
             None,
         )
     )
+    assert all(
+        [r.shape[0] == a.shape[0] for r, a in zip(results_primary, artifacts_primary)]
+    ), ValueError("Artifacts shape doesn't match result's length.")
     composite = composite.clone(replace_with(primary_transformations[0]))
 
     if composite.properties.primary_only_single_pipeline:
@@ -152,9 +164,13 @@ def _process_composite(
     secondary_transformations = composite.get_children_secondary()
 
     artifacts_primary = composite.postprocess_artifacts_primary(
-        artifacts=artifacts_primary,
+        primary_artifacts=artifacts_primary,
         results=results_primary,
         fit=stage.is_fit_or_update(),
+        original_artifact=artifacts,
+    )
+    assert artifacts_primary.shape[0] == results_primary[0].shape[0], ValueError(
+        f"Artifacts shape doesn't match result's length after {composite.__class__.__name__}.postprocess_artifacts_primary() was called"
     )
     if secondary_transformations is None:
         return (
@@ -163,8 +179,12 @@ def _process_composite(
             artifacts_primary,
         )
 
-    secondary_transformations, results_secondary, artifacts_secondary = zip(
-        *backend_functions.process_child_transformations(
+    (
+        secondary_transformations,
+        results_secondary,
+        artifacts_secondary,
+    ) = unpack_list_of_tuples(
+        backend_functions.process_child_transformations(
             __process_secondary_child_transform,
             enumerate(secondary_transformations),
             composite,
@@ -195,7 +215,7 @@ def _process_composite(
             results_primary, results_secondary, y, in_sample=stage == Stage.inital_fit
         ),
         composite.postprocess_artifacts_secondary(
-            artifacts_primary, artifacts_secondary
+            artifacts_primary, artifacts_secondary, artifacts
         ),
     )
 
@@ -218,8 +238,8 @@ def _process_optimizer(
             if len(candidates) == 0:
                 break
 
-            _, results, candidate_artifacts = zip(
-                *backend_functions.process_child_transformations(
+            _, results, candidate_artifacts = unpack_list_of_tuples(
+                backend_functions.process_child_transformations(
                     __process_candidates,
                     enumerate(candidates),
                     optimizer,

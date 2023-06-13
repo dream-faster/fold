@@ -127,6 +127,14 @@ class ModelResiduals(Composite):
             .to_frame()
         )
 
+    def postprocess_artifacts_secondary(
+        self,
+        primary_artifacts: pd.DataFrame,
+        secondary_artifacts: List[Artifact],
+        original_artifact: Artifact,
+    ) -> pd.DataFrame:
+        return original_artifact
+
     def get_children_primary(self) -> Pipelines:
         return self.primary
 

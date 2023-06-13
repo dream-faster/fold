@@ -14,7 +14,7 @@ from ..base import (
 )
 from ..splitters import Fold, SlidingWindowSplitter, Splitter
 from ..utils.dataframe import concat_on_index_override_duplicate_rows
-from ..utils.list import wrap_in_list
+from ..utils.list import unpack_list_of_tuples, wrap_in_list
 from .backend import get_backend_dependent_functions
 from .checks import check_types
 from .common import _sequential_train_on_window, _train_on_window
@@ -100,8 +100,8 @@ def train(
             backend=backend,
         )
 
-        rest_idx, rest_transformations, rest_artifacts = zip(
-            *backend_functions.train_transformations(
+        rest_idx, rest_transformations, rest_artifacts = unpack_list_of_tuples(
+            backend_functions.train_transformations(
                 _train_on_window,
                 first_batch_transformations,
                 X,
@@ -118,8 +118,8 @@ def train(
         processed_artifacts = [first_batch_artifacts] + list(rest_artifacts)
 
     elif train_method == TrainMethod.parallel and len(splits) > 1:
-        processed_idx, processed_pipelines, processed_artifacts = zip(
-            *backend_functions.train_transformations(
+        processed_idx, processed_pipelines, processed_artifacts = unpack_list_of_tuples(
+            backend_functions.train_transformations(
                 _train_on_window,
                 pipeline,
                 X,

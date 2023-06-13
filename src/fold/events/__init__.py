@@ -68,14 +68,18 @@ class _CreateEvents(Composite):
 
     def postprocess_artifacts_primary(
         self,
-        artifacts: List[Artifact],
+        primary_artifacts: List[Artifact],
         results: List[pd.DataFrame],
+        original_artifact: Artifact,
         fit: bool,
     ) -> pd.DataFrame:
         return results[0]
 
     def postprocess_artifacts_secondary(
-        self, primary_artifacts: pd.DataFrame, secondary_artifacts: List[Artifact]
+        self,
+        primary_artifacts: pd.DataFrame,
+        secondary_artifacts: List[Artifact],
+        original_artifact: Artifact,
     ) -> pd.DataFrame:
         return concat_on_columns_with_duplicates(
             [primary_artifacts, concat_on_columns(secondary_artifacts)],
@@ -93,7 +97,9 @@ class _CreateEvents(Composite):
 
 
 class UsePredefinedEvents(Composite):
-    properties = Composite.Properties(primary_only_single_pipeline=True)
+    properties = Composite.Properties(
+        primary_only_single_pipeline=True, artifacts_length_should_match=False
+    )
     name = "UsePredefinedEvents"
 
     def __init__(
@@ -127,12 +133,13 @@ class UsePredefinedEvents(Composite):
 
     def postprocess_artifacts_primary(
         self,
-        artifacts: List[Artifact],
+        primary_artifacts: List[Artifact],
         results: List[pd.DataFrame],
+        original_artifact: Artifact,
         fit: bool,
     ) -> pd.DataFrame:
         return concat_on_columns_with_duplicates(
-            artifacts,
+            primary_artifacts,
             strategy=ResolutionStrategy.last,
         )
 

@@ -46,6 +46,9 @@ class Composite(Block, ABC):
         secondary_only_single_pipeline: bool = (
             False  # There should be a single secondary pipeline.
         )
+        artifacts_length_should_match: bool = (
+            True  # returned Artifacts should be the same length as the input
+        )
 
     properties: Properties
 
@@ -97,16 +100,20 @@ class Composite(Block, ABC):
 
     def postprocess_artifacts_primary(
         self,
-        artifacts: List[Artifact],
+        primary_artifacts: List[Artifact],
         results: List[pd.DataFrame],
+        original_artifact: Artifact,
         fit: bool,
     ) -> pd.DataFrame:
         return concat_on_columns_with_duplicates(
-            artifacts, strategy=ResolutionStrategy.last
+            primary_artifacts, strategy=ResolutionStrategy.last
         )
 
     def postprocess_artifacts_secondary(
-        self, primary_artifacts: pd.DataFrame, secondary_artifacts: List[Artifact]
+        self,
+        primary_artifacts: pd.DataFrame,
+        secondary_artifacts: List[Artifact],
+        original_artifact: Artifact,
     ) -> pd.DataFrame:
         return concat_on_columns_with_duplicates(
             [primary_artifacts] + secondary_artifacts, strategy=ResolutionStrategy.last
