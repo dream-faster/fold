@@ -120,6 +120,24 @@ class Composite(Block, ABC):
         )
 
 
+class Sampler(Block, ABC):
+    @abstractmethod
+    def get_children_primary(self) -> Pipelines:
+        raise NotImplementedError
+
+    @abstractmethod
+    def clone(self, clone_children: Callable) -> Composite:
+        raise NotImplementedError
+
+    def before_fit(self, X: pd.DataFrame) -> None:
+        pass
+
+    def preprocess_primary(
+        self, X: pd.DataFrame, index: int, y: T, artifact: Artifact, fit: bool
+    ) -> Tuple[pd.DataFrame, T, Artifact]:
+        return X, y, artifact
+
+
 class Optimizer(Block, ABC):
     splitter: SingleWindowSplitter
 

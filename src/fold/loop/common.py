@@ -13,6 +13,7 @@ from ..base import (
     Composite,
     Optimizer,
     Pipeline,
+    Sampler,
     TrainedPipeline,
     TrainedPipelines,
     Transformation,
@@ -43,7 +44,8 @@ T = TypeVar(
         Transformation,
         Composite,
         Optimizer,
-        List[Union[Transformation, Optimizer, Composite]],
+        Sampler,
+        List[Union[Transformation, Optimizer, Sampler, Composite]],
     ],
 )
 
@@ -86,6 +88,9 @@ def recursively_transform(
 
     elif isinstance(transformations, Optimizer):
         return _process_optimizer(transformations, X, y, artifacts, stage, backend)
+
+    elif isinstance(transformations, Sampler):
+        return _process_sampler(transformations, X, y, artifacts, stage, backend)
 
     elif isinstance(transformations, Transformation) or isinstance(
         transformations, Model
@@ -146,9 +151,13 @@ def _process_composite(
             None,
         )
     )
-    assert all(
-        [r.shape[0] == a.shape[0] for r, a in zip(results_primary, artifacts_primary)]
-    ), ValueError("Artifacts shape doesn't match result's length.")
+    if composite.properties.artifacts_length_should_match:
+        assert all(
+            [
+                r.shape[0] == a.shape[0]
+                for r, a in zip(results_primary, artifacts_primary)
+            ]
+        ), ValueError("Artifacts shape doesn't match result's length.")
     composite = composite.clone(replace_with(primary_transformations[0]))
 
     if composite.properties.primary_only_single_pipeline:
@@ -219,6 +228,66 @@ def _process_composite(
             artifacts_primary, artifacts_secondary, artifacts
         ),
     )
+
+
+def _process_sampler(
+    sampler: Sampler,
+    X: pd.DataFrame,
+    y: Optional[pd.Series],
+    artifacts: Artifact,
+    stage: Stage,
+    backend: Backend,
+) -> Tuple[Composite, X, Artifact]:
+    backend_functions = get_backend_dependent_functions(backend)
+
+    primary_transformations = sampler.get_children_primary()
+
+    primary_transformations, primary_results, primary_artifacts = unpack_list_of_tuples(
+        backend_functions.process_child_transformations(
+            __process_primary_child_transform,
+            enumerate(primary_transformations),
+            sampler,
+            X,
+            y,
+            artifacts,
+            stage,
+            backend,
+            None,
+        )
+    )
+    sampler = sampler.clone(replace_with(primary_transformations[0]))
+
+    assert len(primary_results) == 1, ValueError(
+        "Expected single output from primary transformations, got"
+        f" {len(primary_results)} instead."
+    )
+
+    if stage is Stage.inital_fit:
+        secondary_transformations = sampler.get_children_primary()
+        (
+            secondary_transformations,
+            primary_results,
+            primary_artifacts,
+        ) = unpack_list_of_tuples(
+            backend_functions.process_child_transformations(
+                __process_primary_child_transform,
+                enumerate(secondary_transformations),
+                sampler,
+                X,
+                y,
+                artifacts,
+                Stage.infer,
+                backend,
+                None,
+            )
+        )
+
+    primary_results = primary_results[0]
+    primary_artifacts = primary_artifacts[0]
+    assert primary_artifacts.shape[0] == primary_results.shape[0], ValueError(
+        f"Artifacts shape doesn't match result's length after {sampler.__class__.__name__}.postprocess_artifacts_primary() was called"
+    )
+    return sampler, primary_results, primary_artifacts
 
 
 def _process_optimizer(
@@ -308,7 +377,7 @@ def __process_candidates(
 
 
 def __process_primary_child_transform(
-    composite: Composite,
+    composite: Union[Composite, Sampler],
     index: int,
     child_transform: Transformations,
     X: pd.DataFrame,
