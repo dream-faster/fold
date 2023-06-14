@@ -54,6 +54,7 @@ class Sample(Composite):
     properties = Composite.Properties(
         primary_requires_predictions=False,
         primary_only_single_pipeline=True,
+        artifacts_length_should_match=False,
     )
 
     def __init__(
