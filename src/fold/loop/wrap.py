@@ -13,7 +13,7 @@ from fold.transformations.sklearn import (
     WrapSKLearnTransformation,
 )
 
-from ..base import Composite, Optimizer, Pipeline, Transformation
+from ..base import Composite, Optimizer, Pipeline, Sampler, Transformation
 from ..transformations.function import WrapFunction
 
 
@@ -35,6 +35,8 @@ def wrap_transformation_if_needed(
     elif isinstance(transformation, Composite):
         return transformation.clone(wrap_transformation_if_needed)
     elif isinstance(transformation, Optimizer):
+        return transformation.clone(wrap_transformation_if_needed)
+    elif isinstance(transformation, Sampler):
         return transformation.clone(wrap_transformation_if_needed)
     elif isinstance(transformation, Transformation):
         return transformation

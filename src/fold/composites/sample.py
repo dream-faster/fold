@@ -3,17 +3,17 @@
 
 from __future__ import annotations
 
-from typing import Any, Callable, List, Optional, Tuple
+from typing import Any, Callable, Optional, Tuple
 
 import pandas as pd
 
-from fold.base.classes import Artifact
+from fold.base.classes import Artifact, Sampler
 
-from ..base import Composite, Pipeline, Pipelines, T, get_concatenated_names
+from ..base import Pipeline, Pipelines, T, get_concatenated_names
 from ..utils.list import wrap_in_double_list_if_needed
 
 
-class Sample(Composite):
+class Sample(Sampler):
     """
     Sample data with an imbalanced-learn sampler instance during training.
     No sampling is done during inference or backtesting.
@@ -51,12 +51,6 @@ class Sample(Composite):
     [imbalanced-learn](https://imbalanced-learn.org/)
     """
 
-    properties = Composite.Properties(
-        primary_requires_predictions=False,
-        primary_only_single_pipeline=True,
-        artifacts_length_should_match=False,
-    )
-
     def __init__(
         self, sampler: Any, pipeline: Pipeline, name: Optional[str] = None
     ) -> None:
@@ -81,20 +75,6 @@ class Sample(Composite):
         else:
             return X, y, artifact
 
-    def postprocess_result_primary(
-        self, results: List[pd.DataFrame], y: Optional[pd.Series]
-    ) -> pd.DataFrame:
-        return results[0]
-
-    def postprocess_artifacts_primary(
-        self,
-        primary_artifacts: List[Artifact],
-        results: List[pd.DataFrame],
-        original_artifact: Artifact,
-        fit: bool,
-    ) -> pd.DataFrame:
-        return original_artifact
-
     def get_children_primary(self) -> Pipelines:
         return self.pipeline
 
@@ -103,6 +83,5 @@ class Sample(Composite):
             sampler=self.sampler,
             pipeline=clone_children(self.pipeline),
         )
-        clone.properties = self.properties
         clone.name = self.name
         return clone
