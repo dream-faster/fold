@@ -169,9 +169,10 @@ def _process_composite(
         fit=stage.is_fit_or_update(),
         original_artifact=artifacts,
     )
-    assert artifacts_primary.shape[0] == results_primary[0].shape[0], ValueError(
-        f"Artifacts shape doesn't match result's length after {composite.__class__.__name__}.postprocess_artifacts_primary() was called"
-    )
+    if composite.properties.artifacts_length_should_match:
+        assert artifacts_primary.shape[0] == results_primary[0].shape[0], ValueError(
+            f"Artifacts shape doesn't match result's length after {composite.__class__.__name__}.postprocess_artifacts_primary() was called"
+        )
     if secondary_transformations is None:
         return (
             composite,
