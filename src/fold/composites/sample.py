@@ -85,6 +85,15 @@ class Sample(Composite):
     ) -> pd.DataFrame:
         return results[0]
 
+    def postprocess_artifacts_primary(
+        self,
+        primary_artifacts: List[Artifact],
+        results: List[pd.DataFrame],
+        original_artifact: Artifact,
+        fit: bool,
+    ) -> pd.DataFrame:
+        return original_artifact
+
     def get_children_primary(self) -> Pipelines:
         return self.pipeline
 
