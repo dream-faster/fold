@@ -100,27 +100,21 @@ class AddWindowFeatures(Transformation, Tunable):
             function_name = (
                 function.__name__ if function.__name__ != "<lambda>" else "transformed"
             )
+
             if columns[0] == "all":
-                X_function_applied = pd.concat(
-                    [
-                        X_function_applied,
-                        function(X.rolling(window)).add_suffix(
-                            f"_{window}_{function_name}"
-                        ),
-                    ],
-                    axis="columns",
-                )
-            else:
-                X_function_applied = pd.concat(
-                    [X_function_applied]
-                    + [
-                        function(X[[col]].rolling(window)).add_suffix(
-                            f"_{window}_{function_name}"
-                        )
-                        for col in columns
-                    ],
-                    axis="columns",
-                )
+                columns = X.columns
+
+            X_function_applied = pd.concat(
+                [
+                    X_function_applied,
+                    function(
+                        X[columns]
+                        .add_suffix(f"_{window}_{function_name}")
+                        .rolling(window)
+                    ),
+                ],
+                axis="columns",
+            )
         return pd.concat([X, X_function_applied], axis="columns"), None
 
     fit = fit_noop
