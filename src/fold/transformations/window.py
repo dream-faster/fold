@@ -111,10 +111,16 @@ class AddWindowFeatures(Transformation, Tunable):
                     axis="columns",
                 )
             else:
-                for col in columns:
-                    X_function_applied[f"{col}_{window}_{function_name}"] = function(
-                        X[col].rolling(window)
-                    )
+                X_function_applied = pd.concat(
+                    [X_function_applied]
+                    + [
+                        function(X[[col]].rolling(window)).add_suffix(
+                            f"_{window}_{function_name}"
+                        )
+                        for col in columns
+                    ],
+                    axis="columns",
+                )
         return pd.concat([X, X_function_applied], axis="columns"), None
 
     fit = fit_noop
