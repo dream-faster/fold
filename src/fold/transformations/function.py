@@ -44,12 +44,12 @@ class AddFunctionColumn(Transformation, Tunable):
     >>> pipeline = AddFunctionColumn([("sine", np.square)])
     >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
     >>> preds.head()
-                               sine     sine_square
-    2021-12-31 15:40:00       -0.0000   0.0000
-    2021-12-31 15:41:00        0.0126   0.0159
-    2021-12-31 15:42:00        0.0251   0.0006
-    2021-12-31 15:43:00        0.0377   0.0014
-    2021-12-31 15:44:00        0.0502   0.0025
+                           sine  sine_square
+    2021-12-31 15:40:00 -0.0000     0.000000
+    2021-12-31 15:41:00  0.0126     0.000159
+    2021-12-31 15:42:00  0.0251     0.000630
+    2021-12-31 15:43:00  0.0377     0.001421
+    2021-12-31 15:44:00  0.0502     0.002520
 
     ```
 
