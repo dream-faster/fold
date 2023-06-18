@@ -70,7 +70,7 @@ class ApplyFunction(Transformation, Tunable):
             requires_X=True, memory_size=past_window_size
         )
         self.params_to_try = params_to_try
-        self.name = name or f"FunctionOnColumns_{self.column_func}"
+        self.name = name or f"ApplyFunction_{self.column_func}"
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
