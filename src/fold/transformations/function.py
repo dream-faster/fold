@@ -27,6 +27,11 @@ class ApplyFunction(Transformation, Tunable):
     params_to_try
         Dictionary of parameters to try when tuning.
 
+    Returns
+    ----------
+    Tuple[pd.DataFrame, Optional[Artifact]]: If column_func is a Callable, returns the transformed DataFrame and None;
+    else returns the transformed DataFrame with the original dataframe concatinated.
+
     Examples
     --------
     ```pycon
