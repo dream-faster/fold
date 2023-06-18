@@ -59,13 +59,14 @@ class ApplyFunction(Transformation, Tunable):
         name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> None:
-        if isinstance(column_func, Callable):
-            self.column_func = [(["all"], column_func)]
-        else:
-            self.column_func = [
+        self.column_func = (
+            column_func
+            if isinstance(column_func, Callable)
+            else [
                 (wrap_in_list(column), function)
                 for column, function in wrap_in_list(column_func)
             ]
+        )
         self.properties = Transformation.Properties(
             requires_X=True, memory_size=past_window_size
         )
@@ -75,6 +76,8 @@ class ApplyFunction(Transformation, Tunable):
     def transform(
         self, X: pd.DataFrame, in_sample: bool
     ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
+        if isinstance(self.column_func, Callable):
+            return self.column_func(X), None
         X_function_applied = pd.DataFrame([], index=X.index)
         for columns, function in self.column_func:
             function_name = (

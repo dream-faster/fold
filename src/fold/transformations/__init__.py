@@ -5,7 +5,6 @@ from ..base import Transformation
 from ..composites.concat import TransformColumn
 from .columns import (
     DropColumns,
-    FunctionOnColumns,
     OnlyPredictions,
     OnlyProbabilities,
     RenameColumns,
