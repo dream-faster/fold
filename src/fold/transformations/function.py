@@ -19,12 +19,12 @@ class ApplyFunction(Transformation, Tunable):
 
     Parameters
     ----------
-    column_func
+    column_func: Union[Callable, Tuple[Union[str, List[str]], Callable]]
         A tuple of a column or list of columns and a function to apply to them.
         Can be a Callable in which case the function will be applied to all columns.
-    name
+    name: str
         Name of the transformation.
-    params_to_try
+    params_to_try: dict
         Dictionary of parameters to try when tuning.
 
     Returns
