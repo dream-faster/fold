@@ -248,12 +248,10 @@ class FunctionOnColumns(Transformation, Tunable):
     >>> from fold.utils.tests import generate_sine_wave_data
     >>> X, y  = generate_sine_wave_data()
     >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
-    >>> def squared(x):
-            return x ** 2
-    >>> pipeline = FunctionOnColumns([("sine", squared)])
+    >>> pipeline = FunctionOnColumns([("sine", np.square)])
     >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
     >>> preds.head()
-                               sine     sine_squared
+                               sine     sine_square
     2021-12-31 15:40:00       -0.0000   0.0000
     2021-12-31 15:41:00        0.0126   0.0159
     2021-12-31 15:42:00        0.0251   0.0006
