@@ -38,6 +38,7 @@ class AddFunctionColumn(Transformation, Tunable):
     >>> from fold.transformations import AddFunctionColumn
     >>> from fold.models.dummy import DummyClassifier
     >>> from fold.utils.tests import generate_sine_wave_data
+    >>> import numpy as np
     >>> X, y  = generate_sine_wave_data()
     >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> pipeline = AddFunctionColumn([("sine", np.square)])
