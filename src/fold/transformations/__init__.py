@@ -25,7 +25,7 @@ from .date import (
     AddYear,
 )
 from .difference import Difference, TakeReturns
-from .function import WrapFunction
+from .function import ApplyFunction
 from .holidays import AddHolidayFeatures
 from .lags import AddLagsX, AddLagsY
 from .math import AddConstant, MultiplyBy, TakeLog, TurnPositive

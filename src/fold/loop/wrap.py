@@ -14,7 +14,7 @@ from fold.transformations.sklearn import (
 )
 
 from ..base import Composite, Optimizer, Pipeline, Sampler, Transformation
-from ..transformations.function import WrapFunction
+from ..transformations.function import ApplyFunction
 
 
 def wrap_transformation_if_needed(
@@ -27,7 +27,7 @@ def wrap_transformation_if_needed(
     elif isinstance(transformation, ClassifierMixin):
         return WrapSKLearnClassifier.from_model(transformation)
     elif isinstance(transformation, Callable):
-        return WrapFunction(transformation, None)
+        return ApplyFunction(transformation, None)
     elif isinstance(transformation, SelectorMixin):
         return WrapSKLearnFeatureSelector.from_model(transformation)
     elif isinstance(transformation, TransformerMixin):
