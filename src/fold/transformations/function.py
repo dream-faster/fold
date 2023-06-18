@@ -13,7 +13,7 @@ ColumnOrColumns = Union[str, List[str]]
 ColumnFunction = Tuple[ColumnOrColumns, Callable]
 
 
-class ApplyFunction(Transformation, Tunable):
+class AddFunctionColumn(Transformation, Tunable):
     """
     Applies a function to one or more columns.
 
@@ -21,7 +21,6 @@ class ApplyFunction(Transformation, Tunable):
     ----------
     column_func: Union[Callable, Tuple[Union[str, List[str]], Callable]]
         A tuple of a column or list of columns and a function to apply to them.
-        Can be a Callable in which case the function will be applied to all columns.
     name: str
         Name of the transformation.
     params_to_try: dict
@@ -29,20 +28,19 @@ class ApplyFunction(Transformation, Tunable):
 
     Returns
     ----------
-    Tuple[pd.DataFrame, Optional[Artifact]]: If column_func is a Callable, returns the transformed DataFrame and None;
-    else returns the transformed DataFrame with the original dataframe concatinated.
+    Tuple[pd.DataFrame, Optional[Artifact]]: returns the transformed DataFrame with the original dataframe concatinated.
 
     Examples
     --------
     ```pycon
     >>> from fold.loop import train_backtest
     >>> from fold.splitters import SlidingWindowSplitter
-    >>> from fold.transformations import ApplyFunction
+    >>> from fold.transformations import AddFunctionColumn
     >>> from fold.models.dummy import DummyClassifier
     >>> from fold.utils.tests import generate_sine_wave_data
     >>> X, y  = generate_sine_wave_data()
     >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
-    >>> pipeline = ApplyFunction([("sine", np.square)])
+    >>> pipeline = AddFunctionColumn([("sine", np.square)])
     >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
     >>> preds.head()
                                sine     sine_square
@@ -59,19 +57,16 @@ class ApplyFunction(Transformation, Tunable):
 
     def __init__(
         self,
-        column_func: Union[Callable, ColumnFunction, List[ColumnFunction]],
+        column_func: Union[ColumnFunction, List[ColumnFunction]],
         past_window_size: Optional[int] = None,
         name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> None:
-        self.column_func = (
-            column_func
-            if isinstance(column_func, Callable)
-            else [
-                (wrap_in_list(column), function)
-                for column, function in wrap_in_list(column_func)
-            ]
-        )
+        self.column_func = [
+            (wrap_in_list(column), function)
+            for column, function in wrap_in_list(column_func)
+        ]
+
         self.properties = Transformation.Properties(
             requires_X=True, memory_size=past_window_size
         )
@@ -81,25 +76,43 @@ class ApplyFunction(Transformation, Tunable):
     def transform(
         self, X: pd.DataFrame, in_sample: bool
     ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
-        if isinstance(self.column_func, Callable):
-            return self.column_func(X), None
-        X_function_applied = pd.DataFrame([], index=X.index)
-        for columns, function in self.column_func:
+        X_function_applied = []
+
+        def apply_function(columns: List[str], function: Callable) -> pd.DataFrame:
             function_name = (
                 function.__name__ if function.__name__ != "<lambda>" else "transformed"
             )
 
             if columns[0] == "all":
                 columns = X.columns
+            return function(X[columns].add_suffix(f"_{function_name}"))
 
-            X_function_applied = pd.concat(
-                [
-                    X_function_applied,
-                    function(X[columns].add_suffix(f"_{function_name}")),
-                ],
-                axis="columns",
-            )
-        return pd.concat([X, X_function_applied], axis="columns"), None
+        X_function_applied = [
+            apply_function(columns, function) for columns, function in self.column_func
+        ]
+
+        return pd.concat([X] + X_function_applied, axis="columns"), None
+
+    fit = fit_noop
+    update = fit
+
+
+class ApplyFunction(Transformation):
+    """
+    Wraps and arbitrary function that will run at inference.
+    """
+
+    def __init__(self, func: Callable, past_window_size: Optional[int]) -> None:
+        self.func = func
+        self.name = func.__name__
+        self.properties = Transformation.Properties(
+            requires_X=True, memory_size=past_window_size
+        )
+
+    def transform(
+        self, X: pd.DataFrame, in_sample: bool
+    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
+        return self.func(X), None
 
     fit = fit_noop
     update = fit

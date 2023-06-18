@@ -7,7 +7,8 @@ from fold.composites.concat import TransformColumn
 from fold.loop import backtest, train
 from fold.loop.encase import train_backtest
 from fold.splitters import ExpandingWindowSplitter, SingleWindowSplitter
-from fold.transformations.columns import DropColumns, FunctionOnColumns, SelectColumns
+from fold.transformations import AddFunctionColumn
+from fold.transformations.columns import DropColumns, SelectColumns
 from fold.transformations.dev import Identity, Lookahead
 from fold.transformations.lags import AddLagsX, AddLagsY
 from fold.transformations.math import AddConstant, MultiplyBy, TakeLog, TurnPositive
@@ -320,7 +321,7 @@ def test_lookahead():
 def test_function_on_columns():
     X, y = generate_sine_wave_data(length=600)
     splitter = SingleWindowSplitter(train_window=400)
-    transformation = FunctionOnColumns([("sine", np.square), ("all", lambda x: x + 1)])
+    transformation = AddFunctionColumn([("sine", np.square), ("all", lambda x: x + 1)])
     pred, _ = train_backtest(transformation, X, y, splitter)
     assert "sine_square" in pred.columns
     assert "sine_transformed" in pred.columns
