@@ -13,7 +13,7 @@ ColumnOrColumns = Union[str, List[str]]
 ColumnFunction = Tuple[ColumnOrColumns, Callable]
 
 
-class AddFunctionColumn(Transformation, Tunable):
+class AddFeatures(Transformation, Tunable):
     """
     Applies a function to one or more columns.
 
@@ -35,13 +35,13 @@ class AddFunctionColumn(Transformation, Tunable):
     ```pycon
     >>> from fold.loop import train_backtest
     >>> from fold.splitters import SlidingWindowSplitter
-    >>> from fold.transformations import AddFunctionColumn
+    >>> from fold.transformations import AddFeatures
     >>> from fold.models.dummy import DummyClassifier
     >>> from fold.utils.tests import generate_sine_wave_data
     >>> import numpy as np
     >>> X, y  = generate_sine_wave_data()
     >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
-    >>> pipeline = AddFunctionColumn([("sine", np.square)])
+    >>> pipeline = AddFeatures([("sine", np.square)])
     >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
     >>> preds.head()
                            sine  sine_square
