@@ -281,7 +281,9 @@ TrainedPipeline = Pipeline
 TrainedPipelines = List[pd.Series]
 """A list of trained `Pipeline`s, to be used for backtesting."""
 OutOfSamplePredictions = pd.DataFrame
-"""The backtest's resulting out-of-sample predictions."""
+"""The backtest's resulting out-of-sample output."""
+InSamplePredictions = pd.DataFrame
+"""The backtest's resulting in-sample output."""
 DeployablePipeline = Pipeline
 """A trained `Pipeline`, to be used for deployment."""
 

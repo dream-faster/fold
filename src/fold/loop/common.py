@@ -356,6 +356,7 @@ def __process_candidates(
     (
         processed_idx,
         processed_pipelines,
+        processed_predictions,
         processed_artifacts,
     ) = _sequential_train_on_window(child_transform, X, y, splits, artifacts, backend)
     trained_pipelines = _extract_trained_pipelines(processed_idx, processed_pipelines)
@@ -460,7 +461,7 @@ def _train_on_window(
     split: Fold,
     never_update: bool,
     backend: Backend,
-) -> Tuple[int, TrainedPipeline, Artifact]:
+) -> Tuple[int, TrainedPipeline, X, Artifact]:
     stage = Stage.inital_fit if (split.order == 0 or never_update) else Stage.update
     window_start = (
         split.update_window_start if stage == Stage.update else split.train_window_start
@@ -478,7 +479,7 @@ def _train_on_window(
         X_train, y_train, artifact_train, pipeline, stage, backend
     )
 
-    return split.model_index, trained_pipeline, artifacts
+    return split.model_index, trained_pipeline, X_train, artifacts
 
 
 def _sequential_train_on_window(
@@ -487,14 +488,20 @@ def _sequential_train_on_window(
     y: pd.Series,
     splits: List[Fold],
     artifact: Artifact,
-    backend: Union[Backend, str] = Backend.no,
-) -> Tuple[List[int], List[Pipeline], List[Artifact]]:
+    backend: Backend,
+) -> Tuple[List[int], List[Pipeline], List[X], List[Artifact]]:
     processed_idx = []
     processed_pipelines: List[Pipeline] = []
     processed_pipeline = pipeline
+    processed_predictions = []
     processed_artifacts = []
     for split in splits:
-        processed_id, processed_pipeline, processed_artifact = _train_on_window(
+        (
+            processed_id,
+            processed_pipeline,
+            processed_prediction,
+            processed_artifact,
+        ) = _train_on_window(
             X,
             y,
             artifact,
@@ -505,6 +512,12 @@ def _sequential_train_on_window(
         )
         processed_idx.append(processed_id)
         processed_pipelines.append(processed_pipeline)
+        processed_predictions.append(processed_prediction)
         processed_artifacts.append(processed_artifact)
 
-    return processed_idx, processed_pipelines, processed_artifacts
+    return (
+        processed_idx,
+        processed_pipelines,
+        processed_predictions,
+        processed_artifacts,
+    )
