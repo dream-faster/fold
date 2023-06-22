@@ -6,6 +6,7 @@ from inspect import getfullargspec
 from typing import Callable, Optional, Tuple, Type
 
 import pandas as pd
+from sklearn.feature_selection import VarianceThreshold
 
 from ..base import (
     Artifact,
@@ -178,3 +179,10 @@ class WrapSKLearnFeatureSelector(FeatureSelector, Tunable):
         )
 
     update = fit_noop
+
+
+class RemoveLowVarianceFeatures(WrapSKLearnFeatureSelector):
+    name = "RemoveLowVarianceFeatures"
+
+    def __init__(self):
+        super().__init__(VarianceThreshold, init_args=dict(threshold=1e-5))
