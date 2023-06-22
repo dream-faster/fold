@@ -1,6 +1,7 @@
 ::: fold.transformations.columns
 ::: fold.transformations.date
 ::: fold.transformations.difference
+::: fold.transformations.features
 ::: fold.transformations.function
 ::: fold.transformations.holidays
 ::: fold.transformations.lags
@@ -8,4 +9,3 @@
 ::: fold.transformations.scaling
 ::: fold.transformations.sklearn
 ::: fold.transformations.update
-::: fold.transformations.window

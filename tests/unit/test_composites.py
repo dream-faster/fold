@@ -8,8 +8,8 @@ from fold.models.dummy import DummyRegressor
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.columns import DropColumns, OnlyPredictions, RenameColumns
 from fold.transformations.dev import Identity
+from fold.transformations.features import AddWindowFeatures
 from fold.transformations.lags import AddLagsY
-from fold.transformations.window import AddWindowFeatures
 from fold.utils.tests import generate_monotonous_data, generate_sine_wave_data
 
 

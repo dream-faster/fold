@@ -10,9 +10,9 @@ from fold.splitters import ExpandingWindowSplitter, SingleWindowSplitter
 from fold.transformations import AddFeatures
 from fold.transformations.columns import DropColumns, SelectColumns
 from fold.transformations.dev import Identity, Lookahead
+from fold.transformations.features import AddRollingCorrelation, AddWindowFeatures
 from fold.transformations.lags import AddLagsX, AddLagsY
 from fold.transformations.math import AddConstant, MultiplyBy, TakeLog, TurnPositive
-from fold.transformations.window import AddWindowFeatures
 from fold.utils.tests import generate_sine_wave_data, tuneability_test
 
 
@@ -328,3 +328,14 @@ def test_function_on_columns():
     assert pred.shape == (200, 3)
     assert pred["sine_square"][0] == pred["sine"][0] ** 2
     assert pred["sine_transformed"][0] == pred["sine"][0] + 1
+
+
+def test_add_rolling_corr():
+    X, y = generate_sine_wave_data(length=600)
+    X["sine2"] = 1 - X["sine"].shift(1)
+    splitter = SingleWindowSplitter(train_window=400)
+    transformation = AddRollingCorrelation(("sine", "sine2"), window=10)
+    pred, _ = train_backtest(transformation, X, y, splitter)
+    assert "sine_sine2_rolling_corr_10" in pred.columns
+    assert pred.shape == (200, 3)
+    assert pred["sine_sine2_rolling_corr_10"].max() <= 0.7
