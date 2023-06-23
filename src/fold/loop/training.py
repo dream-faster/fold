@@ -67,6 +67,7 @@ def train(
         Wether the pipeline should print to the console, by default False.
     return_artifacts: bool = False
         Whether to return the artifacts of the training process, by default False.
+    return_insample: bool = False
 
     Returns
     -------
