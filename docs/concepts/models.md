@@ -29,7 +29,7 @@ Each row in `X` corresponds to a single dependent variable, in `y`.
 Usually, you may want to add lagged values of `y` with the [AddLagsY][fold.transformations.lags.AddLagsY] class, or create other features for the tabular models with:
 
 - [AddLagsX][fold.transformations.lags.AddLagsX]: if you have exogenous data already.
-- [AddWindowFeatures][fold.transformations.window.AddWindowFeatures]: if you have exogenous data already, and you want to aggregate them across different windows.
+- [AddWindowFeatures][fold.transformations.features.AddWindowFeatures]: if you have exogenous data already, and you want to aggregate them across different windows.
 
 
 Examples:

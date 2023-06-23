@@ -24,11 +24,11 @@ from .date import (
     AddYear,
 )
 from .difference import Difference, TakeReturns
-from .function import AddFeatures, ApplyFunction
+from .features import AddFeatures, AddWindowFeatures
+from .function import ApplyFunction
 from .holidays import AddHolidayFeatures
 from .lags import AddLagsX, AddLagsY
 from .math import AddConstant, MultiplyBy, TakeLog, TurnPositive
 from .scaling import MinMaxScaler, StandardScaler
 from .sklearn import WrapSKLearnFeatureSelector, WrapSKLearnTransformation
 from .update import DontUpdate
-from .window import AddWindowFeatures

@@ -3,7 +3,7 @@ from fold.composites.optimize import OptimizeGridSearch
 from fold.loop.encase import train_backtest
 from fold.models.dummy import DummyRegressor
 from fold.splitters import ExpandingWindowSplitter
-from fold.transformations.window import AddWindowFeatures
+from fold.transformations.features import AddWindowFeatures
 from fold.utils.dataset import get_preprocessed_dataset
 
 
