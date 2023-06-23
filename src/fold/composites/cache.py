@@ -4,16 +4,13 @@
 from __future__ import annotations
 
 import os
-import sys
-from typing import Callable, List, Optional, Union
+from typing import Callable, List, Optional
 
 import pandas as pd
 
 from ..base import Artifact, Composite, Pipeline, Pipelines, get_concatenated_names
-from ..transformations.columns import SelectColumns
-from ..transformations.dev import Identity
 from ..utils.dataframe import concat_on_columns_with_duplicates
-from ..utils.list import wrap_in_double_list_if_needed, wrap_in_list
+from ..utils.list import wrap_in_double_list_if_needed
 
 
 class Cache(Composite):
@@ -46,8 +43,12 @@ class Cache(Composite):
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
     ) -> pd.DataFrame:
-        # TODO: load file if exists
-        return results[0]
+        if os.path.exists(self.path):
+            return pd.read_parquet(self.path)
+        else:
+            os.makedirs(os.path.dirname(self.path), exist_ok=True)
+            results[0].to_parquet(self.path)
+            return results[0]
 
     def postprocess_artifacts_primary(
         self,
@@ -62,6 +63,8 @@ class Cache(Composite):
 
     def get_children_primary(self) -> Pipelines:
         # TODOD: return empty array if path exists
+        if os.path.exists(self.path):
+            return []
         return self.pipelines
 
     def clone(self, clone_children: Callable) -> Cache:
