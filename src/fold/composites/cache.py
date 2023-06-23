@@ -9,14 +9,13 @@ from typing import Callable, List, Optional
 import pandas as pd
 
 from ..base import Artifact, Composite, Pipeline, Pipelines, get_concatenated_names
-from ..utils.dataframe import concat_on_columns_with_duplicates
 from ..utils.list import wrap_in_double_list_if_needed
 
 
 class Cache(Composite):
     """
-    Saves the results of the pipeline up until its position for the first time, to the given path (in parquet format).
-    If the file exists at the location, it loads it and skips execution of all Blocks.
+    Saves the results of the pipeline up until its position for the first time, to the given directory (in parquet format).
+    If the file exists at the location, it loads it and skips execution of the wrapped pipeline.
 
     Parameters
     ----------
@@ -25,10 +24,10 @@ class Cache(Composite):
         pipeline to execute if file at path doesn't exist.
 
     path: str
-        path to the parquet file its using for caching.
+        path to the directory used for caching.
     """
 
-    properties = Composite.Properties()
+    properties = Composite.Properties(primary_only_single_pipeline=True)
 
     def __init__(
         self,
@@ -43,11 +42,11 @@ class Cache(Composite):
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
     ) -> pd.DataFrame:
-        if os.path.exists(self.path):
-            return pd.read_parquet(self.path)
+        if os.path.exists(self.path) and os.path.exists(__result_path(self.path)):
+            return pd.read_parquet(__result_path(self.path))
         else:
             os.makedirs(os.path.dirname(self.path), exist_ok=True)
-            results[0].to_parquet(self.path)
+            results[0].to_parquet(__result_path(self.path))
             return results[0]
 
     def postprocess_artifacts_primary(
@@ -57,15 +56,17 @@ class Cache(Composite):
         original_artifact: Artifact,
         fit: bool,
     ) -> pd.DataFrame:
-        return concat_on_columns_with_duplicates(
-            primary_artifacts, self.if_duplicate_keep
-        )
+        if os.path.exists(self.path) and os.path.exists(__artifacts_path(self.path)):
+            return pd.read_parquet(__artifacts_path(self.path))
+        else:
+            os.makedirs(os.path.dirname(self.path), exist_ok=True)
+            primary_artifacts[0].to_parquet(__artifacts_path(self.path))
+            return primary_artifacts[0]
 
     def get_children_primary(self) -> Pipelines:
-        # TODOD: return empty array if path exists
-        if os.path.exists(self.path):
+        if os.path.exists(self.path) and os.path.exists(__result_path(self.path)):
             return []
-        return self.pipelines
+        return self.pipeline
 
     def clone(self, clone_children: Callable) -> Cache:
         clone = Cache(
@@ -75,3 +76,11 @@ class Cache(Composite):
         clone.properties = self.properties
         clone.name = self.name
         return clone
+
+
+def __result_path(path) -> str:
+    return os.path.join(path, "/result.parquet")
+
+
+def __artifacts_path(path) -> str:
+    return os.path.join(path, "/artifacts.parquet")
