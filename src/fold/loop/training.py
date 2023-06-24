@@ -166,7 +166,7 @@ def train(
             processed_artifacts
         )
         if return_insample:
-            return trained_pipelines, processed_predictions, processed_artifacts
+            return trained_pipelines, processed_artifacts, processed_predictions
         else:
             return trained_pipelines, processed_artifacts
     else:
