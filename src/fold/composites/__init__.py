@@ -2,6 +2,7 @@
 
 
 from ..base import Composite
+from .cache import Cache
 from .columns import EnsembleEachColumn, SkipNA, TransformEachColumn
 from .concat import Concat, Pipeline, TransformColumn
 from .ensemble import Ensemble

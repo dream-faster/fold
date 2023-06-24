@@ -42,7 +42,7 @@ class EnsembleEachColumn(Composite):
     pipelines_already_cloned = False
 
     def __init__(self, pipeline: Pipeline, name: Optional[str] = None) -> None:
-        self.pipelines: Pipelines = wrap_in_double_list_if_needed(pipeline)
+        self.pipelines: Pipelines = wrap_in_double_list_if_needed(pipeline)  # type: ignore
         self.name = name or "PerColumnEnsemble-" + get_concatenated_names(
             self.pipelines
         )
