@@ -13,9 +13,14 @@ class ApplyFunction(Transformation):
     Wraps and arbitrary function that will run at inference.
     """
 
-    def __init__(self, func: Callable, past_window_size: Optional[int]) -> None:
+    def __init__(
+        self,
+        func: Callable,
+        past_window_size: Optional[int],
+        name: Optional[str] = None,
+    ) -> None:
         self.func = func
-        self.name = func.__name__
+        self.name = name or func.__name__
         self.properties = Transformation.Properties(
             requires_X=True, memory_size=past_window_size
         )
