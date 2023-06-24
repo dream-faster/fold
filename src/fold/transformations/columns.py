@@ -127,6 +127,54 @@ class RenameColumns(Transformation):
     update = fit
 
 
+class AddColumnSuffix(Transformation):
+    """
+    Add suffix to column names.
+
+    Parameters
+    ----------
+
+    suffix : str
+        Suffix to add to all column names.
+
+    Examples
+    --------
+
+    ```pycon
+    >>> from fold.loop import train_backtest
+    >>> from fold.splitters import SlidingWindowSplitter
+    >>> from fold.transformations import RenameColumns
+    >>> from fold.utils.tests import generate_sine_wave_data
+    >>> X, y  = generate_sine_wave_data()
+    >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
+    >>> pipeline = AddColumnSuffix("_2")
+    >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+    >>> preds.head()
+                         sine_2
+    2021-12-31 15:40:00 -0.0000
+    2021-12-31 15:41:00  0.0126
+    2021-12-31 15:42:00  0.0251
+    2021-12-31 15:43:00  0.0377
+    2021-12-31 15:44:00  0.0502
+
+    ```
+    """
+
+    properties = Transformation.Properties(requires_X=True)
+
+    def __init__(self, suffix: str) -> None:
+        self.suffix = suffix
+        self.name = f"AddColumnSuffix-{self.suffix}"
+
+    def transform(
+        self, X: pd.DataFrame, in_sample: bool
+    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
+        return X.add_suffix(self.suffix), None
+
+    fit = fit_noop
+    update = fit
+
+
 class OnlyPredictions(Transformation):
     """
     Drops all columns except the output model(s)' predictions.
