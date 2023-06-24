@@ -1,33 +1,41 @@
-from sklearn.feature_selection import SelectKBest, f_regression
-
-from fold.composites.optimize import OptimizeGridSearch
+from fold.composites import Cache
 from fold.events import CreateEvents
 from fold.events.filters.everynth import EveryNth
 from fold.events.labeling import FixedForwardHorizon, NoLabel
 from fold.events.weights import NoWeighing
-from fold.loop import train, train_evaluate
-from fold.models import DummyRegressor
+from fold.loop import train_backtest
+from fold.models.random import RandomClassifier
 from fold.splitters import ExpandingWindowSplitter
-from fold.utils.tests import generate_monotonous_data, generate_sine_wave_data
+from fold.utils.tests import generate_monotonous_data
 
 
-def test_artifacts_events() -> None:
+def test_cache() -> None:
     X, y = generate_monotonous_data(1000, freq="1min")
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     pipeline = [
-        CreateEvents(
-            DummyRegressor(
-                predicted_value=1, params_to_try=dict(predicted_value=[100, 25, 50])
+        Cache(
+            CreateEvents(
+                RandomClassifier(all_classes=[0, 1]),
+                FixedForwardHorizon(
+                    time_horizon=3,
+                    labeling_strategy=NoLabel(),
+                    weighing_strategy=NoWeighing(),
+                ),
+                EveryNth(2),
             ),
-            FixedForwardHorizon(
-                time_horizon=3,
-                labeling_strategy=NoLabel(),
-                weighing_strategy=NoWeighing(),
-            ),
-            EveryNth(2),
+            path="tests/unit/cache/",
         )
     ]
-    _, artifacts = train(pipeline, X, y, splitter, return_artifacts=True)
-    assert artifacts is not None
-    assert artifacts.index.duplicated().sum() == 0
+    pred_first, _, artifacts_first = train_backtest(
+        pipeline, X, y, splitter, return_artifacts=True
+    )
+    assert pred_first is not None
+    assert artifacts_first is not None
+    assert artifacts_first.index.duplicated().sum() == 0
+
+    pred_second, _, artifacts_second = train_backtest(
+        pipeline, X, y, splitter, return_artifacts=True
+    )
+    assert pred_first.equals(pred_second)
+    assert artifacts_first.equals(artifacts_second)

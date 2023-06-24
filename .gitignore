@@ -121,3 +121,5 @@ venv.bak/
 # MKdocs Gallery Generated
 docs/generated/*
 archive/*
+tests/unit/cache/artifacts.parquet
+tests/unit/cache/result.parquet
