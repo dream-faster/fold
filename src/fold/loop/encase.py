@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple, Union
 
 import pandas as pd
 
+from fold.base.classes import InSamplePredictions
 from fold.base.scoring import score_results
 
 from ..base import (
@@ -109,9 +110,11 @@ def train_backtest(
     train_method: Union[TrainMethod, str] = TrainMethod.parallel,
     silent: bool = False,
     return_artifacts: bool = False,
+    return_insample: bool = False,
 ) -> Union[
     Tuple[OutOfSamplePredictions, TrainedPipelines],
     Tuple[OutOfSamplePredictions, TrainedPipelines, Artifact],
+    Tuple[OutOfSamplePredictions, TrainedPipelines, Artifact, InSamplePredictions],
 ]:
     """
     Run train and backtest.
@@ -138,6 +141,7 @@ def train_backtest(
         Wether the pipeline should print to the console, by default False.
     return_artifacts: bool = False
         Whether to return the artifacts of the process, by default False.
+    return_insample: bool = False
 
     Returns
     -------
@@ -146,7 +150,7 @@ def train_backtest(
     TrainedPipelines
         The fitted pipelines, for all folds.
     """
-    trained_pipelines, train_artifacts = train(
+    trained_pipelines, train_artifacts, insample_predictions = train(
         pipeline,
         X,
         y,
@@ -157,6 +161,7 @@ def train_backtest(
         backend=backend,
         silent=silent,
         return_artifacts=True,
+        return_insample=True,
     )
 
     pred, backtest_artifacts = backtest(
@@ -172,16 +177,19 @@ def train_backtest(
     )
 
     if return_artifacts:
-        return (
-            pred,
-            trained_pipelines,
-            concat_on_columns_with_duplicates(
-                [train_artifacts, backtest_artifacts],
-                strategy=ResolutionStrategy.last,
-            ),
+        artifacts = concat_on_columns_with_duplicates(
+            [train_artifacts, backtest_artifacts],
+            strategy=ResolutionStrategy.last,
         )
+        if return_insample:
+            return pred, trained_pipelines, artifacts, insample_predictions
+        else:
+            return pred, trained_pipelines, artifacts
     else:
-        return pred, trained_pipelines
+        if return_insample:
+            return pred, trained_pipelines, insample_predictions
+        else:
+            return pred, trained_pipelines
 
 
 def train_evaluate(

@@ -37,8 +37,13 @@ def test_on_weather_data_backends(backend: str) -> None:
         HistGradientBoostingRegressor(),
     ]
 
-    pred, _ = train_backtest(pipeline, X, y, splitter, backend=backend)
+    pred, _, insample_predictions = train_backtest(
+        pipeline, X, y, splitter, backend=backend, return_insample=True
+    )
     assert len(pred) == 800
+    assert (
+        len(insample_predictions) <= 800
+    ), "length of insample predictions should be always <= length of outofsample predictions"
 
 
 def test_train_evaluate() -> None:

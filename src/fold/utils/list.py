@@ -95,7 +95,7 @@ def ensure_dict(dictionary: Optional[Dict]) -> dict:
     return {} if dictionary is None else dictionary
 
 
-def unpack_list_of_tuples(input: List[Tuple]) -> Tuple[List]:
+def unpack_list_of_tuples(input: List[Tuple]):
     if len(input) == 1:
         return [[item] for item in input[0]]
     return zip(*input)

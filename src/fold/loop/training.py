@@ -5,6 +5,8 @@ from typing import Optional, Tuple, Union
 
 import pandas as pd
 
+from fold.base.classes import InSamplePredictions
+
 from ..base import (
     Artifact,
     DeployablePipeline,
@@ -34,7 +36,12 @@ def train(
     backend: Union[Backend, str] = Backend.no,
     silent: bool = False,
     return_artifacts: bool = False,
-) -> Union[TrainedPipelines, Tuple[TrainedPipelines, Artifact]]:
+    return_insample: bool = False,
+) -> Union[
+    TrainedPipelines,
+    Tuple[TrainedPipelines, Artifact],
+    Tuple[TrainedPipelines, Artifact, InSamplePredictions],
+]:
     """
     Trains a pipeline on a given dataset, for all folds returned by the Splitter.
 
@@ -60,6 +67,7 @@ def train(
         Wether the pipeline should print to the console, by default False.
     return_artifacts: bool = False
         Whether to return the artifacts of the training process, by default False.
+    return_insample: bool = False
 
     Returns
     -------
@@ -89,6 +97,7 @@ def train(
         (
             first_batch_index,
             first_batch_transformations,
+            first_batch_predictions,
             first_batch_artifacts,
         ) = _train_on_window(
             X,
@@ -100,7 +109,12 @@ def train(
             backend=backend,
         )
 
-        rest_idx, rest_transformations, rest_artifacts = unpack_list_of_tuples(
+        (
+            rest_idx,
+            rest_transformations,
+            rest_predictions,
+            rest_artifacts,
+        ) = unpack_list_of_tuples(
             backend_functions.train_transformations(
                 _train_on_window,
                 first_batch_transformations,
@@ -115,10 +129,16 @@ def train(
         )
         processed_idx = [first_batch_index] + list(rest_idx)
         processed_pipelines = [first_batch_transformations] + list(rest_transformations)
+        processed_predictions = [first_batch_predictions] + list(rest_predictions)
         processed_artifacts = [first_batch_artifacts] + list(rest_artifacts)
 
     elif train_method == TrainMethod.parallel and len(splits) > 1:
-        processed_idx, processed_pipelines, processed_artifacts = unpack_list_of_tuples(
+        (
+            processed_idx,
+            processed_pipelines,
+            processed_predictions,
+            processed_artifacts,
+        ) = unpack_list_of_tuples(
             backend_functions.train_transformations(
                 _train_on_window,
                 pipeline,
@@ -136,16 +156,24 @@ def train(
         (
             processed_idx,
             processed_pipelines,
+            processed_predictions,
             processed_artifacts,
         ) = _sequential_train_on_window(pipeline, X, y, splits, artifact, backend)
 
     trained_pipelines = _extract_trained_pipelines(processed_idx, processed_pipelines)
     if return_artifacts is True:
-        return trained_pipelines, concat_on_index_override_duplicate_rows(
+        processed_artifacts = concat_on_index_override_duplicate_rows(
             processed_artifacts
         )
+        if return_insample:
+            return trained_pipelines, processed_artifacts, processed_predictions
+        else:
+            return trained_pipelines, processed_artifacts
     else:
-        return trained_pipelines
+        if return_insample:
+            return trained_pipelines, processed_predictions
+        else:
+            return trained_pipelines
 
 
 def train_for_deployment(
@@ -160,7 +188,7 @@ def train_for_deployment(
 
     pipeline = wrap_in_list(pipeline)
     pipeline = wrap_transformation_if_needed(pipeline)
-    _, transformations, artifacts = _train_on_window(
+    _, transformations, predictions, artifacts = _train_on_window(
         X,
         y,
         artifact,
