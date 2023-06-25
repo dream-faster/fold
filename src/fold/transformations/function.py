@@ -24,6 +24,7 @@ class ApplyFunction(Transformation, Tunable):
     ) -> None:
         self.func = func
         self.name = name or func.__name__
+        self.past_window_size = past_window_size
         self.params_to_try = params_to_try
         self.properties = Transformation.Properties(
             requires_X=True, memory_size=past_window_size
