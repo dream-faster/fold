@@ -33,7 +33,6 @@ ColumnWindowFunction = Tuple[ColumnOrColumns, Optional[int], FunctionOrPredefine
 
 
 class AddWindowFeatures(Transformation, Tunable):
-
     """
     Creates rolling window features on the specified columns.
     Equivalent to adding a new column by running: `df[column].rolling(window).function()`.
@@ -44,6 +43,9 @@ class AddWindowFeatures(Transformation, Tunable):
     column_window_func : ColumnWindowFunction, List[ColumnWindowFunction]
         A list of tuples, where each tuple contains the column name, the window size and the function to apply.
         The function can be a predefined function (see PredefinedFunction) or a Callable (with a single parameter).
+    fillna: bool = True
+        Fill NaNs in the resulting DataFrame
+
 
     Examples
     --------
@@ -70,6 +72,7 @@ class AddWindowFeatures(Transformation, Tunable):
     def __init__(
         self,
         column_window_func: Union[ColumnWindowFunction, List[ColumnWindowFunction]],
+        fillna: bool = True,
         name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> None:
@@ -92,6 +95,7 @@ class AddWindowFeatures(Transformation, Tunable):
         self.properties = Transformation.Properties(
             requires_X=True, memory_size=max_memory
         )
+        self.fillna = fillna
         self.params_to_try = params_to_try
         self.name = name or "AddWindowFeatures"
 
@@ -113,13 +117,14 @@ class AddWindowFeatures(Transformation, Tunable):
                 columns = X.columns
 
             if window is None:
-                return function(
+                return_value = function(
                     X[columns].add_suffix(f"_{window}_{function_name}").expanding()
                 )
             else:
-                return function(
+                return_value = function(
                     X[columns].add_suffix(f"_{window}_{function_name}").rolling(window)
                 )
+            return return_value.fillna(0.0) if self.fillna else return_value
 
         X_function_applied = [
             apply_function(columns, window, function)
@@ -143,6 +148,8 @@ class AddFeatures(Transformation, Tunable):
     ----------
     column_func: Union[Callable, Tuple[Union[str, List[str]], Callable]]
         A tuple of a column or list of columns and a function to apply to them.
+    fillna: bool = True
+        Fill NaNs in the resulting DataFrame
     name: str
         Name of the transformation.
     params_to_try: dict
@@ -182,6 +189,7 @@ class AddFeatures(Transformation, Tunable):
         self,
         column_func: Union[ColumnFunction, List[ColumnFunction]],
         past_window_size: Optional[int] = None,
+        fillna: bool = True,
         name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> None:
@@ -193,6 +201,7 @@ class AddFeatures(Transformation, Tunable):
         self.properties = Transformation.Properties(
             requires_X=True, memory_size=past_window_size
         )
+        self.fillna = fillna
         self.params_to_try = params_to_try
         self.name = name or f"ApplyFunction_{self.column_func}"
 
@@ -208,7 +217,11 @@ class AddFeatures(Transformation, Tunable):
 
             if columns[0] == "all":
                 columns = X.columns
-            return function(X[columns].add_suffix(f"_{function_name}"))
+            return_value = function(X[columns].add_suffix(f"_{function_name}"))
+            if self.fillna:
+                return return_value.fillna(0.0)
+            else:
+                return return_value
 
         X_function_applied = [
             apply_function(columns, function) for columns, function in self.column_func

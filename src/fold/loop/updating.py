@@ -19,8 +19,8 @@ def update(
     Update a set of Transformations with new data.
     Returns a new set of Transformations, does not mutate the original.
     """
-    X, y = check_types(X, y)
     artifact = Artifact.from_events_sample_weights(X.index, events, sample_weights)
+    X, y, artifact = check_types(X, y, artifact)
 
     transformations = deepcopy_pipelines(pipeline)
     _ = recursively_transform(

@@ -61,8 +61,8 @@ def backtest(
         Predictions for all folds, concatenated.
     """
     backend = Backend.from_str(backend)
-    X, y = check_types(X, y)
     artifact = Artifact.from_events_sample_weights(X.index, events, sample_weights)
+    X, y, artifact = check_types(X, y, artifact)
 
     results, artifacts = unpack_list_of_tuples(
         [

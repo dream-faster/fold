@@ -10,7 +10,6 @@ import pandas as pd
 from ...base import Artifact, Transformation, X
 from ...utils.checks import is_X_available
 from ...utils.dataframe import concat_on_columns
-from ...utils.trim import trim_initial_nans
 from ..memory import postprocess_X_y_into_memory_, preprocess_X_y_with_memory
 from ..types import Stage
 
@@ -22,8 +21,6 @@ def _process_minibatch_transformation(
     artifacts: Artifact,
     stage: Stage,
 ) -> Tuple[Transformation, X, Artifact]:
-    X, y, artifacts = trim_initial_nans(X, y, artifacts)
-
     if not is_X_available(X) and transformation.properties.requires_X:
         raise ValueError(
             "X is None, but transformation"
@@ -91,7 +88,6 @@ def _process_internal_online_model_minibatch_inference_and_update(
     y: Optional[pd.Series],
     artifacts: Artifact,
 ) -> Tuple[Transformation, X, Artifact]:
-    X, y, artifacts = trim_initial_nans(X, y, artifacts)
     (
         X_with_memory,
         y_with_memory,
