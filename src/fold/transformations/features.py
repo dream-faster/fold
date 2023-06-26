@@ -115,7 +115,7 @@ class AddWindowFeatures(Transformation, Tunable):
                 return function(
                     X[columns]
                     .add_suffix(f"_{window}_{function_name}")
-                    .expanding(min_periods=window)
+                    .expanding(min_periods=-window)
                 )
 
         X_function_applied = [
