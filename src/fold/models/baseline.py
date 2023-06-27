@@ -49,12 +49,12 @@ class Naive(TimeSeriesModel):
         self, X: pd.DataFrame, past_y: pd.Series
     ) -> Union[pd.Series, pd.DataFrame]:
         # it's an online transformation, so len(X) will be always 1,
-        return pd.Series(past_y.iloc[-1].squeeze(), index=X.index[-1:None])
+        return pd.Series(past_y.iloc[-1].squeeze(), index=X.index[-1:None]).fillna(0.0)
 
     def predict_in_sample(
         self, X: pd.DataFrame, lagged_y: pd.Series
     ) -> Union[pd.Series, pd.DataFrame]:
-        return lagged_y
+        return lagged_y.fillna(0.0)
 
     fit = fit_noop
     update = fit

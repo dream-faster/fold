@@ -71,7 +71,7 @@ class AddLagsY(Transformation, Tunable):
         lags = pd.concat(
             [past_y.shift(lag)[-len(X) :].rename(f"y_lag_{lag}") for lag in self.lags],
             axis="columns",
-        )
+        ).fillna(0.0)
         if is_X_available(X):
             return pd.concat([X, lags], axis="columns"), None
         else:
@@ -151,17 +151,14 @@ class AddLagsX(Transformation, Tunable):
     def transform(
         self, X: pd.DataFrame, in_sample: bool
     ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
-        X_lagged = pd.DataFrame([], index=X.index)
+        lagged_columns = []
         for column, lags in self.columns_and_lags:
             for lag in lags:
-                if column == "all":
-                    X_lagged = pd.concat(
-                        [X_lagged, X.shift(lag)[-len(X) :].add_suffix(f"_lag_{lag}")],
-                        axis="columns",
-                    )
-                else:
-                    X_lagged[f"{column}_lag_{lag}"] = X[column].shift(lag)[-len(X) :]
-        return pd.concat([X, X_lagged], axis="columns"), None
+                selected = X if column == "all" else X[column].to_frame()
+                lagged_columns.append(
+                    selected.shift(lag)[-len(X) :].add_suffix(f"_lag_{lag}")
+                )
+        return pd.concat([X] + lagged_columns, axis="columns").fillna(0.0), None
 
     fit = fit_noop
     update = fit_noop

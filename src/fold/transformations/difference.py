@@ -93,12 +93,13 @@ class Difference(InvertibleTransformation, Tunable):
         self, X: pd.DataFrame, in_sample: bool
     ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
         if in_sample:
-            return X.diff(self.lag), None
+            return X.diff(self.lag).fillna(0.0), None
         else:
             return (
                 pd.concat([self.last_values_X, X], axis="index")
                 .diff(self.lag)
                 .iloc[self.lag :]
+                .fillna(0.0)
             ), None
 
     def inverse_transform(self, X: pd.Series, in_sample: bool) -> pd.Series:
