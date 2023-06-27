@@ -29,7 +29,14 @@ class FixedForwardHorizon(Labeler):
             weighing_strategy if weighing_strategy else NoWeighing()
         )
         self.weighing_strategy_test = weighing_strategy_test
-        self.aggregate_function = aggregate_function
+        self.aggregate_function = (
+            aggregate_function
+            if isinstance(aggregate_function, Callable)
+            else getattr(
+                pd.core.window.rolling.Rolling,
+                PredefinedFunction.from_str(aggregate_function).value,
+            )
+        )
 
     def label_events(
         self, event_start_times: pd.DatetimeIndex, y: pd.Series
