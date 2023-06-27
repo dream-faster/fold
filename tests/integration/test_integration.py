@@ -6,7 +6,7 @@ from fold.composites import Concat
 from fold.composites.concat import Pipeline
 from fold.composites.optimize import OptimizeGridSearch
 from fold.composites.select import SelectBest
-from fold.events import CreateEvents
+from fold.events import CreateEvents, UsePredefinedEvents
 from fold.events.filters.everynth import EveryNth
 from fold.events.labeling import BinarizeSign, FixedForwardHorizon
 from fold.events.weights import NoWeighing
@@ -30,7 +30,7 @@ def test_on_weather_data_backends(backend: str) -> None:
     )
     events = FixedForwardHorizon(
         2, BinarizeSign(), weighing_strategy=NoWeighing()
-    ).label_events(y.index, y)
+    ).label_events(EveryNth(3).get_event_start_times(y), y)
     splitter = SlidingWindowSplitter(train_window=0.2, step=0.2)
     pipeline = [
         Concat(
@@ -55,7 +55,7 @@ def test_on_weather_data_backends(backend: str) -> None:
             ]
         ),
         RemoveLowVarianceFeatures(),
-        HistGradientBoostingRegressor(),
+        UsePredefinedEvents(HistGradientBoostingRegressor()),
     ]
 
     pred, _, insample_predictions = train_backtest(

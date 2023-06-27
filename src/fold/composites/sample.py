@@ -71,6 +71,7 @@ class Sample(Sampler):
             if y is not None:
                 y_resampled.name = y.name
             artifact_resampled = artifact.iloc[self.sampler.sample_indices_]
+            artifact_resampled.index = X_resampled.index
             return X_resampled, y_resampled, artifact_resampled
         else:
             return X, y, artifact
