@@ -206,12 +206,12 @@ def train_evaluate(
     krisi_args: Optional[Dict[str, Any]] = None,
 ) -> Union[
     Tuple[
-        "ScoreCard",
+        ScoreCard,
         OutOfSamplePredictions,
         TrainedPipelines,
     ],
     Tuple[
-        "ScoreCard",
+        ScoreCard,
         OutOfSamplePredictions,
         TrainedPipelines,
         Artifact,
