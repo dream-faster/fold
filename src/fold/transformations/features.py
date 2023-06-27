@@ -107,15 +107,13 @@ class AddWindowFeatures(Transformation, Tunable):
             if columns[0] == "all":
                 columns = X.columns
 
-            if window > 0:
+            if window == 0:
                 return function(
-                    X[columns].add_suffix(f"_{window}_{function_name}").rolling(window)
+                    X[columns].add_suffix(f"_{window}_{function_name}").expanding()
                 )
             else:
                 return function(
-                    X[columns]
-                    .add_suffix(f"_{window}_{function_name}")
-                    .expanding(min_periods=-window)
+                    X[columns].add_suffix(f"_{window}_{function_name}").rolling(window)
                 )
 
         X_function_applied = [
