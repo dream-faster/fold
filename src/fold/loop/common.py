@@ -439,7 +439,7 @@ def _backtest_on_window(
 
     X_test = X.iloc[split.test_window_start : split.test_window_end]
     y_test = y.iloc[split.test_window_start : split.test_window_end]
-    artifact_test = artifact.iloc[split.train_window_start : split.test_window_end]
+    artifact_test = artifact.iloc[split.test_window_start : split.test_window_end]
     results, artifacts = recursively_transform(
         X_test,
         y_test,
