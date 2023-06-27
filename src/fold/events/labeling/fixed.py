@@ -20,7 +20,7 @@ class FixedForwardHorizon(Labeler):
         weighing_strategy: Optional[WeighingStrategy],
         weighing_strategy_test: WeighingStrategy = WeightBySumWithLookahead(),
         aggregate_function: Union[
-            PredefinedFunction, Callable
+            str, PredefinedFunction, Callable
         ] = PredefinedFunction.sum,
     ):
         self.time_horizon = time_horizon

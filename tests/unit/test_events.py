@@ -1,3 +1,5 @@
+import pytest
+
 from fold.events import CreateEvents, FixedForwardHorizon, UsePredefinedEvents
 from fold.events.filters.everynth import EveryNth
 from fold.events.labeling import BinarizeSign
@@ -37,12 +39,16 @@ def test_create_event() -> None:
     assert len(pred.dropna()) == 190
 
 
-def test_predefined_events() -> None:
+@pytest.mark.parametrize("agg_func", ["mean", "std", "max", "min"])
+def test_predefined_events(agg_func: str) -> None:
     X, y = generate_sine_wave_data(length=1100)
     splitter = ExpandingWindowSplitter(initial_train_window=100, step=200)
 
     labeler = FixedForwardHorizon(
-        2, labeling_strategy=BinarizeSign(), weighing_strategy=NoWeighing()
+        2,
+        labeling_strategy=BinarizeSign(),
+        weighing_strategy=NoWeighing(),
+        aggregate_function="std",
     )
 
     original_start_times = y.index
