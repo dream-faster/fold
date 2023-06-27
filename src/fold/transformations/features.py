@@ -29,7 +29,7 @@ class PredefinedFunction(ParsableEnum):
 
 ColumnOrColumns = Union[str, List[str]]
 FunctionOrPredefined = Union[Callable, PredefinedFunction, str]
-ColumnWindowFunction = Tuple[ColumnOrColumns, int, FunctionOrPredefined]
+ColumnWindowFunction = Tuple[ColumnOrColumns, Optional[int], FunctionOrPredefined]
 
 
 class AddWindowFeatures(Transformation, Tunable):
@@ -73,6 +73,9 @@ class AddWindowFeatures(Transformation, Tunable):
         name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> None:
+        def replace_nan(value: Optional[int], replacement: int = 0) -> int:
+            return value if value is not None else replacement
+
         self.column_window_func = [
             (
                 wrap_in_list(column),
@@ -83,7 +86,9 @@ class AddWindowFeatures(Transformation, Tunable):
             )
             for column, window, function in wrap_in_list(column_window_func)
         ]
-        max_memory = max([window for _, window, _ in self.column_window_func])
+        max_memory = max(
+            [replace_nan(window) for _, window, _ in self.column_window_func]
+        )
         self.properties = Transformation.Properties(
             requires_X=True, memory_size=max_memory
         )
@@ -107,7 +112,7 @@ class AddWindowFeatures(Transformation, Tunable):
             if columns[0] == "all":
                 columns = X.columns
 
-            if window == 0:
+            if window is None:
                 return function(
                     X[columns].add_suffix(f"_{window}_{function_name}").expanding()
                 )
