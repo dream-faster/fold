@@ -1,11 +1,15 @@
+import pytest
+
 from fold.events import CreateEvents, FixedForwardHorizon, UsePredefinedEvents
 from fold.events.filters.everynth import EveryNth
 from fold.events.labeling import BinarizeSign
+from fold.events.labeling.strategies import NoLabel
 from fold.events.weights import NoWeighing
 from fold.loop import backtest, train
 from fold.loop.encase import train_backtest
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.dev import Identity
+from fold.transformations.lags import AddLagsY
 from fold.utils.tests import generate_sine_wave_data
 
 
@@ -37,18 +41,22 @@ def test_create_event() -> None:
     assert len(pred.dropna()) == 190
 
 
-def test_predefined_events() -> None:
+@pytest.mark.parametrize("agg_func", ["mean", "std", "max", "min"])
+def test_predefined_events(agg_func: str) -> None:
     X, y = generate_sine_wave_data(length=1100)
     splitter = ExpandingWindowSplitter(initial_train_window=100, step=200)
 
     labeler = FixedForwardHorizon(
-        2, labeling_strategy=BinarizeSign(), weighing_strategy=NoWeighing()
+        2,
+        labeling_strategy=NoLabel(),
+        weighing_strategy=NoWeighing(),
+        aggregate_function=agg_func,
     )
 
     original_start_times = y.index
     events = labeler.label_events(original_start_times, y).reindex(y.index)
 
-    pipeline = UsePredefinedEvents(Identity())
+    pipeline = UsePredefinedEvents(AddLagsY([1]))
     pred, trained_pipeline, artifacts = train_backtest(
         pipeline, X, y, splitter, events=events, return_artifacts=True
     )

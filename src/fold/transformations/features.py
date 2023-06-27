@@ -7,25 +7,8 @@ from typing import Callable, List, Optional, Tuple, Union
 
 import pandas as pd
 
-from ..base import Artifact, Transformation, Tunable, fit_noop
-from ..utils.enums import ParsableEnum
+from ..base import Artifact, PredefinedFunction, Transformation, Tunable, fit_noop
 from ..utils.list import wrap_in_list
-
-
-class PredefinedFunction(ParsableEnum):
-    mean = "mean"
-    sum = "sum"
-    median = "median"
-    std = "std"
-    var = "var"
-    kurt = "kurt"
-    min = "min"
-    max = "max"
-    corr = "corr"
-    cov = "cov"
-    skew = "skew"
-    sem = "sem"
-
 
 ColumnOrColumns = Union[str, List[str]]
 FunctionOrPredefined = Union[Callable, PredefinedFunction, str]

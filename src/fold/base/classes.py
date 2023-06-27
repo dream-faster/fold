@@ -10,6 +10,7 @@ import pandas as pd
 
 from ..splitters import SingleWindowSplitter
 from ..utils.dataframe import ResolutionStrategy, concat_on_columns_with_duplicates
+from ..utils.enums import ParsableEnum
 from ..utils.introspection import get_initialization_parameters
 from ..utils.list import filter_none
 
@@ -425,3 +426,18 @@ class Artifact(pd.DataFrame):
             return Artifact.empty(index)  # type: ignore
         else:
             return result.reindex(index)  # type: ignore
+
+
+class PredefinedFunction(ParsableEnum):
+    mean = "mean"
+    sum = "sum"
+    median = "median"
+    std = "std"
+    var = "var"
+    kurt = "kurt"
+    min = "min"
+    max = "max"
+    corr = "corr"
+    cov = "cov"
+    skew = "skew"
+    sem = "sem"
