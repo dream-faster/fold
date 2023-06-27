@@ -101,14 +101,14 @@ def test_target_transformation_log_difference() -> None:
     X, y = X + 2, y + 2
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
 
-    def assert_y_not_nan(X, y):
+    def assert_is_close_to(X, y):
         assert np.isclose(
-            np.diff(np.log(X.squeeze()), 1), y.shift(1)[1:], atol=0.001
+            np.diff(np.log(X.squeeze()[1:]), 1), y.shift(1)[2:], atol=0.001
         ).all()
 
     pipeline = TransformTarget(
         [
-            Test(fit_func=assert_y_not_nan, transform_func=lambda x: x),
+            Test(fit_func=assert_is_close_to, transform_func=lambda x: x),
             Lookahead(),
         ],
         y_pipeline=[TakeLog(), Difference()],

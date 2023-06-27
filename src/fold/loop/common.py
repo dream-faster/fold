@@ -66,14 +66,6 @@ def recursively_transform(
         f'called "recursively_transform()" with {transformations.__class__.__name__} with stage {stage}'
     )
 
-    if len(X) != len(artifacts):
-        artifacts = artifacts.loc[
-            X.index
-        ]  # we're calling recursively_transform() recursively, and we trim artifacts as well, but for simplicity's sake, recursive_transform doesn't return it explicitly, so these two could get out of sync.
-
-    if y is not None and len(X) != len(y):
-        y = y[X.index]
-
     if isinstance(transformations, List):
         processed_transformations = []
         for transformation in transformations:
@@ -441,7 +433,7 @@ def _backtest_on_window(
 
     X_test = X.iloc[split.test_window_start : split.test_window_end]
     y_test = y.iloc[split.test_window_start : split.test_window_end]
-    artifact_test = artifact[split.train_window_start : split.test_window_end]
+    artifact_test = artifact.iloc[split.test_window_start : split.test_window_end]
     results, artifacts = recursively_transform(
         X_test,
         y_test,

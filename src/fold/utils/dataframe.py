@@ -96,6 +96,13 @@ def concat_on_columns_with_duplicates(
     if all([result.empty for result in dfs]):
         return pd.DataFrame(index=dfs[0].index)
     dfs = [to_dataframe(df) for df in dfs]
+    max_len = max([len(df) for df in dfs])
+    if not all([len(df) == max_len for df in dfs]):
+        index_to_apply = reduce(
+            lambda i1, i2: i1.union(i2), [df.index for df in dfs]
+        ).sort_values()
+        dfs = [df.reindex(index_to_apply) for df in dfs]
+
     columns = flatten([result.columns.to_list() for result in dfs])
     duplicates = keep_only_duplicates(columns)
     if len(duplicates) == 0:

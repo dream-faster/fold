@@ -1,13 +1,9 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
 
-from logging import warn
 from typing import Optional, Tuple
 
 import pandas as pd
-
-from ..base.classes import Artifact
-from ..utils.trim import trim_initial_nans
 
 
 def check_types(
@@ -20,14 +16,6 @@ def check_types(
     else:
         assert isinstance(X, pd.DataFrame), "X must be a pandas DataFrame."
     assert isinstance(y, pd.Series), "y must be a pandas Series."
-
-    X_trimmed, _, _ = trim_initial_nans(X, y, Artifact.empty(X.index))
-    if len(X_trimmed) < len(X):
-        warn(
-            f"Detected initial NaNs in X ({ len(X) - len(X_trimmed) } instances),"
-            " that'll be trimmed internally. Please trim your data before passing it"
-            " to the model."
-        )
     return X, y
 
 

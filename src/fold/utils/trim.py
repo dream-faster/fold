@@ -1,6 +1,6 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
-
+import logging
 from typing import Optional, Tuple, TypeVar, Union
 
 import numpy as np
@@ -9,6 +9,7 @@ import pandas as pd
 from ..base import Artifact
 
 T = TypeVar("T", pd.Series, Optional[pd.Series])
+logger = logging.getLogger("fold:utils")
 
 
 def trim_initial_nans(
@@ -26,11 +27,17 @@ def trim_initial_nans(
             Artifact.empty(X.index),
         )
     first_valid_index = max(first_valid_index_X, first_valid_index_y)
-    return (
-        X.iloc[first_valid_index:],
-        y.iloc[first_valid_index:],
-        artifact.iloc[first_valid_index:],
-    )
+    if first_valid_index == 0:
+        return X, y, artifact
+    else:
+        logger.warn(
+            f"The first {first_valid_index} rows of the dataset were removed because they contained NaN values."
+        )
+        return (
+            X.iloc[first_valid_index:],
+            y.iloc[first_valid_index:],
+            artifact.iloc[first_valid_index:],
+        )
 
 
 def trim_initial_nans_single(X: pd.DataFrame) -> pd.DataFrame:

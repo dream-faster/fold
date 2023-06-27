@@ -31,5 +31,9 @@ from .holidays import AddHolidayFeatures
 from .lags import AddLagsX, AddLagsY
 from .math import AddConstant, MultiplyBy, TakeLog, TurnPositive
 from .scaling import MinMaxScaler, StandardScaler
-from .sklearn import WrapSKLearnFeatureSelector, WrapSKLearnTransformation
+from .sklearn import (
+    RemoveLowVarianceFeatures,
+    WrapSKLearnFeatureSelector,
+    WrapSKLearnTransformation,
+)
 from .update import DontUpdate

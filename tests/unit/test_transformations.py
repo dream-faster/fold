@@ -332,7 +332,7 @@ def test_function_on_columns():
 
 def test_add_rolling_corr():
     X, y = generate_sine_wave_data(length=600)
-    X["sine2"] = 1 - X["sine"].shift(1)
+    X["sine2"] = 1 - X["sine"].shift(1).fillna(0.0)
     splitter = SingleWindowSplitter(train_window=400)
     transformation = AddRollingCorrelation(("sine", "sine2"), window=10)
     pred, _ = train_backtest(transformation, X, y, splitter)

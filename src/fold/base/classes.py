@@ -424,4 +424,4 @@ class Artifact(pd.DataFrame):
         if result.empty:
             return Artifact.empty(index)  # type: ignore
         else:
-            return result  # type: ignore
+            return result.reindex(index)  # type: ignore
