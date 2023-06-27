@@ -98,7 +98,9 @@ def concat_on_columns_with_duplicates(
     dfs = [to_dataframe(df) for df in dfs]
     max_len = max([len(df) for df in dfs])
     if not all([len(df) == max_len for df in dfs]):
-        index_to_apply = [df.index for df in dfs if len(df) == max_len][0]
+        index_to_apply = reduce(
+            lambda i1, i2: i1.union(i2), [df.index for df in dfs]
+        ).sort_values()
         dfs = [df.reindex(index_to_apply) for df in dfs]
 
     columns = flatten([result.columns.to_list() for result in dfs])
