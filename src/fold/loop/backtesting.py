@@ -10,7 +10,7 @@ from ..base import Artifact, EventDataFrame, OutOfSamplePredictions, TrainedPipe
 from ..splitters import Splitter
 from ..utils.dataframe import concat_on_index
 from ..utils.list import unpack_list_of_tuples
-from ..utils.trim import trim_initial_nans_single
+from ..utils.trim import trim_initial_nans, trim_initial_nans_single
 from .checks import check_types
 from .common import _backtest_on_window
 from .types import Backend
@@ -61,8 +61,9 @@ def backtest(
         Predictions for all folds, concatenated.
     """
     backend = Backend.from_str(backend)
+    X, y = check_types(X, y)
     artifact = Artifact.from_events_sample_weights(X.index, events, sample_weights)
-    X, y, artifact = check_types(X, y, artifact)
+    X, y, artifact = trim_initial_nans(X, y, artifact)
 
     results, artifacts = unpack_list_of_tuples(
         [

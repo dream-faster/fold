@@ -96,8 +96,10 @@ def concat_on_columns_with_duplicates(
     if all([result.empty for result in dfs]):
         return pd.DataFrame(index=dfs[0].index)
     dfs = [to_dataframe(df) for df in dfs]
-    if not all([df.shape[0] == dfs[0].shape[0] for df in dfs]):
-        raise ValueError("All DataFrames must have the same dimensions")
+    max_len = max([len(df) for df in dfs])
+    if not all([len(df) == max_len for df in dfs]):
+        index_to_apply = [df.index for df in dfs if len(df) == max_len][0]
+        dfs = [df.reindex(index_to_apply) for df in dfs]
 
     columns = flatten([result.columns.to_list() for result in dfs])
     duplicates = keep_only_duplicates(columns)
