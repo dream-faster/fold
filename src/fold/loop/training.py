@@ -5,8 +5,6 @@ from typing import Optional, Tuple, Union
 
 import pandas as pd
 
-from fold.base.classes import InSamplePredictions
-
 from ..base import (
     Artifact,
     DeployablePipeline,
@@ -14,9 +12,11 @@ from ..base import (
     Pipeline,
     TrainedPipelines,
 )
+from ..base.classes import InSamplePredictions
 from ..splitters import Fold, SlidingWindowSplitter, Splitter
 from ..utils.dataframe import concat_on_index_override_duplicate_rows
 from ..utils.list import unpack_list_of_tuples, wrap_in_list
+from ..utils.trim import trim_initial_nans
 from .backend import get_backend_dependent_functions
 from .checks import check_types
 from .common import _sequential_train_on_window, _train_on_window
@@ -74,8 +74,9 @@ def train(
     TrainedPipelines
         The fitted pipelines, for all folds.
     """
+    X, y = check_types(X, y)
     artifact = Artifact.from_events_sample_weights(X.index, events, sample_weights)
-    X, y, artifact = check_types(X, y, artifact)
+    X, y, artifact = trim_initial_nans(X, y, artifact)
     train_method = TrainMethod.from_str(train_method)
     backend = Backend.from_str(backend)
 
@@ -183,8 +184,9 @@ def train_for_deployment(
     sample_weights: Optional[pd.Series] = None,
     events: Optional[EventDataFrame] = None,
 ) -> DeployablePipeline:
+    X, y = check_types(X, y)
     artifact = Artifact.from_events_sample_weights(X.index, events, sample_weights)
-    X, y, artifact = check_types(X, y, artifact)
+    X, y, artifact = trim_initial_nans(X, y, artifact)
 
     pipeline = wrap_in_list(pipeline)
     pipeline = wrap_transformation_if_needed(pipeline)
