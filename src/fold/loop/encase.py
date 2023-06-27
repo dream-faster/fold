@@ -197,7 +197,7 @@ def train_evaluate(
     X: Optional[pd.DataFrame],
     y: pd.Series,
     splitter: Splitter,
-    backend: Backend = Backend.no,
+    backend: Union[str, Backend] = Backend.no,
     sample_weights: Optional[pd.Series] = None,
     events: Optional[EventDataFrame] = None,
     train_method: Union[TrainMethod, str] = TrainMethod.parallel,
