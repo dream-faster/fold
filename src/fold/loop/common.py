@@ -66,12 +66,6 @@ def recursively_transform(
         f'called "recursively_transform()" with {transformations.__class__.__name__} with stage {stage}'
     )
 
-    if len(X) != len(artifacts):
-        artifacts = artifacts.loc[X.index]
-
-    if y is not None and len(X) != len(y):
-        y = y[X.index]
-
     if isinstance(transformations, List):
         processed_transformations = []
         for transformation in transformations:

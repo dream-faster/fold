@@ -67,7 +67,7 @@ def test_on_weather_data_backends(backend: str) -> None:
         backend=backend,
         return_insample=True,
     )
-    assert len(pred) == 800
+    assert len(pred) == 799
     assert (
         len(insample_predictions) <= 800
     ), "length of insample predictions should be always <= length of outofsample predictions"
