@@ -219,10 +219,12 @@ class AddRollingCorrelation(Transformation, Tunable):
         self,
         column_pairs: Union[Tuple[str], List[Tuple[str]]],
         window: int,
+        fillna: bool = True,
         name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> None:
         self.column_pairs = wrap_in_list(column_pairs)
+        self.fillna = fillna
         assert all(
             len(pair) == 2 for pair in self.column_pairs
         ), "All column pairs must be of length 2"
@@ -252,7 +254,8 @@ class AddRollingCorrelation(Transformation, Tunable):
             for column_pair in self.column_pairs
         ]
 
-        return pd.concat([X] + X_function_applied, axis="columns"), None
+        concatenated = pd.concat([X] + X_function_applied, axis="columns")
+        return fill_na_inf(concatenated) if self.fillna else concatenated, None
 
     fit = fit_noop
     update = fit
