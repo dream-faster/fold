@@ -4,11 +4,10 @@ from __future__ import annotations
 
 from typing import Optional, Tuple, Union
 
-import numpy as np
 import pandas as pd
 
 from ..base import Artifact, InvertibleTransformation, Transformation, Tunable, fit_noop
-from ..utils.dataframe import take_log, to_series
+from ..utils.dataframe import fill_na_inf, take_log, to_series
 from ..utils.enums import ParsableEnum
 
 
@@ -278,7 +277,3 @@ class MakeStationary(Transformation, Tunable):
         return pd.concat(columns, axis="columns"), None
 
     update = fit_noop
-
-
-def fill_na_inf(df: pd.DataFrame) -> pd.DataFrame:
-    return df.replace([np.inf, -np.inf], np.nan).fillna(0.0)
