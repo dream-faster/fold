@@ -10,7 +10,11 @@ from fold.transformations.columns import DropColumns, OnlyPredictions, RenameCol
 from fold.transformations.dev import Identity
 from fold.transformations.features import AddWindowFeatures
 from fold.transformations.lags import AddLagsY
-from fold.utils.tests import generate_monotonous_data, generate_sine_wave_data
+from fold.utils.tests import (
+    generate_monotonous_data,
+    generate_sine_wave_data,
+    tuneability_test,
+)
 
 
 def test_composite_cloning():
@@ -34,6 +38,10 @@ def test_concat_and_metadata():
     assert preds["sine~mean_10"] is not None
     for i in range(0, 8):
         assert trained.pipeline[0].iloc[i].metadata.fold_index == i
+
+    tuneability_test(
+        concat, dict(pipelines=[pipeline2, pipeline1], if_duplicate_keep="last")
+    )
 
 
 def test_concat_resolution_left():

@@ -109,15 +109,20 @@ class Concat(Composite, Tunable):
         return clone
 
     def get_params(self) -> dict:
-        return dict(if_duplicate_keep=self.if_duplicate_keep, name=self.name)
+        return dict(
+            pipelines=self.pipelines,
+            if_duplicate_keep=self.if_duplicate_keep,
+            name=self.name,
+        )
 
     def clone_with_params(
         self, parameters: dict, clone_children: Optional[Callable] = None
     ) -> Tunable:
-        instance = self.clone(clone_children)
-        instance.name = parameters["name"]
-        instance.if_duplicate_keep = parameters["if_duplicate_keep"]
-        return instance
+        return Concat(
+            pipelines=clone_children(parameters["pipelines"]),
+            name=parameters["name"],
+            if_duplicate_keep=parameters["if_duplicate_keep"],
+        )
 
 
 class Sequence(Composite, Tunable):
@@ -161,14 +166,14 @@ class Sequence(Composite, Tunable):
         return clone
 
     def get_params(self) -> dict:
-        return dict(name=self.name)
+        return dict(pipeline=self.pipeline, name=self.name)
 
     def clone_with_params(
         self, parameters: dict, clone_children: Optional[Callable] = None
     ) -> Tunable:
-        instance = self.clone(clone_children)
-        instance.name = parameters["name"]
-        return instance
+        return Pipeline(
+            pipeline=clone_children(parameters["pipeline"]), name=parameters["name"]
+        )
 
 
 def TransformColumn(
