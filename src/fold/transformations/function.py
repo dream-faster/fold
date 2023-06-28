@@ -5,9 +5,8 @@ from typing import Callable, Optional, Tuple
 
 import pandas as pd
 
-from fold.base.classes import Tunable
-
-from ..base import Artifact, Transformation, fit_noop
+from ..base import Artifact, Transformation, Tunable, fit_noop
+from ..utils.dataframe import fill_na_inf
 
 
 class ApplyFunction(Transformation, Tunable):
@@ -19,11 +18,13 @@ class ApplyFunction(Transformation, Tunable):
         self,
         func: Callable,
         past_window_size: Optional[int],
+        fillna: bool = True,
         name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> None:
         self.func = func
         self.name = name or func.__name__
+        self.fillna = fillna
         self.past_window_size = past_window_size
         self.params_to_try = params_to_try
         self.properties = Transformation.Properties(
@@ -33,7 +34,8 @@ class ApplyFunction(Transformation, Tunable):
     def transform(
         self, X: pd.DataFrame, in_sample: bool
     ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
-        return self.func(X), None
+        return_value = self.func(X)
+        return fill_na_inf(return_value) if self.fillna else return_value, None
 
     fit = fit_noop
     update = fit

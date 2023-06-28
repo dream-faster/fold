@@ -8,6 +8,7 @@ from typing import Callable, List, Optional, Tuple, Union
 import pandas as pd
 
 from ..base import Artifact, PredefinedFunction, Transformation, Tunable, fit_noop
+from ..utils.dataframe import fill_na_inf
 from ..utils.list import wrap_in_list
 
 ColumnOrColumns = Union[str, List[str]]
@@ -100,21 +101,21 @@ class AddWindowFeatures(Transformation, Tunable):
                 columns = X.columns
 
             if window is None:
-                return_value = function(
+                return function(
                     X[columns].add_suffix(f"_{window}_{function_name}").expanding()
                 )
             else:
-                return_value = function(
+                return function(
                     X[columns].add_suffix(f"_{window}_{function_name}").rolling(window)
                 )
-            return return_value.fillna(0.0) if self.fillna else return_value
 
         X_function_applied = [
             apply_function(columns, window, function)
             for columns, window, function in self.column_window_func
         ]
+        concatenated = pd.concat([X] + X_function_applied, axis="columns")
 
-        return pd.concat([X] + X_function_applied, axis="columns"), None
+        return fill_na_inf(concatenated) if self.fillna else concatenated, None
 
     fit = fit_noop
     update = fit
@@ -200,17 +201,14 @@ class AddFeatures(Transformation, Tunable):
 
             if columns[0] == "all":
                 columns = X.columns
-            return_value = function(X[columns].add_suffix(f"_{function_name}"))
-            if self.fillna:
-                return return_value.fillna(0.0)
-            else:
-                return return_value
+            return function(X[columns].add_suffix(f"_{function_name}"))
 
         X_function_applied = [
             apply_function(columns, function) for columns, function in self.column_func
         ]
 
-        return pd.concat([X] + X_function_applied, axis="columns"), None
+        concatenated = pd.concat([X] + X_function_applied, axis="columns")
+        return fill_na_inf(concatenated) if self.fillna else concatenated, None
 
     fit = fit_noop
     update = fit

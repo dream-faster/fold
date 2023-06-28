@@ -144,3 +144,7 @@ def concat_on_columns_with_duplicates(
             raise ValueError(f"ResolutionStrategy is not valid: {strategy}")
     else:
         return pd.concat(dfs, axis="columns")
+
+
+def fill_na_inf(df: pd.DataFrame) -> pd.DataFrame:
+    return df.replace([np.inf, -np.inf], np.nan).fillna(0.0)
