@@ -7,7 +7,7 @@ from typing import Callable, List, Optional, Union
 
 import pandas as pd
 
-from fold.base.classes import Artifact
+from fold.base.classes import Artifact, Tunable
 
 from ..base import Composite, Pipeline, Pipelines, get_concatenated_names
 from ..transformations.columns import SelectColumns
@@ -107,7 +107,7 @@ class Concat(Composite):
         return clone
 
 
-class Sequence(Composite):
+class Sequence(Composite, Tunable):
     """
     An optional wrappers that is equivalent to using a single array for the transformations.
     It executes the transformations sequentially, in the order they are provided.
@@ -124,11 +124,13 @@ class Sequence(Composite):
         self,
         pipeline: Pipeline,
         name: Optional[str] = None,
+        params_to_try: Optional[dict] = None,
     ) -> None:
         self.pipeline = wrap_in_double_list_if_needed(pipeline)
         self.name = name or "Sequence-" + get_concatenated_names(pipeline)
         self.properties = Composite.Properties(primary_only_single_pipeline=True)
         self.metadata = None
+        self.params_to_try = params_to_try
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series], fit: bool
@@ -144,6 +146,19 @@ class Sequence(Composite):
         clone.name = self.name
         clone.metadata = self.metadata
         return clone
+
+    def get_params(self) -> dict:
+        return dict(name=self.name)
+
+    def get_params_to_try(self) -> Optional[dict]:
+        return dict()
+
+    def clone_with_params(
+        self, parameters: dict, clone_children: Optional[Callable] = None
+    ) -> Tunable:
+        instance = self.clone(self, clone_children)
+        instance.name = parameters["name"]
+        return instance
 
 
 def TransformColumn(
