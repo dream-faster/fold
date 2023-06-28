@@ -39,8 +39,11 @@ def test_concat_and_metadata():
     for i in range(0, 8):
         assert trained.pipeline[0].iloc[i].metadata.fold_index == i
 
+    pipeline2_renamed = [AddLagsY([1]), RenameColumns({"y_lag_1": "sine_10_mean"})]
+    concat = Concat([pipeline1, pipeline2_renamed], if_duplicate_keep="first")
+
     tuneability_test(
-        concat, dict(pipelines=[pipeline2, pipeline1], if_duplicate_keep="last")
+        concat, dict(pipelines=[pipeline1, pipeline2_renamed], if_duplicate_keep="last")
     )
 
 

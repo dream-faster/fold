@@ -8,11 +8,7 @@ from fold.composites.ensemble import Ensemble
 from fold.loop import backtest, train
 from fold.models.dummy import DummyClassifier
 from fold.splitters import ExpandingWindowSplitter
-from fold.utils.tests import (
-    generate_all_zeros,
-    generate_sine_wave_data,
-    tuneability_test,
-)
+from fold.utils.tests import generate_all_zeros, generate_sine_wave_data
 
 
 def test_ensemble_regression() -> None:
@@ -147,16 +143,3 @@ def test_dummy_pipeline_classification() -> None:
     pred_baseline = backtest(trained_pipelines_baseline, X, y, splitter)
 
     assert (pred == pred_baseline).all(axis=0).all()
-
-    tuneability_test(
-        pipeline,
-        dict(
-            pipeline=[
-                DummyClassifier(
-                    predicted_value=1,
-                    all_classes=[1, 0],
-                    predicted_probabilities=[1.0, 0.0],
-                ),
-            ]
-        ),
-    )
