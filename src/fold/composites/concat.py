@@ -16,7 +16,7 @@ from ..utils.dataframe import ResolutionStrategy, concat_on_columns_with_duplica
 from ..utils.list import wrap_in_double_list_if_needed, wrap_in_list
 
 
-class Concat(Composite):
+class Concat(Composite, Tunable):
     """
     Concatenates the results of multiple pipelines.
 
@@ -62,6 +62,7 @@ class Concat(Composite):
             Callable[[List[pd.DataFrame]], pd.DataFrame]
         ] = None,
         name: Optional[str] = None,
+        params_to_try: Optional[dict] = None,
     ) -> None:
         self.pipelines = pipelines
         self.if_duplicate_keep = ResolutionStrategy.from_str(if_duplicate_keep)
@@ -69,6 +70,7 @@ class Concat(Composite):
         self.name = name or "Concat-" + get_concatenated_names(pipelines)
         self.properties = Composite.Properties()
         self.metadata = None
+        self.params_to_try = params_to_try
 
     def postprocess_result_primary(
         self,
@@ -105,6 +107,17 @@ class Concat(Composite):
         clone.name = self.name
         clone.metadata = self.metadata
         return clone
+
+    def get_params(self) -> dict:
+        return dict(if_duplicate_keep=self.if_duplicate_keep, name=self.name)
+
+    def clone_with_params(
+        self, parameters: dict, clone_children: Optional[Callable] = None
+    ) -> Tunable:
+        instance = self.clone(clone_children)
+        instance.name = parameters["name"]
+        instance.if_duplicate_keep = parameters["if_duplicate_keep"]
+        return instance
 
 
 class Sequence(Composite, Tunable):
@@ -150,13 +163,10 @@ class Sequence(Composite, Tunable):
     def get_params(self) -> dict:
         return dict(name=self.name)
 
-    def get_params_to_try(self) -> Optional[dict]:
-        return dict()
-
     def clone_with_params(
         self, parameters: dict, clone_children: Optional[Callable] = None
     ) -> Tunable:
-        instance = self.clone(self, clone_children)
+        instance = self.clone(clone_children)
         instance.name = parameters["name"]
         return instance
 
