@@ -27,6 +27,8 @@ class Concat(Composite):
         A list of pipelines to be applied to the data, independently of each other.
     if_duplicate_keep : Union[ResolutionStrategy, str], optional
         How to handle duplicate columns, by default ResolutionStrategy.first
+    custom_merge_logic: Optional[Callable[[List[pd.DataFrame]], pd.DataFrame]], default None
+        A custom function that takes a list of dataframes and returns a single dataframe. If present, it's used instead of ResolutionStrategy.
 
     Examples
     --------
@@ -57,16 +59,23 @@ class Concat(Composite):
         self,
         pipelines: Pipelines,
         if_duplicate_keep: Union[ResolutionStrategy, str] = ResolutionStrategy.first,
+        custom_merge_logic: Optional[
+            Callable[[List[pd.DataFrame]], pd.DataFrame]
+        ] = None,
         name: Optional[str] = None,
     ) -> None:
         self.pipelines = pipelines
         self.if_duplicate_keep = ResolutionStrategy.from_str(if_duplicate_keep)
+        self.custom_merge_logic = custom_merge_logic
         self.name = name or "Concat-" + get_concatenated_names(pipelines)
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
     ) -> pd.DataFrame:
-        return concat_on_columns_with_duplicates(results, self.if_duplicate_keep)
+        if self.custom_merge_logic is not None:
+            return self.custom_merge_logic(results)
+        else:
+            return concat_on_columns_with_duplicates(results, self.if_duplicate_keep)
 
     def postprocess_artifacts_primary(
         self,
@@ -86,6 +95,7 @@ class Concat(Composite):
         clone = Concat(
             pipelines=clone_children(self.pipelines),
             if_duplicate_keep=self.if_duplicate_keep,
+            custom_merge_logic=self.custom_merge_logic,
         )
         clone.properties = self.properties
         clone.name = self.name
