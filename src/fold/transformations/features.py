@@ -51,7 +51,7 @@ class AddWindowFeatures(Transformation, Tunable):
     >>> pipeline = AddWindowFeatures(("sine", 10, "mean"))
     >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
     >>> preds.head()
-                           sine  sine_10_mean
+                           sine  sine~10_mean
     2021-12-31 15:40:00 -0.0000      -0.05649
     2021-12-31 15:41:00  0.0126      -0.04394
     2021-12-31 15:42:00  0.0251      -0.03139
@@ -168,7 +168,7 @@ class AddFeatures(Transformation, Tunable):
     >>> pipeline = AddFeatures([("sine", np.square)])
     >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
     >>> preds.head()
-                           sine  sine_square
+                           sine  sine~square
     2021-12-31 15:40:00 -0.0000     0.000000
     2021-12-31 15:41:00  0.0126     0.000159
     2021-12-31 15:42:00  0.0251     0.000630

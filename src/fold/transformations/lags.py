@@ -103,7 +103,7 @@ class AddLagsX(Transformation, Tunable):
     >>> pipeline = AddLagsX([("sine", 1), ("sine", [2,3])])
     >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
     >>> preds.head()
-                           sine  sine_lag_1  sine_lag_2  sine_lag_3
+                           sine  sine~lag_1  sine~lag_2  sine~lag_3
     2021-12-31 15:40:00 -0.0000     -0.0126     -0.0251     -0.0377
     2021-12-31 15:41:00  0.0126     -0.0000     -0.0126     -0.0251
     2021-12-31 15:42:00  0.0251      0.0126     -0.0000     -0.0126
