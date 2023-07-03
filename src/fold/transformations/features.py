@@ -7,7 +7,15 @@ from typing import Callable, List, Optional, Tuple, Union
 
 import pandas as pd
 
-from ..base import Artifact, PredefinedFunction, Transformation, Tunable, fit_noop
+from ..base import (
+    Artifact,
+    PredefinedFunction,
+    Transformation,
+    Tunable,
+    feature_name_separator,
+    fit_noop,
+)
+from ..utils.checks import get_list_column_names
 from ..utils.dataframe import fill_na_inf
 from ..utils.list import wrap_in_list
 
@@ -97,16 +105,19 @@ class AddWindowFeatures(Transformation, Tunable):
                 function.__name__ if function.__name__ != "<lambda>" else "transformed"
             )
 
-            if columns[0] == "all":
-                columns = X.columns
+            column_names = get_list_column_names(columns, X)
 
             if window is None:
                 return function(
-                    X[columns].add_suffix(f"_{window}_{function_name}").expanding()
+                    X[column_names]
+                    .add_suffix(f"{feature_name_separator}_expanding_{function_name}")
+                    .expanding()
                 )
             else:
                 return function(
-                    X[columns].add_suffix(f"_{window}_{function_name}").rolling(window)
+                    X[column_names]
+                    .add_suffix(f"{feature_name_separator}{window}_{function_name}")
+                    .rolling(window, min_periods=1)
                 )
 
         X_function_applied = [
@@ -199,9 +210,11 @@ class AddFeatures(Transformation, Tunable):
                 function.__name__ if function.__name__ != "<lambda>" else "transformed"
             )
 
-            if columns[0] == "all":
-                columns = X.columns
-            return function(X[columns].add_suffix(f"_{function_name}"))
+            return function(
+                X[get_list_column_names(columns, X)].add_suffix(
+                    f"{feature_name_separator}{function_name}"
+                )
+            )
 
         X_function_applied = [
             apply_function(columns, function) for columns, function in self.column_func
@@ -244,9 +257,9 @@ class AddRollingCorrelation(Transformation, Tunable):
             rhs = column_pair[1]
             return (
                 X[lhs]
-                .rolling(window)
+                .rolling(window, min_periods=1)
                 .corr(X[rhs])
-                .rename(f"{lhs}_{rhs}_rolling_corr_{window}")
+                .rename(f"{lhs}_{rhs}{feature_name_separator}rolling_corr_{window}")
             )
 
         X_function_applied = [

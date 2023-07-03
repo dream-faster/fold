@@ -8,7 +8,7 @@ from typing import List, Optional, Tuple, Union
 import pandas as pd
 
 from ..base import Artifact, Transformation, Tunable, fit_noop
-from ..utils.checks import check_get_columns
+from ..utils.checks import get_list_column_names
 from ..utils.list import wrap_in_list
 
 
@@ -40,7 +40,7 @@ class SelectColumns(Transformation, Tunable):
     def transform(
         self, X: pd.DataFrame, in_sample: bool
     ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
-        return X[self.columns], None
+        return X[get_list_column_names(self.columns, X)], None
 
     fit = fit_noop
     update = fit
@@ -73,7 +73,7 @@ class DropColumns(Transformation, Tunable):
     def transform(
         self, X: pd.DataFrame, in_sample: bool
     ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
-        return X.drop(columns=check_get_columns(self.columns, X)), None
+        return X.drop(columns=get_list_column_names(self.columns, X)), None
 
     fit = fit_noop
     update = fit

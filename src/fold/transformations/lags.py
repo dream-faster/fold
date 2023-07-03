@@ -5,9 +5,9 @@ from typing import List, Optional, Tuple, Union
 
 import pandas as pd
 
-from fold.utils.checks import is_X_available
-
-from ..base import Artifact, Transformation, Tunable, fit_noop
+from ..base import Artifact, Transformation, Tunable, feature_name_separator, fit_noop
+from ..utils.checks import get_column_names, is_X_available
+from ..utils.dataframe import to_dataframe
 from ..utils.list import flatten, transform_range_to_list, wrap_in_list
 
 
@@ -154,9 +154,11 @@ class AddLagsX(Transformation, Tunable):
         lagged_columns = []
         for column, lags in self.columns_and_lags:
             for lag in lags:
-                selected = X if column == "all" else X[column].to_frame()
+                selected = to_dataframe(X[get_column_names(column, X)])
                 lagged_columns.append(
-                    selected.shift(lag)[-len(X) :].add_suffix(f"_lag_{lag}")
+                    selected.shift(lag)[-len(X) :].add_suffix(
+                        f"{feature_name_separator}lag_{lag}"
+                    )
                 )
         return pd.concat([X] + lagged_columns, axis="columns").fillna(0.0), None
 

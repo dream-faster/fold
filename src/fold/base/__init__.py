@@ -7,3 +7,5 @@ from .utils import (
     traverse,
     traverse_apply,
 )
+
+feature_name_separator = "~"

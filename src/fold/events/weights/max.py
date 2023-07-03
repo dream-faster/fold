@@ -35,7 +35,7 @@ def calculate_rolling_expanding_abs_max(
         abs_returns.expanding()
         if window_size is None
         else abs_returns.rolling(
-            calculate_rolling_window_size(window_size, abs_returns)
+            calculate_rolling_window_size(window_size, abs_returns), min_periods=1
         )
     )
     maximum = rolling_or_expanding.max()
