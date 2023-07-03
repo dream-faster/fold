@@ -5,9 +5,9 @@ from typing import List, Optional, Tuple, Union
 
 import pandas as pd
 
-from fold.utils.checks import is_X_available
-
-from ..base import Artifact, Transformation, Tunable, fit_noop
+from ..base import Artifact, Transformation, Tunable, feature_name_separator, fit_noop
+from ..utils.checks import get_column_names, is_X_available
+from ..utils.dataframe import to_dataframe
 from ..utils.list import flatten, transform_range_to_list, wrap_in_list
 
 
@@ -103,7 +103,7 @@ class AddLagsX(Transformation, Tunable):
     >>> pipeline = AddLagsX([("sine", 1), ("sine", [2,3])])
     >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
     >>> preds.head()
-                           sine  sine_lag_1  sine_lag_2  sine_lag_3
+                           sine  sine~lag_1  sine~lag_2  sine~lag_3
     2021-12-31 15:40:00 -0.0000     -0.0126     -0.0251     -0.0377
     2021-12-31 15:41:00  0.0126     -0.0000     -0.0126     -0.0251
     2021-12-31 15:42:00  0.0251      0.0126     -0.0000     -0.0126
@@ -154,9 +154,11 @@ class AddLagsX(Transformation, Tunable):
         lagged_columns = []
         for column, lags in self.columns_and_lags:
             for lag in lags:
-                selected = X if column == "all" else X[column].to_frame()
+                selected = to_dataframe(X[get_column_names(column, X)])
                 lagged_columns.append(
-                    selected.shift(lag)[-len(X) :].add_suffix(f"_lag_{lag}")
+                    selected.shift(lag)[-len(X) :].add_suffix(
+                        f"{feature_name_separator}lag_{lag}"
+                    )
                 )
         return pd.concat([X] + lagged_columns, axis="columns").fillna(0.0), None
 

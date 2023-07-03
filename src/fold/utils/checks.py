@@ -1,11 +1,12 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
 
-from typing import List
+from typing import List, Union
 
 import pandas as pd
 
 from fold.utils.dataframe import to_series
+from fold.utils.list import flatten, unique
 
 
 def is_prediction(input: pd.DataFrame) -> bool:
@@ -87,12 +88,19 @@ def is_X_available(X: pd.DataFrame) -> bool:
     return not (X.shape[1] == 1 and X.columns[0] == "X_not_available")
 
 
-def is_columns_all(columns: List[str]):
-    return columns[0] == "all"
-
-
-def check_get_columns(columns: List[str], X: pd.DataFrame) -> List[str]:
-    if is_columns_all(columns):
+def get_column_names(column: str, X: pd.DataFrame) -> pd.Index:
+    if column == "all":
         return X.columns
+    if "*" in column:
+        return [col for col in X.columns if col.startswith(column.split("*")[0])]
     else:
-        return columns
+        return [column]
+
+
+def get_list_column_names(
+    columns: List[str], X: pd.DataFrame
+) -> Union[List[str], pd.Index]:
+    if len(columns) == 1:
+        return get_column_names(columns[0], X)
+    else:
+        return unique(flatten([get_column_names(c, X) for c in columns]))

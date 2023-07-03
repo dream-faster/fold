@@ -109,16 +109,16 @@ def test_add_lags_X():
     transformations = AddLagsX(columns_and_lags=[("sine", [1, 2, 3])])
     trained_pipelines = train(transformations, X, y, splitter)
     pred = backtest(trained_pipelines, X, y, splitter)
-    assert (pred["sine_lag_1"] == X["sine"].shift(1)[pred.index]).all()
-    assert (pred["sine_lag_2"] == X["sine"].shift(2)[pred.index]).all()
-    assert (pred["sine_lag_3"] == X["sine"].shift(3)[pred.index]).all()
+    assert (pred["sine~lag_1"] == X["sine"].shift(1)[pred.index]).all()
+    assert (pred["sine~lag_2"] == X["sine"].shift(2)[pred.index]).all()
+    assert (pred["sine~lag_3"] == X["sine"].shift(3)[pred.index]).all()
 
     transformations = AddLagsX(columns_and_lags=[("sine", range(1, 4))])
     trained_pipelines = train(transformations, X, y, splitter)
     pred = backtest(trained_pipelines, X, y, splitter)
-    assert (pred["sine_lag_1"] == X["sine"].shift(1)[pred.index]).all()
-    assert (pred["sine_lag_2"] == X["sine"].shift(2)[pred.index]).all()
-    assert (pred["sine_lag_3"] == X["sine"].shift(3)[pred.index]).all()
+    assert (pred["sine~lag_1"] == X["sine"].shift(1)[pred.index]).all()
+    assert (pred["sine~lag_2"] == X["sine"].shift(2)[pred.index]).all()
+    assert (pred["sine~lag_3"] == X["sine"].shift(3)[pred.index]).all()
 
     X["sine_inverted"] = generate_sine_wave_data(length=6000)[0].squeeze() * -1.0
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
@@ -126,20 +126,20 @@ def test_add_lags_X():
         columns_and_lags=[("sine", [1, 2, 3]), ("all", [5, 8, 11])]
     )
     pred, trained_pipelines = train_backtest(transformations, X, y, splitter)
-    assert (pred["sine_lag_1"] == X["sine"].shift(1)[pred.index]).all()
-    assert (pred["sine_lag_2"] == X["sine"].shift(2)[pred.index]).all()
-    assert (pred["sine_lag_3"] == X["sine"].shift(3)[pred.index]).all()
-    assert (pred["sine_lag_5"] == X["sine"].shift(5)[pred.index]).all()
-    assert (pred["sine_lag_8"] == X["sine"].shift(8)[pred.index]).all()
-    assert (pred["sine_lag_11"] == X["sine"].shift(11)[pred.index]).all()
+    assert (pred["sine~lag_1"] == X["sine"].shift(1)[pred.index]).all()
+    assert (pred["sine~lag_2"] == X["sine"].shift(2)[pred.index]).all()
+    assert (pred["sine~lag_3"] == X["sine"].shift(3)[pred.index]).all()
+    assert (pred["sine~lag_5"] == X["sine"].shift(5)[pred.index]).all()
+    assert (pred["sine~lag_8"] == X["sine"].shift(8)[pred.index]).all()
+    assert (pred["sine~lag_11"] == X["sine"].shift(11)[pred.index]).all()
     assert (
-        pred["sine_inverted_lag_5"] == X["sine_inverted"].shift(5)[pred.index]
+        pred["sine_inverted~lag_5"] == X["sine_inverted"].shift(5)[pred.index]
     ).all()
     assert (
-        pred["sine_inverted_lag_8"] == X["sine_inverted"].shift(8)[pred.index]
+        pred["sine_inverted~lag_8"] == X["sine_inverted"].shift(8)[pred.index]
     ).all()
     assert (
-        pred["sine_inverted_lag_11"] == X["sine_inverted"].shift(11)[pred.index]
+        pred["sine_inverted~lag_11"] == X["sine_inverted"].shift(11)[pred.index]
     ).all()
     assert len(pred.columns) == 11
 
@@ -152,7 +152,9 @@ def test_window_features():
     transformations = AddWindowFeatures(("sine", 14, "mean"))
     pred, _ = train_backtest(transformations, X, y, splitter)
     assert np.isclose(
-        pred["sine_14_mean"], X["sine"].rolling(14).mean()[pred.index], atol=0.01
+        pred["sine~14_mean"],
+        X["sine"].rolling(14, min_periods=1).mean()[pred.index],
+        atol=0.01,
     ).all()
 
     tuneability_test(
@@ -164,17 +166,23 @@ def test_window_features():
     transformations = AddWindowFeatures([("sine", 14, "mean")])
     pred, _ = train_backtest(transformations, X, y, splitter)
     assert np.isclose(
-        pred["sine_14_mean"], X["sine"].rolling(14).mean()[pred.index], atol=0.01
+        pred["sine~14_mean"],
+        X["sine"].rolling(14, min_periods=1).mean()[pred.index],
+        atol=0.01,
     ).all()
 
     # check if it works with multiple transformations
     transformations = AddWindowFeatures([("sine", 14, "mean"), ("sine", 5, "max")])
     pred, _ = train_backtest(transformations, X, y, splitter)
     assert np.isclose(
-        pred["sine_14_mean"], X["sine"].rolling(14).mean()[pred.index], atol=0.01
+        pred["sine~14_mean"],
+        X["sine"].rolling(14, min_periods=1).mean()[pred.index],
+        atol=0.01,
     ).all()
     assert np.isclose(
-        pred["sine_5_max"], X["sine"].rolling(5).max()[pred.index], atol=0.01
+        pred["sine~5_max"],
+        X["sine"].rolling(5, min_periods=1).max()[pred.index],
+        atol=0.01,
     ).all()
 
     transformations = AddWindowFeatures(
@@ -183,10 +191,14 @@ def test_window_features():
     pred, _ = train_backtest(transformations, X, y, splitter)
     # if the Callable is lambda, then use the generic "transformed" name
     assert np.isclose(
-        pred["sine_14_transformed"], X["sine"].rolling(14).mean()[pred.index], atol=0.01
+        pred["sine~14_transformed"],
+        X["sine"].rolling(14, min_periods=1).mean()[pred.index],
+        atol=0.01,
     ).all()
     assert np.isclose(
-        pred["sine_5_transformed"], X["sine"].rolling(5).max()[pred.index], atol=0.01
+        pred["sine~5_transformed"],
+        X["sine"].rolling(5, min_periods=1).max()[pred.index],
+        atol=0.01,
     ).all()
 
     transformations = AddWindowFeatures(
@@ -197,7 +209,9 @@ def test_window_features():
     pred, _ = train_backtest(transformations, X, y, splitter)
     # it should pick up the name of the function
     assert np.isclose(
-        pred["sine_14_mean"], X["sine"].rolling(14).mean()[pred.index], atol=0.01
+        pred["sine~14_mean"],
+        X["sine"].rolling(14, min_periods=1).mean()[pred.index],
+        atol=0.01,
     ).all()
 
     X["sine_inverted"] = generate_sine_wave_data(length=6000)[0].squeeze() * -1.0
@@ -205,14 +219,18 @@ def test_window_features():
     pred, _ = train_backtest(transformations, X, y, splitter)
     # it should pick up the name of the function
     assert np.isclose(
-        pred["sine_14_mean"], X["sine"].rolling(14).mean()[pred.index], atol=0.01
+        pred["sine~14_mean"],
+        X["sine"].rolling(14, min_periods=1).mean()[pred.index],
+        atol=0.01,
     ).all()
     assert np.isclose(
-        pred["sine_5_mean"], X["sine"].rolling(5).mean()[pred.index], atol=0.01
+        pred["sine~5_mean"],
+        X["sine"].rolling(5, min_periods=1).mean()[pred.index],
+        atol=0.01,
     ).all()
     assert np.isclose(
-        pred["sine_inverted_5_mean"],
-        X["sine_inverted"].rolling(5).mean()[pred.index],
+        pred["sine_inverted~5_mean"],
+        X["sine_inverted"].rolling(5, min_periods=1).mean()[pred.index],
         atol=0.01,
     ).all()
     assert len(pred.columns) == 5
@@ -323,11 +341,11 @@ def test_function_on_columns():
     splitter = SingleWindowSplitter(train_window=400)
     transformation = AddFeatures([("sine", np.square), ("all", lambda x: x + 1)])
     pred, _ = train_backtest(transformation, X, y, splitter)
-    assert "sine_square" in pred.columns
-    assert "sine_transformed" in pred.columns
+    assert "sine~square" in pred.columns
+    assert "sine~transformed" in pred.columns
     assert pred.shape == (200, 3)
-    assert pred["sine_square"][0] == pred["sine"][0] ** 2
-    assert pred["sine_transformed"][0] == pred["sine"][0] + 1
+    assert pred["sine~square"][0] == pred["sine"][0] ** 2
+    assert pred["sine~transformed"][0] == pred["sine"][0] + 1
 
 
 def test_add_rolling_corr():
@@ -336,6 +354,6 @@ def test_add_rolling_corr():
     splitter = SingleWindowSplitter(train_window=400)
     transformation = AddRollingCorrelation(("sine", "sine2"), window=10)
     pred, _ = train_backtest(transformation, X, y, splitter)
-    assert "sine_sine2_rolling_corr_10" in pred.columns
+    assert "sine_sine2~rolling_corr_10" in pred.columns
     assert pred.shape == (200, 3)
-    assert pred["sine_sine2_rolling_corr_10"].max() <= 0.7
+    assert pred["sine_sine2~rolling_corr_10"].max() <= 0.7

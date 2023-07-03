@@ -7,13 +7,12 @@ from typing import Optional, Tuple, Union
 import numpy as np
 import pandas as pd
 
-from fold.utils.checks import (
+from ..base import Artifact, Transformation
+from ..utils.checks import (
     get_classes_from_probabilies_column_names,
     get_probabilities_column_names,
     has_probabilities,
 )
-
-from ..base import Artifact, Transformation
 
 
 class Model(Transformation):
