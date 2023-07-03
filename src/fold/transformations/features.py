@@ -110,7 +110,7 @@ class AddWindowFeatures(Transformation, Tunable):
             if window is None:
                 return function(
                     X[column_names]
-                    .add_suffix(f"{feature_name_separator}_expanding_{function_name}")
+                    .add_suffix(f"{feature_name_separator}expanding_{function_name}")
                     .expanding()
                 )
             else:
