@@ -81,15 +81,15 @@ def process_child_transformations(
     return ray.get(
         [
             func.remote(
-                composite,
-                index,
-                child_transformation,
-                X,
-                y,
-                artifacts,
-                stage,
-                backend,
-                results_primary,
+                composite=composite,
+                index=index,
+                child_transform=child_transformation,
+                X=X,
+                y=y,
+                artifacts=artifacts,
+                stage=stage,
+                backend=backend,
+                results_primary=results_primary,
             )
             for index, child_transformation in list_of_child_transformations_with_index
         ]

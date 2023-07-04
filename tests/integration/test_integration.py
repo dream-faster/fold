@@ -1,5 +1,5 @@
 import pytest
-from sklearn.ensemble import HistGradientBoostingRegressor, RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.linear_model import LogisticRegression
 
 from fold.composites import Concat
@@ -55,7 +55,7 @@ def test_on_weather_data_backends(backend: str) -> None:
             ]
         ),
         RemoveLowVarianceFeatures(),
-        UsePredefinedEvents(HistGradientBoostingRegressor()),
+        UsePredefinedEvents(RandomForestRegressor()),
     ]
 
     pred, _, insample_predictions = train_backtest(
@@ -84,7 +84,7 @@ def test_train_evaluate() -> None:
     pipeline = [
         AddLagsX(columns_and_lags=[("pressure", list(range(1, 3)))]),
         AddLagsY(list(range(1, 10))),
-        HistGradientBoostingRegressor(),
+        RandomForestRegressor(),
     ]
 
     splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.2)
