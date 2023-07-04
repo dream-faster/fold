@@ -6,14 +6,14 @@ from typing import Callable, List, Optional
 import pandas as pd
 import ray
 
-from ...base import Artifact, Composite, Transformations, X
+from ...base import Artifact, Composite, Pipeline, TrainedPipeline, X
 from ...splitters import Fold
 from ..types import Backend, Stage
 
 
-def train_transformations(
+def train_pipeline(
     func: Callable,
-    transformations: Transformations,
+    pipeline: Pipeline,
     X: X,
     y: pd.Series,
     artifact: Artifact,
@@ -31,11 +31,33 @@ def train_transformations(
                 X,
                 y,
                 artifact,
-                transformations,
+                pipeline,
                 split,
                 never_update,
                 backend,
             )
+            for split in splits
+        ]
+    )
+
+
+def backtest_pipeline(
+    func: Callable,
+    pipeline: TrainedPipeline,
+    splits: List[Fold],
+    X: pd.DataFrame,
+    y: pd.Series,
+    artifact: Artifact,
+    backend: Backend,
+    mutate: bool,
+    silent: bool,
+):
+    func = ray.remote(func)
+    X = ray.put(X)
+    y = ray.put(y)
+    return ray.get(
+        [
+            func.remote(pipeline, split, X, y, artifact, backend, mutate)
             for split in splits
         ]
     )
