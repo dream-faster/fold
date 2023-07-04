@@ -218,6 +218,7 @@ class TurnPositive(InvertibleTransformation):
     """
 
     name = "TurnPositive"
+    properties = InvertibleTransformation.Properties(requires_X=True)
 
     def fit(
         self,
