@@ -116,7 +116,7 @@ def train(
             rest_predictions,
             rest_artifacts,
         ) = unpack_list_of_tuples(
-            backend_functions.train_transformations(
+            backend_functions.train_pipeline(
                 _train_on_window,
                 first_batch_transformations,
                 X,
@@ -140,7 +140,7 @@ def train(
             processed_predictions,
             processed_artifacts,
         ) = unpack_list_of_tuples(
-            backend_functions.train_transformations(
+            backend_functions.train_pipeline(
                 _train_on_window,
                 pipeline,
                 X,

@@ -4,13 +4,13 @@
 from typing import Optional, Tuple, Union
 
 import pandas as pd
-from tqdm.auto import tqdm
 
 from ..base import Artifact, EventDataFrame, OutOfSamplePredictions, TrainedPipelines
 from ..splitters import Splitter
 from ..utils.dataframe import concat_on_index
 from ..utils.list import unpack_list_of_tuples
 from ..utils.trim import trim_initial_nans, trim_initial_nans_single
+from .backend import get_backend_dependent_functions
 from .checks import check_types
 from .common import _backtest_on_window
 from .types import Backend
@@ -64,22 +64,20 @@ def backtest(
     X, y = check_types(X, y)
     artifact = Artifact.from_events_sample_weights(X.index, events, sample_weights)
     X, y, artifact = trim_initial_nans(X, y, artifact)
+    backend_functions = get_backend_dependent_functions(backend)
 
     results, artifacts = unpack_list_of_tuples(
-        [
-            _backtest_on_window(
-                trained_pipelines,
-                split,
-                X,
-                y,
-                artifact,
-                backend,
-                mutate=mutate,
-            )
-            for split in tqdm(
-                splitter.splits(length=len(X)), desc="Backtesting", disable=silent
-            )
-        ]
+        backend_functions.backtest_pipeline(
+            _backtest_on_window,
+            trained_pipelines,
+            splitter.splits(length=len(X)),
+            X,
+            y,
+            artifact,
+            backend,
+            mutate=mutate,
+            silent=silent,
+        )
     )
     results = trim_initial_nans_single(concat_on_index(results))
     if return_artifacts:

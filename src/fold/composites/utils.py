@@ -1,3 +1,4 @@
+from collections import Counter
 from copy import deepcopy
 from typing import Callable, List, Union
 
@@ -56,7 +57,12 @@ def _clean_params(
 def _check_for_duplicate_names(pipeline: Pipeline):
     names = [i.name for i in _get_tunables_with_params_to_try(pipeline)]
     if len(set(names)) != len(names):
-        raise ValueError("Duplicate names in pipeline are not allowed.")
+        duplicate_names = print(
+            [item for item, count in Counter(names).items() if count > 1]
+        )
+        raise ValueError(
+            f"Duplicate names in pipeline are not allowed. {duplicate_names}"
+        )
 
 
 def _extract_param_grid(pipeline: Pipeline, divider: str = "¦"):

@@ -6,14 +6,14 @@ from typing import Callable, List, Optional
 import pandas as pd
 from tqdm.auto import tqdm
 
-from ...base import Artifact, Composite, Transformations, X
+from ...base import Artifact, Composite, Pipeline, TrainedPipeline, X
 from ...splitters import Fold
 from ..types import Backend, Stage
 
 
-def train_transformations(
+def train_pipeline(
     func: Callable,
-    transformations: Transformations,
+    pipeline: Pipeline,
     X: pd.DataFrame,
     y: pd.Series,
     artifact: Artifact,
@@ -23,8 +23,25 @@ def train_transformations(
     silent: bool,
 ):
     return [
-        func(X, y, artifact, transformations, split, never_update, backend)
+        func(X, y, artifact, pipeline, split, never_update, backend)
         for split in tqdm(splits, desc="Training", disable=silent)
+    ]
+
+
+def backtest_pipeline(
+    func: Callable,
+    pipeline: TrainedPipeline,
+    splits: List[Fold],
+    X: pd.DataFrame,
+    y: pd.Series,
+    artifact: Artifact,
+    backend: Backend,
+    mutate: bool,
+    silent: bool,
+):
+    return [
+        func(pipeline, split, X, y, artifact, backend, mutate)
+        for split in tqdm(splits, desc="Backtesting", disable=silent)
     ]
 
 
