@@ -46,8 +46,6 @@ class DummyClassifier(Model, Tunable):
     ```
     """
 
-    properties = Transformation.Properties(requires_X=False)
-
     def __init__(
         self,
         predicted_value: Union[float, int],
@@ -61,6 +59,7 @@ class DummyClassifier(Model, Tunable):
         self.predicted_probabilities = predicted_probabilities
         self.params_to_try = params_to_try
         self.name = name or f"DummyClassifier-{str(self.predicted_value)}"
+        self.properties = Transformation.Properties(requires_X=False)
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         predictions = pd.Series(
@@ -117,8 +116,6 @@ class DummyRegressor(Model, Tunable):
     ```
     """
 
-    properties = Transformation.Properties(requires_X=False)
-
     def __init__(
         self,
         predicted_value: float,
@@ -128,6 +125,7 @@ class DummyRegressor(Model, Tunable):
         self.predicted_value = predicted_value
         self.params_to_try = params_to_try
         self.name = name or f"DummyRegressor-{str(self.predicted_value)}"
+        self.properties = Transformation.Properties(requires_X=False)
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         return pd.Series(

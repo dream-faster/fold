@@ -9,11 +9,10 @@ from ..base import Artifact, Transformation, fit_noop
 
 
 class DontUpdate(Transformation):
-    properties = Transformation.Properties(requires_X=False)
-
     def __init__(self, transformation: Transformation) -> None:
         self.transformation = transformation
         self.name = f"DontUpdate-{transformation.name}"
+        self.properties = Transformation.Properties(requires_X=False)
 
     def fit(
         self,

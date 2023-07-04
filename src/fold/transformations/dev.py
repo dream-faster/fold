@@ -15,7 +15,6 @@ class Breakpoint(Transformation):
     """
 
     name = "Breakpoint"
-    properties = Transformation.Properties(requires_X=False)
 
     def __init__(
         self,
@@ -26,6 +25,7 @@ class Breakpoint(Transformation):
         self.stop_at_fit = stop_at_fit
         self.stop_at_update = stop_at_update
         self.stop_at_transform = stop_at_transform
+        self.properties = Transformation.Properties(requires_X=False)
 
     def fit(
         self,
@@ -54,13 +54,12 @@ class Breakpoint(Transformation):
 
 
 class Identity(InvertibleTransformation):
-    properties = Transformation.Properties(requires_X=False)
-
     def __init__(
         self,
         name: Optional[str] = None,
     ) -> None:
         self.name = name or "Identity"
+        self.properties = Transformation.Properties(requires_X=False)
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -75,7 +74,6 @@ class Identity(InvertibleTransformation):
 
 
 class Test(InvertibleTransformation):
-    properties = InvertibleTransformation.Properties(requires_X=False)
     __test__ = False
     no_of_calls_fit = 0
     no_of_calls_update = 0
@@ -95,6 +93,7 @@ class Test(InvertibleTransformation):
         self.transform_func = transform_func
         self.update_func = update_func
         self.inverse_transform_func = inverse_transform_func
+        self.properties = InvertibleTransformation.Properties(requires_X=False)
 
     def fit(
         self,

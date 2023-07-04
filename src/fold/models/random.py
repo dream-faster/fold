@@ -42,7 +42,6 @@ class RandomClassifier(Model):
     ```
     """
 
-    properties = Transformation.Properties(requires_X=False)
     name = "RandomClassifier"
 
     def __init__(
@@ -56,6 +55,7 @@ class RandomClassifier(Model):
             if probability_mean is None
             else probability_mean
         )
+        self.properties = Transformation.Properties(requires_X=False)
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         predictions = pd.Series(

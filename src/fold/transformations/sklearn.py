@@ -24,8 +24,6 @@ class WrapSKLearnTransformation(Transformation, Tunable):
     There's no need to use it directly, `fold` automatically wraps all sklearn transformations into this class.
     """
 
-    properties = Transformation.Properties(requires_X=True)
-
     def __init__(
         self,
         transformation_class: Type,
@@ -40,6 +38,7 @@ class WrapSKLearnTransformation(Transformation, Tunable):
             self.transformation = self.transformation.set_output(transform="pandas")
         self.params_to_try = params_to_try
         self.name = name or self.transformation.__class__.__name__
+        self.properties = Transformation.Properties(requires_X=True)
 
     @classmethod
     def from_model(
@@ -117,7 +116,6 @@ class WrapSKLearnFeatureSelector(FeatureSelector, Tunable):
     There's no need to use it directly, `fold` automatically wraps all sklearn feature selectors into this class.
     """
 
-    properties = Transformation.Properties(requires_X=True)
     selected_features: Optional[str] = None
 
     def __init__(
@@ -134,6 +132,7 @@ class WrapSKLearnFeatureSelector(FeatureSelector, Tunable):
             self.transformation = self.transformation.set_output(transform="pandas")
         self.params_to_try = params_to_try
         self.name = name or self.transformation.__class__.__name__
+        self.properties = Transformation.Properties(requires_X=True)
 
     @classmethod
     def from_model(

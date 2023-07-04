@@ -28,10 +28,6 @@ class Cache(Composite):
         path to the directory used for caching.
     """
 
-    properties = Composite.Properties(
-        primary_only_single_pipeline=True, artifacts_length_should_match=False
-    )
-
     def __init__(
         self,
         pipeline: Pipeline,
@@ -41,6 +37,9 @@ class Cache(Composite):
         self.path = path
         self.pipeline: Pipelines = wrap_in_double_list_if_needed(pipeline)  # type: ignore
         self.name = name or "Cache-" + get_concatenated_names(self.pipeline)
+        self.properties = Composite.Properties(
+            primary_only_single_pipeline=True, artifacts_length_should_match=False
+        )
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]

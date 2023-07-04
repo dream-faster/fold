@@ -67,13 +67,6 @@ class MetaLabeling(Composite):
 
     """
 
-    properties = Composite.Properties(
-        primary_requires_predictions=True,
-        primary_only_single_pipeline=True,
-        secondary_requires_predictions=True,
-        secondary_only_single_pipeline=True,
-    )
-
     def __init__(
         self,
         primary: Pipeline,
@@ -90,6 +83,12 @@ class MetaLabeling(Composite):
         self.primary_output_included = primary_output_included
         self.name = name or "MetaLabeling-" + get_concatenated_names(
             self.primary + self.meta
+        )
+        self.properties = Composite.Properties(
+            primary_requires_predictions=True,
+            primary_only_single_pipeline=True,
+            secondary_requires_predictions=True,
+            secondary_only_single_pipeline=True,
         )
 
     def preprocess_secondary(

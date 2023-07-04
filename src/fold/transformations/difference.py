@@ -56,8 +56,6 @@ class Difference(InvertibleTransformation, Tunable):
     [Stationarity and differencing](https://otexts.com/fpp2/stationarity.html)
     """
 
-    properties = InvertibleTransformation.Properties(requires_X=False)
-
     first_values_X: Optional[Union[pd.DataFrame, pd.Series]] = None
     last_values_X: Optional[Union[pd.DataFrame, pd.Series]] = None
 
@@ -70,6 +68,7 @@ class Difference(InvertibleTransformation, Tunable):
         self.lag = lag
         self.params_to_try = params_to_try
         self.name = name or "Difference"
+        self.properties = InvertibleTransformation.Properties(requires_X=False)
 
     def fit(
         self,
@@ -154,8 +153,6 @@ class TakeReturns(Transformation, Tunable):
 
     """
 
-    properties = InvertibleTransformation.Properties(requires_X=False)
-
     last_values_X: Optional[Union[pd.DataFrame, pd.Series]] = None
 
     def __init__(
@@ -170,6 +167,7 @@ class TakeReturns(Transformation, Tunable):
         self.params_to_try = params_to_try
         description = "log" if log_returns else "arithmetic"
         self.name = name or f"TakeReturns-{description}"
+        self.properties = InvertibleTransformation.Properties(requires_X=False)
 
     def fit(
         self,
@@ -231,8 +229,6 @@ class MakeStationary(Transformation, Tunable):
     It can not be updated after the initial training, as that'd change the underlying distribution of the data.
     """
 
-    properties = InvertibleTransformation.Properties(requires_X=True)
-
     def __init__(
         self,
         p_threshold: float = 0.05,
@@ -246,6 +242,7 @@ class MakeStationary(Transformation, Tunable):
         self.fill_na = fill_na
         self.params_to_try = params_to_try
         self.name = name or f"MakeStationary-{self.method.value}"
+        self.properties = InvertibleTransformation.Properties(requires_X=True)
 
     def fit(
         self,

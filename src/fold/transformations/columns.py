@@ -25,8 +25,6 @@ class SelectColumns(Transformation, Tunable):
 
     """
 
-    properties = Transformation.Properties(requires_X=True)
-
     def __init__(
         self,
         columns: Union[List[str], str],
@@ -36,6 +34,7 @@ class SelectColumns(Transformation, Tunable):
         self.columns: List[str] = wrap_in_list(columns)
         self.params_to_try = params_to_try
         self.name = name or f"SelectColumns-{columns}"
+        self.properties = Transformation.Properties(requires_X=True)
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -58,8 +57,6 @@ class DropColumns(Transformation, Tunable):
 
     """
 
-    properties = Transformation.Properties(requires_X=True)
-
     def __init__(
         self,
         columns: Union[List[str], str],
@@ -69,6 +66,7 @@ class DropColumns(Transformation, Tunable):
         self.columns = wrap_in_list(columns)
         self.params_to_try = params_to_try
         self.name = name or f"DropColumns-{columns}"
+        self.properties = Transformation.Properties(requires_X=True)
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -112,11 +110,10 @@ class RenameColumns(Transformation):
     ```
     """
 
-    properties = Transformation.Properties(requires_X=True)
-
     def __init__(self, columns_mapper: dict) -> None:
         self.columns_mapper = columns_mapper
         self.name = "RenameColumns"
+        self.properties = Transformation.Properties(requires_X=True)
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -160,11 +157,10 @@ class AddColumnSuffix(Transformation):
     ```
     """
 
-    properties = Transformation.Properties(requires_X=True)
-
     def __init__(self, suffix: str) -> None:
         self.suffix = suffix
         self.name = f"AddColumnSuffix-{self.suffix}"
+        self.properties = Transformation.Properties(requires_X=True)
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -202,10 +198,9 @@ class OnlyPredictions(Transformation):
     ```
     """
 
-    properties = Transformation.Properties(requires_X=True)
-
     def __init__(self) -> None:
         self.name = "OnlyPredictions"
+        self.properties = Transformation.Properties(requires_X=True)
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -248,10 +243,9 @@ class OnlyProbabilities(Transformation):
     ```
     """
 
-    properties = Transformation.Properties(requires_X=True)
-
     def __init__(self) -> None:
         self.name = "OnlyProbabilities"
+        self.properties = Transformation.Properties(requires_X=True)
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool

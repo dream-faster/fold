@@ -199,7 +199,7 @@ class Transformation(Block, ABC):
 
     properties: Properties
     name: str
-    _state: Optional[State] = None
+    _state: Optional[State]
 
     @abstractmethod
     def fit(

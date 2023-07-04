@@ -58,8 +58,6 @@ class AddHolidayFeatures(Transformation, Tunable):
 
     """
 
-    properties = Transformation.Properties(requires_X=False)
-
     def __init__(
         self,
         country_codes: Union[List[str], str],
@@ -103,6 +101,7 @@ class AddHolidayFeatures(Transformation, Tunable):
         ]
         self.params_to_try = params_to_try
         self.name = name or f"AddHolidayFeatures-{self.country_codes}"
+        self.properties = Transformation.Properties(requires_X=False)
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool

@@ -66,8 +66,6 @@ class AddDateTimeFeatures(Transformation, Tunable):
     ```
     """
 
-    properties = Transformation.Properties(requires_X=False)
-
     def __init__(
         self,
         features: List[Union[DateTimeFeature, str]],
@@ -81,6 +79,7 @@ class AddDateTimeFeatures(Transformation, Tunable):
             else f"AddDateTimeFeatures-{'-'.join([i.value for i in self.features])}"
         )
         self.params_to_try = params_to_try
+        self.properties = Transformation.Properties(requires_X=False)
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
