@@ -38,7 +38,6 @@ class EnsembleEachColumn(Composite):
 
     """
 
-    properties = Composite.Properties()
     pipelines_already_cloned = False
 
     def __init__(self, pipeline: Pipeline, name: Optional[str] = None) -> None:
@@ -46,6 +45,7 @@ class EnsembleEachColumn(Composite):
         self.name = name or "PerColumnEnsemble-" + get_concatenated_names(
             self.pipelines
         )
+        self.properties = Composite.Properties()
 
     @classmethod
     def from_cloned_instance(
@@ -123,7 +123,6 @@ class TransformEachColumn(Composite):
         2021-12-31 15:44:00  1.0502       2.0502
     """
 
-    properties = Composite.Properties()
     pipeline_already_cloned = False
 
     def __init__(self, pipeline: Pipeline, name: Optional[str] = None) -> None:
@@ -131,6 +130,7 @@ class TransformEachColumn(Composite):
         self.name = name or "PerColumnTransform-" + get_concatenated_names(
             self.pipeline
         )
+        self.properties = Composite.Properties()
 
     @classmethod
     def from_cloned_instance(
@@ -201,12 +201,12 @@ class SkipNA(Composite):
 
     """
 
-    properties = Composite.Properties()
     original_index: Optional[pd.Index] = None
 
     def __init__(self, pipeline: Pipeline, name: Optional[str] = None) -> None:
         self.pipeline = wrap_in_double_list_if_needed(pipeline)
         self.name = name or "SkipNA-" + get_concatenated_names(self.pipeline)
+        self.properties = Composite.Properties()
 
     def preprocess_primary(
         self, X: pd.DataFrame, index: int, y: T, artifact: Artifact, fit: bool

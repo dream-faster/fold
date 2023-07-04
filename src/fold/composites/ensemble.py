@@ -44,11 +44,10 @@ class Ensemble(Composite):
         Freq: T, Name: predictions_Ensemble-DummyRegressor-0.1-DummyRegressor-0.9, dtype: float64
     """
 
-    properties = Composite.Properties()
-
     def __init__(self, pipelines: Pipelines, name: Optional[str] = None) -> None:
         self.pipelines = pipelines
         self.name = name or "Ensemble-" + get_concatenated_names(pipelines)
+        self.properties = Composite.Properties()
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]

@@ -13,7 +13,6 @@ from .utils import _check_for_duplicate_names
 
 
 class SelectBest(Composite, Tunable):
-    properties = Composite.Properties()
     selected_: Optional[str] = None
 
     def __init__(
@@ -24,6 +23,7 @@ class SelectBest(Composite, Tunable):
         self.choose_from = choose_from
         _check_for_duplicate_names(self.choose_from)
         self.name = name or "SelectBest"
+        self.properties = Composite.Properties()
 
     @classmethod
     def from_cloned_instance(

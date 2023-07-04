@@ -27,7 +27,6 @@ def CreateEvents(
 
 
 class _CreateEvents(Composite):
-    properties = Composite.Properties(primary_only_single_pipeline=True)
     name = "CreateEvents"
     transformation: List[_EventLabelWrapper]
 
@@ -38,6 +37,7 @@ class _CreateEvents(Composite):
     ) -> None:
         self.wrapped_pipeline = wrap_in_double_list_if_needed(wrapped_pipeline)
         self.transformation = wrap_in_list(event_label_wrapper)
+        self.properties = Composite.Properties(primary_only_single_pipeline=True)
 
     def get_children_primary(self) -> Pipelines:
         return self.transformation
@@ -97,9 +97,6 @@ class _CreateEvents(Composite):
 
 
 class UsePredefinedEvents(Composite):
-    properties = Composite.Properties(
-        primary_only_single_pipeline=True, artifacts_length_should_match=False
-    )
     name = "UsePredefinedEvents"
 
     def __init__(
@@ -107,6 +104,9 @@ class UsePredefinedEvents(Composite):
         wrapped_pipeline: Pipeline,
     ) -> None:
         self.wrapped_pipeline = wrap_in_double_list_if_needed(wrapped_pipeline)
+        self.properties = Composite.Properties(
+            primary_only_single_pipeline=True, artifacts_length_should_match=False
+        )
 
     def get_children_primary(self) -> Pipelines:
         return self.wrapped_pipeline

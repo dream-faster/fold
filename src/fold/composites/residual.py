@@ -62,13 +62,6 @@ class ModelResiduals(Composite):
     - https://www.uber.com/en-DE/blog/m4-forecasting-competition/
     """
 
-    properties = Composite.Properties(
-        primary_requires_predictions=True,
-        primary_only_single_pipeline=True,
-        secondary_requires_predictions=True,
-        secondary_only_single_pipeline=True,
-    )
-
     def __init__(
         self,
         primary: Pipeline,
@@ -81,6 +74,12 @@ class ModelResiduals(Composite):
         self.primary_output_included = primary_output_included
         self.name = name or "ModelResidual-" + get_concatenated_names(
             self.primary + self.meta
+        )
+        self.properties = Composite.Properties(
+            primary_requires_predictions=True,
+            primary_only_single_pipeline=True,
+            secondary_requires_predictions=True,
+            secondary_only_single_pipeline=True,
         )
 
     def preprocess_primary(

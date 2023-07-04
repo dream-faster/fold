@@ -16,10 +16,6 @@ class WrapSKLearnClassifier(Model, Tunable):
     There's no need to use it directly, `fold` automatically wraps all sklearn classifiers into this class.
     """
 
-    properties = Model.Properties(
-        requires_X=True, model_type=Model.Properties.ModelType.classifier
-    )
-
     def __init__(
         self,
         model_class: Type,
@@ -30,6 +26,9 @@ class WrapSKLearnClassifier(Model, Tunable):
         self.model = model_class(**init_args)
         self.params_to_try = params_to_try
         self.name = name or self.model.__class__.__name__
+        self.properties = Model.Properties(
+            requires_X=True, model_type=Model.Properties.ModelType.classifier
+        )
 
     @classmethod
     def from_model(
@@ -99,10 +98,6 @@ class WrapSKLearnRegressor(Model, Tunable):
     There's no need to use it directly, `fold` automatically wraps all sklearn regressors into this class.
     """
 
-    properties = Model.Properties(
-        requires_X=True, model_type=Model.Properties.ModelType.regressor
-    )
-
     def __init__(
         self,
         model_class: Type,
@@ -113,6 +108,9 @@ class WrapSKLearnRegressor(Model, Tunable):
         self.model = model_class(**init_args)
         self.params_to_try = params_to_try
         self.name = name or self.model.__class__.__name__
+        self.properties = Model.Properties(
+            requires_X=True, model_type=Model.Properties.ModelType.regressor
+        )
 
     @classmethod
     def from_model(

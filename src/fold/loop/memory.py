@@ -20,7 +20,11 @@ def preprocess_X_y_with_memory(
     in_sample: bool,
 ) -> Tuple[pd.DataFrame, T, S]:
     memory_size = transformation.properties.memory_size
-    if transformation._state is None or memory_size is None:
+    if (
+        not hasattr(transformation, "_state")
+        or transformation._state is None
+        or memory_size is None
+    ):
         return X, y, sample_weights
     memory_X, memory_y, memory_sample_weights = (
         transformation._state.memory_X,

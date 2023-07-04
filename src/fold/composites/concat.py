@@ -53,7 +53,6 @@ class Concat(Composite):
     """
 
     ResolutionStrategy = ResolutionStrategy
-    properties = Composite.Properties()
 
     def __init__(
         self,
@@ -68,6 +67,7 @@ class Concat(Composite):
         self.if_duplicate_keep = ResolutionStrategy.from_str(if_duplicate_keep)
         self.custom_merge_logic = custom_merge_logic
         self.name = name or "Concat-" + get_concatenated_names(pipelines)
+        self.properties = Composite.Properties()
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
@@ -115,11 +115,10 @@ class Pipeline(Composite):
 
     """
 
-    properties = Composite.Properties(primary_only_single_pipeline=True)
-
     def __init__(self, pipeline: Pipeline, name: Optional[str] = None) -> None:
         self.pipeline = wrap_in_double_list_if_needed(pipeline)
         self.name = name or "Pipeline-" + get_concatenated_names(pipeline)
+        self.properties = Composite.Properties(primary_only_single_pipeline=True)
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]

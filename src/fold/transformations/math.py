@@ -48,8 +48,6 @@ class TakeLog(InvertibleTransformation, Tunable):
     ```
     """
 
-    properties = InvertibleTransformation.Properties(requires_X=True)
-
     def __init__(
         self,
         base: Union[int, str] = "e",
@@ -61,6 +59,7 @@ class TakeLog(InvertibleTransformation, Tunable):
         self.base = base
         self.params_to_try = params_to_try
         self.name = name or f"TakeLog-{self.base}"
+        self.properties = InvertibleTransformation.Properties(requires_X=True)
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -136,8 +135,6 @@ class AddConstant(InvertibleTransformation, Tunable):
     ```
     """
 
-    properties = InvertibleTransformation.Properties(requires_X=True)
-
     def __init__(
         self,
         constant: Union[int, float, Dict[str, Union[float, int]]],
@@ -153,6 +150,7 @@ class AddConstant(InvertibleTransformation, Tunable):
         self.constant = constant
         self.params_to_try = params_to_try
         self.name = name or "AddConstant"
+        self.properties = InvertibleTransformation.Properties(requires_X=True)
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -230,6 +228,7 @@ class TurnPositive(InvertibleTransformation):
     ) -> Optional[Artifact]:
         min_values = X.min(axis=0)
         self.constant = dict(min_values[min_values <= 0].abs() + 1)
+        self.properties = InvertibleTransformation.Properties(requires_X=True)
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
@@ -254,7 +253,6 @@ class MultiplyBy(InvertibleTransformation, Tunable):
     Multiplies the data by a constant.
     """
 
-    properties = InvertibleTransformation.Properties(requires_X=True)
     constant: float
 
     def __init__(
@@ -266,6 +264,7 @@ class MultiplyBy(InvertibleTransformation, Tunable):
         self.constant = constant
         self.params_to_try = params_to_try
         self.name = name or f"MultiplyBy-{constant}"
+        self.properties = InvertibleTransformation.Properties(requires_X=True)
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool

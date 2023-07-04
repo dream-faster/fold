@@ -58,17 +58,22 @@ def process_child_transformations(
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
 ):
-    return [
-        func(
+    list_of_child_transformations_with_index = [
+        {"index": index, "child_transformation": child_transformation}
+        for index, child_transformation in list_of_child_transformations_with_index
+    ]
+    return thread_map(
+        lambda obj: func(
             composite,
-            index,
-            child_transformation,
+            obj["index"],
+            obj["child_transformation"],
             X,
             y,
             artifacts,
             stage,
             backend,
             results_primary,
-        )
-        for index, child_transformation in list_of_child_transformations_with_index
-    ]
+        ),
+        list_of_child_transformations_with_index,
+        disable=True,
+    )
