@@ -267,12 +267,12 @@ class FeatureSelector(Transformation):
 
 Transformations = Union[
     Transformation,
-    "Composite",
-    List[Union[Transformation, "Composite"]],
+    Composite,
+    List[Union[Transformation, Composite]],
 ]
 
 Pipeline = Union[
-    Union[Transformation, "Composite"], List[Union[Transformation, "Composite"]]
+    Union[Transformation, Composite], List[Union[Transformation, Composite]]
 ]
 """A list of `fold` objects that are executed sequentially. Or a single object."""
 Pipelines = List[Pipeline]
