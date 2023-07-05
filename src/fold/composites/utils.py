@@ -57,9 +57,7 @@ def _clean_params(
 def _check_for_duplicate_names(pipeline: Pipeline):
     names = [i.name for i in _get_tunables_with_params_to_try(pipeline)]
     if len(set(names)) != len(names):
-        duplicate_names = print(
-            [item for item, count in Counter(names).items() if count > 1]
-        )
+        duplicate_names = [item for item, count in Counter(names).items() if count > 1]
         raise ValueError(
             f"Duplicate names in pipeline are not allowed. {duplicate_names}"
         )

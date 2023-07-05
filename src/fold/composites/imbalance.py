@@ -9,10 +9,9 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import roc_curve
 
-from fold.base.classes import Artifact
-from fold.utils.checks import get_prediction_column_name, get_probabilities_columns
-
-from ..base import Composite, Pipelines, get_concatenated_names
+from ..base import Artifact, Composite, Pipelines, get_concatenated_names
+from ..utils.checks import get_prediction_column_name, get_probabilities_columns
+from ..utils.list import wrap_in_double_list_if_needed
 
 
 def roc_youden_statistic(
@@ -41,7 +40,7 @@ class FindThreshold(Composite):
     def __init__(
         self, pipelines: Pipelines, name: Optional[str] = None, pos_label: int = 1
     ) -> None:
-        self.pipelines = pipelines
+        self.pipelines = wrap_in_double_list_if_needed(pipelines)
 
         self.name = name or "FindThreshold-" + get_concatenated_names(pipelines)
         self.properties = Composite.Properties()
