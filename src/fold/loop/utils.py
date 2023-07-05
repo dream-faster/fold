@@ -2,7 +2,7 @@
 
 
 from copy import deepcopy
-from typing import Callable, List
+from typing import Callable, List, Tuple
 
 import pandas as pd
 
@@ -19,7 +19,7 @@ from ..base import (
 
 
 def deepcopy_pipelines(transformation: Transformations) -> Transformations:
-    if isinstance(transformation, List):
+    if isinstance(transformation, List) or isinstance(transformation, Tuple):
         return [deepcopy_pipelines(t) for t in transformation]
     elif (
         isinstance(transformation, Composite)
@@ -36,7 +36,7 @@ def replace_with(transformations: List[Block]) -> Callable:
     mapping = {t.id: t for t in transformations}
 
     def replace(transformation: Transformations) -> Transformations:
-        if isinstance(transformation, List):
+        if isinstance(transformation, List) or isinstance(transformation, Tuple):
             return [replace(t) for t in transformation]
         elif (
             isinstance(transformation, Composite)
