@@ -1,16 +1,22 @@
 import pandas as pd
 
 from fold.composites import Concat, TransformEachColumn
+from fold.composites.imbalance import ModelRebalancing
 from fold.composites.residual import ModelResiduals
 from fold.loop import backtest, train
 from fold.loop.utils import deepcopy_pipelines
-from fold.models.dummy import DummyRegressor
+from fold.models.dummy import DummyClassifier, DummyRegressor
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.columns import DropColumns, OnlyPredictions, RenameColumns
 from fold.transformations.dev import Identity
 from fold.transformations.features import AddWindowFeatures
 from fold.transformations.lags import AddLagsY
-from fold.utils.tests import generate_monotonous_data, generate_sine_wave_data
+from fold.utils.checks import get_prediction_column
+from fold.utils.tests import (
+    generate_monotonous_data,
+    generate_sine_wave_data,
+    generate_zeros_and_ones_skewed,
+)
 
 
 def test_composite_cloning():
@@ -107,3 +113,14 @@ def test_model_residuals() -> None:
     trained_pipelines = train(transformations, X, y, splitter)
     pred = backtest(trained_pipelines, X, y, splitter)
     assert (pred.squeeze() == 1.0).all()
+
+
+def test_imbalance():
+    X, y = generate_zeros_and_ones_skewed(
+        length=100000, labels=[1, 0], weights=[0.2, 0.8]
+    )
+    transformations = [ModelRebalancing([DummyClassifier(1, [0, 1], [0.2, 0.8])])]
+    splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
+    trained_pipelines = train(transformations, X, y.astype(int), splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
+    assert (get_prediction_column(pred) == 1.0).all()
