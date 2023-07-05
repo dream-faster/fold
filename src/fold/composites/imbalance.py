@@ -35,7 +35,7 @@ def roc_youden_statistic(
     return optimal_threshold[0][1]
 
 
-class ModelRebalancing(Composite):
+class FindThreshold(Composite):
     pos_label: int
 
     def __init__(
@@ -43,7 +43,7 @@ class ModelRebalancing(Composite):
     ) -> None:
         self.pipelines = pipelines
 
-        self.name = name or "ModelRebalancing-" + get_concatenated_names(pipelines)
+        self.name = name or "FindThreshold-" + get_concatenated_names(pipelines)
         self.properties = Composite.Properties()
         self.threshold = None
         self.pos_label = pos_label
@@ -84,8 +84,8 @@ class ModelRebalancing(Composite):
     def get_children_primary(self) -> Pipelines:
         return self.pipelines
 
-    def clone(self, clone_children: Callable) -> ModelRebalancing:
-        clone = ModelRebalancing(
+    def clone(self, clone_children: Callable) -> FindThreshold:
+        clone = FindThreshold(
             pipelines=clone_children(self.pipelines), pos_label=self.pos_label
         )
         clone.properties = self.properties

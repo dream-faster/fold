@@ -1,7 +1,8 @@
+import numpy as np
 import pandas as pd
 
 from fold.composites import Concat, TransformEachColumn
-from fold.composites.imbalance import ModelRebalancing
+from fold.composites.imbalance import FindThreshold
 from fold.composites.residual import ModelResiduals
 from fold.loop import backtest, train
 from fold.loop.utils import deepcopy_pipelines
@@ -119,8 +120,27 @@ def test_imbalance():
     X, y = generate_zeros_and_ones_skewed(
         length=100000, labels=[1, 0], weights=[0.2, 0.8]
     )
-    transformations = [ModelRebalancing([DummyClassifier(1, [0, 1], [0.2, 0.8])])]
+
+    transformations_dummy = [FindThreshold([DummyClassifier(1, [0, 1], [0.2, 0.8])])]
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    trained_pipelines = train(transformations, X, y.astype(int), splitter)
+    trained_pipelines = train(transformations_dummy, X, y.astype(int), splitter)
+    pred = backtest(trained_pipelines, X, y, splitter)
+    assert (get_prediction_column(pred) == 1.0).all()
+
+    def close_enough_predictor(X: pd.DataFrame) -> pd.DataFrame:
+        preds = pd.DataFrame([], index=y.index)
+        preds["predictions_"] = y
+        random_idx = np.random.randint(0, len(y) - 1, size=len(y) // 10)
+        preds["predictions_"].iloc[random_idx] = abs(y.iloc[random_idx] - 1)
+        preds["probabilities_0"] = 0.2
+        preds["probabilities_1"] = 0.2
+        preds["probabilities_0"].iloc[preds["predictions_"] == 0] = 0.8
+        preds["probabilities_1"].iloc[preds["predictions_"] == 1] = 0.8
+        return preds
+
+    transformations_close_enough_predictor = [FindThreshold([close_enough_predictor])]
+    trained_pipelines = train(
+        transformations_close_enough_predictor, X, y.astype(int), splitter
+    )
     pred = backtest(trained_pipelines, X, y, splitter)
     assert (get_prediction_column(pred) == 1.0).all()
