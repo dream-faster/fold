@@ -3,7 +3,7 @@ from random import randint
 import numpy as np
 
 from fold.composites.columns import EnsembleEachColumn
-from fold.composites.concat import Pipeline
+from fold.composites.concat import Sequence
 from fold.composites.ensemble import Ensemble
 from fold.loop import backtest, train
 from fold.models.dummy import DummyClassifier
@@ -98,7 +98,7 @@ def test_dummy_pipeline_classification() -> None:
     X, y = generate_all_zeros(1000)
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    pipeline = Pipeline(
+    pipeline = Sequence(
         [
             DummyClassifier(
                 predicted_value=1,

@@ -4,7 +4,7 @@
 from ..base import Composite
 from .cache import Cache
 from .columns import EnsembleEachColumn, SkipNA, TransformEachColumn
-from .concat import Blocks, Concat, Pipeline, TransformColumn
+from .concat import Concat, Pipeline, TransformColumn
 from .ensemble import Ensemble
 from .metalabeling import MetaLabeling
 from .optimize import OptimizeGridSearch

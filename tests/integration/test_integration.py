@@ -3,7 +3,7 @@ from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.linear_model import LogisticRegression
 
 from fold.composites import Concat
-from fold.composites.concat import Pipeline
+from fold.composites.concat import Sequence
 from fold.composites.optimize import OptimizeGridSearch
 from fold.composites.select import SelectBest
 from fold.events import CreateEvents, UsePredefinedEvents
@@ -37,7 +37,7 @@ def test_on_weather_data_backends(backend: str) -> None:
             [
                 Concat(
                     [
-                        Pipeline(
+                        Sequence(
                             AddLagsX(columns_and_lags=[("pressure", list(range(1, 3)))])
                         ),
                         AddLagsY(list(range(4, 7))),

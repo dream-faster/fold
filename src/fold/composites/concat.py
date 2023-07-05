@@ -102,7 +102,7 @@ class Concat(Composite):
         return clone
 
 
-class Pipeline(Composite):
+class Sequence(Composite):
     """
     An optional wrappers that is equivalent to using a single array for the transformations.
     It executes the transformations sequentially, in the order they are provided.
@@ -110,7 +110,7 @@ class Pipeline(Composite):
     Parameters
     ----------
 
-    pipeline : Pipeline
+    pipeline : Pipelines
         A list of transformations or models to be applied to the data.
 
     """
@@ -121,7 +121,7 @@ class Pipeline(Composite):
         name: Optional[str] = None,
     ) -> None:
         self.pipeline = wrap_in_double_list_if_needed(pipeline)
-        self.name = name or "Pipeline-" + get_concatenated_names(pipeline)
+        self.name = name or "Sequence-" + get_concatenated_names(pipeline)
         self.properties = Composite.Properties(primary_only_single_pipeline=True)
 
     def postprocess_result_primary(
@@ -132,8 +132,8 @@ class Pipeline(Composite):
     def get_children_primary(self) -> Pipelines:
         return self.pipeline
 
-    def clone(self, clone_children: Callable) -> Pipeline:
-        clone = Pipeline(pipeline=clone_children(self.pipeline))
+    def clone(self, clone_children: Callable) -> Sequence:
+        clone = Sequence(pipeline=clone_children(self.pipeline))
         clone.properties = self.properties
         clone.name = self.name
         return clone
