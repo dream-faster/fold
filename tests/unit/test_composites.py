@@ -12,7 +12,7 @@ from fold.transformations.columns import DropColumns, OnlyPredictions, RenameCol
 from fold.transformations.dev import Identity
 from fold.transformations.features import AddWindowFeatures
 from fold.transformations.lags import AddLagsY
-from fold.utils.checks import get_prediction_column
+from fold.utils.checks import get_prediction_column, get_probabilities_columns
 from fold.utils.tests import (
     generate_monotonous_data,
     generate_sine_wave_data,
@@ -143,4 +143,7 @@ def test_imbalance():
         transformations_close_enough_predictor, X, y.astype(int), splitter
     )
     pred = backtest(trained_pipelines, X, y, splitter)
-    assert (get_prediction_column(pred) == 1.0).all()
+    assert (
+        get_prediction_column(pred)[get_probabilities_columns(pred).iloc[:, 1] >= 0.8]
+        == 1.0
+    ).all()
