@@ -76,7 +76,11 @@ class FindThreshold(Composite):
         return pd.concat(
             primary_artifacts
             + [
-                pd.Series([self.threshold], index=primary_artifacts[0].index[:1]),
+                pd.Series(
+                    [self.threshold],
+                    index=primary_artifacts[0].index[:1],
+                    name="threshold",
+                ),
             ],
             axis="columns",
         )

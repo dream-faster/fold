@@ -6,6 +6,7 @@ from .cache import Cache
 from .columns import EnsembleEachColumn, SkipNA, TransformEachColumn
 from .concat import Concat, Pipeline, TransformColumn
 from .ensemble import Ensemble
+from .imbalance import FindThreshold
 from .metalabeling import MetaLabeling
 from .optimize import OptimizeGridSearch
 from .residual import ModelResiduals
