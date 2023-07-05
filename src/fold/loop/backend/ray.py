@@ -74,23 +74,59 @@ def process_child_transformations(
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
 ):
-    func = ray.remote(func)
-    X = ray.put(X)
-    y = ray.put(y)
+    # list_of_child_transformations_with_index = list(
+    #     list_of_child_transformations_with_index
+    # )
+    # available_resources = ray.available_resources()
+    # if (
+    #     len(list_of_child_transformations_with_index) == 1
+    #     or "CPU" not in available_resources
+    #     or ("CPU" in available_resources and available_resources["CPU"] < 2)
+    # ):
+    return [
+        func(
+            composite,
+            index,
+            child_transformation,
+            X,
+            y,
+            artifacts,
+            stage,
+            backend,
+            results_primary,
+        )
+        for index, child_transformation in list_of_child_transformations_with_index
+    ]
+    # else:
+    #     func = ray.remote(func)
+    #     X = ray.put(X)
+    #     y = ray.put(y)
 
-    return ray.get(
-        [
-            func.remote(
-                composite,
-                index,
-                child_transformation,
-                X,
-                y,
-                artifacts,
-                stage,
-                backend,
-                results_primary,
-            )
-            for index, child_transformation in list_of_child_transformations_with_index
-        ]
-    )
+    #     futures = [
+    #         func.remote(
+    #             composite,
+    #             index,
+    #             child_transformation,
+    #             X,
+    #             y,
+    #             artifacts,
+    #             stage,
+    #             backend,
+    #             results_primary,
+    #         )
+    #         for index, child_transformation in list_of_child_transformations_with_index
+    #     ]
+    # batch_size = 2
+
+    # chunk processing of futures with ray
+    # results = []
+    # for i in range(0, len(futures), batch_size):
+    #     results.extend(ray.get(futures[i : i + batch_size]))
+    # while futures:
+    #     if len(futures) < batch_size:
+    #         batch_size = len(futures)
+    #     ready_futures, futures = ray.wait(futures, num_returns=batch_size)
+    #     result = ray.get(ready_futures)
+    #     results.append(result)
+
+    # return results
