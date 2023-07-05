@@ -9,7 +9,7 @@ import pandas as pd
 
 from fold.base.classes import Artifact
 
-from ..base import Block, Composite, Pipelines, Transformations, get_concatenated_names
+from ..base import Composite, Pipelines, Transformations, get_concatenated_names
 from ..transformations.columns import SelectColumns
 from ..transformations.dev import Identity
 from ..utils.dataframe import ResolutionStrategy, concat_on_columns_with_duplicates
@@ -102,10 +102,7 @@ class Concat(Composite):
         return clone
 
 
-Blocks = List[Block]
-
-
-class Pipeline(Blocks, Composite):
+class Pipeline(Composite):
     """
     An optional wrappers that is equivalent to using a single array for the transformations.
     It executes the transformations sequentially, in the order they are provided.
@@ -120,7 +117,7 @@ class Pipeline(Blocks, Composite):
 
     def __init__(
         self,
-        pipeline: Union[Blocks, Pipeline],
+        pipeline: Pipelines,
         name: Optional[str] = None,
     ) -> None:
         self.pipeline = wrap_in_double_list_if_needed(pipeline)
