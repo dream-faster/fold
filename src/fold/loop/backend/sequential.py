@@ -10,6 +10,8 @@ from ...base import Artifact, Composite, Pipeline, TrainedPipeline, X
 from ...splitters import Fold
 from ..types import Backend, Stage
 
+DEBUG_MULTI_PROCESSING = False
+
 
 def train_pipeline(
     func: Callable,
@@ -22,6 +24,10 @@ def train_pipeline(
     backend: Backend,
     silent: bool,
 ):
+    if DEBUG_MULTI_PROCESSING:
+        from ray.cloudpickle import dumps, loads
+
+        pipeline = loads(dumps(pipeline))
     return [
         func(X, y, artifact, pipeline, split, never_update, backend)
         for split in tqdm(splits, desc="Training", disable=silent)
@@ -39,6 +45,10 @@ def backtest_pipeline(
     mutate: bool,
     silent: bool,
 ):
+    if DEBUG_MULTI_PROCESSING:
+        from ray.cloudpickle import dumps, loads
+
+        pipeline = loads(dumps(pipeline))
     return [
         func(pipeline, split, X, y, artifact, backend, mutate)
         for split in tqdm(splits, desc="Backtesting", disable=silent)
@@ -56,6 +66,12 @@ def process_child_transformations(
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
 ):
+    if DEBUG_MULTI_PROCESSING:
+        from ray.cloudpickle import dumps, loads
+
+        list_of_child_transformations_with_index = loads(
+            dumps(list_of_child_transformations_with_index)
+        )
     return [
         func(
             composite,

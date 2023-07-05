@@ -36,7 +36,7 @@ from .types import Backend, Stage
 from .utils import _extract_trained_pipelines, deepcopy_pipelines, replace_with
 
 logger = logging.getLogger("fold:loop")
-
+DEBUG_MULTI_PROCESSING = False
 
 T = TypeVar(
     "T",
@@ -66,7 +66,7 @@ def recursively_transform(
         f'called "recursively_transform()" with {transformations.__class__.__name__} with stage {stage}'
     )
 
-    if isinstance(transformations, List):
+    if isinstance(transformations, List) or isinstance(transformations, Tuple):
         processed_transformations = []
         for transformation in transformations:
             processed_transformation, X, artifacts = recursively_transform(
@@ -76,8 +76,10 @@ def recursively_transform(
         return processed_transformations, X, artifacts
 
     elif isinstance(transformations, Composite):
-        return _process_composite(transformations, X, y, artifacts, stage, backend)
-
+        return_value = _process_composite(
+            transformations, X, y, artifacts, stage, backend
+        )
+        return return_value
     elif isinstance(transformations, Optimizer):
         return _process_optimizer(transformations, X, y, artifacts, stage, backend)
 
@@ -150,7 +152,7 @@ def _process_composite(
                 for r, a in zip(results_primary, artifacts_primary)
             ]
         ), ValueError("Artifacts shape doesn't match result's length.")
-    composite = composite.clone(replace_with(primary_transformations[0]))
+    composite = composite.clone(replace_with(primary_transformations))
 
     if composite.properties.primary_only_single_pipeline:
         assert len(results_primary) == 1, ValueError(
@@ -198,7 +200,7 @@ def _process_composite(
             results_primary,
         )
     )
-    composite = composite.clone(replace_with(secondary_transformations[0]))
+    composite = composite.clone(replace_with(secondary_transformations))
 
     if composite.properties.secondary_only_single_pipeline:
         assert len(results_secondary) == 1, ValueError(
@@ -247,7 +249,7 @@ def _process_sampler(
             None,
         )
     )
-    sampler = sampler.clone(replace_with(primary_transformations[0]))
+    sampler = sampler.clone(replace_with(primary_transformations))
 
     assert len(primary_results) == 1, ValueError(
         "Expected single output from primary transformations, got"

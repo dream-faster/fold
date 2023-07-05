@@ -2,7 +2,7 @@
 
 
 from importlib.util import find_spec
-from typing import Callable, List
+from typing import Callable, List, Tuple
 
 from sklearn.base import ClassifierMixin, RegressorMixin, TransformerMixin
 from sklearn.feature_selection import SelectorMixin
@@ -20,7 +20,7 @@ from ..transformations.function import ApplyFunction
 def wrap_transformation_if_needed(
     transformation: Pipeline,
 ) -> Pipeline:
-    if isinstance(transformation, List):
+    if isinstance(transformation, List) or isinstance(transformation, Tuple):
         return [wrap_transformation_if_needed(t) for t in transformation]
     elif isinstance(transformation, RegressorMixin):
         return WrapSKLearnRegressor.from_model(transformation)
