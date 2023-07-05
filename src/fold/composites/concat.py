@@ -9,7 +9,13 @@ import pandas as pd
 
 from fold.base.classes import Artifact
 
-from ..base import Composite, Pipelines, Transformations, get_concatenated_names
+from ..base import (
+    Composite,
+    Pipeline,
+    Pipelines,
+    Transformations,
+    get_concatenated_names,
+)
 from ..transformations.columns import SelectColumns
 from ..transformations.dev import Identity
 from ..utils.dataframe import ResolutionStrategy, concat_on_columns_with_duplicates
@@ -117,7 +123,7 @@ class Sequence(Composite):
 
     def __init__(
         self,
-        pipeline: Pipelines,
+        pipeline: Pipeline,
         name: Optional[str] = None,
     ) -> None:
         self.pipeline = wrap_in_double_list_if_needed(pipeline)

@@ -271,9 +271,7 @@ Transformations = Union[
     List[Union[Transformation, Composite]],
 ]
 
-Pipeline = Union[
-    Union[Transformation, Composite], List[Union[Transformation, Composite]]
-]
+Pipeline = Union[Block, List[Block]]
 """A list of `fold` objects that are executed sequentially. Or a single object."""
 Pipelines = List[Pipeline]
 """Multiple, independent `Pipeline`s."""

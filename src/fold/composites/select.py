@@ -17,7 +17,7 @@ class SelectBest(Composite, Tunable):
 
     def __init__(
         self,
-        choose_from: List[Union[Transformation, Composite]],
+        choose_from: Pipelines,
         name: Optional[str] = None,
     ) -> None:
         self.choose_from = choose_from
@@ -28,7 +28,7 @@ class SelectBest(Composite, Tunable):
     @classmethod
     def from_cloned_instance(
         cls,
-        choose_from: List[Union[Transformation, Composite]],
+        choose_from: Pipelines,
         selected_: Optional[str],
         name: Optional[str],
     ) -> SelectBest:
