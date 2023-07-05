@@ -4,7 +4,7 @@
 from ..base import Composite
 from .cache import Cache
 from .columns import EnsembleEachColumn, SkipNA, TransformEachColumn
-from .concat import Concat, Pipeline, TransformColumn
+from .concat import Concat, Sequence, TransformColumn
 from .ensemble import Ensemble
 from .imbalance import FindThreshold
 from .metalabeling import MetaLabeling
