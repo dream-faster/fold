@@ -1,3 +1,4 @@
+import os
 import shutil
 
 import pytest
@@ -14,6 +15,7 @@ from fold.transformations.scaling import StandardScaler
 from fold.utils.tests import generate_monotonous_data
 
 folder = "tests/unit/cache/"
+os.makedirs("tests/unit/cache/", exist_ok=True)
 
 events_pipeline = [
     Cache(
@@ -42,6 +44,7 @@ normal_pipeline = [
 @pytest.mark.parametrize("pipeline", [events_pipeline, normal_pipeline])
 def test_cache(pipeline) -> None:
     X, y = generate_monotonous_data(1000, freq="1min")
+
     shutil.rmtree(folder)
 
     splitter = ExpandingWindowSplitter(initial_train_window=200, step=200)
