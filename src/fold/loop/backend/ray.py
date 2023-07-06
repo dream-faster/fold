@@ -25,7 +25,7 @@ def train_pipeline(
     func = ray.remote(func)
     X = ray.put(X)
     y = ray.put(y)
-    return ray.get(
+    return_value = ray.get(
         [
             func.remote(
                 X,
@@ -39,6 +39,8 @@ def train_pipeline(
             for split in splits
         ]
     )
+    ray.internal.free([X, y])
+    return return_value
 
 
 def backtest_pipeline(
@@ -56,12 +58,14 @@ def backtest_pipeline(
     X = ray.put(X)
     y = ray.put(y)
     pipeline = ray.put(pipeline)
-    return ray.get(
+    return_value = ray.get(
         [
             func.remote(pipeline, split, X, y, artifact, backend, mutate)
             for split in splits
         ]
     )
+    ray.internal.free([X, y, pipeline])
+    return return_value
 
 
 def process_child_transformations(
