@@ -121,13 +121,4 @@ venv.bak/
 # MKdocs Gallery Generated
 docs/generated/*
 archive/*
-tests/unit/cache/artifacts.parquet
-tests/unit/cache/result.parquet
-tests/unit/cache/artifacts_fold0.parquet
-tests/unit/cache/artifacts_fold1.parquet
-tests/unit/cache/result_fold0.parquet
-tests/unit/cache/result_fold1.parquet
-tests/unit/cache/artifacts_linear_fold0.parquet
-tests/unit/cache/artifacts_linear_fold1.parquet
-tests/unit/cache/result_linear_fold0.parquet
-tests/unit/cache/result_linear_fold1.parquet
+tests/unit/cache/**
