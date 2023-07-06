@@ -82,9 +82,9 @@ class Cache(Composite):
         return clone
 
 
-def _result_path(path) -> str:
-    return os.path.join(path, "result.parquet")
+def _result_path(path, fold_index: int) -> str:
+    return os.path.join(path, f"result_fold{str(fold_index)}.parquet")
 
 
-def _artifacts_path(path) -> str:
-    return os.path.join(path, "artifacts.parquet")
+def _artifacts_path(path, fold_index: int) -> str:
+    return os.path.join(path, f"artifacts_fold{str(fold_index)}.parquet")
