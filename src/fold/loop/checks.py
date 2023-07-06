@@ -3,7 +3,6 @@
 
 from typing import Optional, Tuple
 
-import numpy as np
 import pandas as pd
 
 
@@ -12,7 +11,7 @@ def check_types(
 ) -> Tuple[pd.DataFrame, pd.Series]:
     if X is None:
         X = pd.DataFrame(
-            pd.arrays.SparseArray(np.nan), index=y.index, columns=["X_not_available"]
+            pd.arrays.SparseArray(0), index=y.index, columns=["X_not_available"]
         )
     else:
         assert isinstance(X, pd.DataFrame), "X must be a pandas DataFrame."
