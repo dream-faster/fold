@@ -43,7 +43,7 @@ class FindThreshold(Composite):
         self.pipelines = wrap_in_double_list_if_needed(pipelines)
 
         self.name = name or "FindThreshold-" + get_concatenated_names(pipelines)
-        self.properties = Composite.Properties()
+        self.properties = Composite.Properties(primary_only_single_pipeline=True)
         self.threshold = None
         self.pos_label = pos_label
         self.metadata = None
@@ -66,6 +66,13 @@ class FindThreshold(Composite):
 
         return model_result
 
+    def __construct_artifact_series(self, index: pd.Index) -> pd.Series:
+        return pd.Series(
+            [self.threshold],
+            index=index,
+            name="threshold",
+        )
+
     def postprocess_artifacts_primary(
         self,
         primary_artifacts: List[Artifact],
@@ -75,13 +82,7 @@ class FindThreshold(Composite):
     ) -> pd.DataFrame:
         return pd.concat(
             primary_artifacts
-            + [
-                pd.Series(
-                    [self.threshold],
-                    index=primary_artifacts[0].index[:1],
-                    name="threshold",
-                ),
-            ],
+            + [self.__construct_artifact_series(results[0].index[-1:])],
             axis="columns",
         )
 

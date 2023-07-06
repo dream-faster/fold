@@ -209,8 +209,9 @@ class SkipNA(Composite):
     def __init__(self, pipeline: Pipeline, name: Optional[str] = None) -> None:
         self.pipeline = wrap_in_double_list_if_needed(pipeline)
         self.name = name or "SkipNA-" + get_concatenated_names(self.pipeline)
-        self.properties = Composite.Properties()
+        self.properties = Composite.Properties(primary_only_single_pipeline=True)
         self.metadata = None
+        self.isna = None
 
     def preprocess_primary(
         self, X: pd.DataFrame, index: int, y: T, artifact: Artifact, fit: bool
@@ -226,8 +227,16 @@ class SkipNA(Composite):
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
     ) -> pd.DataFrame:
-        results = [result.reindex(self.original_index) for result in results]
-        return pd.concat(results, axis="columns")
+        return results[0].reindex(self.original_index)
+
+    def postprocess_artifacts_primary(
+        self,
+        primary_artifacts: List[Artifact],
+        results: List[pd.DataFrame],
+        original_artifact: Artifact,
+        fit: bool,
+    ) -> pd.DataFrame:
+        return primary_artifacts[0].reindex(self.original_index)
 
     def get_children_primary(self) -> Pipelines:
         return self.pipeline
@@ -240,6 +249,7 @@ class SkipNA(Composite):
         clone.original_index = self.original_index
         clone.name = self.name
         clone.metadata = self.metadata
+        clone.isna = self.isna
         return clone
 
 

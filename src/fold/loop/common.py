@@ -169,20 +169,22 @@ def _process_composite(
 
     secondary_transformations = composite.get_children_secondary()
 
+    original_results_primary = results_primary
+    results_primary = composite.postprocess_result_primary(results_primary, y)
     artifacts_primary = composite.postprocess_artifacts_primary(
         primary_artifacts=artifacts_primary,
-        results=results_primary,
+        results=original_results_primary,
         fit=stage.is_fit_or_update(),
         original_artifact=artifacts,
     )
     if composite.properties.artifacts_length_should_match:
-        assert artifacts_primary.shape[0] == results_primary[0].shape[0], ValueError(
+        assert artifacts_primary.shape[0] == results_primary.shape[0], ValueError(
             f"Artifacts shape doesn't match result's length after {composite.__class__.__name__}.postprocess_artifacts_primary() was called"
         )
     if secondary_transformations is None:
         return (
             composite,
-            composite.postprocess_result_primary(results_primary, y),
+            results_primary,
             artifacts_primary,
         )
 
@@ -219,7 +221,10 @@ def _process_composite(
     return (
         composite,
         composite.postprocess_result_secondary(
-            results_primary, results_secondary, y, in_sample=stage == Stage.inital_fit
+            results_primary,
+            results_secondary,
+            y,
+            in_sample=stage == Stage.inital_fit,
         ),
         composite.postprocess_artifacts_secondary(
             artifacts_primary, artifacts_secondary, artifacts

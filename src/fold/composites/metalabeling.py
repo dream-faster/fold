@@ -92,32 +92,37 @@ class MetaLabeling(Composite):
         )
         self.metadata = None
 
+    def postprocess_result_primary(
+        self, results: List[pd.DataFrame], y: Optional[pd.Series]
+    ) -> pd.DataFrame:
+        return results[0]
+
     def preprocess_secondary(
         self,
         X: pd.DataFrame,
         y: T,
         artifact: Artifact,
-        results_primary: List[pd.DataFrame],
+        results_primary: pd.DataFrame,
         index: int,
         fit: bool,
     ) -> Tuple[pd.DataFrame, T, Artifact]:
         X = (
-            pd.concat([X] + results_primary, axis="columns")
+            pd.concat([X, results_primary], axis="columns")
             if self.primary_output_included
             else X
         )
-        predictions = get_prediction_column(results_primary[0])
+        predictions = get_prediction_column(results_primary)
         y = y.astype(int) == predictions.astype(int)
         return X, y, Artifact.empty(X.index)
 
     def postprocess_result_secondary(
         self,
-        primary_results: List[pd.DataFrame],
+        primary_results: pd.DataFrame,
         secondary_results: List[pd.DataFrame],
         y: Optional[pd.Series],
         in_sample: bool,
     ) -> pd.DataFrame:
-        primary_predictions = get_prediction_column(primary_results[0])
+        primary_predictions = get_prediction_column(primary_results)
         meta_probabilities = secondary_results[0][
             [
                 col

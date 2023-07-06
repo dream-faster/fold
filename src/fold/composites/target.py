@@ -100,15 +100,20 @@ class TransformTarget(Composite):
         X: pd.DataFrame,
         y: T,
         artifact: Artifact,
-        results_primary: List[pd.DataFrame],
+        results_primary: pd.DataFrame,
         index: int,
         fit: bool,
     ) -> Tuple[pd.DataFrame, T, Artifact]:
-        return X, to_series(results_primary[0]), artifact
+        return X, to_series(results_primary), artifact
+
+    def postprocess_result_primary(
+        self, results: List[pd.DataFrame], y: Optional[pd.Series]
+    ) -> pd.DataFrame:
+        return results[0]
 
     def postprocess_result_secondary(
         self,
-        primary_results: List[pd.DataFrame],
+        primary_results: pd.DataFrame,
         secondary_results: List[pd.DataFrame],
         y: Optional[pd.Series],
         in_sample: bool,
