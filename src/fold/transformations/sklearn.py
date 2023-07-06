@@ -183,5 +183,5 @@ class WrapSKLearnFeatureSelector(FeatureSelector, Tunable):
 class RemoveLowVarianceFeatures(WrapSKLearnFeatureSelector):
     name = "RemoveLowVarianceFeatures"
 
-    def __init__(self):
-        super().__init__(VarianceThreshold, init_args=dict(threshold=1e-5))
+    def __init__(self, name: Optional[str] = None):
+        super().__init__(VarianceThreshold, init_args=dict(threshold=1e-5), name=name)
