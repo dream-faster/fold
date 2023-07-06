@@ -84,7 +84,7 @@ class FindThreshold(Composite):
             primary_artifacts
             + [self.__construct_artifact_series(results[0].index[-1:])],
             axis="columns",
-        ).astype(pd.SparseDtype("float", np.nan))
+        )
 
     def get_children_primary(self) -> Pipelines:
         return self.pipelines
