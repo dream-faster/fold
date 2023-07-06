@@ -45,11 +45,13 @@ class Cache(Composite):
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
     ) -> pd.DataFrame:
-        if os.path.exists(self.path) and os.path.exists(_result_path(self.path)):
-            return pd.read_parquet(_result_path(self.path))
+        if os.path.exists(self.path) and os.path.exists(
+            _result_path(self.path, self.metadata.fold_index)
+        ):
+            return pd.read_parquet(_result_path(self.path, self.metadata.fold_index))
         else:
             os.makedirs(os.path.dirname(self.path), exist_ok=True)
-            results[0].to_parquet(_result_path(self.path))
+            results[0].to_parquet(_result_path(self.path, self.metadata.fold_index))
             return results[0]
 
     def postprocess_artifacts_primary(
@@ -59,15 +61,21 @@ class Cache(Composite):
         original_artifact: Artifact,
         fit: bool,
     ) -> pd.DataFrame:
-        if os.path.exists(self.path) and os.path.exists(_artifacts_path(self.path)):
-            return pd.read_parquet(_artifacts_path(self.path))
+        if os.path.exists(self.path) and os.path.exists(
+            _artifacts_path(self.path, self.metadata.fold_index)
+        ):
+            return pd.read_parquet(_artifacts_path(self.path, self.metadata.fold_index))
         else:
             os.makedirs(os.path.dirname(self.path), exist_ok=True)
-            primary_artifacts[0].to_parquet(_artifacts_path(self.path))
+            primary_artifacts[0].to_parquet(
+                _artifacts_path(self.path, self.metadata.fold_index)
+            )
             return primary_artifacts[0]
 
     def get_children_primary(self) -> Pipelines:
-        if os.path.exists(self.path) and os.path.exists(_result_path(self.path)):
+        if os.path.exists(self.path) and os.path.exists(
+            _result_path(self.path, self.metadata.fold_index)
+        ):
             return [Identity()]
         return self.pipeline
 

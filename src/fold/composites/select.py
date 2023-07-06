@@ -24,6 +24,7 @@ class SelectBest(Composite, Tunable):
         _check_for_duplicate_names(self.choose_from)
         self.name = name or "SelectBest"
         self.properties = Composite.Properties()
+        self.metadata = None
 
     @classmethod
     def from_cloned_instance(
