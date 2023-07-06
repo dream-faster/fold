@@ -10,6 +10,7 @@ import pandas as pd
 
 from ..base import Artifact, Composite, Pipeline, Pipelines, get_concatenated_names
 from ..transformations.dev import Identity
+from ..utils.dataframe import ResolutionStrategy, concat_on_columns_with_duplicates
 from ..utils.list import wrap_in_double_list_if_needed
 
 
@@ -76,7 +77,11 @@ class Cache(Composite):
             )
         else:
             os.makedirs(os.path.dirname(self.path), exist_ok=True)
-            primary_artifacts[0].to_parquet(
+            artifacts = concat_on_columns_with_duplicates(
+                primary_artifacts,
+                strategy=ResolutionStrategy.last,
+            )
+            artifacts.to_parquet(
                 _artifacts_path(
                     self.path, self.metadata.fold_index, self.metadata.target
                 )
