@@ -156,7 +156,7 @@ class WrapSKLearnFeatureSelector(FeatureSelector, Tunable):
                 self.transformation.get_support()
             ].to_list()
         return pd.DataFrame(
-            {"selected_features": [self.selected_features]},
+            {f"selected_features_{self.name}": [self.selected_features]},
             index=X.index[-1:],
         )
 

@@ -89,6 +89,8 @@ class Cache(Composite):
             return primary_artifacts[0]
 
     def get_children_primary(self) -> Pipelines:
+        if self.metadata is None:
+            return self.pipeline
         if os.path.exists(self.path) and os.path.exists(
             _result_path(self.path, self.metadata.fold_index, self.metadata.target)
         ):
