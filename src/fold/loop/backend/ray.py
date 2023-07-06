@@ -55,6 +55,7 @@ def backtest_pipeline(
     func = ray.remote(func)
     X = ray.put(X)
     y = ray.put(y)
+    pipeline = ray.put(pipeline)
     return ray.get(
         [
             func.remote(pipeline, split, X, y, artifact, backend, mutate)
