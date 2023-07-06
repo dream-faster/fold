@@ -46,6 +46,7 @@ class FindThreshold(Composite):
         self.properties = Composite.Properties()
         self.threshold = None
         self.pos_label = pos_label
+        self.metadata = None
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
@@ -93,4 +94,5 @@ class FindThreshold(Composite):
         )
         clone.properties = self.properties
         clone.name = self.name
+        clone.metadata = self.metadata
         return clone

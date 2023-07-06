@@ -81,6 +81,7 @@ class ModelResiduals(Composite):
             secondary_requires_predictions=True,
             secondary_only_single_pipeline=True,
         )
+        self.metadata = None
 
     def preprocess_primary(
         self, X: pd.DataFrame, index: int, y: T, artifact: Artifact, fit: bool
@@ -150,4 +151,5 @@ class ModelResiduals(Composite):
         )
         clone.name = self.name
         clone.properties = self.properties
+        clone.metadata = self.metadata
         return clone

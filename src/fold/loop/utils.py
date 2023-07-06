@@ -8,10 +8,8 @@ import pandas as pd
 
 from ..base import (
     Block,
-    Composite,
-    Optimizer,
+    Clonable,
     Pipeline,
-    Sampler,
     TrainedPipelines,
     Transformations,
     get_flat_list_of_transformations,
@@ -21,11 +19,7 @@ from ..base import (
 def deepcopy_pipelines(transformation: Transformations) -> Transformations:
     if isinstance(transformation, List) or isinstance(transformation, Tuple):
         return [deepcopy_pipelines(t) for t in transformation]
-    elif (
-        isinstance(transformation, Composite)
-        or isinstance(transformation, Sampler)
-        or isinstance(transformation, Optimizer)
-    ):
+    elif isinstance(transformation, Clonable):
         return transformation.clone(deepcopy_pipelines)
     else:
         return deepcopy(transformation)
@@ -38,11 +32,7 @@ def replace_with(transformations: List[Block]) -> Callable:
     def replace(transformation: Transformations) -> Transformations:
         if isinstance(transformation, List) or isinstance(transformation, Tuple):
             return [replace(t) for t in transformation]
-        elif (
-            isinstance(transformation, Composite)
-            or isinstance(transformation, Sampler)
-            or isinstance(transformation, Optimizer)
-        ):
+        elif isinstance(transformation, Clonable):
             return transformation.clone(replace)
         else:
             if transformation.id in mapping:

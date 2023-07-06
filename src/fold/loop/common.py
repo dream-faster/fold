@@ -4,12 +4,14 @@
 from __future__ import annotations
 
 import logging
-from typing import List, Optional, Tuple, TypeVar, Union
+from typing import Callable, List, Optional, Tuple, TypeVar, Union
 
 import pandas as pd
 
 from ..base import (
     Artifact,
+    Block,
+    Clonable,
     Composite,
     Optimizer,
     Pipeline,
@@ -19,6 +21,7 @@ from ..base import (
     Transformation,
     Transformations,
     X,
+    traverse_apply,
 )
 from ..models.base import Model
 from ..splitters import Fold
@@ -469,6 +472,7 @@ def _train_on_window(
     artifact_train = artifact.iloc[window_start:window_end]
 
     pipeline = deepcopy_pipelines(pipeline)
+    pipeline = set_metadata(pipeline, Composite.Metadata(fold_index=split.order))
     trained_pipeline, X_train, artifacts = recursively_transform(
         X_train, y_train, artifact_train, pipeline, stage, backend
     )
@@ -515,3 +519,17 @@ def _sequential_train_on_window(
         processed_predictions,
         processed_artifacts,
     )
+
+
+def set_metadata(
+    pipeline: Pipeline,
+    metadata: Composite.Metadata,
+) -> Pipeline:
+    def set_(block: Block, clone_children: Callable) -> Block:
+        if isinstance(block, Clonable):
+            block = block.clone(clone_children)
+            if isinstance(block, Composite):
+                block.metadata = metadata
+        return block
+
+    return traverse_apply(pipeline, set_)

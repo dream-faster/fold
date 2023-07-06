@@ -40,6 +40,7 @@ class Cache(Composite):
         self.properties = Composite.Properties(
             primary_only_single_pipeline=True, artifacts_length_should_match=False
         )
+        self.metadata = None
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
@@ -77,6 +78,7 @@ class Cache(Composite):
         )
         clone.properties = self.properties
         clone.name = self.name
+        clone.metadata = self.metadata
         return clone
 
 
