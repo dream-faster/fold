@@ -24,6 +24,7 @@ class SelectBest(Composite, Tunable):
         _check_for_duplicate_names(self.choose_from)
         self.name = name or "SelectBest"
         self.properties = Composite.Properties()
+        self.metadata = None
 
     @classmethod
     def from_cloned_instance(
@@ -31,10 +32,12 @@ class SelectBest(Composite, Tunable):
         choose_from: Pipelines,
         selected_: Optional[str],
         name: Optional[str],
+        metadata: Optional[Composite.Metadata],
     ) -> SelectBest:
         instance = cls(choose_from)
         instance.selected_ = selected_
         instance.name = name
+        instance.metadata = metadata
         return instance
 
     def postprocess_result_primary(
@@ -57,6 +60,7 @@ class SelectBest(Composite, Tunable):
             choose_from=clone_children(self.choose_from),
             selected_=self.selected_,
             name=self.name,
+            metadata=self.metadata,
         )
 
     def get_params(self) -> dict:
@@ -88,6 +92,7 @@ class SelectBest(Composite, Tunable):
             choose_from=clone_children(children),
             selected_=parameters["selected_"],
             name=self.name,
+            metadata=self.metadata,
         )
 
 

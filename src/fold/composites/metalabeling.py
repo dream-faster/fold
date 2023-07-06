@@ -90,6 +90,7 @@ class MetaLabeling(Composite):
             secondary_requires_predictions=True,
             secondary_only_single_pipeline=True,
         )
+        self.metadata = None
 
     def preprocess_secondary(
         self,
@@ -171,6 +172,7 @@ class MetaLabeling(Composite):
         )
         clone.properties = self.properties
         clone.name = self.name
+        clone.metadata = self.metadata
         return clone
 
 

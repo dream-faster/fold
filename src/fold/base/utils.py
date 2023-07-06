@@ -16,13 +16,7 @@ def traverse_apply(pipeline: Pipeline, apply_func: Callable) -> Pipeline:
     def _traverse_apply(pipeline):
         if isinstance(pipeline, List) or isinstance(pipeline, Tuple):
             return [_traverse_apply(t) for t in pipeline]
-        elif isinstance(pipeline, Optimizer):
-            raise ValueError("Optimizer is not supported within an Optimizer.")
-        elif (
-            isinstance(pipeline, Transformation)
-            or isinstance(pipeline, Composite)
-            or isinstance(pipeline, Sampler)
-        ):
+        else:
             return apply_func(pipeline, _traverse_apply)
 
     return _traverse_apply(pipeline)

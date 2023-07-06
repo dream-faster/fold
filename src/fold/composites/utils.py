@@ -4,7 +4,7 @@ from typing import Callable, List, Union
 
 from deepmerge import always_merger
 
-from ..base import Composite, Pipeline, Transformation, Tunable, traverse
+from ..base import Clonable, Composite, Pipeline, Transformation, Tunable, traverse
 from ..transformations.dev import Identity
 
 
@@ -27,7 +27,7 @@ def _apply_params(params: dict) -> Callable:
         item: Union[Composite, Transformation], clone_children: Callable
     ) -> Union[Composite, Transformation]:
         if not isinstance(item, Tunable):
-            if isinstance(item, Composite):
+            if isinstance(item, Clonable):
                 return item.clone(clone_children)
             else:
                 return item

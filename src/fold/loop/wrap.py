@@ -7,14 +7,13 @@ from typing import Callable, List, Tuple
 from sklearn.base import ClassifierMixin, RegressorMixin, TransformerMixin
 from sklearn.feature_selection import SelectorMixin
 
-from fold.models.sklearn import WrapSKLearnClassifier, WrapSKLearnRegressor
-from fold.transformations.sklearn import (
+from ..base import Clonable, Pipeline, Transformation
+from ..models.sklearn import WrapSKLearnClassifier, WrapSKLearnRegressor
+from ..transformations.function import ApplyFunction
+from ..transformations.sklearn import (
     WrapSKLearnFeatureSelector,
     WrapSKLearnTransformation,
 )
-
-from ..base import Composite, Optimizer, Pipeline, Sampler, Transformation
-from ..transformations.function import ApplyFunction
 
 
 def wrap_transformation_if_needed(
@@ -32,11 +31,7 @@ def wrap_transformation_if_needed(
         return WrapSKLearnFeatureSelector.from_model(transformation)
     elif isinstance(transformation, TransformerMixin):
         return WrapSKLearnTransformation.from_model(transformation)
-    elif isinstance(transformation, Composite):
-        return transformation.clone(wrap_transformation_if_needed)
-    elif isinstance(transformation, Optimizer):
-        return transformation.clone(wrap_transformation_if_needed)
-    elif isinstance(transformation, Sampler):
+    elif isinstance(transformation, Clonable):
         return transformation.clone(wrap_transformation_if_needed)
     elif isinstance(transformation, Transformation):
         return transformation

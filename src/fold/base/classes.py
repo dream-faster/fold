@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from typing import Callable, List, Optional, Tuple, TypeVar, Union
 
 import pandas as pd
+from typing_extensions import Self
 
 from ..splitters import SingleWindowSplitter
 from ..utils.dataframe import ResolutionStrategy, concat_on_columns_with_duplicates
@@ -28,7 +29,13 @@ class Block(ABC):
         return instance
 
 
-class Composite(Block, ABC):
+class Clonable(ABC):
+    @abstractmethod
+    def clone(self, clone_children: Callable) -> Self:
+        raise NotImplementedError
+
+
+class Composite(Block, Clonable, ABC):
     """
     A Composite contains other transformations.
     """
@@ -51,7 +58,12 @@ class Composite(Block, ABC):
             True  # returned Artifacts should be the same length as the input
         )
 
+    @dataclass
+    class Metadata:
+        fold_index: int
+
     properties: Properties
+    metadata: Optional[Metadata]
 
     @abstractmethod
     def get_children_primary(self) -> Pipelines:
@@ -74,10 +86,6 @@ class Composite(Block, ABC):
         y: Optional[pd.Series],
         in_sample: bool,
     ) -> pd.DataFrame:
-        raise NotImplementedError
-
-    @abstractmethod
-    def clone(self, clone_children: Callable) -> Composite:
         raise NotImplementedError
 
     def before_fit(self, X: pd.DataFrame) -> None:
@@ -121,13 +129,9 @@ class Composite(Block, ABC):
         )
 
 
-class Sampler(Block, ABC):
+class Sampler(Block, Clonable, ABC):
     @abstractmethod
     def get_children_primary(self) -> Pipelines:
-        raise NotImplementedError
-
-    @abstractmethod
-    def clone(self, clone_children: Callable) -> Composite:
         raise NotImplementedError
 
     def before_fit(self, X: pd.DataFrame) -> None:
@@ -139,7 +143,7 @@ class Sampler(Block, ABC):
         return X, y, artifact
 
 
-class Optimizer(Block, ABC):
+class Optimizer(Block, Clonable, ABC):
     splitter: SingleWindowSplitter
 
     @abstractmethod
@@ -161,10 +165,6 @@ class Optimizer(Block, ABC):
         y: pd.Series,
         artifacts: List[pd.DataFrame],
     ) -> Optional[Artifact]:
-        raise NotImplementedError
-
-    @abstractmethod
-    def clone(self, clone_children: Callable) -> Optimizer:
         raise NotImplementedError
 
 

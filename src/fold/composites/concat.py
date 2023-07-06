@@ -74,6 +74,7 @@ class Concat(Composite):
         self.custom_merge_logic = custom_merge_logic
         self.name = name or "Concat-" + get_concatenated_names(pipelines)
         self.properties = Composite.Properties()
+        self.metadata = None
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
@@ -105,6 +106,7 @@ class Concat(Composite):
         )
         clone.properties = self.properties
         clone.name = self.name
+        clone.metadata = self.metadata
         return clone
 
 
@@ -129,6 +131,7 @@ class Sequence(Composite):
         self.pipeline = wrap_in_double_list_if_needed(pipeline)
         self.name = name or "Sequence-" + get_concatenated_names(pipeline)
         self.properties = Composite.Properties(primary_only_single_pipeline=True)
+        self.metadata = None
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
@@ -142,6 +145,7 @@ class Sequence(Composite):
         clone = Sequence(pipeline=clone_children(self.pipeline))
         clone.properties = self.properties
         clone.name = self.name
+        clone.metadata = self.metadata
         return clone
 
 

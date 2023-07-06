@@ -141,7 +141,7 @@ class AddFeatures(Transformation, Tunable):
 
     Parameters
     ----------
-    column_func: Union[Callable, Tuple[Union[str, List[str]], Callable]]
+    column_func: Tuple[Union[str, List[str]], Callable]
         A tuple of a column or list of columns and a function to apply to them.
     fillna: bool = True
         Fill NaNs in the resulting DataFrame

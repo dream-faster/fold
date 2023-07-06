@@ -38,6 +38,7 @@ class _CreateEvents(Composite):
         self.wrapped_pipeline = wrap_in_double_list_if_needed(wrapped_pipeline)
         self.transformation = wrap_in_list(event_label_wrapper)
         self.properties = Composite.Properties(primary_only_single_pipeline=True)
+        self.metadata = None
 
     def get_children_primary(self) -> Pipelines:
         return self.transformation
@@ -93,6 +94,7 @@ class _CreateEvents(Composite):
         )
         clone.properties = self.properties
         clone.name = self.name
+        clone.metadata = self.metadata
         return clone
 
 
@@ -107,6 +109,7 @@ class UsePredefinedEvents(Composite):
         self.properties = Composite.Properties(
             primary_only_single_pipeline=True, artifacts_length_should_match=False
         )
+        self.metadata = None
 
     def get_children_primary(self) -> Pipelines:
         return self.wrapped_pipeline
@@ -149,6 +152,7 @@ class UsePredefinedEvents(Composite):
         )
         clone.properties = self.properties
         clone.name = self.name
+        clone.metadata = self.metadata
         return clone
 
 

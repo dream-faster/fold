@@ -46,6 +46,7 @@ class EnsembleEachColumn(Composite):
             self.pipelines
         )
         self.properties = Composite.Properties()
+        self.metadata = None
 
     @classmethod
     def from_cloned_instance(
@@ -83,6 +84,7 @@ class EnsembleEachColumn(Composite):
         )
         clone.properties = self.properties
         clone.name = self.name
+        clone.metadata = self.metadata
         return clone
 
 
@@ -131,6 +133,7 @@ class TransformEachColumn(Composite):
             self.pipeline
         )
         self.properties = Composite.Properties()
+        self.metadata = None
 
     @classmethod
     def from_cloned_instance(
@@ -207,6 +210,7 @@ class SkipNA(Composite):
         self.pipeline = wrap_in_double_list_if_needed(pipeline)
         self.name = name or "SkipNA-" + get_concatenated_names(self.pipeline)
         self.properties = Composite.Properties()
+        self.metadata = None
 
     def preprocess_primary(
         self, X: pd.DataFrame, index: int, y: T, artifact: Artifact, fit: bool
@@ -235,6 +239,7 @@ class SkipNA(Composite):
         clone.properties = self.properties
         clone.original_index = self.original_index
         clone.name = self.name
+        clone.metadata = self.metadata
         return clone
 
 

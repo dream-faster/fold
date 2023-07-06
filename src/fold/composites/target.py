@@ -80,6 +80,7 @@ class TransformTarget(Composite):
         self.name = name or "TransformTarget-" + get_concatenated_names(
             self.wrapped_pipeline + self.y_pipeline
         )
+        self.metadata = None
 
     def preprocess_primary(
         self, X: pd.DataFrame, index: int, y: T, artifact: Artifact, fit: bool
@@ -137,4 +138,5 @@ class TransformTarget(Composite):
         )
         clone.properties = self.properties
         clone.name = self.name
+        clone.metadata = self.metadata
         return clone

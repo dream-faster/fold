@@ -40,15 +40,18 @@ class Cache(Composite):
         self.properties = Composite.Properties(
             primary_only_single_pipeline=True, artifacts_length_should_match=False
         )
+        self.metadata = None
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
     ) -> pd.DataFrame:
-        if os.path.exists(self.path) and os.path.exists(_result_path(self.path)):
-            return pd.read_parquet(_result_path(self.path))
+        if os.path.exists(self.path) and os.path.exists(
+            _result_path(self.path, self.metadata.fold_index)
+        ):
+            return pd.read_parquet(_result_path(self.path, self.metadata.fold_index))
         else:
             os.makedirs(os.path.dirname(self.path), exist_ok=True)
-            results[0].to_parquet(_result_path(self.path))
+            results[0].to_parquet(_result_path(self.path, self.metadata.fold_index))
             return results[0]
 
     def postprocess_artifacts_primary(
@@ -58,15 +61,21 @@ class Cache(Composite):
         original_artifact: Artifact,
         fit: bool,
     ) -> pd.DataFrame:
-        if os.path.exists(self.path) and os.path.exists(_artifacts_path(self.path)):
-            return pd.read_parquet(_artifacts_path(self.path))
+        if os.path.exists(self.path) and os.path.exists(
+            _artifacts_path(self.path, self.metadata.fold_index)
+        ):
+            return pd.read_parquet(_artifacts_path(self.path, self.metadata.fold_index))
         else:
             os.makedirs(os.path.dirname(self.path), exist_ok=True)
-            primary_artifacts[0].to_parquet(_artifacts_path(self.path))
+            primary_artifacts[0].to_parquet(
+                _artifacts_path(self.path, self.metadata.fold_index)
+            )
             return primary_artifacts[0]
 
     def get_children_primary(self) -> Pipelines:
-        if os.path.exists(self.path) and os.path.exists(_result_path(self.path)):
+        if os.path.exists(self.path) and os.path.exists(
+            _result_path(self.path, self.metadata.fold_index)
+        ):
             return [Identity()]
         return self.pipeline
 
@@ -77,12 +86,13 @@ class Cache(Composite):
         )
         clone.properties = self.properties
         clone.name = self.name
+        clone.metadata = self.metadata
         return clone
 
 
-def _result_path(path) -> str:
-    return os.path.join(path, "result.parquet")
+def _result_path(path, fold_index: int) -> str:
+    return os.path.join(path, f"result_fold{str(fold_index)}.parquet")
 
 
-def _artifacts_path(path) -> str:
-    return os.path.join(path, "artifacts.parquet")
+def _artifacts_path(path, fold_index: int) -> str:
+    return os.path.join(path, f"artifacts_fold{str(fold_index)}.parquet")
