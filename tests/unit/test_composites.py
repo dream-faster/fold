@@ -142,8 +142,12 @@ def test_imbalance():
         return preds
 
     transformations_close_enough_predictor = [FindThreshold([close_enough_predictor])]
-    trained_pipelines = train(
-        transformations_close_enough_predictor, X, y.astype(int), splitter
+    trained_pipelines, artifacts = train(
+        transformations_close_enough_predictor,
+        X,
+        y.astype(int),
+        splitter,
+        return_artifacts=True,
     )
     pred = backtest(trained_pipelines, X, y, splitter)
     assert (
