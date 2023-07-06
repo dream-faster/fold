@@ -169,7 +169,6 @@ def _process_composite(
 
     secondary_transformations = composite.get_children_secondary()
 
-    # TODO secondary artifacts calculation should be calculated after secondary results
     original_results_primary = results_primary
     results_primary = composite.postprocess_result_primary(results_primary, y)
     artifacts_primary = composite.postprocess_artifacts_primary(
@@ -222,7 +221,10 @@ def _process_composite(
     return (
         composite,
         composite.postprocess_result_secondary(
-            results_primary, results_secondary, y, in_sample=stage == Stage.inital_fit
+            results_primary,
+            results_secondary,
+            y,
+            in_sample=stage == Stage.inital_fit,
         ),
         composite.postprocess_artifacts_secondary(
             artifacts_primary, artifacts_secondary, artifacts

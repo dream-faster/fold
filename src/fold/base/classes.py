@@ -81,7 +81,7 @@ class Composite(Block, Clonable, ABC):
 
     def postprocess_result_secondary(
         self,
-        primary_results: List[pd.DataFrame],
+        primary_results: pd.DataFrame,
         secondary_results: List[pd.DataFrame],
         y: Optional[pd.Series],
         in_sample: bool,
@@ -101,7 +101,7 @@ class Composite(Block, Clonable, ABC):
         X: pd.DataFrame,
         y: T,
         artifact: Artifact,
-        results_primary: List[pd.DataFrame],
+        results_primary: pd.DataFrame,
         index: int,
         fit: bool,
     ) -> Tuple[pd.DataFrame, T, Artifact]:
