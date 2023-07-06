@@ -35,7 +35,7 @@ def test_artifacts_transformation_fit() -> None:
         transformations, X, y, splitter, return_artifacts=True
     )
     assert artifacts is not None
-    assert artifacts["selected_features"].dropna().iloc[-1] == ["sine"]
+    assert artifacts["selected_features_SelectKBest"].dropna().iloc[-1] == ["sine"]
 
 
 def test_artifacts_optimizer() -> None:

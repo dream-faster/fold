@@ -156,7 +156,7 @@ class WrapSKLearnFeatureSelector(FeatureSelector, Tunable):
                 self.transformation.get_support()
             ].to_list()
         return pd.DataFrame(
-            {"selected_features": [self.selected_features]},
+            {f"selected_features_{self.name}": [self.selected_features]},
             index=X.index[-1:],
         )
 
@@ -183,5 +183,5 @@ class WrapSKLearnFeatureSelector(FeatureSelector, Tunable):
 class RemoveLowVarianceFeatures(WrapSKLearnFeatureSelector):
     name = "RemoveLowVarianceFeatures"
 
-    def __init__(self):
-        super().__init__(VarianceThreshold, init_args=dict(threshold=1e-5))
+    def __init__(self, name: Optional[str] = None):
+        super().__init__(VarianceThreshold, init_args=dict(threshold=1e-5), name=name)

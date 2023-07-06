@@ -56,7 +56,7 @@ class FixedForwardHorizon(Labeler):
         offset = pd.Timedelta(value=self.time_horizon, unit=y.index.freqstr)
         return EventDataFrame.from_data(
             start=event_start_times,
-            end=event_start_times + offset,
+            end=(event_start_times + offset).astype("datetime64[s]"),
             label=labels,
             raw=raw_returns,
             sample_weights=sample_weights,

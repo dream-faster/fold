@@ -61,6 +61,7 @@ class Composite(Block, Clonable, ABC):
     @dataclass
     class Metadata:
         fold_index: int
+        target: str
 
     properties: Properties
     metadata: Optional[Metadata]
