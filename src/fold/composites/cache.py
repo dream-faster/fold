@@ -17,6 +17,7 @@ class Cache(Composite):
     """
     Saves the results of the pipeline up until its position for the first time, to the given directory (in parquet format).
     If the file exists at the location, it loads it and skips execution of the wrapped pipeline.
+    It only works during backtesting, and can not be used in live deployments.
 
     Parameters
     ----------
@@ -46,12 +47,16 @@ class Cache(Composite):
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
     ) -> pd.DataFrame:
         if os.path.exists(self.path) and os.path.exists(
-            _result_path(self.path, self.metadata.fold_index)
+            _result_path(self.path, self.metadata.fold_index, self.metadata.target)
         ):
-            return pd.read_parquet(_result_path(self.path, self.metadata.fold_index))
+            return pd.read_parquet(
+                _result_path(self.path, self.metadata.fold_index, self.metadata.target)
+            )
         else:
             os.makedirs(os.path.dirname(self.path), exist_ok=True)
-            results[0].to_parquet(_result_path(self.path, self.metadata.fold_index))
+            results[0].to_parquet(
+                _result_path(self.path, self.metadata.fold_index, self.metadata.target)
+            )
             return results[0]
 
     def postprocess_artifacts_primary(
@@ -62,19 +67,25 @@ class Cache(Composite):
         fit: bool,
     ) -> pd.DataFrame:
         if os.path.exists(self.path) and os.path.exists(
-            _artifacts_path(self.path, self.metadata.fold_index)
+            _artifacts_path(self.path, self.metadata.fold_index, self.metadata.target)
         ):
-            return pd.read_parquet(_artifacts_path(self.path, self.metadata.fold_index))
+            return pd.read_parquet(
+                _artifacts_path(
+                    self.path, self.metadata.fold_index, self.metadata.target
+                )
+            )
         else:
             os.makedirs(os.path.dirname(self.path), exist_ok=True)
             primary_artifacts[0].to_parquet(
-                _artifacts_path(self.path, self.metadata.fold_index)
+                _artifacts_path(
+                    self.path, self.metadata.fold_index, self.metadata.target
+                )
             )
             return primary_artifacts[0]
 
     def get_children_primary(self) -> Pipelines:
         if os.path.exists(self.path) and os.path.exists(
-            _result_path(self.path, self.metadata.fold_index)
+            _result_path(self.path, self.metadata.fold_index, self.metadata.target)
         ):
             return [Identity()]
         return self.pipeline
@@ -90,9 +101,9 @@ class Cache(Composite):
         return clone
 
 
-def _result_path(path, fold_index: int) -> str:
-    return os.path.join(path, f"result_fold{str(fold_index)}.parquet")
+def _result_path(path, fold_index: int, y_name: str) -> str:
+    return os.path.join(path, f"result_{y_name}_fold{str(fold_index)}.parquet")
 
 
-def _artifacts_path(path, fold_index: int) -> str:
-    return os.path.join(path, f"artifacts_fold{str(fold_index)}.parquet")
+def _artifacts_path(path, fold_index: int, y_name: str) -> str:
+    return os.path.join(path, f"artifacts_{y_name}_fold{str(fold_index)}.parquet")

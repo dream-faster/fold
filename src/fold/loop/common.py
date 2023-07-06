@@ -477,7 +477,9 @@ def _train_on_window(
     artifact_train = artifact.iloc[window_start:window_end]
 
     pipeline = deepcopy_pipelines(pipeline)
-    pipeline = set_metadata(pipeline, Composite.Metadata(fold_index=split.order))
+    pipeline = set_metadata(
+        pipeline, Composite.Metadata(fold_index=split.order, target=y.name)
+    )
     trained_pipeline, X_train, artifacts = recursively_transform(
         X_train, y_train, artifact_train, pipeline, stage, backend
     )
