@@ -39,7 +39,7 @@ def train_pipeline(
     ]
     return_value = ray.get(futures)
     # ray.internal.free([X, y])
-    # ray.internal.free(futures)
+    ray.internal.free(futures)
     return return_value
 
 
