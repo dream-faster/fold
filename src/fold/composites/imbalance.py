@@ -9,12 +9,33 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import roc_curve
 
+from fold.utils.enums import ParsableEnum
+
 from ..base import Artifact, Composite, Pipelines, get_concatenated_names
 from ..utils.checks import get_prediction_column_name, get_probabilities_columns
 from ..utils.list import wrap_in_double_list_if_needed
 
 
-def roc_youden_statistic(
+def roc_youden_statistic(tpr: np.ndarray, fpr: np.ndarray) -> np.ndarray:
+    return np.abs(tpr - fpr)
+
+
+def harmonic_beta(tpr: np.ndarray, fpr: np.ndarray, beta: float) -> np.ndarray:
+    return (1 + beta**2) * tpr * fpr / (beta**2 * tpr + fpr)
+
+
+class ThresholdRankings(ParsableEnum):
+    youden_statistic = "youden_statistic"
+    harmonic_fbeta = "harmonic_fbeta"
+
+    def get_function(self, value: ParsableEnum) -> Optional[Callable]:
+        if value == self.youden_statistic:
+            return roc_youden_statistic
+        if value == self.harmonic_fbeta:
+            return harmonic_beta
+
+
+def get_best_threshold(
     true_label: pd.Series, predicted_proba: pd.Series, pos_label: int
 ) -> float:
     fpr, tpr, thresholds = roc_curve(true_label, predicted_proba, pos_label=pos_label)
@@ -54,7 +75,7 @@ class FindThreshold(Composite):
         model_result = results[0]
         pos_results = get_probabilities_columns(model_result).iloc[:, self.pos_label]
         if self.threshold is None and y is not None:
-            self.threshold = roc_youden_statistic(y, pos_results, self.pos_label)
+            self.threshold = get_best_threshold(y, pos_results, self.pos_label)
 
         res = pd.Series(
             [abs(1 - self.pos_label)] * len(model_result),
