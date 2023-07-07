@@ -25,21 +25,21 @@ def train_pipeline(
     func = ray.remote(func)
     X = ray.put(X)
     y = ray.put(y)
-    return_value = ray.get(
-        [
-            func.remote(
-                X,
-                y,
-                artifact,
-                pipeline,
-                split,
-                never_update,
-                backend,
-            )
-            for split in splits
-        ]
-    )
+    futures = [
+        func.remote(
+            X,
+            y,
+            artifact,
+            pipeline,
+            split,
+            never_update,
+            backend,
+        )
+        for split in splits
+    ]
+    return_value = ray.get(futures)
     ray.internal.free([X, y])
+    ray.internal.free(futures)
     return return_value
 
 
@@ -58,13 +58,13 @@ def backtest_pipeline(
     X = ray.put(X)
     y = ray.put(y)
     pipeline = ray.put(pipeline)
-    return_value = ray.get(
-        [
-            func.remote(pipeline, split, X, y, artifact, backend, mutate)
-            for split in splits
-        ]
-    )
+    futures = [
+        func.remote(pipeline, split, X, y, artifact, backend, mutate)
+        for split in splits
+    ]
+    return_value = ray.get(futures)
     ray.internal.free([X, y, pipeline])
+    ray.internal.free(futures)
     return return_value
 
 
