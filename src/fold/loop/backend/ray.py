@@ -38,8 +38,7 @@ def train_pipeline(
         for split in splits
     ]
     return_value = ray.get(futures)
-    ray.internal.free([X, y])
-    ray.internal.free([func, futures])
+    ray.internal.free([X, y, futures])
     return return_value
 
 
@@ -63,8 +62,7 @@ def backtest_pipeline(
         for split in splits
     ]
     return_value = ray.get(futures)
-    ray.internal.free([X, y, pipeline])
-    ray.internal.free([func, futures])
+    ray.internal.free([X, y, pipeline, futures])
     return return_value
 
 
