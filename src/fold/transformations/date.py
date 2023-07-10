@@ -115,7 +115,7 @@ class AddDateTimeFeatures(Transformation, Tunable):
                 X_datetime[feature.value] = X.index.year
             else:
                 raise ValueError(f"Unsupported feature: {feature}")
-        to_concat = [X] + X_datetime if self.keep_original else X_datetime
+        to_concat = [X, X_datetime] if self.keep_original else X_datetime
         concatenated = pd.concat(to_concat, axis="columns")
         return concatenated, None
 
