@@ -118,6 +118,7 @@ class AddLagsX(Transformation, Tunable):
     def __init__(
         self,
         columns_and_lags: Union[List[ColumnAndLag], ColumnAndLag],
+        keep_original: bool = True,
         name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> None:
@@ -146,6 +147,7 @@ class AddLagsX(Transformation, Tunable):
             requires_X=True,
             memory_size=max(flatten([l for _, l in self.columns_and_lags])),
         )
+        self.keep_original = keep_original
         self.name = name or f"AddLagsX-{self.columns_and_lags}"
 
     def transform(
@@ -160,7 +162,8 @@ class AddLagsX(Transformation, Tunable):
                         f"{feature_name_separator}lag_{lag}"
                     )
                 )
-        return pd.concat([X] + lagged_columns, axis="columns").fillna(0.0), None
+        to_concat = [X] + lagged_columns if self.keep_original else lagged_columns
+        return pd.concat(to_concat, axis="columns").fillna(0.0), None
 
     fit = fit_noop
     update = fit_noop

@@ -39,6 +39,7 @@ class AddWindowFeatures(Transformation, Tunable):
         Fill NaNs in the resulting DataFrame
 
 
+
     Examples
     --------
     ```pycon
@@ -65,6 +66,7 @@ class AddWindowFeatures(Transformation, Tunable):
         self,
         column_window_func: Union[ColumnWindowFunction, List[ColumnWindowFunction]],
         fillna: bool = True,
+        keep_original: bool = True,
         name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> None:
@@ -88,6 +90,7 @@ class AddWindowFeatures(Transformation, Tunable):
             requires_X=True, memory_size=max_memory
         )
         self.fillna = fillna
+        self.keep_original = keep_original
         self.params_to_try = params_to_try
         self.name = name or "AddWindowFeatures"
 
@@ -124,7 +127,10 @@ class AddWindowFeatures(Transformation, Tunable):
             apply_function(columns, window, function)
             for columns, window, function in self.column_window_func
         ]
-        concatenated = pd.concat([X] + X_function_applied, axis="columns")
+        to_concat = (
+            [X] + X_function_applied if self.keep_original else X_function_applied
+        )
+        concatenated = pd.concat(to_concat, axis="columns")
 
         return fill_na_inf(concatenated) if self.fillna else concatenated, None
 
@@ -185,6 +191,7 @@ class AddFeatures(Transformation, Tunable):
         column_func: Union[ColumnFunction, List[ColumnFunction]],
         past_window_size: Optional[int] = None,
         fillna: bool = True,
+        keep_original: bool = True,
         name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> None:
@@ -197,6 +204,7 @@ class AddFeatures(Transformation, Tunable):
             requires_X=True, memory_size=past_window_size
         )
         self.fillna = fillna
+        self.keep_original = keep_original
         self.params_to_try = params_to_try
         self.name = name or f"ApplyFunction_{self.column_func}"
 
@@ -219,8 +227,10 @@ class AddFeatures(Transformation, Tunable):
         X_function_applied = [
             apply_function(columns, function) for columns, function in self.column_func
         ]
-
-        concatenated = pd.concat([X] + X_function_applied, axis="columns")
+        to_concat = (
+            [X] + X_function_applied if self.keep_original else X_function_applied
+        )
+        concatenated = pd.concat(to_concat, axis="columns")
         return fill_na_inf(concatenated) if self.fillna else concatenated, None
 
     fit = fit_noop
@@ -233,6 +243,7 @@ class AddRollingCorrelation(Transformation, Tunable):
         column_pairs: Union[Tuple[str], List[Tuple[str]]],
         window: int,
         fillna: bool = True,
+        keep_original: bool = True,
         name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> None:
@@ -243,6 +254,7 @@ class AddRollingCorrelation(Transformation, Tunable):
         ), "All column pairs must be of length 2"
         self.window = window
         self.properties = Transformation.Properties(requires_X=True, memory_size=window)
+        self.keep_original = keep_original
         self.params_to_try = params_to_try
         self.name = name or "AddRollingCorrelation"
 
@@ -266,8 +278,10 @@ class AddRollingCorrelation(Transformation, Tunable):
             apply_function(column_pair, self.window)
             for column_pair in self.column_pairs
         ]
-
-        concatenated = pd.concat([X] + X_function_applied, axis="columns")
+        to_concat = (
+            [X] + X_function_applied if self.keep_original else X_function_applied
+        )
+        concatenated = pd.concat(to_concat, axis="columns")
         return fill_na_inf(concatenated) if self.fillna else concatenated, None
 
     fit = fit_noop
