@@ -62,6 +62,7 @@ class AddHolidayFeatures(Transformation, Tunable):
         self,
         country_codes: Union[List[str], str],
         labeling: Union[str, LabelingMethod] = LabelingMethod.weekday_weekend_holiday,
+        keep_original: bool = True,
         name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> None:
@@ -100,6 +101,7 @@ class AddHolidayFeatures(Transformation, Tunable):
             for country_code in self.country_codes
         ]
         self.params_to_try = params_to_try
+        self.keep_original = keep_original
         self.name = name or f"AddHolidayFeatures-{self.country_codes}"
         self.properties = Transformation.Properties(requires_X=False)
 
@@ -112,7 +114,6 @@ class AddHolidayFeatures(Transformation, Tunable):
             )
             holidays[holidays != 0] = 1
 
-            return pd.concat([X, holidays], axis="columns"), None
         elif self.labeling == LabelingMethod.weekday_weekend_holiday:
             holidays = _get_holidays(
                 X.index, self.country_codes, self.holiday_to_int_maps, encode=True
@@ -124,7 +125,7 @@ class AddHolidayFeatures(Transformation, Tunable):
             holidays[holidays == 0] = holidays[holidays == 0].add(
                 _get_weekends(X.index), axis="index"
             )
-            return pd.concat([X, holidays], axis="columns"), None
+
         elif (
             self.labeling == LabelingMethod.weekday_weekend_uniqueholiday
             or self.labeling == LabelingMethod.weekday_weekend_uniqueholiday_string
@@ -140,9 +141,13 @@ class AddHolidayFeatures(Transformation, Tunable):
             holidays[holidays == 0] = holidays[holidays == 0].add(
                 weekends, axis="index"
             )
-            return pd.concat([X, holidays], axis="columns"), None
         else:
             raise ValueError(f"Unknown HolidayType: {self.labeling}")
+
+        concatenated = (
+            pd.concat([X, holidays], axis="columns") if self.keep_original else holidays
+        )
+        return concatenated, None
 
     fit = fit_noop
     update = fit_noop

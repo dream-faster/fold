@@ -69,6 +69,7 @@ class AddDateTimeFeatures(Transformation, Tunable):
     def __init__(
         self,
         features: List[Union[DateTimeFeature, str]],
+        keep_original: bool = True,
         name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> None:
@@ -78,6 +79,7 @@ class AddDateTimeFeatures(Transformation, Tunable):
             if name is not None
             else f"AddDateTimeFeatures-{'-'.join([i.value for i in self.features])}"
         )
+        self.keep_original = keep_original
         self.params_to_try = params_to_try
         self.properties = Transformation.Properties(requires_X=False)
 
@@ -113,7 +115,9 @@ class AddDateTimeFeatures(Transformation, Tunable):
                 X_datetime[feature.value] = X.index.year
             else:
                 raise ValueError(f"Unsupported feature: {feature}")
-        return pd.concat([X, X_datetime], axis="columns"), None
+        to_concat = [X] + X_datetime if self.keep_original else X_datetime
+        concatenated = pd.concat(to_concat, axis="columns")
+        return concatenated, None
 
     fit = fit_noop
     update = fit_noop
