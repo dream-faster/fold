@@ -6,7 +6,6 @@ from .cache import *
 from .columns import *
 from .concat import *
 from .ensemble import *
-from .imbalance import *
 from .metalabeling import *
 from .optimize import *
 from .residual import *
