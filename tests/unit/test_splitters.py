@@ -60,6 +60,16 @@ def test_sliding_window_splitter():
     assert splits[-1].test_window_end == len(X)
 
 
+def test_sliding_window_splitter_initial_window():
+    X, _ = generate_sine_wave_data(length=1000)
+    splitter = SlidingWindowSplitter(train_window=0.4, step=0.1, initial_window=0.2)
+
+    splits = splitter.splits(len(X))
+    assert splits[0].train_window_end == 200
+    assert len(splits) == (len(X) // 100) - 2
+    assert splits[-1].test_window_end == len(X)
+
+
 def test_sliding_window_splitter_embargo():
     X, _ = generate_sine_wave_data(length=1000)
     splitter = SlidingWindowSplitter(train_window=400, step=400, embargo=10)
