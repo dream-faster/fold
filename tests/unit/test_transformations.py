@@ -152,7 +152,7 @@ def test_window_features():
     transformations = AddWindowFeatures(("sine", 14, "mean"))
     pred, _ = train_backtest(transformations, X, y, splitter)
     assert np.isclose(
-        pred["sine~14_mean"],
+        pred["sine~mean_14"],
         X["sine"].rolling(14, min_periods=1).mean()[pred.index],
         atol=0.01,
     ).all()
@@ -166,7 +166,7 @@ def test_window_features():
     transformations = AddWindowFeatures([("sine", 14, "mean")])
     pred, _ = train_backtest(transformations, X, y, splitter)
     assert np.isclose(
-        pred["sine~14_mean"],
+        pred["sine~mean_14"],
         X["sine"].rolling(14, min_periods=1).mean()[pred.index],
         atol=0.01,
     ).all()
@@ -175,12 +175,12 @@ def test_window_features():
     transformations = AddWindowFeatures([("sine", 14, "mean"), ("sine", 5, "max")])
     pred, _ = train_backtest(transformations, X, y, splitter)
     assert np.isclose(
-        pred["sine~14_mean"],
+        pred["sine~mean_14"],
         X["sine"].rolling(14, min_periods=1).mean()[pred.index],
         atol=0.01,
     ).all()
     assert np.isclose(
-        pred["sine~5_max"],
+        pred["sine~max_5"],
         X["sine"].rolling(5, min_periods=1).max()[pred.index],
         atol=0.01,
     ).all()
@@ -191,12 +191,12 @@ def test_window_features():
     pred, _ = train_backtest(transformations, X, y, splitter)
     # if the Callable is lambda, then use the generic "transformed" name
     assert np.isclose(
-        pred["sine~14_transformed"],
+        pred["sine~transformed_14"],
         X["sine"].rolling(14, min_periods=1).mean()[pred.index],
         atol=0.01,
     ).all()
     assert np.isclose(
-        pred["sine~5_transformed"],
+        pred["sine~transformed_5"],
         X["sine"].rolling(5, min_periods=1).max()[pred.index],
         atol=0.01,
     ).all()
@@ -209,7 +209,7 @@ def test_window_features():
     pred, _ = train_backtest(transformations, X, y, splitter)
     # it should pick up the name of the function
     assert np.isclose(
-        pred["sine~14_mean"],
+        pred["sine~mean_14"],
         X["sine"].rolling(14, min_periods=1).mean()[pred.index],
         atol=0.01,
     ).all()
@@ -219,17 +219,17 @@ def test_window_features():
     pred, _ = train_backtest(transformations, X, y, splitter)
     # it should pick up the name of the function
     assert np.isclose(
-        pred["sine~14_mean"],
+        pred["sine~mean_14"],
         X["sine"].rolling(14, min_periods=1).mean()[pred.index],
         atol=0.01,
     ).all()
     assert np.isclose(
-        pred["sine~5_mean"],
+        pred["sine~mean_5"],
         X["sine"].rolling(5, min_periods=1).mean()[pred.index],
         atol=0.01,
     ).all()
     assert np.isclose(
-        pred["sine_inverted~5_mean"],
+        pred["sine_inverted~mean_5"],
         X["sine_inverted"].rolling(5, min_periods=1).mean()[pred.index],
         atol=0.01,
     ).all()

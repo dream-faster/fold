@@ -31,7 +31,7 @@ def test_concat_and_metadata():
     trained_pipelines = train(concat, X, y, splitter)
     preds = backtest(trained_pipelines, X, y, splitter)
     assert preds["y_lag_1"] is not None
-    assert preds["sine~10_mean"] is not None
+    assert preds["sine~mean_10"] is not None
     for i in range(0, 8):
         assert trained_pipelines[0].iloc[i].metadata.fold_index == i
 
@@ -41,7 +41,7 @@ def test_concat_resolution_left():
     pipeline1 = [
         AddWindowFeatures(("sine", 10, "mean")),
         DropColumns(["sine"]),
-        RenameColumns({"sine~10_mean": "sine"}),
+        RenameColumns({"sine~mean_10": "sine"}),
     ]
     pipeline2 = [
         AddWindowFeatures(("sine", 10, "mean")),
@@ -53,7 +53,7 @@ def test_concat_resolution_left():
 
     preds = backtest(trained_pipelines, X, y, splitter)
     assert isinstance(preds["sine"], pd.Series)
-    assert (preds["sine"] == preds["sine~10_mean"]).all()
+    assert (preds["sine"] == preds["sine~mean_10"]).all()
 
 
 def test_concat_resolution_right():
@@ -76,7 +76,7 @@ def test_concat_resolution_both():
     pipeline1 = [
         AddWindowFeatures(("sine", 10, "mean")),
         DropColumns(["sine"]),
-        RenameColumns({"sine~10_mean": "sine"}),
+        RenameColumns({"sine~mean_10": "sine"}),
     ]
     concat = Concat([pipeline1, Identity()], if_duplicate_keep="both")
     splitter = ExpandingWindowSplitter(0.2, 0.1)
