@@ -61,14 +61,16 @@ class SlidingWindowSplitter(Splitter):
         self,
         train_window: Union[
             int, float
-        ],  # this is what you don't out of sample get predictions for
+        ],  # this is what you don't get out of sample get predictions for
         step: Union[int, float],
+        initial_window: Optional[Union[int, float]] = None,
         embargo: int = 0,
         start: int = 0,
         end: Optional[int] = None,
         merge_threshold: float = 0.01,
     ) -> None:
         self.window_size = train_window
+        self.initial_window = initial_window
         self.step = step
         self.embargo = embargo
         self.start = start
@@ -80,18 +82,29 @@ class SlidingWindowSplitter(Splitter):
         end = self.end if self.end is not None else length
         window_size = translate_float_if_needed(self.window_size, length)
         step = translate_float_if_needed(self.step, length)
+        initial_window = (
+            translate_float_if_needed(self.initial_window, length)
+            if self.initial_window is not None
+            else window_size
+        )
+        first_window_start = (
+            self.start + initial_window
+            if initial_window is not None
+            else self.start + window_size
+        )
+
         folds = [
             Fold(
                 order=order,
                 model_index=index,
-                train_window_start=index - window_size,
+                train_window_start=max(index - window_size, self.start),
                 train_window_end=index - self.embargo,
                 update_window_start=0,  # SlidingWindowSplitter is incompatible with sequential updates
                 update_window_end=0,
                 test_window_start=index,
                 test_window_end=min(end, index + step),
             )
-            for order, index in enumerate(range(self.start + window_size, end, step))
+            for order, index in enumerate(range(first_window_start, end, step))
         ]
         return merge_last_fold_if_too_small(folds, merge_threshold)
 
