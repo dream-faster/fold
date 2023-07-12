@@ -113,13 +113,13 @@ class AddWindowFeatures(Transformation, Tunable):
             if window is None:
                 return function(
                     X[column_names]
-                    .add_suffix(f"{feature_name_separator}expanding_{function_name}")
+                    .add_suffix(f"{feature_name_separator}{function_name}_expanding")
                     .expanding()
                 )
             else:
                 return function(
                     X[column_names]
-                    .add_suffix(f"{feature_name_separator}{window}_{function_name}")
+                    .add_suffix(f"{feature_name_separator}{function_name}_{window}")
                     .rolling(window, min_periods=1)
                 )
 
