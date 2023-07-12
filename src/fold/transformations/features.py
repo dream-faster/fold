@@ -52,7 +52,7 @@ class AddWindowFeatures(Transformation, Tunable):
     >>> pipeline = AddWindowFeatures(("sine", 10, "mean"))
     >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
     >>> preds.head()
-                           sine  sine~10_mean
+                           sine  sine~mean_10
     2021-12-31 15:40:00 -0.0000      -0.05649
     2021-12-31 15:41:00  0.0126      -0.04394
     2021-12-31 15:42:00  0.0251      -0.03139
