@@ -78,7 +78,7 @@ class RandomClassifier(Model):
         )
         probabilities = probabilities.div(probabilities.sum(axis=1), axis=0)
 
-        return pd.concat([predictions, probabilities], axis="columns")
+        return pd.concat([predictions, probabilities], copy=False, axis="columns")
 
     fit = fit_noop
     predict_in_sample = predict

@@ -130,7 +130,7 @@ class AddWindowFeatures(Transformation, Tunable):
         to_concat = (
             [X] + X_function_applied if self.keep_original else X_function_applied
         )
-        concatenated = pd.concat(to_concat, axis="columns")
+        concatenated = pd.concat(to_concat, copy=False, axis="columns")
 
         return fill_na_inf(concatenated) if self.fillna else concatenated, None
 
@@ -230,7 +230,7 @@ class AddFeatures(Transformation, Tunable):
         to_concat = (
             [X] + X_function_applied if self.keep_original else X_function_applied
         )
-        concatenated = pd.concat(to_concat, axis="columns")
+        concatenated = pd.concat(to_concat, copy=False, axis="columns")
         return fill_na_inf(concatenated) if self.fillna else concatenated, None
 
     fit = fit_noop
@@ -281,7 +281,7 @@ class AddRollingCorrelation(Transformation, Tunable):
         to_concat = (
             [X] + X_function_applied if self.keep_original else X_function_applied
         )
-        concatenated = pd.concat(to_concat, axis="columns")
+        concatenated = pd.concat(to_concat, copy=False, axis="columns")
         return fill_na_inf(concatenated) if self.fillna else concatenated, None
 
     fit = fit_noop

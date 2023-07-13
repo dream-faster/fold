@@ -75,7 +75,7 @@ class WrapSKLearnClassifier(Model, Tunable):
             index=X.index,
             name=f"predictions_{self.name}",
         )
-        return pd.concat([predictions, probabilities], axis="columns")
+        return pd.concat([predictions, probabilities], copy=False, axis="columns")
 
     predict_in_sample = predict
 
