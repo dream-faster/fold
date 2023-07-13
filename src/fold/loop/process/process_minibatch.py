@@ -53,7 +53,7 @@ def _process_minibatch_transformation(
             sample_weights_with_memory,
             in_sample=stage == Stage.inital_fit,
         )
-        artifacts = concat_on_columns([artifact, artifacts])
+        artifacts = concat_on_columns([artifact, artifacts], copy=False)
     # 2. transform (inference)
     (
         X_with_memory,
@@ -69,13 +69,13 @@ def _process_minibatch_transformation(
     return_value, artifact = transformation.transform(
         X_with_memory, in_sample=in_sample
     )
-    artifact = concat_on_columns([artifact, artifacts])
+    artifact = concat_on_columns([artifact, artifacts], copy=False)
     # 3. update (if we're in the update stage)
     if stage == Stage.update:
         artifact = transformation.update(
             X_with_memory, y_with_memory, sample_weights_with_memory
         )
-        artifacts = concat_on_columns([artifact, artifacts])
+        artifacts = concat_on_columns([artifact, artifacts], copy=False)
         postprocess_X_y_into_memory_(
             transformation, X, y, Artifact.get_sample_weights(artifacts), False
         )
@@ -103,7 +103,7 @@ def _process_internal_online_model_minibatch_inference_and_update(
         transformation, X_with_memory, y_with_memory, sample_weights_with_memory, True
     )
     return_value, artifact = transformation.transform(X_with_memory, in_sample=True)
-    artifacts = concat_on_columns([artifact, artifacts])
+    artifacts = concat_on_columns([artifact, artifacts], copy=False)
 
     artifact = transformation.update(
         X_with_memory, y_with_memory, sample_weights_with_memory
@@ -114,5 +114,5 @@ def _process_internal_online_model_minibatch_inference_and_update(
     return (
         transformation,
         return_value.loc[X.index],
-        concat_on_columns([artifact, artifacts]),
+        concat_on_columns([artifact, artifacts], copy=False),
     )

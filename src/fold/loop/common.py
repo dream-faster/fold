@@ -334,7 +334,7 @@ def _process_optimizer(
     processed_optimized_pipeline, X, artifact = recursively_transform(
         X,
         y,
-        concat_on_columns([artifact, artifacts]),
+        concat_on_columns([artifact, artifacts], copy=False),
         optimized_pipeline,
         stage,
         backend,

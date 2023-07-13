@@ -79,8 +79,8 @@ def backtest(
             silent=silent,
         )
     )
-    results = trim_initial_nans_single(concat_on_index(results))
+    results = trim_initial_nans_single(concat_on_index(results, copy=False))
     if return_artifacts:
-        return results, concat_on_index(artifacts)
+        return results, concat_on_index(artifacts, copy=False)
     else:
         return results

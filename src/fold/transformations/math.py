@@ -162,6 +162,7 @@ class AddConstant(InvertibleTransformation, Tunable):
             return (
                 pd.concat(
                     [X.drop(columns=self.constant.keys()), transformed_columns],
+                    copy=False,
                     axis="columns",
                 ),
                 None,
@@ -237,6 +238,7 @@ class TurnPositive(InvertibleTransformation):
         return (
             pd.concat(
                 [X.drop(columns=self.constant.keys()), transformed_columns],
+                copy=False,
                 axis="columns",
             ),
             None,

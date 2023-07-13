@@ -32,14 +32,16 @@ def to_dataframe(dataframe_or_series: Union[pd.DataFrame, pd.Series]) -> pd.Data
 
 
 def __concat_on_axis(axis: str) -> Callable:
-    def concat_on(dfs: List[Optional[Union[pd.DataFrame, pd.Series]]]) -> pd.DataFrame:
+    def concat_on(
+        dfs: List[Optional[Union[pd.DataFrame, pd.Series]]], copy: bool
+    ) -> pd.DataFrame:
         filtered = filter_none(dfs)
         if len(filtered) == 0:
             return None  # type: ignore
         elif len(filtered) == 1:
             return filtered[0]
         else:
-            return pd.concat(filtered, axis=axis)
+            return pd.concat(filtered, axis=axis, copy=copy)
 
     return concat_on
 
@@ -54,7 +56,7 @@ def concat_on_index_override_duplicate_rows(dfs: List[pd.DataFrame]) -> pd.DataF
     elif len(dfs) == 1:
         return dfs[0]
     else:
-        return pd.concat(dfs, axis="index").groupby(level=0).last()
+        return pd.concat(dfs, axis="index", copy=False).groupby(level=0).last()
 
 
 def take_log(df: pd.DataFrame) -> pd.DataFrame:
@@ -106,7 +108,7 @@ def concat_on_columns_with_duplicates(
     columns = flatten([result.columns.to_list() for result in dfs])
     duplicates = keep_only_duplicates(columns)
     if len(duplicates) == 0:
-        return pd.concat(dfs, axis="columns")
+        return pd.concat(dfs, axis="columns", copy=False)
 
     if len(duplicates) > 0 or strategy is not ResolutionStrategy.both:
 
@@ -118,7 +120,7 @@ def concat_on_columns_with_duplicates(
             ):
                 return reduce(lambda accum, item: accum.combine_first(item), dfs)
             else:
-                return pd.concat(dfs, axis="columns")
+                return pd.concat(dfs, copy=False, axis="columns")
 
         duplicate_columns = [
             result[
@@ -143,7 +145,7 @@ def concat_on_columns_with_duplicates(
         else:
             raise ValueError(f"ResolutionStrategy is not valid: {strategy}")
     else:
-        return pd.concat(dfs, axis="columns")
+        return pd.concat(dfs, copy=False, axis="columns")
 
 
 def fill_na_inf(df: pd.DataFrame) -> pd.DataFrame:

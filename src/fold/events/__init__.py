@@ -88,7 +88,7 @@ class _CreateEvents(Composite):
         original_artifact: Artifact,
     ) -> pd.DataFrame:
         return concat_on_columns_with_duplicates(
-            [primary_artifacts, concat_on_columns(secondary_artifacts)],
+            [primary_artifacts, concat_on_columns(secondary_artifacts, copy=False)],
             strategy=ResolutionStrategy.last,
         )
 

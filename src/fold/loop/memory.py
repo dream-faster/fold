@@ -47,28 +47,28 @@ def preprocess_X_y_with_memory(
     if y is None:
         assert sample_weights is None
         return (
-            concat_on_index([memory_X.iloc[-memory_size:None], X]),
+            concat_on_index([memory_X.iloc[-memory_size:None], X], copy=True),
             y,
             sample_weights,
         )
     elif in_sample is True or memory_size == 0:
         memory_y.name = y.name
         return (
-            concat_on_index([memory_X, X]),
-            concat_on_index([memory_y, y]),
-            concat_on_index([memory_sample_weights, sample_weights]),
+            concat_on_index([memory_X, X], copy=True),
+            concat_on_index([memory_y, y], copy=True),
+            concat_on_index([memory_sample_weights, sample_weights], copy=True),
         )
     else:
         memory_y.name = y.name
         return (
-            concat_on_index(
-                [memory_X.iloc[-memory_size:None], X],
-            ),
+            concat_on_index([memory_X.iloc[-memory_size:None], X], copy=True),
             concat_on_index(
                 [memory_y.iloc[-memory_size:None], y],
+                copy=True,
             ),
             concat_on_index(
                 [memory_sample_weights.iloc[-memory_size:None], sample_weights],
+                copy=True,
             )
             if sample_weights is not None
             else None,
@@ -103,10 +103,10 @@ def postprocess_X_y_into_memory_(
         memory_y.name = y.name
         #  memory requirement is greater than the current batch, so we use the previous memory as well
         transformation._state = Transformation.State(
-            memory_X=concat_on_index([memory_X, X]).iloc[-window_size:None],
-            memory_y=concat_on_index([memory_y, y]).iloc[-window_size:None],
+            memory_X=concat_on_index([memory_X, X], copy=True).iloc[-window_size:None],
+            memory_y=concat_on_index([memory_y, y], copy=True).iloc[-window_size:None],
             memory_sample_weights=concat_on_index(
-                [memory_sample_weights, sample_weights]
+                [memory_sample_weights, sample_weights], copy=True
             ).iloc[-window_size:None]
             if sample_weights is not None
             else None,
