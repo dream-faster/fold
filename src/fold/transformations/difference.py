@@ -94,7 +94,7 @@ class Difference(InvertibleTransformation, Tunable):
             return X.diff(self.lag).fillna(0.0), None
         else:
             return (
-                pd.concat([self.last_values_X, X], axis="index")
+                pd.concat([self.last_values_X.copy(), X], copy=False, axis="index")
                 .diff(self.lag)
                 .iloc[self.lag :]
                 .fillna(0.0)
@@ -108,7 +108,9 @@ class Difference(InvertibleTransformation, Tunable):
                 X.iloc[i :: self.lag] = X.iloc[i :: self.lag].cumsum()
             return X
         else:
-            X = pd.concat([to_series(self.last_values_X), X], axis="index")
+            X = pd.concat(
+                [to_series(self.last_values_X).copy(), X], copy=False, axis="index"
+            )
             for i in range(self.lag):
                 X.iloc[i :: self.lag] = X.iloc[i :: self.lag].cumsum()
             return X.iloc[self.lag :]
@@ -201,7 +203,11 @@ class TakeReturns(Transformation, Tunable):
         else:
             return (
                 fill_na(
-                    operation(pd.concat([self.last_values_X, X], axis="index"))
+                    operation(
+                        pd.concat(
+                            [self.last_values_X.copy(), X], copy=False, axis="index"
+                        )
+                    )
                 ).iloc[1:]
             ), None
 

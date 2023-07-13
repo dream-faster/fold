@@ -434,6 +434,7 @@ def _backtest_on_window(
     backend: Backend,
     mutate: bool,
 ) -> Tuple[X, Artifact]:
+    pd.options.mode.copy_on_write = True
     current_pipeline = [
         pipeline_over_time.loc[split.model_index]
         for pipeline_over_time in trained_pipelines
@@ -464,6 +465,7 @@ def _train_on_window(
     never_update: bool,
     backend: Backend,
 ) -> Tuple[int, TrainedPipeline, X, Artifact]:
+    pd.options.mode.copy_on_write = True
     stage = Stage.inital_fit if (split.order == 0 or never_update) else Stage.update
     window_start = (
         split.update_window_start if stage == Stage.update else split.train_window_start

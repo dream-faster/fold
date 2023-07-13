@@ -116,7 +116,7 @@ class AddDateTimeFeatures(Transformation, Tunable):
             else:
                 raise ValueError(f"Unsupported feature: {feature}")
         to_concat = [X, X_datetime] if self.keep_original else X_datetime
-        concatenated = pd.concat(to_concat, axis="columns")
+        concatenated = pd.concat(to_concat, copy=False, axis="columns")
         return concatenated, None
 
     fit = fit_noop
