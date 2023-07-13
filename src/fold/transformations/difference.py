@@ -6,9 +6,8 @@ from typing import Optional, Tuple, Union
 
 import pandas as pd
 
-from ..base import Artifact, InvertibleTransformation, Transformation, Tunable, fit_noop
+from ..base import Artifact, InvertibleTransformation, Transformation, Tunable
 from ..utils.dataframe import fill_na_inf, take_log, to_series
-from ..utils.enums import ParsableEnum
 
 
 class Difference(InvertibleTransformation, Tunable):
@@ -210,73 +209,3 @@ class TakeReturns(Transformation, Tunable):
                     )
                 ).iloc[1:]
             ), None
-
-
-class StationaryMethod(ParsableEnum):
-    difference = "difference"
-    log_returns = "log_returns"
-    returns = "returns"
-
-    def transform_func(self):
-        if self == StationaryMethod.difference:
-            return lambda x: x.diff()
-        elif self == StationaryMethod.log_returns:
-            return lambda x: take_log(x).diff()
-        elif self == StationaryMethod.returns:
-            return lambda x: x.pct_change()
-        else:
-            raise ValueError(f"Unknown TransformationMethod: {self}")
-
-
-class MakeStationary(Transformation, Tunable):
-    """
-    Differences each column separately, if needed.
-
-    It can not be updated after the initial training, as that'd change the underlying distribution of the data.
-    """
-
-    def __init__(
-        self,
-        p_threshold: float = 0.05,
-        method: Union[StationaryMethod, str] = StationaryMethod.returns,
-        fill_na: bool = True,
-        name: Optional[str] = None,
-        params_to_try: Optional[dict] = None,
-    ) -> None:
-        self.p_threshold = p_threshold
-        self.method = StationaryMethod.from_str(method)
-        self.fill_na = fill_na
-        self.params_to_try = params_to_try
-        self.name = name or f"MakeStationary-{self.method.value}"
-        self.properties = InvertibleTransformation.Properties(requires_X=True)
-
-    def fit(
-        self,
-        X: pd.DataFrame,
-        y: pd.Series,
-        sample_weights: Optional[pd.Series] = None,
-    ) -> Optional[Artifact]:
-        from statsmodels.tsa.stattools import adfuller
-
-        self.is_stationary = {
-            col: adfuller(x=X[col], regression="c")[1] <= self.p_threshold
-            for col in X.columns
-        }
-
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
-        func = self.method.transform_func()
-
-        def make_stationary(series):
-            if not self.is_stationary[series.name]:
-                return func(series)
-            else:
-                return series
-
-        fill_na = fill_na_inf if self.fill_na else lambda x: x
-
-        columns = [fill_na(make_stationary(X[col])) for col in X.columns]
-        return pd.concat(columns, axis="columns"), None
-
-    update = fit_noop
