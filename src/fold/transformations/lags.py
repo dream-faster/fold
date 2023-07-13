@@ -70,10 +70,11 @@ class AddLagsY(Transformation, Tunable):
         )
         lags = pd.concat(
             [past_y.shift(lag)[-len(X) :].rename(f"y_lag_{lag}") for lag in self.lags],
+            copy=False,
             axis="columns",
         ).fillna(0.0)
         if is_X_available(X):
-            return pd.concat([X, lags], axis="columns"), None
+            return pd.concat([X, lags], copy=False, axis="columns"), None
         else:
             # If X is just an DataFrame with zeros, then just return the lags
             return lags, None
@@ -163,7 +164,7 @@ class AddLagsX(Transformation, Tunable):
                     )
                 )
         to_concat = [X] + lagged_columns if self.keep_original else lagged_columns
-        return pd.concat(to_concat, axis="columns").fillna(0.0), None
+        return pd.concat(to_concat, copy=False, axis="columns").fillna(0.0), None
 
     fit = fit_noop
     update = fit_noop

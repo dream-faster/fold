@@ -156,7 +156,7 @@ class TransformEachColumn(Composite):
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series]
     ) -> pd.DataFrame:
-        return pd.concat(results, axis="columns")
+        return pd.concat(results, copy=False, axis="columns")
 
     def get_children_primary(self) -> Pipelines:
         return self.pipeline
@@ -276,6 +276,7 @@ def get_groupped_columns_regression(
                 for df in results
             ],
             axis="columns",
+            copy=False,
         )
         .mean(axis="columns")
         .rename(f"predictions_{name}")
@@ -300,6 +301,7 @@ def get_groupped_columns_classification(
                 for df in results
             ],
             axis="columns",
+            copy=False,
         )
         .mean(axis="columns")
         .rename(f"predictions_{name}")
@@ -326,4 +328,4 @@ def get_groupped_columns_classification(
         )
         for selected_class in classes
     ]
-    return pd.concat([predictions] + probabilities, axis="columns")
+    return pd.concat([predictions] + probabilities, copy=True, axis="columns")

@@ -45,7 +45,7 @@ def _process_with_inner_loop(
             artifact = transformation.update(
                 X_row_with_memory, y_row_with_memory, sample_weights_row_with_memory
             )
-            _ = concat_on_columns([artifact, artifacts])
+            _ = concat_on_columns([artifact, artifacts], copy=False)
             postprocess_X_y_into_memory_(
                 transformation,
                 X_row_with_memory,
@@ -65,7 +65,8 @@ def _process_with_inner_loop(
                     artifacts[index:index],
                 )
                 for index in X.index
-            ]
+            ],
+            copy=False,
         ),
         Artifact.empty(X.index),
     )
