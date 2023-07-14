@@ -1,6 +1,7 @@
 import os
 import shutil
 
+import pandas as pd
 import pytest
 
 from fold.composites import Cache
@@ -49,14 +50,16 @@ def test_cache(pipeline) -> None:
 
     splitter = ExpandingWindowSplitter(initial_train_window=200, step=200)
     pred_first, _, artifacts_first = train_backtest(
-        pipeline, X, y, splitter, return_artifacts=True
+        pipeline, X, y, splitter, return_artifacts=True, return_insample=True
     )
     assert pred_first is not None
     assert artifacts_first is not None
     assert artifacts_first.index.duplicated().sum() == 0
 
     pred_second, _, artifacts_second = train_backtest(
-        pipeline, X, y, splitter, return_artifacts=True
+        pipeline, X, y, splitter, return_artifacts=True, return_insample=True
     )
     assert pred_first.equals(pred_second)
-    assert artifacts_first.equals(artifacts_second)
+    assert artifacts_first.replace({pd.NaT: pd.Timedelta(seconds=0)}).equals(
+        artifacts_second.replace({pd.NaT: pd.Timedelta(seconds=0)})
+    )

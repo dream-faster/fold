@@ -102,7 +102,7 @@ class Cache(Composite):
             return self.pipeline
         if os.path.exists(self.path) and os.path.exists(
             _result_path(
-                self.path, self.metadata.fold_index, self.metadata.target, True
+                self.path, self.metadata.fold_index, self.metadata.target, False
             )
         ):
             return [Identity()]
