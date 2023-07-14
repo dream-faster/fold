@@ -45,18 +45,25 @@ class Cache(Composite):
         self.metadata = None
 
     def postprocess_result_primary(
-        self, results: List[pd.DataFrame], y: Optional[pd.Series]
+        self,
+        results: List[pd.DataFrame],
+        y: Optional[pd.Series],
+        fit: bool,
     ) -> pd.DataFrame:
         if os.path.exists(self.path) and os.path.exists(
-            _result_path(self.path, self.metadata.fold_index, self.metadata.target)
+            _result_path(self.path, self.metadata.fold_index, self.metadata.target, fit)
         ):
             return pd.read_parquet(
-                _result_path(self.path, self.metadata.fold_index, self.metadata.target)
+                _result_path(
+                    self.path, self.metadata.fold_index, self.metadata.target, fit
+                )
             )
         else:
             os.makedirs(os.path.dirname(self.path), exist_ok=True)
             results[0].to_parquet(
-                _result_path(self.path, self.metadata.fold_index, self.metadata.target)
+                _result_path(
+                    self.path, self.metadata.fold_index, self.metadata.target, fit
+                )
             )
             return results[0]
 
@@ -68,11 +75,13 @@ class Cache(Composite):
         fit: bool,
     ) -> pd.DataFrame:
         if os.path.exists(self.path) and os.path.exists(
-            _artifacts_path(self.path, self.metadata.fold_index, self.metadata.target)
+            _artifacts_path(
+                self.path, self.metadata.fold_index, self.metadata.target, fit
+            )
         ):
             return pd.read_parquet(
                 _artifacts_path(
-                    self.path, self.metadata.fold_index, self.metadata.target
+                    self.path, self.metadata.fold_index, self.metadata.target, fit
                 )
             )
         else:
@@ -83,7 +92,7 @@ class Cache(Composite):
             )
             artifacts.to_parquet(
                 _artifacts_path(
-                    self.path, self.metadata.fold_index, self.metadata.target
+                    self.path, self.metadata.fold_index, self.metadata.target, fit
                 )
             )
             return primary_artifacts[0]
@@ -92,7 +101,9 @@ class Cache(Composite):
         if self.metadata is None:
             return self.pipeline
         if os.path.exists(self.path) and os.path.exists(
-            _result_path(self.path, self.metadata.fold_index, self.metadata.target)
+            _result_path(
+                self.path, self.metadata.fold_index, self.metadata.target, True
+            )
         ):
             return [Identity()]
         return self.pipeline
@@ -108,9 +119,17 @@ class Cache(Composite):
         return clone
 
 
-def _result_path(path, fold_index: int, y_name: str) -> str:
-    return os.path.join(path, f"result_{y_name}_fold{str(fold_index)}.parquet")
+def __fit_to_str(fit: bool) -> str:
+    return "fit" if fit else "predict"
 
 
-def _artifacts_path(path, fold_index: int, y_name: str) -> str:
-    return os.path.join(path, f"artifacts_{y_name}_fold{str(fold_index)}.parquet")
+def _result_path(path, fold_index: int, y_name: str, fit: bool) -> str:
+    return os.path.join(
+        path, f"result_{y_name}_fold{str(fold_index)}_{__fit_to_str(fit)}.parquet"
+    )
+
+
+def _artifacts_path(path, fold_index: int, y_name: str, fit: bool) -> str:
+    return os.path.join(
+        path, f"artifacts_{y_name}_fold{str(fold_index)}_{__fit_to_str(fit)}.parquet"
+    )

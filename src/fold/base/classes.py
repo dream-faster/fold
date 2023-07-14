@@ -76,7 +76,10 @@ class Composite(Block, Clonable, ABC):
         return None
 
     def postprocess_result_primary(
-        self, results: List[pd.DataFrame], y: Optional[pd.Series]
+        self,
+        results: List[pd.DataFrame],
+        y: Optional[pd.Series],
+        fit: bool,
     ) -> pd.DataFrame:
         raise NotImplementedError
 

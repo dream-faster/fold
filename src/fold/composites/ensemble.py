@@ -51,7 +51,7 @@ class Ensemble(Composite):
         self.metadata = None
 
     def postprocess_result_primary(
-        self, results: List[pd.DataFrame], y: Optional[pd.Series]
+        self, results: List[pd.DataFrame], y: Optional[pd.Series], fit: bool
     ) -> pd.DataFrame:
         return postprocess_results(results, self.name)
 
