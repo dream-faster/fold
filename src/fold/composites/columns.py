@@ -69,7 +69,10 @@ class EnsembleEachColumn(Composite):
         return X, y, artifact
 
     def postprocess_result_primary(
-        self, results: List[pd.DataFrame], y: Optional[pd.Series]
+        self,
+        results: List[pd.DataFrame],
+        y: Optional[pd.Series],
+        fit: bool,
     ) -> pd.DataFrame:
         return postprocess_results(results, self.name)
 
@@ -154,7 +157,10 @@ class TransformEachColumn(Composite):
         return (X.iloc[:, index].to_frame(), y, artifact)
 
     def postprocess_result_primary(
-        self, results: List[pd.DataFrame], y: Optional[pd.Series]
+        self,
+        results: List[pd.DataFrame],
+        y: Optional[pd.Series],
+        fit: bool,
     ) -> pd.DataFrame:
         return pd.concat(results, copy=False, axis="columns")
 
@@ -225,7 +231,10 @@ class SkipNA(Composite):
         )
 
     def postprocess_result_primary(
-        self, results: List[pd.DataFrame], y: Optional[pd.Series]
+        self,
+        results: List[pd.DataFrame],
+        y: Optional[pd.Series],
+        fit: bool,
     ) -> pd.DataFrame:
         return results[0].reindex(self.original_index)
 

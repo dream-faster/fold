@@ -41,7 +41,7 @@ class SelectBest(Composite, Tunable):
         return instance
 
     def postprocess_result_primary(
-        self, results: List[pd.DataFrame], y: Optional[pd.Series]
+        self, results: List[pd.DataFrame], y: Optional[pd.Series], fit: bool
     ) -> pd.DataFrame:
         assert self.selected_ is not None, ValueError(
             "SelectBest only works within an `Optimize` class."

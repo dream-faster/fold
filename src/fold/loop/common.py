@@ -170,7 +170,11 @@ def _process_composite(
     secondary_transformations = composite.get_children_secondary()
 
     original_results_primary = results_primary
-    results_primary = composite.postprocess_result_primary(results_primary, y)
+    results_primary = composite.postprocess_result_primary(
+        results_primary,
+        y,
+        fit=stage.is_fit_or_update(),
+    )
     artifacts_primary = composite.postprocess_artifacts_primary(
         primary_artifacts=artifacts_primary,
         results=original_results_primary,

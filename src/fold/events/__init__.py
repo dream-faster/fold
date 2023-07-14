@@ -59,7 +59,7 @@ class _CreateEvents(Composite):
         return X.loc[events.index], events.event_label, events
 
     def postprocess_result_primary(
-        self, results: List[pd.DataFrame], y: Optional[pd.Series]
+        self, results: List[pd.DataFrame], y: Optional[pd.Series], fit: bool
     ) -> pd.DataFrame:
         return results[0]
 
@@ -135,7 +135,7 @@ class UsePredefinedEvents(Composite):
         )
 
     def postprocess_result_primary(
-        self, results: List[pd.DataFrame], y: Optional[pd.Series]
+        self, results: List[pd.DataFrame], y: Optional[pd.Series], fit: bool
     ) -> pd.DataFrame:
         return results[0].reindex(y.index)
 

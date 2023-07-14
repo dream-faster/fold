@@ -107,7 +107,7 @@ class ModelResiduals(Composite):
         return X, residuals, Artifact.empty(X.index)
 
     def postprocess_result_primary(
-        self, results: List[pd.DataFrame], y: Optional[pd.Series]
+        self, results: List[pd.DataFrame], y: Optional[pd.Series], fit: bool
     ) -> pd.DataFrame:
         return results[0]
 
