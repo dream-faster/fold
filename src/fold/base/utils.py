@@ -1,4 +1,4 @@
-from typing import Callable, List, Tuple
+from typing import Callable, List, Tuple, Union
 
 from ..utils.list import empty_if_none, flatten
 from .classes import (
@@ -56,7 +56,7 @@ def get_flat_list_of_transformations(
     )
 
 
-def get_concatenated_names(transformations: Pipelines) -> str:
+def get_concatenated_names(transformations: Union[Pipelines, Pipeline]) -> str:
     return "-".join(
         [
             transformation.name if hasattr(transformation, "name") else ""
