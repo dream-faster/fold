@@ -16,7 +16,7 @@ from ..utils.list import wrap_in_double_list_if_needed
 
 class Cache(Composite):
     """
-    Saves the results of the pipeline up until its position for the first time, to the given directory (in parquet format).
+    Saves the results of the pipeline up until its position for the first time, to the given directory (in feathe format).
     If the file exists at the location, it loads it and skips execution of the wrapped pipeline.
     It only works during backtesting, and can not be used in live deployments.
 
@@ -53,14 +53,14 @@ class Cache(Composite):
         if os.path.exists(self.path) and os.path.exists(
             _result_path(self.path, self.metadata.fold_index, self.metadata.target, fit)
         ):
-            return pd.read_parquet(
+            return pd.read_feather(
                 _result_path(
                     self.path, self.metadata.fold_index, self.metadata.target, fit
                 )
-            )
+            ).set_index("index")
         else:
             os.makedirs(os.path.dirname(self.path), exist_ok=True)
-            results[0].to_parquet(
+            results[0].reset_index().to_feather(
                 _result_path(
                     self.path, self.metadata.fold_index, self.metadata.target, fit
                 )
@@ -79,18 +79,18 @@ class Cache(Composite):
                 self.path, self.metadata.fold_index, self.metadata.target, fit
             )
         ):
-            return pd.read_parquet(
+            return pd.read_feather(
                 _artifacts_path(
                     self.path, self.metadata.fold_index, self.metadata.target, fit
                 )
-            )
+            ).set_index("index")
         else:
             os.makedirs(os.path.dirname(self.path), exist_ok=True)
             artifacts = concat_on_columns_with_duplicates(
                 primary_artifacts,
                 strategy=ResolutionStrategy.last,
             )
-            artifacts.to_parquet(
+            artifacts.reset_index().to_feather(
                 _artifacts_path(
                     self.path, self.metadata.fold_index, self.metadata.target, fit
                 )
@@ -125,11 +125,11 @@ def __fit_to_str(fit: bool) -> str:
 
 def _result_path(path, fold_index: int, y_name: str, fit: bool) -> str:
     return os.path.join(
-        path, f"result_{y_name}_fold{str(fold_index)}_{__fit_to_str(fit)}.parquet"
+        path, f"result_{y_name}_fold{str(fold_index)}_{__fit_to_str(fit)}.feather"
     )
 
 
 def _artifacts_path(path, fold_index: int, y_name: str, fit: bool) -> str:
     return os.path.join(
-        path, f"artifacts_{y_name}_fold{str(fold_index)}_{__fit_to_str(fit)}.parquet"
+        path, f"artifacts_{y_name}_fold{str(fold_index)}_{__fit_to_str(fit)}.feather"
     )
