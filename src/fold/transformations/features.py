@@ -67,6 +67,7 @@ class AddWindowFeatures(Transformation, Tunable):
         column_window_func: Union[ColumnWindowFunction, List[ColumnWindowFunction]],
         fillna: bool = True,
         keep_original: bool = True,
+        output_dtype: Optional[type] = None,
         name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> None:
@@ -91,12 +92,16 @@ class AddWindowFeatures(Transformation, Tunable):
         )
         self.fillna = fillna
         self.keep_original = keep_original
+        self.output_dtype = output_dtype
         self.params_to_try = params_to_try
         self.name = name or "AddWindowFeatures"
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
     ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
+        def convert_dtype_if_needed(df: pd.DataFrame) -> pd.DataFrame:
+            return df.astype(self.output_dtype) if self.output_dtype is not None else df
+
         def apply_function(
             columns: List[str],
             window: int,
@@ -111,16 +116,22 @@ class AddWindowFeatures(Transformation, Tunable):
             column_names = get_list_column_names(columns, X)
 
             if window is None:
-                return function(
-                    X[column_names]
-                    .add_suffix(f"{feature_name_separator}{function_name}_expanding")
-                    .expanding()
+                return convert_dtype_if_needed(
+                    function(
+                        X[column_names]
+                        .add_suffix(
+                            f"{feature_name_separator}{function_name}_expanding"
+                        )
+                        .expanding()
+                    )
                 )
             else:
-                return function(
-                    X[column_names]
-                    .add_suffix(f"{feature_name_separator}{function_name}_{window}")
-                    .rolling(window, min_periods=1)
+                return convert_dtype_if_needed(
+                    function(
+                        X[column_names]
+                        .add_suffix(f"{feature_name_separator}{function_name}_{window}")
+                        .rolling(window, min_periods=1)
+                    )
                 )
 
         X_function_applied = [
@@ -192,6 +203,7 @@ class AddFeatures(Transformation, Tunable):
         past_window_size: Optional[int] = None,
         fillna: bool = True,
         keep_original: bool = True,
+        output_dtype: Optional[type] = None,
         name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> None:
@@ -205,22 +217,26 @@ class AddFeatures(Transformation, Tunable):
         )
         self.fillna = fillna
         self.keep_original = keep_original
+        self.output_dtype = output_dtype
         self.params_to_try = params_to_try
         self.name = name or f"ApplyFunction_{self.column_func}"
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
     ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
-        X_function_applied = []
+        def convert_dtype_if_needed(df: pd.DataFrame) -> pd.DataFrame:
+            return df.astype(self.output_dtype) if self.output_dtype is not None else df
 
         def apply_function(columns: List[str], function: Callable) -> pd.DataFrame:
             function_name = (
                 function.__name__ if function.__name__ != "<lambda>" else "transformed"
             )
 
-            return function(
-                X[get_list_column_names(columns, X)].add_suffix(
-                    f"{feature_name_separator}{function_name}"
+            return convert_dtype_if_needed(
+                function(
+                    X[get_list_column_names(columns, X)].add_suffix(
+                        f"{feature_name_separator}{function_name}"
+                    )
                 )
             )
 
@@ -244,6 +260,7 @@ class AddRollingCorrelation(Transformation, Tunable):
         window: int,
         fillna: bool = True,
         keep_original: bool = True,
+        output_dtype: Optional[type] = None,
         name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> None:
@@ -255,19 +272,23 @@ class AddRollingCorrelation(Transformation, Tunable):
         self.window = window
         self.properties = Transformation.Properties(requires_X=True, memory_size=window)
         self.keep_original = keep_original
+        self.output_dtype = output_dtype
         self.params_to_try = params_to_try
         self.name = name or "AddRollingCorrelation"
 
     def transform(
         self, X: pd.DataFrame, in_sample: bool
     ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
+        def convert_dtype_if_needed(df: pd.DataFrame) -> pd.DataFrame:
+            return df.astype(self.output_dtype) if self.output_dtype is not None else df
+
         def apply_function(
             column_pair: Tuple[str],
             window: int,
         ):
             lhs = column_pair[0]
             rhs = column_pair[1]
-            return (
+            return convert_dtype_if_needed(
                 X[lhs]
                 .rolling(window, min_periods=1)
                 .corr(X[rhs])

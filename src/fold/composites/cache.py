@@ -56,7 +56,8 @@ class Cache(Composite):
             return pd.read_feather(
                 _result_path(
                     self.path, self.metadata.fold_index, self.metadata.target, fit
-                )
+                ),
+                use_threads=False,
             ).set_index("index")
         else:
             os.makedirs(os.path.dirname(self.path), exist_ok=True)
@@ -82,7 +83,8 @@ class Cache(Composite):
             return pd.read_feather(
                 _artifacts_path(
                     self.path, self.metadata.fold_index, self.metadata.target, fit
-                )
+                ),
+                use_threads=False,
             ).set_index("index")
         else:
             os.makedirs(os.path.dirname(self.path), exist_ok=True)
