@@ -19,6 +19,7 @@ class ApplyFunction(Transformation, Tunable):
         func: Callable,
         past_window_size: Optional[int],
         fillna: bool = True,
+        output_dtype: Optional[type] = None,
         name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> None:
@@ -26,6 +27,7 @@ class ApplyFunction(Transformation, Tunable):
         self.name = name or func.__name__
         self.fillna = fillna
         self.past_window_size = past_window_size
+        self.output_dtype = output_dtype
         self.params_to_try = params_to_try
         self.properties = Transformation.Properties(
             requires_X=True, memory_size=past_window_size
@@ -34,7 +36,10 @@ class ApplyFunction(Transformation, Tunable):
     def transform(
         self, X: pd.DataFrame, in_sample: bool
     ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
-        return_value = self.func(X)
+        def convert_dtype_if_needed(df: pd.DataFrame) -> pd.DataFrame:
+            return df.astype(self.output_dtype) if self.output_dtype is not None else df
+
+        return_value = convert_dtype_if_needed(self.func(X))
         return fill_na_inf(return_value) if self.fillna else return_value, None
 
     fit = fit_noop

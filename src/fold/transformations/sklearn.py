@@ -28,6 +28,7 @@ class WrapSKLearnTransformation(Transformation, Tunable):
         self,
         transformation_class: Type,
         init_args: dict,
+        output_dtype: Optional[type] = None,
         name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> None:
@@ -37,16 +38,22 @@ class WrapSKLearnTransformation(Transformation, Tunable):
         if hasattr(self.transformation, "set_output"):
             self.transformation = self.transformation.set_output(transform="pandas")
         self.params_to_try = params_to_try
+        self.output_dtype = output_dtype
         self.name = name or self.transformation.__class__.__name__
         self.properties = Transformation.Properties(requires_X=True)
 
     @classmethod
     def from_model(
-        cls, model, name: Optional[str] = None, params_to_try: Optional[dict] = None
+        cls,
+        model,
+        output_dtype: Optional[type] = None,
+        name: Optional[str] = None,
+        params_to_try: Optional[dict] = None,
     ) -> WrapSKLearnTransformation:
         return cls(
             transformation_class=model.__class__,
             init_args=model.get_params(),
+            output_dtype=output_dtype,
             name=name,
             params_to_try=params_to_try,
         )
@@ -80,7 +87,10 @@ class WrapSKLearnTransformation(Transformation, Tunable):
     def transform(
         self, X: pd.DataFrame, in_sample: bool
     ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
-        result = self.transformation.transform(X)
+        def convert_dtype_if_needed(df: pd.DataFrame) -> pd.DataFrame:
+            return df.astype(self.output_dtype) if self.output_dtype is not None else df
+
+        result = convert_dtype_if_needed(self.transformation.transform(X))
         if hasattr(self.transformation, "set_output"):
             return result, None
         else:
@@ -98,6 +108,7 @@ class WrapSKLearnTransformation(Transformation, Tunable):
     ) -> Tunable:
         return WrapSKLearnTransformation(
             transformation_class=self.transformation.__class__,
+            output_dtype=self.output_dtype,
             init_args=parameters,
             name=self.name,
         )
