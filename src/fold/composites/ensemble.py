@@ -8,7 +8,7 @@ from typing import Callable, List, Optional
 import pandas as pd
 
 from ..base import Composite, Pipelines, get_concatenated_names
-from .columns import postprocess_results
+from .columns import average_results
 
 
 class Ensemble(Composite):
@@ -53,7 +53,7 @@ class Ensemble(Composite):
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series], fit: bool
     ) -> pd.DataFrame:
-        return postprocess_results(results, self.name)
+        return average_results(results, self.name)
 
     def get_children_primary(self) -> Pipelines:
         return self.pipelines
