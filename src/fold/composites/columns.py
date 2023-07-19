@@ -74,7 +74,7 @@ class EnsembleEachColumn(Composite):
         y: Optional[pd.Series],
         fit: bool,
     ) -> pd.DataFrame:
-        return postprocess_results(results, self.name)
+        return average_results(results, self.name)
 
     def get_children_primary(self) -> Pipelines:
         return self.pipelines
@@ -262,17 +262,17 @@ class SkipNA(Composite):
         return clone
 
 
-def postprocess_results(
+def average_results(
     results: List[pd.DataFrame],
     name: str,
 ) -> pd.DataFrame:
     if all_have_probabilities(results):
-        return get_groupped_columns_classification(results, name)
+        return _average_results_classification(results, name)
     else:
-        return get_groupped_columns_regression(results, name)
+        return _average_results_regression(results, name)
 
 
-def get_groupped_columns_regression(
+def _average_results_regression(
     results: List[pd.DataFrame],
     name: str,
 ) -> pd.DataFrame:
@@ -293,7 +293,7 @@ def get_groupped_columns_regression(
     )
 
 
-def get_groupped_columns_classification(
+def _average_results_classification(
     results: List[pd.DataFrame],
     name: str,
 ) -> pd.DataFrame:
