@@ -4,6 +4,8 @@
 from dataclasses import dataclass
 from typing import List, Optional, Union
 
+import pandas as pd
+
 
 @dataclass
 class Fold:
@@ -18,9 +20,9 @@ class Fold:
 
 
 class Splitter:
-    only_last_fold: bool = False
+    from_cutoff: Optional[pd.Timestamp]
 
-    def splits(self, length: int) -> List[Fold]:
+    def splits(self, index: pd.Index) -> List[Fold]:
         raise NotImplementedError
 
 
@@ -70,7 +72,7 @@ class SlidingWindowSplitter(Splitter):
         start: int = 0,
         end: Optional[int] = None,
         merge_threshold: float = 0.01,
-        only_last_fold: bool = False,
+        from_cutoff: Optional[pd.Timestamp] = None,
     ) -> None:
         self.window_size = train_window
         self.initial_window = initial_window
@@ -79,9 +81,10 @@ class SlidingWindowSplitter(Splitter):
         self.start = start
         self.end = end
         self.merge_threshold = merge_threshold
-        self.only_last_fold = only_last_fold
+        self.from_cutoff = from_cutoff
 
-    def splits(self, length: int) -> List[Fold]:
+    def splits(self, index: pd.Index) -> List[Fold]:
+        length = len(index)
         merge_threshold = int(length * self.merge_threshold)
         end = self.end if self.end is not None else length
         window_size = translate_float_if_needed(self.window_size, length)
@@ -110,8 +113,10 @@ class SlidingWindowSplitter(Splitter):
             )
             for order, index in enumerate(range(first_window_start, end, step))
         ]
-        return postprocess_folds(
-            merge_last_fold_if_too_small(folds, merge_threshold), self.only_last_fold
+        return filter_folds(
+            merge_last_fold_if_too_small(folds, merge_threshold),
+            index,
+            self.from_cutoff,
         )
 
 
@@ -149,7 +154,7 @@ class ExpandingWindowSplitter(Splitter):
         start: int = 0,
         end: Optional[int] = None,
         merge_threshold: float = 0.01,
-        only_last_fold: bool = False,
+        from_cutoff: Optional[pd.Timestamp] = None,
     ) -> None:
         self.window_size = initial_train_window
         self.step = step
@@ -157,9 +162,10 @@ class ExpandingWindowSplitter(Splitter):
         self.start = start
         self.end = end
         self.merge_threshold = merge_threshold
-        self.only_last_fold = only_last_fold
+        self.from_cutoff = from_cutoff
 
-    def splits(self, length: int) -> List[Fold]:
+    def splits(self, index: pd.Index) -> List[Fold]:
+        length = len(index)
         merge_threshold = int(length * self.merge_threshold)
         end = self.end if self.end is not None else length
         window_size = translate_float_if_needed(self.window_size, length)
@@ -179,8 +185,10 @@ class ExpandingWindowSplitter(Splitter):
             )
             for order, index in enumerate(range(self.start + window_size, end, step))
         ]
-        return postprocess_folds(
-            merge_last_fold_if_too_small(folds, merge_threshold), self.only_last_fold
+        return filter_folds(
+            merge_last_fold_if_too_small(folds, merge_threshold),
+            index,
+            self.from_cutoff,
         )
 
 
@@ -206,8 +214,10 @@ class SingleWindowSplitter(Splitter):
     ) -> None:
         self.window_size = train_window
         self.embargo = embargo
+        self.from_cutoff = None
 
-    def splits(self, length: int) -> List[Fold]:
+    def splits(self, index: pd.Index) -> List[Fold]:
+        length = len(index)
         window_size = translate_float_if_needed(self.window_size, length)
 
         return [
@@ -243,8 +253,17 @@ def merge_last_fold_if_too_small(splits: List[Fold], threshold: int) -> List[Fol
     return splits[:-2] + [merged_fold]
 
 
-def postprocess_folds(splits: List[Fold], only_last_fold=False) -> List[Fold]:
-    if only_last_fold:
-        return [splits[-1]]
+def filter_folds(
+    splits: List[Fold],
+    index: pd.Index,
+    from_cutoff: Optional[pd.Timestamp],
+) -> List[Fold]:
+    if from_cutoff is not None:
+        assert isinstance(
+            from_cutoff, pd.Timestamp
+        ), "from_cutoff must be a Timestamp, otherwise comparison doesn't work reliably"
+        return [
+            split for split in splits if index[split.test_window_end - 1] >= from_cutoff
+        ]
     else:
         return splits
