@@ -1,7 +1,6 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
 
-import datetime
 from dataclasses import dataclass
 from typing import List, Optional, Union
 
@@ -21,7 +20,7 @@ class Fold:
 
 
 class Splitter:
-    from_cutoff: Optional[Union[str, datetime.datetime]]
+    from_cutoff: Optional[pd.Timestamp]
 
     def splits(self, index: pd.Index) -> List[Fold]:
         raise NotImplementedError
@@ -73,7 +72,7 @@ class SlidingWindowSplitter(Splitter):
         start: int = 0,
         end: Optional[int] = None,
         merge_threshold: float = 0.01,
-        from_cutoff: Optional[Union[str, datetime.datetime]] = None,
+        from_cutoff: Optional[pd.Timestamp] = None,
     ) -> None:
         self.window_size = train_window
         self.initial_window = initial_window
@@ -155,7 +154,7 @@ class ExpandingWindowSplitter(Splitter):
         start: int = 0,
         end: Optional[int] = None,
         merge_threshold: float = 0.01,
-        from_cutoff: Optional[Union[str, datetime.datetime]] = None,
+        from_cutoff: Optional[pd.Timestamp] = None,
     ) -> None:
         self.window_size = initial_train_window
         self.step = step
@@ -257,11 +256,14 @@ def merge_last_fold_if_too_small(splits: List[Fold], threshold: int) -> List[Fol
 def filter_folds(
     splits: List[Fold],
     index: pd.Index,
-    from_cutoff: Optional[Union[str, datetime.datetime]],
+    from_cutoff: Optional[pd.Timestamp],
 ) -> List[Fold]:
     if from_cutoff is not None:
+        assert isinstance(
+            from_cutoff, pd.Timestamp
+        ), "from_cutoff must be a Timestamp, otherwise comparison doesn't work reliably"
         return [
-            split for split in splits if index[split.test_window_end] >= from_cutoff
+            split for split in splits if index[split.test_window_end - 1] >= from_cutoff
         ]
     else:
         return splits

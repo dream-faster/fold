@@ -95,6 +95,18 @@ def test_sliding_window_splitter_merge():
     assert splits[-1].test_window_end == len(X)
 
 
+def test_sliding_window_splitter_from_cutoff():
+    X, _ = generate_sine_wave_data(length=1000)
+    splitter = SlidingWindowSplitter(
+        train_window=0.1, step=0.1, from_cutoff=X.index[900]
+    )
+
+    splits = splitter.splits(X.index)
+    assert len(splits) == 1
+    assert splits[-1].test_window_end == len(X)
+    assert splits[-1].test_window_start == 900
+
+
 def test_single_window_splitter():
     X, _ = generate_sine_wave_data(length=1000)
     splitter = SingleWindowSplitter(train_window=0.4)
