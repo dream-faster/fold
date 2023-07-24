@@ -1,8 +1,11 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
 
+import datetime
 from dataclasses import dataclass
 from typing import List, Optional, Union
+
+import pandas as pd
 
 
 @dataclass
@@ -18,9 +21,9 @@ class Fold:
 
 
 class Splitter:
-    only_last_fold: bool = False
+    from_cutoff: Optional[Union[str, datetime.datetime]] = None
 
-    def splits(self, length: int) -> List[Fold]:
+    def splits(self, index: pd.Index) -> List[Fold]:
         raise NotImplementedError
 
 
@@ -81,7 +84,8 @@ class SlidingWindowSplitter(Splitter):
         self.merge_threshold = merge_threshold
         self.only_last_fold = only_last_fold
 
-    def splits(self, length: int) -> List[Fold]:
+    def splits(self, index: pd.Index) -> List[Fold]:
+        length = len(index)
         merge_threshold = int(length * self.merge_threshold)
         end = self.end if self.end is not None else length
         window_size = translate_float_if_needed(self.window_size, length)
@@ -110,8 +114,10 @@ class SlidingWindowSplitter(Splitter):
             )
             for order, index in enumerate(range(first_window_start, end, step))
         ]
-        return postprocess_folds(
-            merge_last_fold_if_too_small(folds, merge_threshold), self.only_last_fold
+        return filter_folds(
+            merge_last_fold_if_too_small(folds, merge_threshold),
+            index,
+            self.from_cutoff,
         )
 
 
@@ -159,7 +165,8 @@ class ExpandingWindowSplitter(Splitter):
         self.merge_threshold = merge_threshold
         self.only_last_fold = only_last_fold
 
-    def splits(self, length: int) -> List[Fold]:
+    def splits(self, index: pd.Index) -> List[Fold]:
+        length = len(index)
         merge_threshold = int(length * self.merge_threshold)
         end = self.end if self.end is not None else length
         window_size = translate_float_if_needed(self.window_size, length)
@@ -179,8 +186,10 @@ class ExpandingWindowSplitter(Splitter):
             )
             for order, index in enumerate(range(self.start + window_size, end, step))
         ]
-        return postprocess_folds(
-            merge_last_fold_if_too_small(folds, merge_threshold), self.only_last_fold
+        return filter_folds(
+            merge_last_fold_if_too_small(folds, merge_threshold),
+            index,
+            self.from_cutoff,
         )
 
 
@@ -207,7 +216,8 @@ class SingleWindowSplitter(Splitter):
         self.window_size = train_window
         self.embargo = embargo
 
-    def splits(self, length: int) -> List[Fold]:
+    def splits(self, index: pd.Index) -> List[Fold]:
+        length = len(index)
         window_size = translate_float_if_needed(self.window_size, length)
 
         return [
@@ -243,8 +253,14 @@ def merge_last_fold_if_too_small(splits: List[Fold], threshold: int) -> List[Fol
     return splits[:-2] + [merged_fold]
 
 
-def postprocess_folds(splits: List[Fold], only_last_fold=False) -> List[Fold]:
-    if only_last_fold:
-        return [splits[-1]]
+def filter_folds(
+    splits: List[Fold],
+    index: pd.Index,
+    cutoff_date: Optional[Union[str, datetime.datetime]],
+) -> List[Fold]:
+    if cutoff_date is not None:
+        return [
+            split for split in splits if index[split.test_window_end] >= cutoff_date
+        ]
     else:
         return splits
