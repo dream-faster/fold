@@ -16,7 +16,7 @@ from ..base import (
     fit_noop,
 )
 from ..utils.checks import get_list_column_names
-from ..utils.dataframe import fill_na_inf
+from ..utils.dataframe import apply_function_batched, fill_na_inf
 from ..utils.list import wrap_in_list
 
 ColumnOrColumns = Union[str, List[str]]
@@ -67,6 +67,7 @@ class AddWindowFeatures(Transformation, Tunable):
         column_window_func: Union[ColumnWindowFunction, List[ColumnWindowFunction]],
         fillna: bool = True,
         keep_original: bool = True,
+        batch_columns: Optional[int] = None,
         output_dtype: Optional[type] = None,
         name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
@@ -92,6 +93,7 @@ class AddWindowFeatures(Transformation, Tunable):
         )
         self.fillna = fillna
         self.keep_original = keep_original
+        self.batch_columns = batch_columns
         self.output_dtype = output_dtype
         self.params_to_try = params_to_try
         self.name = name or "AddWindowFeatures"
@@ -117,20 +119,24 @@ class AddWindowFeatures(Transformation, Tunable):
 
             if window is None:
                 return convert_dtype_if_needed(
-                    function(
+                    apply_function_batched(
                         X[column_names]
                         .add_suffix(
                             f"{feature_name_separator}{function_name}_expanding"
                         )
-                        .expanding()
+                        .expanding(),
+                        function,
+                        self.batch_columns,
                     )
                 )
             else:
                 return convert_dtype_if_needed(
-                    function(
+                    apply_function_batched(
                         X[column_names]
                         .add_suffix(f"{feature_name_separator}{function_name}_{window}")
-                        .rolling(window, min_periods=1)
+                        .rolling(window, min_periods=1),
+                        function,
+                        self.batch_columns,
                     )
                 )
 
@@ -203,6 +209,7 @@ class AddFeatures(Transformation, Tunable):
         past_window_size: Optional[int] = None,
         fillna: bool = True,
         keep_original: bool = True,
+        batch_columns: Optional[int] = None,
         output_dtype: Optional[type] = None,
         name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
@@ -217,6 +224,7 @@ class AddFeatures(Transformation, Tunable):
         )
         self.fillna = fillna
         self.keep_original = keep_original
+        self.batch_columns = batch_columns
         self.output_dtype = output_dtype
         self.params_to_try = params_to_try
         self.name = name or f"ApplyFunction_{self.column_func}"
@@ -233,11 +241,9 @@ class AddFeatures(Transformation, Tunable):
             )
 
             return convert_dtype_if_needed(
-                function(
-                    X[get_list_column_names(columns, X)].add_suffix(
-                        f"{feature_name_separator}{function_name}"
-                    )
-                )
+                apply_function_batched(
+                    X[get_list_column_names(columns, X)], function, self.batch_columns
+                ).add_suffix(f"{feature_name_separator}{function_name}")
             )
 
         X_function_applied = [

@@ -4,8 +4,8 @@ from typing import Callable, List, Optional, Union
 import numpy as np
 import pandas as pd
 
-from fold.utils.enums import ParsableEnum
-from fold.utils.list import filter_none, flatten, has_intersection, keep_only_duplicates
+from .enums import ParsableEnum
+from .list import filter_none, flatten, has_intersection, keep_only_duplicates
 
 
 def to_series(dataframe_or_series: Union[pd.DataFrame, pd.Series]) -> pd.Series:
@@ -150,3 +150,15 @@ def concat_on_columns_with_duplicates(
 
 def fill_na_inf(df: pd.DataFrame) -> pd.DataFrame:
     return df.replace([np.inf, -np.inf], 0.0).fillna(0.0)
+
+
+def apply_function_batched(
+    df: pd.DataFrame, func: Callable, batch_columns: Optional[int]
+) -> pd.DataFrame:
+    if batch_columns is not None:
+        batches = [
+            func(df.iloc[:, batch]) for batch in range(0, df.shape[1], batch_columns)
+        ]
+        return pd.concat(batches, axis="columns", copy=False)
+    else:
+        return func(df)

@@ -1,3 +1,5 @@
+from typing import Optional
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -146,7 +148,8 @@ def test_add_lags_X():
     tuneability_test(transformations, dict(columns_and_lags=[("all", [1, 2])]))
 
 
-def test_window_features():
+@pytest.mark.parametrize("batch_size", [None, 1])
+def test_window_features(batch_size: Optional[int]):
     X, y = generate_sine_wave_data(length=600)
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
     transformations = AddWindowFeatures(("sine", 14, "mean"))
@@ -158,7 +161,7 @@ def test_window_features():
     ).all()
 
     tuneability_test(
-        AddWindowFeatures(("sine", 14, "mean")),
+        AddWindowFeatures(("sine", 14, "mean"), batch_columns=batch_size),
         dict(column_window_func=("sine", 10, "std")),
     )
 
@@ -336,7 +339,8 @@ def test_lookahead():
     assert (pred.squeeze() == y[pred.index]).all()
 
 
-def test_function_on_columns():
+@pytest.mark.parametrize("batch_size", [None, 1])
+def test_function_on_columns(batch_size: Optional[int]):
     X, y = generate_sine_wave_data(length=600)
     splitter = SingleWindowSplitter(train_window=400)
     transformation = AddFeatures([("sine", np.square), ("all", lambda x: x + 1)])
