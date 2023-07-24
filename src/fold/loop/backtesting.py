@@ -69,7 +69,7 @@ def backtest(
         backend.backtest_pipeline(
             _backtest_on_window,
             trained_pipelines,
-            splitter.splits(length=len(X)),
+            splitter.splits(index=X.index),
             X,
             y,
             artifact,

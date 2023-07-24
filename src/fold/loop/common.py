@@ -350,7 +350,7 @@ def __process_candidates(
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
 ) -> Tuple[Transformations, X, Artifact]:
-    splits = optimizer.splitter.splits(length=len(y))
+    splits = optimizer.splitter.splits(y.index)
 
     (
         processed_idx,

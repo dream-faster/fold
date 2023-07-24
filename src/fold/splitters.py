@@ -21,7 +21,7 @@ class Fold:
 
 
 class Splitter:
-    from_cutoff: Optional[Union[str, datetime.datetime]] = None
+    from_cutoff: Optional[Union[str, datetime.datetime]]
 
     def splits(self, index: pd.Index) -> List[Fold]:
         raise NotImplementedError
@@ -73,7 +73,7 @@ class SlidingWindowSplitter(Splitter):
         start: int = 0,
         end: Optional[int] = None,
         merge_threshold: float = 0.01,
-        only_last_fold: bool = False,
+        from_cutoff: Optional[Union[str, datetime.datetime]] = None,
     ) -> None:
         self.window_size = train_window
         self.initial_window = initial_window
@@ -82,7 +82,7 @@ class SlidingWindowSplitter(Splitter):
         self.start = start
         self.end = end
         self.merge_threshold = merge_threshold
-        self.only_last_fold = only_last_fold
+        self.from_cutoff = from_cutoff
 
     def splits(self, index: pd.Index) -> List[Fold]:
         length = len(index)
@@ -155,7 +155,7 @@ class ExpandingWindowSplitter(Splitter):
         start: int = 0,
         end: Optional[int] = None,
         merge_threshold: float = 0.01,
-        only_last_fold: bool = False,
+        from_cutoff: Optional[Union[str, datetime.datetime]] = None,
     ) -> None:
         self.window_size = initial_train_window
         self.step = step
@@ -163,7 +163,7 @@ class ExpandingWindowSplitter(Splitter):
         self.start = start
         self.end = end
         self.merge_threshold = merge_threshold
-        self.only_last_fold = only_last_fold
+        self.from_cutoff = from_cutoff
 
     def splits(self, index: pd.Index) -> List[Fold]:
         length = len(index)
@@ -215,6 +215,7 @@ class SingleWindowSplitter(Splitter):
     ) -> None:
         self.window_size = train_window
         self.embargo = embargo
+        self.from_cutoff = None
 
     def splits(self, index: pd.Index) -> List[Fold]:
         length = len(index)
@@ -256,11 +257,11 @@ def merge_last_fold_if_too_small(splits: List[Fold], threshold: int) -> List[Fol
 def filter_folds(
     splits: List[Fold],
     index: pd.Index,
-    cutoff_date: Optional[Union[str, datetime.datetime]],
+    from_cutoff: Optional[Union[str, datetime.datetime]],
 ) -> List[Fold]:
-    if cutoff_date is not None:
+    if from_cutoff is not None:
         return [
-            split for split in splits if index[split.test_window_end] >= cutoff_date
+            split for split in splits if index[split.test_window_end] >= from_cutoff
         ]
     else:
         return splits
