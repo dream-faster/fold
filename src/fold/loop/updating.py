@@ -6,7 +6,7 @@ from ..base import Artifact, DeployablePipeline, EventDataFrame
 from ..utils.trim import trim_initial_nans
 from .checks import check_types
 from .common import deepcopy_pipelines, recursively_transform
-from .types import Backend, Stage
+from .types import BackendType, Stage
 
 
 def update(
@@ -31,6 +31,6 @@ def update(
         artifact,
         transformations,
         stage=Stage.update,
-        backend=Backend.no,
+        backend=BackendType.no,
     )
     return transformations

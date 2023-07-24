@@ -438,7 +438,7 @@ scorecard[['rmse']].print('minimal')
 
 ```python
 model = WrapStatsModels(StatsModelARIMA, init_args=dict(order=(1, 1, 0)), online_mode=True)
-scorecard, predictions, _ = timing.record_time('arima', 'fold (online)')(train_evaluate, model, None, y, splitter, backend=Backend.no, silent=True)
+scorecard, predictions, _ = timing.record_time('arima', 'fold (online)')(train_evaluate, model, None, y, splitter, backend=BackendType.no, silent=True)
 plot_y_predictions(y[predictions.index], predictions, mode="overlap")
 scorecard[['rmse']].print('minimal')
 ```

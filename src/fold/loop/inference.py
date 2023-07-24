@@ -6,7 +6,7 @@ from fold.base.classes import Artifact
 
 from ..base import DeployablePipeline, OutOfSamplePredictions
 from .common import recursively_transform
-from .types import Backend, Stage
+from .types import BackendType, Stage
 
 
 def infer(
@@ -30,6 +30,6 @@ def infer(
         Artifact.empty(X.index),
         pipeline,
         stage=Stage.infer,
-        backend=Backend.no,
+        backend=BackendType.no,
     )
     return results

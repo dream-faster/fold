@@ -29,7 +29,6 @@ from ..utils.checks import is_prediction
 from ..utils.dataframe import concat_on_columns
 from ..utils.list import unpack_list_of_tuples
 from ..utils.trim import trim_initial_nans_single
-from .backend import get_backend_dependent_functions
 from .process.process_inner_loop import _process_with_inner_loop
 from .process.process_minibatch import (
     _process_internal_online_model_minibatch_inference_and_update,
@@ -130,13 +129,11 @@ def _process_composite(
     stage: Stage,
     backend: Backend,
 ) -> Tuple[Composite, X, Artifact]:
-    backend_functions = get_backend_dependent_functions(backend)
-
     composite.before_fit(X)
     primary_transformations = composite.get_children_primary()
 
     primary_transformations, results_primary, artifacts_primary = unpack_list_of_tuples(
-        backend_functions.process_child_transformations(
+        backend.process_child_transformations(
             __process_primary_child_transform,
             enumerate(primary_transformations),
             composite,
@@ -197,7 +194,7 @@ def _process_composite(
         results_secondary,
         artifacts_secondary,
     ) = unpack_list_of_tuples(
-        backend_functions.process_child_transformations(
+        backend.process_child_transformations(
             __process_secondary_child_transform,
             enumerate(secondary_transformations),
             composite,
@@ -244,12 +241,10 @@ def _process_sampler(
     stage: Stage,
     backend: Backend,
 ) -> Tuple[Composite, X, Artifact]:
-    backend_functions = get_backend_dependent_functions(backend)
-
     primary_transformations = sampler.get_children_primary()
 
     primary_transformations, primary_results, primary_artifacts = unpack_list_of_tuples(
-        backend_functions.process_child_transformations(
+        backend.process_child_transformations(
             __process_primary_child_transform,
             enumerate(primary_transformations),
             sampler,
@@ -275,7 +270,7 @@ def _process_sampler(
             primary_results,
             primary_artifacts,
         ) = unpack_list_of_tuples(
-            backend_functions.process_child_transformations(
+            backend.process_child_transformations(
                 __process_primary_child_transform,
                 enumerate(secondary_transformations),
                 sampler,
@@ -304,8 +299,6 @@ def _process_optimizer(
     stage: Stage,
     backend: Backend,
 ) -> Tuple[Pipeline, X, Artifact]:
-    backend_functions = get_backend_dependent_functions(backend)
-
     optimized_pipeline = optimizer.get_optimized_pipeline()
     artifact = None
     if optimized_pipeline is None:
@@ -315,7 +308,7 @@ def _process_optimizer(
                 break
 
             _, results, candidate_artifacts = unpack_list_of_tuples(
-                backend_functions.process_child_transformations(
+                backend.process_child_transformations(
                     __process_candidates,
                     enumerate(candidates),
                     optimizer,

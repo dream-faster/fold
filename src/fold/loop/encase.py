@@ -19,7 +19,7 @@ from ..splitters import Splitter
 from ..utils.dataframe import ResolutionStrategy, concat_on_columns_with_duplicates
 from .backtesting import backtest
 from .training import train
-from .types import Backend, TrainMethod
+from .types import Backend, BackendType, TrainMethod
 
 if TYPE_CHECKING:
     from krisi import ScoreCard
@@ -30,7 +30,7 @@ def backtest_score(
     X: Optional[pd.DataFrame],
     y: pd.Series,
     splitter: Splitter,
-    backend: Union[str, Backend] = Backend.no,
+    backend: Union[BackendType, Backend, str] = BackendType.no,
     sample_weights: Optional[pd.Series] = None,
     events: Optional[EventDataFrame] = None,
     silent: bool = False,
@@ -104,7 +104,7 @@ def train_backtest(
     X: Optional[pd.DataFrame],
     y: pd.Series,
     splitter: Splitter,
-    backend: Union[Backend, str] = Backend.no,
+    backend: Union[BackendType, Backend, str] = BackendType.no,
     sample_weights: Optional[pd.Series] = None,
     events: Optional[EventDataFrame] = None,
     train_method: Union[TrainMethod, str] = TrainMethod.parallel,
@@ -197,7 +197,7 @@ def train_evaluate(
     X: Optional[pd.DataFrame],
     y: pd.Series,
     splitter: Splitter,
-    backend: Backend = Backend.no,
+    backend: Union[BackendType, Backend, str] = BackendType.no,
     sample_weights: Optional[pd.Series] = None,
     events: Optional[EventDataFrame] = None,
     train_method: Union[TrainMethod, str] = TrainMethod.parallel,
