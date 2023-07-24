@@ -18,6 +18,8 @@ class Fold:
 
 
 class Splitter:
+    only_last_fold: bool = False
+
     def splits(self, length: int) -> List[Fold]:
         raise NotImplementedError
 
@@ -68,6 +70,7 @@ class SlidingWindowSplitter(Splitter):
         start: int = 0,
         end: Optional[int] = None,
         merge_threshold: float = 0.01,
+        only_last_fold: bool = False,
     ) -> None:
         self.window_size = train_window
         self.initial_window = initial_window
@@ -76,6 +79,7 @@ class SlidingWindowSplitter(Splitter):
         self.start = start
         self.end = end
         self.merge_threshold = merge_threshold
+        self.only_last_fold = only_last_fold
 
     def splits(self, length: int) -> List[Fold]:
         merge_threshold = int(length * self.merge_threshold)
@@ -106,7 +110,9 @@ class SlidingWindowSplitter(Splitter):
             )
             for order, index in enumerate(range(first_window_start, end, step))
         ]
-        return merge_last_fold_if_too_small(folds, merge_threshold)
+        return postprocess_folds(
+            merge_last_fold_if_too_small(folds, merge_threshold), self.only_last_fold
+        )
 
 
 class ExpandingWindowSplitter(Splitter):
@@ -143,6 +149,7 @@ class ExpandingWindowSplitter(Splitter):
         start: int = 0,
         end: Optional[int] = None,
         merge_threshold: float = 0.01,
+        only_last_fold: bool = False,
     ) -> None:
         self.window_size = initial_train_window
         self.step = step
@@ -150,6 +157,7 @@ class ExpandingWindowSplitter(Splitter):
         self.start = start
         self.end = end
         self.merge_threshold = merge_threshold
+        self.only_last_fold = only_last_fold
 
     def splits(self, length: int) -> List[Fold]:
         merge_threshold = int(length * self.merge_threshold)
@@ -171,7 +179,9 @@ class ExpandingWindowSplitter(Splitter):
             )
             for order, index in enumerate(range(self.start + window_size, end, step))
         ]
-        return merge_last_fold_if_too_small(folds, merge_threshold)
+        return postprocess_folds(
+            merge_last_fold_if_too_small(folds, merge_threshold), self.only_last_fold
+        )
 
 
 class SingleWindowSplitter(Splitter):
@@ -231,3 +241,10 @@ def merge_last_fold_if_too_small(splits: List[Fold], threshold: int) -> List[Fol
         test_window_end=last_fold.test_window_end,
     )
     return splits[:-2] + [merged_fold]
+
+
+def postprocess_folds(splits: List[Fold], only_last_fold=False) -> List[Fold]:
+    if only_last_fold:
+        return [splits[-1]]
+    else:
+        return splits
