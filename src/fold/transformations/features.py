@@ -236,8 +236,12 @@ class AddFeatures(Transformation, Tunable):
 
             return convert_dtype_if_needed(
                 apply_function_batched(
-                    X[get_list_column_names(columns, X)], function, self.batch_columns
-                ).add_suffix(f"{feature_name_separator}{function_name}")
+                    X[get_list_column_names(columns, X)].add_suffix(
+                        f"{feature_name_separator}{function_name}"
+                    ),
+                    function,
+                    self.batch_columns,
+                )
             )
 
         X_function_applied = [
