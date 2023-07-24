@@ -340,10 +340,12 @@ def test_lookahead():
 
 
 @pytest.mark.parametrize("batch_size", [None, 1])
-def test_function_on_columns(batch_size: Optional[int]):
+def test_add_features(batch_size: Optional[int]):
     X, y = generate_sine_wave_data(length=600)
     splitter = SingleWindowSplitter(train_window=400)
-    transformation = AddFeatures([("sine", np.square), ("all", lambda x: x + 1)])
+    transformation = AddFeatures(
+        [("sine", np.square), ("all", lambda x: x + 1)], batch_columns=batch_size
+    )
     pred, _ = train_backtest(transformation, X, y, splitter)
     assert "sine~square" in pred.columns
     assert "sine~transformed" in pred.columns
