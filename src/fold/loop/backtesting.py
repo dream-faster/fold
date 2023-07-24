@@ -10,10 +10,10 @@ from ..splitters import Splitter
 from ..utils.dataframe import concat_on_index
 from ..utils.list import unpack_list_of_tuples
 from ..utils.trim import trim_initial_nans, trim_initial_nans_single
-from .backend import get_backend_dependent_functions
+from .backend import get_backend
 from .checks import check_types
 from .common import _backtest_on_window
-from .types import Backend
+from .types import Backend, BackendType
 
 
 def backtest(
@@ -21,7 +21,7 @@ def backtest(
     X: Optional[pd.DataFrame],
     y: pd.Series,
     splitter: Splitter,
-    backend: Union[Backend, str] = Backend.no,
+    backend: Union[BackendType, Backend, str] = BackendType.no,
     sample_weights: Optional[pd.Series] = None,
     events: Optional[EventDataFrame] = None,
     silent: bool = False,
@@ -42,7 +42,7 @@ def backtest(
         Endogenous Data (Target).
     splitter: Splitter
         Defines how the folds should be constructed.
-    backend: str, Backend = Backend.no
+    backend: str, BackendType = BackendType.no
         The library/service to use for parallelization / distributed computing, by default `no`.
     sample_weights: pd.Series, optional = None
         Weights assigned to each sample/timestamp, that are passed into models that support it, by default None.
@@ -60,14 +60,13 @@ def backtest(
     OutOfSamplePredictions
         Predictions for all folds, concatenated.
     """
-    backend = Backend.from_str(backend)
+    backend = get_backend(backend)
     X, y = check_types(X, y)
     artifact = Artifact.from_events_sample_weights(X.index, events, sample_weights)
     X, y, artifact = trim_initial_nans(X, y, artifact)
-    backend_functions = get_backend_dependent_functions(backend)
 
     results, artifacts = unpack_list_of_tuples(
-        backend_functions.backtest_pipeline(
+        backend.backtest_pipeline(
             _backtest_on_window,
             trained_pipelines,
             splitter.splits(length=len(X)),

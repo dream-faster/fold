@@ -3,12 +3,25 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from enum import Enum
+from typing import Callable
 
 from ..utils.enums import ParsableEnum
 
 
-class Backend(ParsableEnum):
+@dataclass
+class Backend:
+    name: str
+    process_child_transformations: Callable
+    train_pipeline: Callable
+    backtest_pipeline: Callable
+
+    def __init__(self):  # to be able to initalize it with the default parameters
+        pass
+
+
+class BackendType(ParsableEnum):
     """
     Parameters
     ----------

@@ -4,9 +4,10 @@ import pandas as pd
 
 from ..base import Artifact, DeployablePipeline, EventDataFrame
 from ..utils.trim import trim_initial_nans
+from .backend import get_backend
 from .checks import check_types
 from .common import deepcopy_pipelines, recursively_transform
-from .types import Backend, Stage
+from .types import BackendType, Stage
 
 
 def update(
@@ -23,6 +24,7 @@ def update(
     X, y = check_types(X, y)
     artifact = Artifact.from_events_sample_weights(X.index, events, sample_weights)
     X, y, artifact = trim_initial_nans(X, y, artifact)
+    backend = get_backend(BackendType.no)
 
     transformations = deepcopy_pipelines(pipeline)
     _ = recursively_transform(
@@ -31,6 +33,6 @@ def update(
         artifact,
         transformations,
         stage=Stage.update,
-        backend=Backend.no,
+        backend=backend,
     )
     return transformations

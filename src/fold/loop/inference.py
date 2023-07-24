@@ -2,11 +2,10 @@ from typing import Optional
 
 import pandas as pd
 
-from fold.base.classes import Artifact
-
-from ..base import DeployablePipeline, OutOfSamplePredictions
+from ..base import Artifact, DeployablePipeline, OutOfSamplePredictions
+from .backend import get_backend
 from .common import recursively_transform
-from .types import Backend, Stage
+from .types import BackendType, Stage
 
 
 def infer(
@@ -30,6 +29,6 @@ def infer(
         Artifact.empty(X.index),
         pipeline,
         stage=Stage.infer,
-        backend=Backend.no,
+        backend=get_backend(BackendType.no),
     )
     return results

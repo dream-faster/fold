@@ -343,11 +343,11 @@ We pass in `None` as `X`, to indicate that we want to train a univariate model, 
 
 
 ```python
-from fold import train_evaluate, Backend
+from fold import train_evaluate, BackendType
 import ray
 ray.init(ignore_reinit_error=True)
 
-scorecard, predictions, trained_pipeline = train_evaluate(prophet, None, y, splitter, backend=Backend.ray, krisi_args={"model_name":"prophet"})
+scorecard, predictions, trained_pipeline = train_evaluate(prophet, None, y, splitter, backend=BackendType.ray, krisi_args={"model_name":"prophet"})
 ```
 
 ### 4. Evaluating the results

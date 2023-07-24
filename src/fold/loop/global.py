@@ -8,9 +8,10 @@ import pandas as pd
 from ..base import Pipeline, TrainedPipelines
 from ..splitters import Splitter
 from ..utils.list import wrap_in_list
+from .backend import get_backend
 from .checks import check_types_multi_series
 from .training import _train_on_window
-from .types import Backend
+from .types import BackendType
 from .wrap import wrap_transformation_if_needed
 
 
@@ -18,7 +19,7 @@ def _train_global(
     pipeline: Pipeline,
     data: pd.DataFrame,
     splitter: Splitter,
-    backend: Union[Backend, str] = Backend.no,
+    backend: Union[BackendType, str] = BackendType.no,
     silent: bool = False,
 ) -> TrainedPipelines:
     """
@@ -27,7 +28,7 @@ def _train_global(
     Currently only supports TrainMethod.sequantial.
     """
     check_types_multi_series(data)
-    backend = Backend.from_str(backend)
+    backend = get_backend(backend)
 
     pipeline = wrap_in_list(pipeline)
     pipeline = wrap_transformation_if_needed(pipeline)

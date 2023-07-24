@@ -8,7 +8,7 @@ from fold.events.labeling.fixed import FixedForwardHorizon
 from fold.events.labeling.strategies import NoLabel
 from fold.loop import train
 from fold.loop.backtesting import backtest
-from fold.loop.types import Backend, TrainMethod
+from fold.loop.types import BackendType, TrainMethod
 from fold.models.baseline import Naive
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.dev import Test
@@ -21,7 +21,7 @@ from fold.utils.tests import (
 
 
 def run_loop(
-    train_method: TrainMethod, backend: Backend, transformations: Transformations
+    train_method: TrainMethod, backend: BackendType, transformations: Transformations
 ) -> None:
     # the naive model returns X as prediction, so y.shift(1) should be == pred
     X, y = generate_sine_wave_data(length=1000)
@@ -44,7 +44,7 @@ def test_loop_sequential():
     naive = Naive()
     run_loop(
         TrainMethod.sequential,
-        Backend.no,
+        BackendType.no,
         naive,
     )
 
@@ -52,7 +52,7 @@ def test_loop_sequential():
 def test_loop_parallel():
     run_loop(
         TrainMethod.parallel,
-        Backend.no,
+        BackendType.no,
         Naive(),
     )
 
@@ -63,7 +63,7 @@ def test_loop_online_model_no_minibatching_backtest():
     naive.properties._internal_supports_minibatch_backtesting = False
     run_loop(
         TrainMethod.parallel,
-        Backend.no,
+        BackendType.no,
         naive,
     )
 
@@ -76,7 +76,7 @@ def test_loop_raises_error_if_requires_X_not_satified():
     ):
         run_loop(
             TrainMethod.parallel,
-            Backend.no,
+            BackendType.no,
             naive,
         )
 

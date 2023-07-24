@@ -1,47 +1,33 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
 
-from dataclasses import dataclass
-from typing import Callable
+from typing import Union
 
-from fold.loop.types import Backend
-
-
-@dataclass
-class BackendDependentFunctions:
-    process_child_transformations: Callable
-    train_pipeline: Callable
-    backtest_pipeline: Callable
+from ..types import Backend, BackendType
 
 
-def get_backend_dependent_functions(backend: Backend) -> BackendDependentFunctions:
-    if backend == Backend.ray:
-        from .ray import (
-            backtest_pipeline,
-            process_child_transformations,
-            train_pipeline,
-        )
-    elif backend == Backend.no:
-        from .sequential import (
-            backtest_pipeline,
-            process_child_transformations,
-            train_pipeline,
-        )
-    elif backend == Backend.pathos:
-        from .pathos import (
-            backtest_pipeline,
-            process_child_transformations,
-            train_pipeline,
-        )
-    elif backend == Backend.thread:
-        from .thread import (
-            backtest_pipeline,
-            process_child_transformations,
-            train_pipeline,
-        )
+def get_backend(backend_type: Union[str, BackendType, Backend]) -> Backend:
+    if isinstance(backend_type, str):
+        backend_type = BackendType.from_str(backend_type)
+
+    if isinstance(backend_type, Backend):
+        return backend_type
+
+    if backend_type == BackendType.ray:
+        from .ray import RayBackend
+
+        return RayBackend()
+    elif backend_type == BackendType.no:
+        from .sequential import NoBackend
+
+        return NoBackend()
+    elif backend_type == BackendType.pathos:
+        from .pathos import PathosBackend
+
+        return PathosBackend()
+    elif backend_type == BackendType.thread:
+        from .thread import ThreadBackend
+
+        return ThreadBackend()
     else:
-        raise ValueError(f"Backend {backend} not supported.")
-
-    return BackendDependentFunctions(
-        process_child_transformations, train_pipeline, backtest_pipeline
-    )
+        raise ValueError(f"Backend type {backend_type} not supported.")

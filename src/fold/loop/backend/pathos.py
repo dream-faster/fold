@@ -12,6 +12,7 @@ from ..types import Backend, Stage
 
 
 def train_pipeline(
+    self,
     func: Callable,
     pipeline: Pipeline,
     X: pd.DataFrame,
@@ -30,6 +31,7 @@ def train_pipeline(
 
 
 def backtest_pipeline(
+    self,
     func: Callable,
     pipeline: TrainedPipeline,
     splits: List[Fold],
@@ -48,6 +50,7 @@ def backtest_pipeline(
 
 
 def process_child_transformations(
+    self,
     func: Callable,
     list_of_child_transformations_with_index: List,
     composite: Composite,
@@ -77,3 +80,10 @@ def process_child_transformations(
         list_of_child_transformations_with_index,
         disable=True,
     )
+
+
+class PathosBackend(Backend):
+    name = "pathos"
+    process_child_transformations = process_child_transformations
+    train_pipeline = train_pipeline
+    backtest_pipeline = backtest_pipeline

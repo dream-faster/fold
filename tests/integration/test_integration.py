@@ -11,6 +11,7 @@ from fold.events.filters.everynth import EveryNth
 from fold.events.labeling import BinarizeSign, FixedForwardHorizon
 from fold.events.weights import NoWeighing
 from fold.loop import train, train_evaluate
+from fold.loop.backend.ray import RayBackend
 from fold.loop.backtesting import backtest
 from fold.loop.encase import train_backtest
 from fold.models import WrapSKLearnClassifier
@@ -21,7 +22,9 @@ from fold.transformations.lags import AddLagsX, AddLagsY
 from fold.utils.dataset import get_preprocessed_dataset
 
 
-@pytest.mark.parametrize("backend", ["no", "ray", "thread"])
+@pytest.mark.parametrize(
+    "backend", ["no", "ray", "thread", RayBackend(limit_threads=2)]
+)
 def test_on_weather_data_backends(backend: str) -> None:
     X, y = get_preprocessed_dataset(
         "weather/historical_hourly_la",
