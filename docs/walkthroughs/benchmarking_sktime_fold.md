@@ -344,7 +344,7 @@ The models are static, stuck in the past between end of the training windows, th
 
 
 ```python
-from fold import train_evaluate, ExpandingWindowSplitter, Backend
+from fold import train_evaluate, ExpandingWindowSplitter, BackendType
 from fold.transformations import AddLagsX
 from fold_wrappers import WrapXGB, WrapStatsModels
 from fold_models import Naive
@@ -412,7 +412,7 @@ splitter = ExpandingWindowSplitter(initial_train_window=initial_train_size, step
 ```python
 model = Naive()
 
-scorecard, predictions, _ = timing.record_time('naive', 'fold (online)')(train_evaluate, model, None, y, splitter, backend=Backend.no, silent=True)
+scorecard, predictions, _ = timing.record_time('naive', 'fold (online)')(train_evaluate, model, None, y, splitter, backend=BackendType.no, silent=True)
 plot_y_predictions(y[predictions.index], predictions, mode="overlap")
 scorecard[['rmse']].print('minimal')
 ```
@@ -467,7 +467,7 @@ from xgboost import XGBRegressor
 model = XGBRegressor(random_state=42)
 pipeline = [AddLagsX(("all", list(range(lag_length_for_tabular_models))) ), model]
 
-scorecard, predictions, _ = timing.record_time('xgboost', 'fold (online)')(train_evaluate, pipeline, X, y, splitter, backend=Backend.ray, silent=True)
+scorecard, predictions, _ = timing.record_time('xgboost', 'fold (online)')(train_evaluate, pipeline, X, y, splitter, backend=BackendType.ray, silent=True)
 plot_y_predictions(y[predictions.index], predictions, mode="overlap")
 scorecard[['rmse']].print('minimal')
 ```
