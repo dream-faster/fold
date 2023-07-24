@@ -205,6 +205,6 @@ def train_for_deployment(
             test_window_end=None,
         ),
         True,
-        backend=BackendType.no,
+        backend=get_backend(BackendType.no),
     )
     return transformations
