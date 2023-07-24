@@ -132,7 +132,7 @@ def train(
         processed_predictions = [first_batch_predictions] + list(rest_predictions)
         processed_artifacts = [first_batch_artifacts] + list(rest_artifacts)
 
-    elif train_method == TrainMethod.parallel and len(splits) > 1:
+    elif train_method == TrainMethod.parallel:
         (
             processed_idx,
             processed_pipelines,
