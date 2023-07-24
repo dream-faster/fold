@@ -115,30 +115,24 @@ class AddWindowFeatures(Transformation, Tunable):
                 function.__name__ if function.__name__ != "<lambda>" else "transformed"
             )
 
-            column_names = get_list_column_names(columns, X)
+            def function_to_apply(df: pd.DataFrame) -> pd.DataFrame:
+                if window is None:
+                    df = df.add_suffix(
+                        f"{feature_name_separator}{function_name}_expanding"
+                    ).expanding()
+                else:
+                    df = df.add_suffix(
+                        f"{feature_name_separator}{function_name}_{window}"
+                    ).rolling(window, min_periods=1)
+                return function(df)
 
-            if window is None:
-                return convert_dtype_if_needed(
-                    apply_function_batched(
-                        X[column_names]
-                        .add_suffix(
-                            f"{feature_name_separator}{function_name}_expanding"
-                        )
-                        .expanding(),
-                        function,
-                        self.batch_columns,
-                    )
+            return convert_dtype_if_needed(
+                apply_function_batched(
+                    X[get_list_column_names(columns, X)],
+                    function_to_apply,
+                    self.batch_columns,
                 )
-            else:
-                return convert_dtype_if_needed(
-                    apply_function_batched(
-                        X[column_names]
-                        .add_suffix(f"{feature_name_separator}{function_name}_{window}")
-                        .rolling(window, min_periods=1),
-                        function,
-                        self.batch_columns,
-                    )
-                )
+            )
 
         X_function_applied = [
             apply_function(columns, window, function)
