@@ -68,20 +68,34 @@ class WrapSKLearnTransformation(Transformation, Tunable):
         )
 
         argspec = getfullargspec(fit_func)
-        if len(argspec.args) == 3:
+        if len(argspec.args) == 2 or len(argspec.args) == 1:
+            fit_func(X)
+        elif len(argspec.args) == 3:
             fit_func(X, y)
         elif len(argspec.args) == 4:
             fit_func(X, y, sample_weights)
+        else:
+            raise ValueError(
+                f"Unexpected number of arguments in {self.transformation.__class__.__name__}.fit"
+            )
 
     def update(
         self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
     ) -> Optional[Artifact]:
-        if hasattr(self.transformation, "partial_fit"):
-            argspec = getfullargspec(self.transformation.partial_fit)
-            if len(argspec.args) == 3:
-                self.transformation.partial_fit(X, y)
-            elif len(argspec.args) == 4:
-                self.transformation.partial_fit(X, y, sample_weights)
+        if not hasattr(self.transformation, "partial_fit"):
+            return
+        argspec = getfullargspec(self.transformation.partial_fit)
+
+        if len(argspec.args) == 2:
+            self.transformation.partial_fit(X)
+        elif len(argspec.args) == 3:
+            self.transformation.partial_fit(X, y)
+        elif len(argspec.args) == 4:
+            self.transformation.partial_fit(X, y, sample_weights)
+        else:
+            raise ValueError(
+                f"Unexpected number of arguments in {self.transformation.__class__.__name__}.partial_fit"
+            )
         # if we don't have partial_fit, we can't update the model (maybe throw an exception, and force user to wrap it into `DontUpdate`?)
 
     def transform(
