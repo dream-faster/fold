@@ -157,7 +157,8 @@ def apply_function_batched(
 ) -> pd.DataFrame:
     if batch_columns is not None:
         batches = [
-            func(df.iloc[:, batch]) for batch in range(0, df.shape[1], batch_columns)
+            func(df.iloc[:, i : i + batch_columns])
+            for i in range(0, len(df.columns), batch_columns)
         ]
         return pd.concat(batches, axis="columns", copy=False)
     else:

@@ -11,7 +11,7 @@ from fold.transformations.dev import Lookahead, Test
 from fold.transformations.difference import Difference
 from fold.transformations.math import TakeLog
 from fold.transformations.sklearn import WrapSKLearnFeatureSelector
-from fold.utils.dataframe import to_series
+from fold.utils.dataframe import apply_function_batched, to_series
 from fold.utils.tests import generate_all_zeros
 from fold.utils.trim import (
     get_first_valid_index,
@@ -197,3 +197,20 @@ def test_clean_params():
     assert "a" in cleaned_dict, "missing value in cleaned dict"
     assert "b" in cleaned_dict, "missing value in cleaned dict"
     assert "hello" in cleaned_dict["c"]["f"], "missing value in cleaned dict"
+
+
+def test_apply_function_batched():
+    df = pd.DataFrame(
+        {
+            "a": [1, 2, 3, 4, 5],
+            "b": [1, 2, 3, 4, 5],
+            "c": [1, 2, 3, 4, 5],
+            "d": [1, 2, 3, 4, 5],
+            "e": [1, 2, 3, 4, 5],
+            "f": [1, 2, 3, 4, 5],
+        }
+    )
+    assert apply_function_batched(df, np.log, 1).equals(np.log(df))
+    assert apply_function_batched(df, np.log, 2).equals(np.log(df))
+    assert apply_function_batched(df, np.log, 3).equals(np.log(df))
+    assert apply_function_batched(df, np.log, 4).equals(np.log(df))
