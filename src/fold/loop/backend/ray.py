@@ -22,6 +22,7 @@ def train_pipeline(
     never_update: bool,
     backend: Backend,
     silent: bool,
+    disable_memory: bool,
 ):
     func = ray.remote(func)
     X = ray.put(X)
@@ -35,6 +36,7 @@ def train_pipeline(
             split,
             never_update,
             backend,
+            disable_memory,
         )
         for split in splits
     ]
@@ -54,6 +56,7 @@ def backtest_pipeline(
     backend: Backend,
     mutate: bool,
     silent: bool,
+    disable_memory: bool,
 ):
     func = ray.remote(func)
     X = ray.put(X)
@@ -74,7 +77,7 @@ def backtest_pipeline(
 
     futures = [
         func.options(num_cpus=self.limit_threads).remote(
-            pipeline, split, X, y, artifact, backend, mutate
+            pipeline, split, X, y, artifact, backend, mutate, disable_memory
         )
         for split in splits
     ]
@@ -95,6 +98,7 @@ def process_child_transformations(
     stage: Stage,
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
+    disable_memory: bool,
 ):
     # list_of_child_transformations_with_index = list(
     #     list_of_child_transformations_with_index
@@ -116,6 +120,7 @@ def process_child_transformations(
             stage,
             backend,
             results_primary,
+            disable_memory,
         )
         for index, child_transformation in list_of_child_transformations_with_index
     ]

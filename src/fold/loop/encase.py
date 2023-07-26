@@ -35,6 +35,7 @@ def backtest_score(
     events: Optional[EventDataFrame] = None,
     silent: bool = False,
     return_artifacts: bool = False,
+    disable_memory: bool = False,
     krisi_args: Optional[dict] = None,
 ) -> Union[
     Tuple["ScoreCard", OutOfSamplePredictions],
@@ -85,6 +86,7 @@ def backtest_score(
         events=events,
         silent=silent,
         return_artifacts=True,
+        disable_memory=disable_memory,
     )
 
     scorecard = score_results(
@@ -111,6 +113,7 @@ def train_backtest(
     silent: bool = False,
     return_artifacts: bool = False,
     return_insample: bool = False,
+    disable_memory: bool = False,
 ) -> Union[
     Tuple[OutOfSamplePredictions, TrainedPipelines],
     Tuple[OutOfSamplePredictions, TrainedPipelines, Artifact],
@@ -162,6 +165,7 @@ def train_backtest(
         silent=silent,
         return_artifacts=True,
         return_insample=True,
+        disable_memory=disable_memory,
     )
 
     pred, backtest_artifacts = backtest(
@@ -174,6 +178,7 @@ def train_backtest(
         events=events,
         silent=silent,
         return_artifacts=True,
+        disable_memory=disable_memory,
     )
 
     if return_artifacts:
@@ -203,6 +208,7 @@ def train_evaluate(
     train_method: Union[TrainMethod, str] = TrainMethod.parallel,
     silent: bool = False,
     return_artifacts: bool = False,
+    disable_memory: bool = False,
     krisi_args: Optional[Dict[str, Any]] = None,
 ) -> Union[
     Tuple[
@@ -264,6 +270,7 @@ def train_evaluate(
         backend=backend,
         silent=silent,
         return_artifacts=True,
+        disable_memory=disable_memory,
     )
 
     scorecard, pred, backtest_artifacts = backtest_score(
@@ -276,6 +283,7 @@ def train_evaluate(
         events=events,
         silent=silent,
         return_artifacts=True,
+        disable_memory=disable_memory,
         krisi_args=krisi_args,
     )
 

@@ -11,6 +11,7 @@ from .types import BackendType, Stage
 def infer(
     pipeline: DeployablePipeline,
     X: Optional[pd.DataFrame],
+    disable_memory: bool = False,
 ) -> OutOfSamplePredictions:
     """
     Run inference on a Pipeline and given data.

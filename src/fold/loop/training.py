@@ -37,6 +37,7 @@ def train(
     silent: bool = False,
     return_artifacts: bool = False,
     return_insample: bool = False,
+    disable_memory: bool = False,
 ) -> Union[
     TrainedPipelines,
     Tuple[TrainedPipelines, Artifact],
@@ -107,6 +108,7 @@ def train(
             splits[0],
             never_update=True,
             backend=backend,
+            disable_memory=disable_memory,
         )
 
         (
@@ -125,6 +127,7 @@ def train(
                 False,
                 backend,
                 silent,
+                disable_memory=disable_memory,
             )
         )
         processed_idx = [first_batch_index] + list(rest_idx)
@@ -149,6 +152,7 @@ def train(
                 True,
                 backend,
                 silent,
+                disable_memory,
             )
         )
 
@@ -158,7 +162,9 @@ def train(
             processed_pipelines,
             processed_predictions,
             processed_artifacts,
-        ) = _sequential_train_on_window(pipeline, X, y, splits, artifact, backend)
+        ) = _sequential_train_on_window(
+            pipeline, X, y, splits, artifact, backend, disable_memory=disable_memory
+        )
 
     trained_pipelines = _extract_trained_pipelines(processed_idx, processed_pipelines)
     if return_artifacts is True:
@@ -182,6 +188,7 @@ def train_for_deployment(
     y: pd.Series,
     sample_weights: Optional[pd.Series] = None,
     events: Optional[EventDataFrame] = None,
+    disable_memory: bool = False,
 ) -> DeployablePipeline:
     X, y = check_types(X, y)
     artifact = Artifact.from_events_sample_weights(X.index, events, sample_weights)
@@ -204,7 +211,8 @@ def train_for_deployment(
             test_window_start=0,
             test_window_end=None,
         ),
-        True,
+        never_update=True,
         backend=get_backend(BackendType.no),
+        disable_memory=disable_memory,
     )
     return transformations

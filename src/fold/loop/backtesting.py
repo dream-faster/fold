@@ -27,6 +27,7 @@ def backtest(
     silent: bool = False,
     mutate: bool = False,
     return_artifacts: bool = False,
+    disable_memory: bool = False,
 ) -> Union[OutOfSamplePredictions, Tuple[OutOfSamplePredictions, Artifact]]:
     """
     Run backtest on TrainedPipelines and given data.
@@ -76,6 +77,7 @@ def backtest(
             backend,
             mutate=mutate,
             silent=silent,
+            disable_memory=disable_memory,
         )
     )
     results = trim_initial_nans_single(concat_on_index(results, copy=False))
