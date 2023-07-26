@@ -174,6 +174,7 @@ def _process_composite(
             stage,
             backend,
             None,
+            disable_memory,
         )
     )
     if composite.properties.artifacts_length_should_match:
