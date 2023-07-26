@@ -34,5 +34,6 @@ def update(
         transformations,
         stage=Stage.update,
         backend=backend,
+        disable_memory=disable_memory,
     )
     return transformations

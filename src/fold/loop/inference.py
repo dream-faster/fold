@@ -30,5 +30,6 @@ def infer(
         pipeline,
         stage=Stage.infer,
         backend=get_backend(BackendType.no),
+        disable_memory=disable_memory,
     )
     return results

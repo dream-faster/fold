@@ -18,7 +18,10 @@ def preprocess_X_y_with_memory(
     y: T,
     sample_weights: S,
     in_sample: bool,
+    disable_memory: bool,
 ) -> Tuple[pd.DataFrame, T, S]:
+    if disable_memory:
+        return X, y, sample_weights
     memory_size = transformation.properties.memory_size
     if (
         not hasattr(transformation, "_state")
@@ -81,7 +84,10 @@ def postprocess_X_y_into_memory_(
     y: pd.Series,
     sample_weights: Optional[pd.Series],
     in_sample: bool,
+    disable_memory: bool,
 ) -> None:
+    if disable_memory:
+        return
     # This function mutates the transformation's state property
     # don't update the transformation if we're in inference mode (y is None)
     memory_size = transformation.properties.memory_size
