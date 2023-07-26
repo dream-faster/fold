@@ -4,15 +4,20 @@ import pytest
 from fold.base import Transformations
 from fold.base.classes import Artifact
 from fold.base.scoring import score_results
+from fold.composites.concat import Concat, Sequence
 from fold.events.labeling.fixed import FixedForwardHorizon
 from fold.events.labeling.strategies import NoLabel
 from fold.loop import train
 from fold.loop.backtesting import backtest
+from fold.loop.encase import train_backtest
 from fold.loop.types import BackendType, TrainMethod
 from fold.models.baseline import Naive
-from fold.splitters import ExpandingWindowSplitter
+from fold.splitters import ExpandingWindowSplitter, SlidingWindowSplitter
 from fold.transformations.dev import Test
-from fold.transformations.lags import AddLagsY
+from fold.transformations.features import AddWindowFeatures
+from fold.transformations.function import ApplyFunction
+from fold.transformations.lags import AddLagsX, AddLagsY
+from fold.utils.dataset import get_preprocessed_dataset
 from fold.utils.tests import (
     generate_all_zeros,
     generate_sine_wave_data,
@@ -140,3 +145,47 @@ def test_score_results():
         artifacts=events,
     )
     assert sc["accuracy"].result == 1.0
+
+
+def test_disable_memory():
+    X, y = get_preprocessed_dataset(
+        "weather/historical_hourly_la",
+        target_col="temperature",
+        shorten=1000,
+    )
+    splitter = SlidingWindowSplitter(train_window=0.2, step=0.2)
+    pipeline = Concat(
+        [
+            Concat(
+                [
+                    Sequence(
+                        AddLagsX(columns_and_lags=[("pressure", list(range(1, 3)))])
+                    ),
+                    AddWindowFeatures(("pressure", 14, "mean")),
+                ]
+            ),
+            AddWindowFeatures(("humidity", 26, "std")),
+            Concat(
+                [
+                    ApplyFunction(lambda x: x.rolling(30).mean(), past_window_size=30),
+                ]
+            ),
+        ]
+    )
+
+    pred, _ = train_backtest(
+        pipeline,
+        X,
+        y,
+        splitter,
+        disable_memory=False,
+    )
+
+    pred_disable_memory, _ = train_backtest(
+        pipeline,
+        X,
+        y,
+        splitter,
+        disable_memory=True,
+    )
+    assert pred_disable_memory.equals(pred)
