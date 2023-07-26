@@ -1,17 +1,21 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
 
-from typing import Optional
+from typing import Callable, Optional
 
 import pandas as pd
 
-from ..base import Artifact, Transformation, fit_noop
+from ..base import Artifact, Transformation, Tunable, fit_noop
 
 
-class DontUpdate(Transformation):
-    def __init__(self, transformation: Transformation) -> None:
+class DontUpdate(Transformation, Tunable):
+    def __init__(
+        self,
+        transformation: Transformation,
+        name: Optional[str] = None,
+    ) -> None:
         self.transformation = transformation
-        self.name = f"DontUpdate-{transformation.name}"
+        self.name = name or f"DontUpdate-{transformation.name}"
         self.properties = Transformation.Properties(requires_X=False)
 
     def fit(
@@ -26,3 +30,25 @@ class DontUpdate(Transformation):
         return self.transformation.transform(X, in_sample)
 
     update = fit_noop
+
+    def get_params(self) -> dict:
+        if hasattr(self.transformation, "get_params"):
+            return self.transformation.get_params()
+        else:
+            return {}
+
+    def get_params_to_try(self) -> Optional[dict]:
+        if hasattr(self.transformation, "get_params_to_try"):
+            return self.transformation.get_params_to_try()
+        else:
+            return None
+
+    def clone_with_params(
+        self, parameters: dict, clone_children: Optional[Callable] = None
+    ) -> Tunable:
+        if hasattr(self.transformation, "clone_with_params"):
+            return DontUpdate(
+                transformation=self.transformation.clone_with_params(parameters)
+            )
+        else:
+            return DontUpdate(transformation=clone_children(self.transformation))
