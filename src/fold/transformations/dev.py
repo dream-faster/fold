@@ -144,7 +144,12 @@ class Test(InvertibleTransformation):
             self.no_of_calls_transform_insample += 1
         else:
             self.no_of_calls_transform_outofsample += 1
-        return_value = self.transform_func(X)
+
+        argspec = getfullargspec(self.transform_func)
+        if len(argspec.args) == 1:
+            return_value = self.transform_func(X)
+        elif len(argspec.args) == 2:
+            return_value = self.transform_func(X, in_sample)
         if return_value is None:
             return X, None
         return return_value, None

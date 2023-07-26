@@ -154,6 +154,16 @@ def test_disable_memory():
         shorten=1000,
     )
     splitter = SlidingWindowSplitter(train_window=0.2, step=0.2)
+    memory_size = 26
+
+    def assert_len_can_be_divided_by_memory_size(x, in_sample):
+        if not in_sample:
+            assert (len(x) - memory_size) % 100 == 0
+
+    test_trans = Test(
+        fit_func=lambda x: x, transform_func=assert_len_can_be_divided_by_memory_size
+    )
+    test_trans.properties.memory_size = memory_size
     pipeline = Concat(
         [
             Concat(
@@ -162,6 +172,7 @@ def test_disable_memory():
                         AddLagsX(columns_and_lags=[("pressure", list(range(1, 3)))])
                     ),
                     AddWindowFeatures(("pressure", 14, "mean")),
+                    test_trans,
                 ]
             ),
             AddWindowFeatures(("humidity", 26, "std")),
