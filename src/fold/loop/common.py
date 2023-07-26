@@ -236,6 +236,7 @@ def _process_composite(
             stage,
             backend,
             results_primary,
+            disable_memory,
         )
     )
     composite = composite.clone(replace_with(secondary_transformations))
@@ -287,6 +288,7 @@ def _process_sampler(
             stage,
             backend,
             None,
+            disable_memory,
         )
     )
     sampler = sampler.clone(replace_with(primary_transformations))
@@ -313,6 +315,7 @@ def _process_sampler(
                 Stage.infer,
                 backend,
                 None,
+                disable_memory,
             )
         )
 
@@ -352,6 +355,7 @@ def _process_optimizer(
                     stage,
                     backend,
                     None,
+                    disable_memory,
                 )
             )
             results = [trim_initial_nans_single(result) for result in results]
@@ -393,7 +397,9 @@ def __process_candidates(
         processed_pipelines,
         processed_predictions,
         processed_artifacts,
-    ) = _sequential_train_on_window(child_transform, X, y, splits, artifacts, backend)
+    ) = _sequential_train_on_window(
+        child_transform, X, y, splits, artifacts, backend, disable_memory
+    )
     trained_pipelines = _extract_trained_pipelines(processed_idx, processed_pipelines)
 
     result, artifact = _backtest_on_window(
@@ -404,6 +410,7 @@ def __process_candidates(
         artifacts,
         backend,
         mutate=False,
+        disable_memory=disable_memory,
     )
     return (
         trained_pipelines,
@@ -570,6 +577,7 @@ def _sequential_train_on_window(
             split,
             False,
             backend,
+            disable_memory=disable_memory,
         )
         processed_idx.append(processed_id)
         processed_pipelines.append(processed_pipeline)
