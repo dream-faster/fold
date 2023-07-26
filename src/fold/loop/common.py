@@ -23,6 +23,7 @@ from ..base import (
     X,
     traverse_apply,
 )
+from ..base.utils import _get_maximum_memory_size
 from ..models.base import Model
 from ..splitters import Fold
 from ..utils.checks import is_prediction
@@ -494,9 +495,12 @@ def _backtest_on_window(
     if not mutate:
         current_pipeline = deepcopy_pipelines(current_pipeline)
 
-    X_test = X.iloc[split.test_window_start : split.test_window_end]
-    y_test = y.iloc[split.test_window_start : split.test_window_end]
-    artifact_test = artifact.iloc[split.test_window_start : split.test_window_end]
+    overlap = _get_maximum_memory_size(current_pipeline) if disable_memory else 0
+    X_test = X.iloc[split.test_window_start - overlap : split.test_window_end]
+    y_test = y.iloc[split.test_window_start - overlap : split.test_window_end]
+    artifact_test = artifact.iloc[
+        split.test_window_start - overlap : split.test_window_end
+    ]
     results, artifacts = recursively_transform(
         X_test,
         y_test,
@@ -506,7 +510,10 @@ def _backtest_on_window(
         backend=backend,
         disable_memory=disable_memory,
     )[1:]
-    return results, artifacts.loc[X.index[split.test_window_start - 1] :]
+    return (
+        results.loc[X.index[split.test_window_start] :],
+        artifacts.loc[X.index[split.test_window_start - 1] :],
+    )
 
 
 def _train_on_window(
