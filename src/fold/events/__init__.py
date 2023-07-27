@@ -181,9 +181,7 @@ class _EventLabelWrapper(Transformation):
     fit = fit_noop
     update = fit
 
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         past_y = self._state.memory_y
         original_start_times = self.filter.get_event_start_times(past_y)
         events = self.labeler.label_events(original_start_times, past_y)
@@ -191,4 +189,4 @@ class _EventLabelWrapper(Transformation):
             self.properties.memory_size += 1
         elif in_sample is False and not events.dropna().empty:
             self.properties.memory_size = 1
-        return events.reindex(X.index), None
+        return events.reindex(X.index)

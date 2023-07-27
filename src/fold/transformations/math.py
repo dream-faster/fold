@@ -1,7 +1,7 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
 
-from typing import Dict, Optional, Tuple, Union
+from typing import Dict, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -61,24 +61,13 @@ class TakeLog(InvertibleTransformation, Tunable):
         self.name = name or f"TakeLog-{self.base}"
         self.properties = InvertibleTransformation.Properties(requires_X=True)
 
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         if self.base == "e" or self.base == np.e:
-            return (
-                pd.DataFrame(np.log(X.values), columns=X.columns, index=X.index),
-                None,
-            )
+            return pd.DataFrame(np.log(X.values), columns=X.columns, index=X.index)
         elif self.base == "10" or self.base == 10:
-            return (
-                pd.DataFrame(np.log10(X.values), columns=X.columns, index=X.index),
-                None,
-            )
+            return pd.DataFrame(np.log10(X.values), columns=X.columns, index=X.index)
         elif self.base == "2" or self.base == 2:
-            return (
-                pd.DataFrame(np.log2(X.values), columns=X.columns, index=X.index),
-                None,
-            )
+            return pd.DataFrame(np.log2(X.values), columns=X.columns, index=X.index)
         else:
             raise ValueError(f"Invalid base: {self.base}")
 
@@ -152,23 +141,18 @@ class AddConstant(InvertibleTransformation, Tunable):
         self.name = name or "AddConstant"
         self.properties = InvertibleTransformation.Properties(requires_X=True)
 
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         if isinstance(self.constant, dict):
             transformed_columns = X[list(self.constant.keys())] + pd.Series(
                 self.constant
             )
-            return (
-                pd.concat(
-                    [X.drop(columns=self.constant.keys()), transformed_columns],
-                    copy=False,
-                    axis="columns",
-                ),
-                None,
+            return pd.concat(
+                [X.drop(columns=self.constant.keys()), transformed_columns],
+                copy=False,
+                axis="columns",
             )
         else:
-            return X + self.constant, None
+            return X + self.constant
 
     def inverse_transform(self, X: pd.Series, in_sample: bool) -> pd.Series:
         constant = self.constant
@@ -231,17 +215,12 @@ class TurnPositive(InvertibleTransformation):
         self.constant = dict(min_values[min_values <= 0].abs() + 1)
         self.properties = InvertibleTransformation.Properties(requires_X=True)
 
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         transformed_columns = X[list(self.constant.keys())] + pd.Series(self.constant)
-        return (
-            pd.concat(
-                [X.drop(columns=self.constant.keys()), transformed_columns],
-                copy=False,
-                axis="columns",
-            ),
-            None,
+        return pd.concat(
+            [X.drop(columns=self.constant.keys()), transformed_columns],
+            copy=False,
+            axis="columns",
         )
 
     def inverse_transform(self, X: pd.Series, in_sample: bool) -> pd.Series:
@@ -268,10 +247,8 @@ class MultiplyBy(InvertibleTransformation, Tunable):
         self.name = name or f"MultiplyBy-{constant}"
         self.properties = InvertibleTransformation.Properties(requires_X=True)
 
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
-        return X * self.constant, None
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
+        return X * self.constant
 
     def inverse_transform(self, X: pd.Series, in_sample: bool) -> pd.Series:
         return X / self.constant
