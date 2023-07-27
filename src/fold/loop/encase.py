@@ -261,6 +261,12 @@ def train_evaluate(
         disable_memory=disable_memory,
     )
 
+    sample_weights = (
+        Artifact.get_test_sample_weights(artifacts)
+        if sample_weights is None
+        else sample_weights
+    )
+    events = Artifact.get_events(artifacts) if events is None else events
     scorecard, pred = backtest_score(
         trained_pipelines,
         X,
