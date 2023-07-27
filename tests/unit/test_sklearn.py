@@ -116,5 +116,5 @@ def test_nested_transformations_with_feature_selection() -> None:
 
     trained_pipelines = train(transformations, X, y, splitter)
     pred = backtest(trained_pipelines, X, y, splitter)
-    assert (np.isclose((X["sine"][pred.index]), pred.squeeze())).all()
+    assert np.allclose((X["sine"][pred.index]), pred.squeeze())
     assert pred.squeeze().name == "pred"

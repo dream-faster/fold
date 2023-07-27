@@ -36,9 +36,7 @@ def test_nested_transformations() -> None:
     ]
 
     pred, _ = train_backtest(transformations, X, y, splitter)
-    assert (
-        np.isclose((X["sine_2"][pred.index]).values, (pred.squeeze() - 3.0).values)
-    ).all()
+    assert np.allclose((X["sine_2"][pred.index]).values, (pred.squeeze() - 3.0).values)
 
 
 def test_column_select_single_column_transformation() -> None:
@@ -63,7 +61,7 @@ def test_function_transformation() -> None:
 
     trained_pipelines = train(transformations, X, y, splitter)
     pred = backtest(trained_pipelines, X, y, splitter)
-    assert (np.isclose((X.squeeze()[pred.index]), (pred.squeeze() + 1.0))).all()
+    assert np.allclose(X.squeeze()[pred.index], pred.squeeze() + 1.0)
 
 
 def test_per_column_transform() -> None:
@@ -80,7 +78,7 @@ def test_per_column_transform() -> None:
 
     trained_pipelines = train(transformations, X, y, splitter)
     pred = backtest(trained_pipelines, X, y, splitter)
-    assert (np.isclose((X.loc[pred.index].sum(axis=1) + 4.0), pred.squeeze())).all()
+    assert np.allclose(X.loc[pred.index].sum(axis=1) + 4.0, pred.squeeze())
 
 
 def test_add_lags_y():
@@ -154,11 +152,11 @@ def test_window_features(batch_size: Optional[int]):
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
     transformations = AddWindowFeatures(("sine", 14, "mean"))
     pred, _ = train_backtest(transformations, X, y, splitter)
-    assert np.isclose(
+    assert np.allclose(
         pred["sine~mean_14"],
         X["sine"].rolling(14, min_periods=1).mean()[pred.index],
         atol=0.01,
-    ).all()
+    )
 
     tuneability_test(
         AddWindowFeatures(("sine", 14, "mean"), batch_columns=batch_size),
@@ -168,41 +166,41 @@ def test_window_features(batch_size: Optional[int]):
     # check if it works when passing a list of tuples
     transformations = AddWindowFeatures([("sine", 14, "mean")])
     pred, _ = train_backtest(transformations, X, y, splitter)
-    assert np.isclose(
+    assert np.allclose(
         pred["sine~mean_14"],
         X["sine"].rolling(14, min_periods=1).mean()[pred.index],
         atol=0.01,
-    ).all()
+    )
 
     # check if it works with multiple transformations
     transformations = AddWindowFeatures([("sine", 14, "mean"), ("sine", 5, "max")])
     pred, _ = train_backtest(transformations, X, y, splitter)
-    assert np.isclose(
+    assert np.allclose(
         pred["sine~mean_14"],
         X["sine"].rolling(14, min_periods=1).mean()[pred.index],
         atol=0.01,
-    ).all()
-    assert np.isclose(
+    )
+    assert np.allclose(
         pred["sine~max_5"],
         X["sine"].rolling(5, min_periods=1).max()[pred.index],
         atol=0.01,
-    ).all()
+    )
 
     transformations = AddWindowFeatures(
         [("sine", 14, lambda X: X.mean()), ("sine", 5, lambda X: X.max())]
     )
     pred, _ = train_backtest(transformations, X, y, splitter)
     # if the Callable is lambda, then use the generic "transformed" name
-    assert np.isclose(
+    assert np.allclose(
         pred["sine~transformed_14"],
         X["sine"].rolling(14, min_periods=1).mean()[pred.index],
         atol=0.01,
-    ).all()
-    assert np.isclose(
+    )
+    assert np.allclose(
         pred["sine~transformed_5"],
         X["sine"].rolling(5, min_periods=1).max()[pred.index],
         atol=0.01,
-    ).all()
+    )
 
     transformations = AddWindowFeatures(
         [
@@ -211,31 +209,31 @@ def test_window_features(batch_size: Optional[int]):
     )
     pred, _ = train_backtest(transformations, X, y, splitter)
     # it should pick up the name of the function
-    assert np.isclose(
+    assert np.allclose(
         pred["sine~mean_14"],
         X["sine"].rolling(14, min_periods=1).mean()[pred.index],
         atol=0.01,
-    ).all()
+    )
 
     X["sine_inverted"] = generate_sine_wave_data(length=6000)[0].squeeze() * -1.0
     transformations = AddWindowFeatures([("sine", 14, "mean"), ("all", 5, "mean")])
     pred, _ = train_backtest(transformations, X, y, splitter)
     # it should pick up the name of the function
-    assert np.isclose(
+    assert np.allclose(
         pred["sine~mean_14"],
         X["sine"].rolling(14, min_periods=1).mean()[pred.index],
         atol=0.01,
-    ).all()
-    assert np.isclose(
+    )
+    assert np.allclose(
         pred["sine~mean_5"],
         X["sine"].rolling(5, min_periods=1).mean()[pred.index],
         atol=0.01,
-    ).all()
-    assert np.isclose(
+    )
+    assert np.allclose(
         pred["sine_inverted~mean_5"],
         X["sine_inverted"].rolling(5, min_periods=1).mean()[pred.index],
         atol=0.01,
-    ).all()
+    )
     assert len(pred.columns) == 5
 
 
@@ -262,14 +260,14 @@ def test_log_transformation():
     assert pred["sine"].equals(np.log(X["sine"][pred.index]))
 
     pred = TakeLog().inverse_transform(np.log(X["sine"]), in_sample=False)
-    assert np.isclose(pred, X["sine"][pred.index], atol=0.01).all()
+    assert np.allclose(pred, X["sine"][pred.index], atol=0.01)
 
     log = TakeLog(base=10)
     pred, _ = train_backtest(log, X, y, splitter)
     assert pred["sine"].equals(np.log10(X["sine"][pred.index]))
 
     pred = log.inverse_transform(np.log10(X["sine"]), in_sample=False)
-    assert np.isclose(pred, X["sine"][pred.index], atol=0.01).all()
+    assert np.allclose(pred, X["sine"][pred.index], atol=0.01)
 
     tuneability_test(
         instance=TakeLog(base=10),
@@ -290,7 +288,7 @@ def test_turn_positive():
     assert len(pred.columns) == len(X.columns)
 
     reverse = turn_positive.inverse_transform(pred["sine"], in_sample=False)
-    assert np.isclose(reverse, X["sine"][pred.index], atol=0.01).all()
+    assert np.allclose(reverse, X["sine"][pred.index], atol=0.01)
 
 
 def test_add_constant():
@@ -302,7 +300,7 @@ def test_add_constant():
     assert pred["sine"].equals(X["sine"][pred.index] + 2.0)
 
     pred = AddConstant(2.0).inverse_transform(X["sine"] + 2.0, in_sample=False)
-    assert np.isclose(pred, X["sine"][pred.index], atol=0.01).all()
+    assert np.allclose(pred, X["sine"][pred.index], atol=0.01)
 
     pred, _ = train_backtest(
         AddConstant({"sine": 2.0, "sine_inverted": 3.0}), X, y, splitter
@@ -324,7 +322,7 @@ def test_multiplyby():
     assert pred["sine"].equals(X["sine"][pred.index] * 2.0)
 
     pred = MultiplyBy(2.0).inverse_transform(X["sine"] * 2.0, in_sample=False)
-    assert np.isclose(pred, X["sine"][pred.index], atol=0.01).all()
+    assert np.allclose(pred, X["sine"][pred.index], atol=0.01)
 
     tuneability_test(
         instance=MultiplyBy(2.0),

@@ -156,7 +156,7 @@ def test_holiday_features_daily() -> None:
     )
     pred = backtest(trained_pipelines, X, y, splitter)
 
-    assert (np.isclose((X.squeeze()[pred.index]), (pred["sine"]))).all()
+    assert np.allclose((X.squeeze()[pred.index]), (pred["sine"]))
     assert (
         pred["holiday_US"]["2019-12-25"] == 1
     ), "Christmas should be a holiday for US."
@@ -178,7 +178,7 @@ def test_holiday_features_minute() -> None:
     )
     pred = backtest(trained_pipelines, X, y, splitter)
 
-    assert (np.isclose((X.squeeze()[pred.index]), (pred["sine"]))).all()
+    assert np.allclose(X.squeeze()[pred.index], pred["sine"])
     assert (
         pred["holiday_US"]["2021-12-25"].mean() == 1
     ), "Christmas should be a holiday for US."

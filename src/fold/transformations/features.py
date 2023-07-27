@@ -89,7 +89,7 @@ class AddWindowFeatures(Transformation, Tunable):
             [replace_nan(window) for _, window, _ in self.column_window_func]
         )
         self.properties = Transformation.Properties(
-            requires_X=True, memory_size=max_memory + 4
+            requires_X=True, memory_size=max_memory
         )
         self.fillna = fillna
         self.keep_original = keep_original

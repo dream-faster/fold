@@ -75,7 +75,7 @@ def test_target_transformation_difference() -> None:
     )
 
     pred, _ = train_backtest(pipeline, X, y, splitter)
-    assert np.isclose(y[pred.index], pred.squeeze(), atol=0.001).all()
+    assert np.allclose(y[pred.index], pred.squeeze(), atol=0.001)
 
 
 def test_target_transformation_log() -> None:
@@ -84,7 +84,7 @@ def test_target_transformation_log() -> None:
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
 
     def assert_y_not_nan(X, y):
-        assert np.isclose(np.log(X.squeeze())[1:], y.shift(1)[1:], atol=0.001).all()
+        assert np.allclose(np.log(X.squeeze())[1:], y.shift(1)[1:], atol=0.001)
 
     pipeline = TransformTarget(
         [
@@ -102,9 +102,9 @@ def test_target_transformation_log_difference() -> None:
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
 
     def assert_is_close_to(X, y):
-        assert np.isclose(
+        assert np.allclose(
             np.diff(np.log(X.squeeze()[1:]), 1), y.shift(1)[2:], atol=0.001
-        ).all()
+        )
 
     pipeline = TransformTarget(
         [
@@ -115,4 +115,4 @@ def test_target_transformation_log_difference() -> None:
     )
 
     pred, _ = train_backtest(pipeline, X, y, splitter)
-    assert np.isclose(y[pred.index], pred.squeeze(), atol=0.001).all()
+    assert np.allclose(y[pred.index], pred.squeeze(), atol=0.001)

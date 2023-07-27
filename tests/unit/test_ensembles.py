@@ -27,7 +27,7 @@ def test_ensemble_regression() -> None:
 
     trained_pipelines = train(pipeline, X, y, splitter)
     pred = backtest(trained_pipelines, X, y, splitter)
-    assert (np.isclose((X.squeeze()[pred.index]), (pred.squeeze() + 2.0))).all()
+    assert np.allclose((X.squeeze()[pred.index]), (pred.squeeze() + 2.0))
 
 
 def test_ensemble_classification() -> None:
@@ -91,7 +91,7 @@ def test_per_column_transform_predictions() -> None:
     trained_pipelines = train(pipeline, X, y, splitter)
     pred = backtest(trained_pipelines, X, y, splitter)
     expected = X.mean(axis=1) + 1.0
-    assert (np.isclose(expected[pred.index].squeeze(), pred.squeeze())).all()
+    assert np.allclose(expected[pred.index].squeeze(), pred.squeeze())
 
 
 def test_dummy_pipeline_classification() -> None:

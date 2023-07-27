@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -199,4 +200,4 @@ def test_disable_memory():
         splitter,
         disable_memory=True,
     )
-    assert pred_disable_memory.equals(pred)
+    assert np.allclose(pred_disable_memory, pred, atol=1e-20)

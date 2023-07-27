@@ -13,14 +13,14 @@ def test_difference(lag: int):
     X, y = generate_sine_wave_data(length=100)
     splitter = SingleWindowSplitter(train_window=50)
     pred, trained_pipelines = train_backtest(Difference(lag), X, y, splitter)
-    assert np.isclose(
+    assert np.allclose(
         X.squeeze()[pred.index],
         trained_pipelines[0]
         .iloc[0]
         .inverse_transform(to_series(pred), in_sample=True)
         .squeeze(),
         atol=1e-3,
-    ).all()
+    )
 
 
 def test_difference_tunability():
@@ -39,13 +39,13 @@ def test_difference_inverse(lag: int):
     difference.fit(X_train, y_train)
     diffed = difference.transform(X_train, in_sample=True)[0].squeeze()
     inverse_diffed = difference.inverse_transform(diffed, in_sample=True)
-    assert np.isclose(X_train.squeeze(), inverse_diffed, atol=1e-3).all()
+    assert np.allclose(X_train.squeeze(), inverse_diffed, atol=1e-3)
 
     difference.update(X_train, y_train)
     assert difference.last_values_X.equals(X_train.iloc[-lag:None])
     diffed = difference.transform(X_test, in_sample=False)[0].squeeze()
     inverse_diffed = difference.inverse_transform(diffed, in_sample=False)
-    assert np.isclose(X_test.squeeze(), inverse_diffed, atol=1e-3).all()
+    assert np.allclose(X_test.squeeze(), inverse_diffed, atol=1e-3)
 
 
 def test_returns():
@@ -61,8 +61,8 @@ def test_log_returns():
     y = y + 2
     splitter = SingleWindowSplitter(train_window=50)
     pred, _ = train_backtest(TakeReturns(log_returns=True), X, y, splitter)
-    assert np.isclose(
+    assert np.allclose(
         pred.squeeze(), np.log(X.squeeze()).diff().loc[pred.index], atol=1e-3
-    ).all()
+    )
 
     tuneability_test(TakeReturns(log_returns=True), dict(log_returns=False))
