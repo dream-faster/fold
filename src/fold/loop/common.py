@@ -23,6 +23,7 @@ from ..base import (
     X,
     traverse_apply,
 )
+from ..base.utils import _get_maximum_memory_size
 from ..models.base import Model
 from ..splitters import Fold
 from ..utils.checks import is_prediction
@@ -59,6 +60,7 @@ def recursively_transform(
     transformations: T,
     stage: Stage,
     backend: Backend,
+    disable_memory: bool,
 ) -> Tuple[T, X, Artifact]:
     """
     The main function to transform (and fit or update) a pipline of transformations.
@@ -72,21 +74,48 @@ def recursively_transform(
         processed_transformations = []
         for transformation in transformations:
             processed_transformation, X, artifacts = recursively_transform(
-                X, y, artifacts, transformation, stage, backend
+                X,
+                y,
+                artifacts,
+                transformation,
+                stage,
+                backend,
+                disable_memory=disable_memory,
             )
             processed_transformations.append(processed_transformation)
         return processed_transformations, X, artifacts
 
     elif isinstance(transformations, Composite):
-        return_value = _process_composite(
-            transformations, X, y, artifacts, stage, backend
+        return _process_composite(
+            transformations,
+            X,
+            y,
+            artifacts,
+            stage,
+            backend,
+            disable_memory=disable_memory,
         )
-        return return_value
     elif isinstance(transformations, Optimizer):
-        return _process_optimizer(transformations, X, y, artifacts, stage, backend)
+        return _process_optimizer(
+            transformations,
+            X,
+            y,
+            artifacts,
+            stage,
+            backend,
+            disable_memory=disable_memory,
+        )
 
     elif isinstance(transformations, Sampler):
-        return _process_sampler(transformations, X, y, artifacts, stage, backend)
+        return _process_sampler(
+            transformations,
+            X,
+            y,
+            artifacts,
+            stage,
+            backend,
+            disable_memory=disable_memory,
+        )
 
     elif isinstance(transformations, Transformation) or isinstance(
         transformations, Model
@@ -97,7 +126,9 @@ def recursively_transform(
             and stage in [Stage.update, Stage.update_online_only]
             and not transformations.properties._internal_supports_minibatch_backtesting
         ):
-            return _process_with_inner_loop(transformations, X, y, artifacts)
+            return _process_with_inner_loop(
+                transformations, X, y, artifacts, disable_memory=disable_memory
+            )
         # If the transformation is "online" but also supports our internal "mini-batch"-style updating
         elif (
             transformations.properties.mode == Transformation.Properties.Mode.online
@@ -105,13 +136,13 @@ def recursively_transform(
             and transformations.properties._internal_supports_minibatch_backtesting
         ):
             return _process_internal_online_model_minibatch_inference_and_update(
-                transformations, X, y, artifacts
+                transformations, X, y, artifacts, disable_memory=disable_memory
             )
 
         # or perform "mini-batch" updating OR the initial fit.
         else:
             return _process_minibatch_transformation(
-                transformations, X, y, artifacts, stage
+                transformations, X, y, artifacts, stage, disable_memory=disable_memory
             )
 
     else:
@@ -128,6 +159,7 @@ def _process_composite(
     artifacts: Artifact,
     stage: Stage,
     backend: Backend,
+    disable_memory: bool,
 ) -> Tuple[Composite, X, Artifact]:
     composite.before_fit(X)
     primary_transformations = composite.get_children_primary()
@@ -143,6 +175,7 @@ def _process_composite(
             stage,
             backend,
             None,
+            disable_memory,
         )
     )
     if composite.properties.artifacts_length_should_match:
@@ -204,6 +237,7 @@ def _process_composite(
             stage,
             backend,
             results_primary,
+            disable_memory,
         )
     )
     composite = composite.clone(replace_with(secondary_transformations))
@@ -240,6 +274,7 @@ def _process_sampler(
     artifacts: Artifact,
     stage: Stage,
     backend: Backend,
+    disable_memory: bool,
 ) -> Tuple[Composite, X, Artifact]:
     primary_transformations = sampler.get_children_primary()
 
@@ -254,6 +289,7 @@ def _process_sampler(
             stage,
             backend,
             None,
+            disable_memory,
         )
     )
     sampler = sampler.clone(replace_with(primary_transformations))
@@ -280,6 +316,7 @@ def _process_sampler(
                 Stage.infer,
                 backend,
                 None,
+                disable_memory,
             )
         )
 
@@ -298,6 +335,7 @@ def _process_optimizer(
     artifacts: Artifact,
     stage: Stage,
     backend: Backend,
+    disable_memory: bool,
 ) -> Tuple[Pipeline, X, Artifact]:
     optimized_pipeline = optimizer.get_optimized_pipeline()
     artifact = None
@@ -318,6 +356,7 @@ def _process_optimizer(
                     stage,
                     backend,
                     None,
+                    disable_memory,
                 )
             )
             results = [trim_initial_nans_single(result) for result in results]
@@ -335,6 +374,7 @@ def _process_optimizer(
         optimized_pipeline,
         stage,
         backend,
+        disable_memory=disable_memory,
     )
     return optimizer, X, artifact
 
@@ -349,6 +389,7 @@ def __process_candidates(
     stage: Stage,
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
+    disable_memory: bool,
 ) -> Tuple[Transformations, X, Artifact]:
     splits = optimizer.splitter.splits(y.index)
 
@@ -357,7 +398,9 @@ def __process_candidates(
         processed_pipelines,
         processed_predictions,
         processed_artifacts,
-    ) = _sequential_train_on_window(child_transform, X, y, splits, artifacts, backend)
+    ) = _sequential_train_on_window(
+        child_transform, X, y, splits, artifacts, backend, disable_memory
+    )
     trained_pipelines = _extract_trained_pipelines(processed_idx, processed_pipelines)
 
     result, artifact = _backtest_on_window(
@@ -368,6 +411,7 @@ def __process_candidates(
         artifacts,
         backend,
         mutate=False,
+        disable_memory=disable_memory,
     )
     return (
         trained_pipelines,
@@ -386,11 +430,20 @@ def __process_primary_child_transform(
     stage: Stage,
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
+    disable_memory: bool,
 ) -> Tuple[Transformations, X, Artifact]:
     X, y, artifacts = composite.preprocess_primary(
         X=X, index=index, y=y, artifact=artifacts, fit=stage.is_fit_or_update()
     )
-    return recursively_transform(X, y, artifacts, child_transform, stage, backend)
+    return recursively_transform(
+        X,
+        y,
+        artifacts,
+        child_transform,
+        stage,
+        backend,
+        disable_memory=disable_memory,
+    )
 
 
 def __process_secondary_child_transform(
@@ -403,6 +456,7 @@ def __process_secondary_child_transform(
     stage: Stage,
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
+    disable_memory: bool,
 ) -> Tuple[Transformations, X, Artifact]:
     X, y, artifacts = composite.preprocess_secondary(
         X=X,
@@ -419,6 +473,7 @@ def __process_secondary_child_transform(
         child_transform,
         stage,
         backend,
+        disable_memory=disable_memory,
     )
 
 
@@ -430,6 +485,7 @@ def _backtest_on_window(
     artifact: Artifact,
     backend: Backend,
     mutate: bool,
+    disable_memory: bool,
 ) -> Tuple[X, Artifact]:
     pd.options.mode.copy_on_write = True
     current_pipeline = [
@@ -439,9 +495,12 @@ def _backtest_on_window(
     if not mutate:
         current_pipeline = deepcopy_pipelines(current_pipeline)
 
-    X_test = X.iloc[split.test_window_start : split.test_window_end]
-    y_test = y.iloc[split.test_window_start : split.test_window_end]
-    artifact_test = artifact.iloc[split.test_window_start : split.test_window_end]
+    overlap = _get_maximum_memory_size(current_pipeline) if disable_memory else 0
+    X_test = X.iloc[split.test_window_start - overlap : split.test_window_end]
+    y_test = y.iloc[split.test_window_start - overlap : split.test_window_end]
+    artifact_test = artifact.iloc[
+        split.test_window_start - overlap : split.test_window_end
+    ]
     results, artifacts = recursively_transform(
         X_test,
         y_test,
@@ -449,8 +508,12 @@ def _backtest_on_window(
         current_pipeline,
         stage=Stage.update_online_only,
         backend=backend,
+        disable_memory=disable_memory,
     )[1:]
-    return results, artifacts.loc[X.index[split.test_window_start - 1] :]
+    return (
+        results.loc[X.index[split.test_window_start] :],
+        artifacts.loc[X.index[split.test_window_start - 1] :],
+    )
 
 
 def _train_on_window(
@@ -461,6 +524,7 @@ def _train_on_window(
     split: Fold,
     never_update: bool,
     backend: Backend,
+    disable_memory: bool,
 ) -> Tuple[int, TrainedPipeline, X, Artifact]:
     pd.options.mode.copy_on_write = True
     stage = Stage.inital_fit if (split.order == 0 or never_update) else Stage.update
@@ -480,7 +544,13 @@ def _train_on_window(
         pipeline, Composite.Metadata(fold_index=split.order, target=y.name)
     )
     trained_pipeline, X_train, artifacts = recursively_transform(
-        X_train, y_train, artifact_train, pipeline, stage, backend
+        X_train,
+        y_train,
+        artifact_train,
+        pipeline,
+        stage,
+        backend,
+        disable_memory=disable_memory,
     )
 
     return split.model_index, trained_pipeline, X_train, artifacts
@@ -493,6 +563,7 @@ def _sequential_train_on_window(
     splits: List[Fold],
     artifact: Artifact,
     backend: Backend,
+    disable_memory: bool,
 ) -> Tuple[List[int], List[Pipeline], List[X], List[Artifact]]:
     processed_idx = []
     processed_pipelines: List[Pipeline] = []
@@ -513,6 +584,7 @@ def _sequential_train_on_window(
             split,
             False,
             backend,
+            disable_memory=disable_memory,
         )
         processed_idx.append(processed_id)
         processed_pipelines.append(processed_pipeline)

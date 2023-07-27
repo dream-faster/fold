@@ -11,6 +11,7 @@ from .types import BackendType, Stage
 def infer(
     pipeline: DeployablePipeline,
     X: Optional[pd.DataFrame],
+    disable_memory: bool = False,
 ) -> OutOfSamplePredictions:
     """
     Run inference on a Pipeline and given data.
@@ -30,5 +31,6 @@ def infer(
         pipeline,
         stage=Stage.infer,
         backend=get_backend(BackendType.no),
+        disable_memory=disable_memory,
     )
     return results

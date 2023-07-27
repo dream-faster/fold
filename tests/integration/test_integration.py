@@ -43,7 +43,6 @@ def test_on_weather_data_backends(backend: str) -> None:
                         Sequence(
                             AddLagsX(columns_and_lags=[("pressure", list(range(1, 3)))])
                         ),
-                        AddLagsY(list(range(4, 7))),
                         AddWindowFeatures(("pressure", 14, "mean")),
                     ]
                 ),
@@ -58,7 +57,7 @@ def test_on_weather_data_backends(backend: str) -> None:
             ]
         ),
         RemoveLowVarianceFeatures(),
-        UsePredefinedEvents(RandomForestRegressor()),
+        UsePredefinedEvents(RandomForestRegressor(random_state=42)),
     ]
 
     pred, _, insample_predictions = train_backtest(
@@ -74,6 +73,17 @@ def test_on_weather_data_backends(backend: str) -> None:
     assert (
         len(insample_predictions) <= 800
     ), "length of insample predictions should be always <= length of outofsample predictions"
+
+    pred_disable_memory, _ = train_backtest(
+        pipeline,
+        X,
+        y,
+        splitter,
+        events=events,
+        backend=backend,
+        disable_memory=True,
+    )
+    assert pred_disable_memory.equals(pred)
 
 
 def test_train_evaluate() -> None:

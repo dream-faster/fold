@@ -1,15 +1,7 @@
 from typing import Callable, List, Tuple, Union
 
 from ..utils.list import empty_if_none, flatten
-from .classes import (
-    Composite,
-    Optimizer,
-    Pipeline,
-    Pipelines,
-    Sampler,
-    Transformation,
-    Transformations,
-)
+from .classes import Composite, Optimizer, Pipeline, Pipelines, Sampler, Transformation
 
 
 def traverse_apply(pipeline: Pipeline, apply_func: Callable) -> Pipeline:
@@ -50,7 +42,7 @@ def traverse(
 
 def get_flat_list_of_transformations(
     transformations: Pipelines,
-) -> List[Transformations]:
+) -> List[Transformation]:
     return flatten(
         [t for t in traverse(transformations) if isinstance(t, Transformation)]
     )
@@ -61,5 +53,15 @@ def get_concatenated_names(transformations: Union[Pipelines, Pipeline]) -> str:
         [
             transformation.name if hasattr(transformation, "name") else ""
             for transformation in get_flat_list_of_transformations(transformations)
+        ]
+    )
+
+
+def _get_maximum_memory_size(pipeline: Pipeline) -> int:
+    return max(
+        [
+            t.properties.memory_size
+            for t in get_flat_list_of_transformations(pipeline)
+            if t.properties.memory_size is not None
         ]
     )

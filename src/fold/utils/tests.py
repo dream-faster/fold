@@ -149,7 +149,7 @@ def tuneability_test(
             " same"
         )
     else:
-        assert np.isclose(preds_orig, preds_reconstructed, atol=tolerance).all(), (
+        assert np.allclose(preds_orig, preds_reconstructed, atol=tolerance), (
             "The output of the two instances with the same parameters should be the"
             " close"
         )

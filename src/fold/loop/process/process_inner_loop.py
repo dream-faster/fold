@@ -17,6 +17,7 @@ def _process_with_inner_loop(
     X: pd.DataFrame,
     y: Optional[pd.Series],
     artifacts: Artifact,
+    disable_memory: bool,
 ) -> Tuple[Transformation, X, Artifact]:
     if len(X) == 0:
         return (transformation, pd.DataFrame(), artifacts)
@@ -39,6 +40,7 @@ def _process_with_inner_loop(
             y_row,
             Artifact.get_sample_weights(artifact_row),
             in_sample=False,
+            disable_memory=disable_memory,
         )
         result, _ = transformation.transform(X_row_with_memory, in_sample=False)
         if y_row is not None:
@@ -51,7 +53,8 @@ def _process_with_inner_loop(
                 X_row_with_memory,
                 y_row_with_memory,
                 sample_weights_row_with_memory,
-                False,
+                in_sample=False,
+                disable_memory=disable_memory,
             )
         return result.loc[X_row.index]
 
