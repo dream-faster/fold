@@ -512,7 +512,7 @@ def _backtest_on_window(
     )[1:]
     return (
         results.loc[X.index[split.test_window_start] :],
-        artifacts.loc[X.index[split.test_window_start - 1] :],
+        artifacts.loc[X.index[split.test_window_start] :],
     )
 
 
