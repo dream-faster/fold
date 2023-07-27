@@ -1,14 +1,13 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
 
-from typing import Optional, Tuple, Union
+from typing import Optional, Union
 
 import pandas as pd
 
 from ..base import Artifact, EventDataFrame, OutOfSamplePredictions, TrainedPipelines
 from ..splitters import Splitter
 from ..utils.dataframe import concat_on_index
-from ..utils.list import unpack_list_of_tuples
 from ..utils.trim import trim_initial_nans, trim_initial_nans_single
 from .backend import get_backend
 from .checks import check_types
@@ -26,9 +25,8 @@ def backtest(
     events: Optional[EventDataFrame] = None,
     silent: bool = False,
     mutate: bool = False,
-    return_artifacts: bool = False,
     disable_memory: bool = False,
-) -> Union[OutOfSamplePredictions, Tuple[OutOfSamplePredictions, Artifact]]:
+) -> OutOfSamplePredictions:
     """
     Run backtest on TrainedPipelines and given data.
 
@@ -53,8 +51,6 @@ def backtest(
         Wether the pipeline should print to the console, by default False.
     mutate: bool = False
         Whether `trained_pipelines` should be mutated, by default False. This is discouraged.
-    return_artifacts: bool = False
-        Whether to return the artifacts of the backtesting process, by default False.
 
     Returns
     -------
@@ -66,22 +62,17 @@ def backtest(
     artifact = Artifact.from_events_sample_weights(X.index, events, sample_weights)
     X, y, artifact = trim_initial_nans(X, y, artifact)
 
-    results, artifacts = unpack_list_of_tuples(
-        backend.backtest_pipeline(
-            _backtest_on_window,
-            trained_pipelines,
-            splitter.splits(index=X.index),
-            X,
-            y,
-            artifact,
-            backend,
-            mutate=mutate,
-            silent=silent,
-            disable_memory=disable_memory,
-        )
+    results = backend.backtest_pipeline(
+        _backtest_on_window,
+        trained_pipelines,
+        splitter.splits(index=X.index),
+        X,
+        y,
+        artifact,
+        backend,
+        mutate=mutate,
+        silent=silent,
+        disable_memory=disable_memory,
     )
     results = trim_initial_nans_single(concat_on_index(results, copy=False))
-    if return_artifacts:
-        return results, concat_on_index(artifacts, copy=False)
-    else:
-        return results
+    return results

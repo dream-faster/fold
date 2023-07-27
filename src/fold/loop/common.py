@@ -403,7 +403,7 @@ def __process_candidates(
     )
     trained_pipelines = _extract_trained_pipelines(processed_idx, processed_pipelines)
 
-    result, artifact = _backtest_on_window(
+    result = _backtest_on_window(
         trained_pipelines,
         splits[0],
         X,
@@ -416,7 +416,7 @@ def __process_candidates(
     return (
         trained_pipelines,
         trim_initial_nans_single(result),
-        artifact,
+        artifacts,
     )
 
 
@@ -480,13 +480,13 @@ def __process_secondary_child_transform(
 def _backtest_on_window(
     trained_pipelines: TrainedPipelines,
     split: Fold,
-    X: pd.DataFrame,
+    X: X,
     y: pd.Series,
     artifact: Artifact,
     backend: Backend,
     mutate: bool,
     disable_memory: bool,
-) -> Tuple[X, Artifact]:
+) -> X:
     pd.options.mode.copy_on_write = True
     current_pipeline = [
         pipeline_over_time.loc[split.model_index]
@@ -510,10 +510,7 @@ def _backtest_on_window(
         backend=backend,
         disable_memory=disable_memory,
     )[1:]
-    return (
-        results.loc[X.index[split.test_window_start] :],
-        artifacts.loc[X.index[split.test_window_start] :],
-    )
+    return results.loc[X.index[split.test_window_start] :]
 
 
 def _train_on_window(

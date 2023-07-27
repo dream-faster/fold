@@ -16,7 +16,6 @@ from ..base import (
     TrainedPipelines,
 )
 from ..splitters import Splitter
-from ..utils.dataframe import ResolutionStrategy, concat_on_columns_with_duplicates
 from .backtesting import backtest
 from .training import train
 from .types import Backend, BackendType, TrainMethod
@@ -34,13 +33,9 @@ def backtest_score(
     sample_weights: Optional[pd.Series] = None,
     events: Optional[EventDataFrame] = None,
     silent: bool = False,
-    return_artifacts: bool = False,
     disable_memory: bool = False,
     krisi_args: Optional[dict] = None,
-) -> Union[
-    Tuple["ScoreCard", OutOfSamplePredictions],
-    Tuple["ScoreCard", OutOfSamplePredictions, Artifact],
-]:
+) -> Tuple["ScoreCard", OutOfSamplePredictions]:
     """
     Run backtest then scoring.
     [`krisi`](https://github.com/dream-faster/krisi) is required to be installed.
@@ -76,7 +71,7 @@ def backtest_score(
         Predictions for all folds, concatenated.
     """
 
-    pred, artifacts = backtest(
+    pred = backtest(
         trained_pipelines,
         X,
         y,
@@ -85,20 +80,18 @@ def backtest_score(
         sample_weights=sample_weights,
         events=events,
         silent=silent,
-        return_artifacts=True,
         disable_memory=disable_memory,
     )
 
     scorecard = score_results(
         pred,
         y,
-        artifacts=artifacts,
+        artifacts=Artifact.from_events_sample_weights(
+            pred.index, events, sample_weights
+        ),
         krisi_args=krisi_args,
     )
-    if return_artifacts:
-        return scorecard, pred, artifacts
-    else:
-        return scorecard, pred
+    return scorecard, pred
 
 
 def train_backtest(
@@ -153,7 +146,7 @@ def train_backtest(
     TrainedPipelines
         The fitted pipelines, for all folds.
     """
-    trained_pipelines, train_artifacts, insample_predictions = train(
+    trained_pipelines, artifacts, insample_predictions = train(
         pipeline,
         X,
         y,
@@ -168,7 +161,7 @@ def train_backtest(
         disable_memory=disable_memory,
     )
 
-    pred, backtest_artifacts = backtest(
+    pred = backtest(
         trained_pipelines,
         X,
         y,
@@ -177,15 +170,10 @@ def train_backtest(
         sample_weights=sample_weights,
         events=events,
         silent=silent,
-        return_artifacts=True,
         disable_memory=disable_memory,
     )
 
     if return_artifacts:
-        artifacts = concat_on_columns_with_duplicates(
-            [train_artifacts, backtest_artifacts],
-            strategy=ResolutionStrategy.last,
-        )
         if return_insample:
             return pred, trained_pipelines, artifacts, insample_predictions
         else:
@@ -259,7 +247,7 @@ def train_evaluate(
     TrainedPipelines
         The fitted pipelines, for all folds.
     """
-    trained_pipelines, train_artifacts = train(
+    trained_pipelines, artifacts = train(
         pipeline,
         X,
         y,
@@ -273,7 +261,7 @@ def train_evaluate(
         disable_memory=disable_memory,
     )
 
-    scorecard, pred, backtest_artifacts = backtest_score(
+    scorecard, pred = backtest_score(
         trained_pipelines,
         X,
         y,
@@ -282,7 +270,6 @@ def train_evaluate(
         sample_weights=sample_weights,
         events=events,
         silent=silent,
-        return_artifacts=True,
         disable_memory=disable_memory,
         krisi_args=krisi_args,
     )
@@ -292,9 +279,7 @@ def train_evaluate(
             scorecard,
             pred,
             trained_pipelines,
-            concat_on_columns_with_duplicates(
-                [train_artifacts, backtest_artifacts], strategy=ResolutionStrategy.last
-            ),
+            artifacts,
         )
     else:
         return scorecard, pred, trained_pipelines
