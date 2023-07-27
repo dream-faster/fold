@@ -154,7 +154,7 @@ def test_disable_memory():
         shorten=1000,
     )
     splitter = SlidingWindowSplitter(train_window=0.2, step=0.2)
-    memory_size = 26
+    memory_size = 30
 
     def assert_len_can_be_divided_by_memory_size(x, in_sample):
         if not in_sample:
