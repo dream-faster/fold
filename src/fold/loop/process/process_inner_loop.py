@@ -42,7 +42,7 @@ def _process_with_inner_loop(
             in_sample=False,
             disable_memory=disable_memory,
         )
-        result, _ = transformation.transform(X_row_with_memory, in_sample=False)
+        result = transformation.transform(X_row_with_memory, in_sample=False)
         if y_row is not None:
             artifact = transformation.update(
                 X_row_with_memory, y_row_with_memory, sample_weights_row_with_memory

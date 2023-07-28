@@ -8,7 +8,6 @@ from typing import Callable, List, Optional, Tuple, Union
 import pandas as pd
 
 from ..base import (
-    Artifact,
     PredefinedFunction,
     Transformation,
     Tunable,
@@ -98,9 +97,7 @@ class AddWindowFeatures(Transformation, Tunable):
         self.params_to_try = params_to_try
         self.name = name or "AddWindowFeatures"
 
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         def convert_dtype_if_needed(df: pd.DataFrame) -> pd.DataFrame:
             return df.astype(self.output_dtype) if self.output_dtype is not None else df
 
@@ -143,7 +140,7 @@ class AddWindowFeatures(Transformation, Tunable):
         )
         concatenated = pd.concat(to_concat, copy=False, axis="columns")
 
-        return fill_na_inf(concatenated) if self.fillna else concatenated, None
+        return fill_na_inf(concatenated) if self.fillna else concatenated
 
     fit = fit_noop
     update = fit
@@ -223,9 +220,7 @@ class AddFeatures(Transformation, Tunable):
         self.params_to_try = params_to_try
         self.name = name or f"ApplyFunction_{self.column_func}"
 
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         def convert_dtype_if_needed(df: pd.DataFrame) -> pd.DataFrame:
             return df.astype(self.output_dtype) if self.output_dtype is not None else df
 
@@ -251,7 +246,7 @@ class AddFeatures(Transformation, Tunable):
             [X] + X_function_applied if self.keep_original else X_function_applied
         )
         concatenated = pd.concat(to_concat, copy=False, axis="columns")
-        return fill_na_inf(concatenated) if self.fillna else concatenated, None
+        return fill_na_inf(concatenated) if self.fillna else concatenated
 
     fit = fit_noop
     update = fit
@@ -280,9 +275,7 @@ class AddRollingCorrelation(Transformation, Tunable):
         self.params_to_try = params_to_try
         self.name = name or "AddRollingCorrelation"
 
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         def convert_dtype_if_needed(df: pd.DataFrame) -> pd.DataFrame:
             return df.astype(self.output_dtype) if self.output_dtype is not None else df
 
@@ -307,7 +300,7 @@ class AddRollingCorrelation(Transformation, Tunable):
             [X] + X_function_applied if self.keep_original else X_function_applied
         )
         concatenated = pd.concat(to_concat, copy=False, axis="columns")
-        return fill_na_inf(concatenated) if self.fillna else concatenated, None
+        return fill_na_inf(concatenated) if self.fillna else concatenated
 
     fit = fit_noop
     update = fit

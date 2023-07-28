@@ -5,7 +5,7 @@ from typing import List, Optional, Tuple, Union
 
 import pandas as pd
 
-from ..base import Artifact, Transformation, Tunable, feature_name_separator, fit_noop
+from ..base import Transformation, Tunable, feature_name_separator, fit_noop
 from ..utils.checks import get_column_names, is_X_available
 from ..utils.dataframe import to_dataframe
 from ..utils.list import flatten, transform_range_to_list, wrap_in_list
@@ -60,9 +60,7 @@ class AddLagsY(Transformation, Tunable):
         self.params_to_try = params_to_try
         self.name = name or f"AddLagsY-{self.lags}"
 
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         lags = pd.DataFrame([], index=X.index)
 
         past_y = (
@@ -74,10 +72,10 @@ class AddLagsY(Transformation, Tunable):
             axis="columns",
         ).fillna(0.0)
         if is_X_available(X):
-            return pd.concat([X, lags], copy=False, axis="columns"), None
+            return pd.concat([X, lags], copy=False, axis="columns")
         else:
             # If X is just an DataFrame with zeros, then just return the lags
-            return lags, None
+            return lags
 
     fit = fit_noop
     update = fit_noop
@@ -151,9 +149,7 @@ class AddLagsX(Transformation, Tunable):
         self.keep_original = keep_original
         self.name = name or f"AddLagsX-{self.columns_and_lags}"
 
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         lagged_columns = []
         for column, lags in self.columns_and_lags:
             for lag in lags:
@@ -164,7 +160,7 @@ class AddLagsX(Transformation, Tunable):
                     )
                 )
         to_concat = [X] + lagged_columns if self.keep_original else lagged_columns
-        return pd.concat(to_concat, copy=False, axis="columns").fillna(0.0), None
+        return pd.concat(to_concat, copy=False, axis="columns").fillna(0.0)
 
     fit = fit_noop
     update = fit_noop

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Optional, Tuple, Union
+from typing import Optional, Union
 
 import pandas as pd
 
@@ -86,18 +86,16 @@ class Difference(InvertibleTransformation, Tunable):
     ) -> Optional[Artifact]:
         self.last_values_X = X.iloc[-self.lag : None]
 
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         if in_sample:
-            return X.diff(self.lag).fillna(0.0), None
+            return X.diff(self.lag).fillna(0.0)
         else:
             return (
                 pd.concat([self.last_values_X.copy(), X], copy=False, axis="index")
                 .diff(self.lag)
                 .iloc[self.lag :]
                 .fillna(0.0)
-            ), None
+            )
 
     def inverse_transform(self, X: pd.Series, in_sample: bool) -> pd.Series:
         if in_sample:
@@ -186,9 +184,7 @@ class TakeReturns(Transformation, Tunable):
     ) -> Optional[Artifact]:
         self.last_values_X = X.iloc[-1:None]
 
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         def operation(df):
             if self.log_returns:
                 return take_log(df).diff()
@@ -198,14 +194,10 @@ class TakeReturns(Transformation, Tunable):
         fill_na = fill_na_inf if self.fill_na else lambda x: x
 
         if in_sample:
-            return fill_na(operation(X)), None
+            return fill_na(operation(X))
         else:
-            return (
-                fill_na(
-                    operation(
-                        pd.concat(
-                            [self.last_values_X.copy(), X], copy=False, axis="index"
-                        )
-                    )
-                ).iloc[1:]
-            ), None
+            return fill_na(
+                operation(
+                    pd.concat([self.last_values_X.copy(), X], copy=False, axis="index")
+                )
+            ).iloc[1:]

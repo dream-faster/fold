@@ -3,17 +3,11 @@
 
 from __future__ import annotations
 
-from typing import Callable, List, Optional, Tuple, Union
+from typing import Callable, List, Optional, Union
 
 import pandas as pd
 
-from ..base import (
-    Artifact,
-    SingleFunctionTransformation,
-    Transformation,
-    Tunable,
-    fit_noop,
-)
+from ..base import SingleFunctionTransformation, Transformation, Tunable, fit_noop
 from ..utils.enums import ParsableEnum
 from ..utils.list import wrap_in_list
 
@@ -83,9 +77,7 @@ class AddDateTimeFeatures(Transformation, Tunable):
         self.params_to_try = params_to_try
         self.properties = Transformation.Properties(requires_X=False)
 
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         X_datetime = pd.DataFrame([], index=X.index)
         for feature in self.features:
             if feature == DateTimeFeature.second:
@@ -117,7 +109,7 @@ class AddDateTimeFeatures(Transformation, Tunable):
                 raise ValueError(f"Unsupported feature: {feature}")
         to_concat = [X, X_datetime] if self.keep_original else X_datetime
         concatenated = pd.concat(to_concat, copy=False, axis="columns")
-        return concatenated, None
+        return concatenated
 
     fit = fit_noop
     update = fit_noop

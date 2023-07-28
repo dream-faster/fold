@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Union
 
 import pandas as pd
 
-from ..base import Artifact, Transformation, Tunable, fit_noop
+from ..base import Transformation, Tunable, fit_noop
 from ..utils.enums import ParsableEnum
 from ..utils.list import swap_tuples, wrap_in_list
 
@@ -105,9 +105,7 @@ class AddHolidayFeatures(Transformation, Tunable):
         self.name = name or f"AddHolidayFeatures-{self.country_codes}"
         self.properties = Transformation.Properties(requires_X=False)
 
-    def transform(
-        self, X: pd.DataFrame, in_sample: bool
-    ) -> Tuple[pd.DataFrame, Optional[Artifact]]:
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         if self.labeling == LabelingMethod.holiday_binary:
             holidays = _get_holidays(
                 X.index, self.country_codes, self.holiday_to_int_maps, encode=True
@@ -147,7 +145,7 @@ class AddHolidayFeatures(Transformation, Tunable):
         concatenated = (
             pd.concat([X, holidays], axis="columns") if self.keep_original else holidays
         )
-        return concatenated, None
+        return concatenated
 
     fit = fit_noop
     update = fit_noop
