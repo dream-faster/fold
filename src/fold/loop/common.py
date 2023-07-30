@@ -8,6 +8,8 @@ from typing import Callable, List, Optional, Tuple, TypeVar, Union
 
 import pandas as pd
 
+from fold.events import UsePredefinedEvents
+
 from ..base import (
     Artifact,
     Block,
@@ -70,6 +72,13 @@ def recursively_transform(
         f'called "recursively_transform()" with {transformations.__class__.__name__} with stage {stage}'
     )
 
+    def post_checks(
+        pipeline: T, X: pd.DataFrame, artifacts: Artifact
+    ) -> Tuple[T, X, Artifact]:
+        assert X.shape[0] == artifacts.shape[0]
+        assert X.index.equals(artifacts.index)
+        return pipeline, X, artifacts
+
     if isinstance(transformations, List) or isinstance(transformations, Tuple):
         processed_transformations = []
         for transformation in transformations:
@@ -83,38 +92,57 @@ def recursively_transform(
                 disable_memory=disable_memory,
             )
             processed_transformations.append(processed_transformation)
-        return processed_transformations, X, artifacts
+        return post_checks(processed_transformations, X, artifacts)
+
+    elif isinstance(transformations, UsePredefinedEvents):
+        return post_checks(
+            *_process_use_predefined_events(
+                transformations,
+                X,
+                y,
+                artifacts,
+                stage,
+                backend,
+                disable_memory=disable_memory,
+            )
+        )
 
     elif isinstance(transformations, Composite):
-        return _process_composite(
-            transformations,
-            X,
-            y,
-            artifacts,
-            stage,
-            backend,
-            disable_memory=disable_memory,
+        return post_checks(
+            *_process_composite(
+                transformations,
+                X,
+                y,
+                artifacts,
+                stage,
+                backend,
+                disable_memory=disable_memory,
+            )
         )
     elif isinstance(transformations, Optimizer):
-        return _process_optimizer(
-            transformations,
-            X,
-            y,
-            artifacts,
-            stage,
-            backend,
-            disable_memory=disable_memory,
+        return post_checks(
+            *_process_optimizer(
+                transformations,
+                X,
+                y,
+                artifacts,
+                stage,
+                backend,
+                disable_memory=disable_memory,
+            )
         )
 
     elif isinstance(transformations, Sampler):
-        return _process_sampler(
-            transformations,
-            X,
-            y,
-            artifacts,
-            stage,
-            backend,
-            disable_memory=disable_memory,
+        return post_checks(
+            *_process_sampler(
+                transformations,
+                X,
+                y,
+                artifacts,
+                stage,
+                backend,
+                disable_memory=disable_memory,
+            )
         )
 
     elif isinstance(transformations, Transformation) or isinstance(
@@ -126,8 +154,10 @@ def recursively_transform(
             and stage in [Stage.update, Stage.update_online_only]
             and not transformations.properties._internal_supports_minibatch_backtesting
         ):
-            return _process_with_inner_loop(
-                transformations, X, y, artifacts, disable_memory=disable_memory
+            return post_checks(
+                *_process_with_inner_loop(
+                    transformations, X, y, artifacts, disable_memory=disable_memory
+                )
             )
         # If the transformation is "online" but also supports our internal "mini-batch"-style updating
         elif (
@@ -135,14 +165,23 @@ def recursively_transform(
             and stage in [Stage.update, Stage.update_online_only]
             and transformations.properties._internal_supports_minibatch_backtesting
         ):
-            return _process_internal_online_model_minibatch_inference_and_update(
-                transformations, X, y, artifacts, disable_memory=disable_memory
+            return post_checks(
+                *_process_internal_online_model_minibatch_inference_and_update(
+                    transformations, X, y, artifacts, disable_memory=disable_memory
+                )
             )
 
         # or perform "mini-batch" updating OR the initial fit.
         else:
-            return _process_minibatch_transformation(
-                transformations, X, y, artifacts, stage, disable_memory=disable_memory
+            return post_checks(
+                *_process_minibatch_transformation(
+                    transformations,
+                    X,
+                    y,
+                    artifacts,
+                    stage,
+                    disable_memory=disable_memory,
+                )
             )
 
     else:
@@ -164,7 +203,12 @@ def _process_composite(
     composite.before_fit(X)
     primary_transformations = composite.get_children_primary()
 
-    primary_transformations, results_primary, artifacts_primary = unpack_list_of_tuples(
+    (
+        primary_transformations,
+        results_primary,
+        y_primary,
+        artifacts_primary,
+    ) = unpack_list_of_tuples(
         backend.process_child_transformations(
             __process_primary_child_transform,
             enumerate(primary_transformations),
@@ -202,7 +246,7 @@ def _process_composite(
     original_results_primary = results_primary
     results_primary = composite.postprocess_result_primary(
         results_primary,
-        y,
+        y_primary[0],
         fit=stage.is_fit_or_update(),
     )
     artifacts_primary = composite.postprocess_artifacts_primary(
@@ -267,6 +311,67 @@ def _process_composite(
     )
 
 
+def _process_use_predefined_events(
+    composite: UsePredefinedEvents,
+    X: pd.DataFrame,
+    y: Optional[pd.Series],
+    artifacts: Artifact,
+    stage: Stage,
+    backend: Backend,
+    disable_memory: bool,
+) -> Tuple[UsePredefinedEvents, X, Artifact]:
+    primary_transformations = composite.get_children_primary()
+
+    (
+        primary_transformations,
+        results_primary,
+        y_primary,
+        artifacts_primary,
+    ) = unpack_list_of_tuples(
+        backend.process_child_transformations(
+            __process_primary_child_transform,
+            enumerate(primary_transformations),
+            composite,
+            X,
+            y,
+            artifacts,
+            stage,
+            backend,
+            None,
+            disable_memory,
+        )
+    )
+    if composite.properties.artifacts_length_should_match:
+        assert all(
+            [
+                r.shape[0] == a.shape[0]
+                for r, a in zip(results_primary, artifacts_primary)
+            ]
+        ), ValueError("Artifacts shape doesn't match result's length.")
+    composite = composite.clone(replace_with(primary_transformations))
+
+    if composite.properties.primary_only_single_pipeline:
+        assert len(results_primary) == 1, ValueError(
+            "Expected single output from primary transformations, got"
+            f" {len(results_primary)} instead."
+        )
+    if composite.properties.primary_requires_predictions:
+        assert is_prediction(results_primary[0]), ValueError(
+            "Expected predictions from primary transformations, but got something else."
+        )
+
+    results_primary = results_primary[0].reindex(y.index)
+    artifacts_primary = artifacts_primary[0].reindex(y.index)
+    assert artifacts_primary.shape[0] == results_primary.shape[0], ValueError(
+        f"Artifacts shape doesn't match result's length after {composite.__class__.__name__}.postprocess_artifacts_primary() was called"
+    )
+    return (
+        composite,
+        results_primary,
+        artifacts_primary,
+    )
+
+
 def _process_sampler(
     sampler: Sampler,
     X: pd.DataFrame,
@@ -278,7 +383,12 @@ def _process_sampler(
 ) -> Tuple[Composite, X, Artifact]:
     primary_transformations = sampler.get_children_primary()
 
-    primary_transformations, primary_results, primary_artifacts = unpack_list_of_tuples(
+    (
+        primary_transformations,
+        primary_results,
+        y_primary,
+        primary_artifacts,
+    ) = unpack_list_of_tuples(
         backend.process_child_transformations(
             __process_primary_child_transform,
             enumerate(primary_transformations),
@@ -304,6 +414,7 @@ def _process_sampler(
         (
             secondary_transformations,
             primary_results,
+            primary_y,
             primary_artifacts,
         ) = unpack_list_of_tuples(
             backend.process_child_transformations(
@@ -413,6 +524,7 @@ def __process_candidates(
         mutate=False,
         disable_memory=disable_memory,
     )
+    assert result.index.equals(artifact.index)
     return (
         trained_pipelines,
         trim_initial_nans_single(result),
@@ -431,11 +543,11 @@ def __process_primary_child_transform(
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
     disable_memory: bool,
-) -> Tuple[Transformations, X, Artifact]:
+) -> Tuple[Transformations, X, Optional[pd.Series], Artifact]:
     X, y, artifacts = composite.preprocess_primary(
         X=X, index=index, y=y, artifact=artifacts, fit=stage.is_fit_or_update()
     )
-    return recursively_transform(
+    transformations, X, artifacts = recursively_transform(
         X,
         y,
         artifacts,
@@ -444,6 +556,7 @@ def __process_primary_child_transform(
         backend,
         disable_memory=disable_memory,
     )
+    return transformations, X, y, artifacts
 
 
 def __process_secondary_child_transform(

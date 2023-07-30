@@ -1,10 +1,11 @@
 import pytest
+from sklearn.ensemble import RandomForestRegressor
 
 from fold.events import CreateEvents, FixedForwardHorizon, UsePredefinedEvents
 from fold.events.filters.everynth import EveryNth
 from fold.events.labeling import BinarizeSign
 from fold.events.labeling.strategies import NoLabel
-from fold.events.weights import NoWeighing
+from fold.events.weights import NoWeighting
 from fold.loop import backtest, train
 from fold.loop.encase import train_backtest
 from fold.splitters import ExpandingWindowSplitter
@@ -19,7 +20,7 @@ def test_create_event() -> None:
     pipeline = CreateEvents(
         Identity(),
         FixedForwardHorizon(
-            1, labeling_strategy=BinarizeSign(), weighing_strategy=None
+            1, labeling_strategy=BinarizeSign(), weighting_strategy=None
         ),
         EveryNth(5),
     )
@@ -31,7 +32,7 @@ def test_create_event() -> None:
     pipeline = CreateEvents(
         Identity(),
         FixedForwardHorizon(
-            10, labeling_strategy=BinarizeSign(), weighing_strategy=None
+            10, labeling_strategy=BinarizeSign(), weighting_strategy=None
         ),
         EveryNth(5),
     )
@@ -49,14 +50,14 @@ def test_predefined_events(agg_func: str) -> None:
     labeler = FixedForwardHorizon(
         2,
         labeling_strategy=NoLabel(),
-        weighing_strategy=NoWeighing(),
+        weighting_strategy=NoWeighting(),
         aggregate_function=agg_func,
     )
 
     original_start_times = y.index
     events = labeler.label_events(original_start_times, y).reindex(y.index)
 
-    pipeline = UsePredefinedEvents(AddLagsY([1]))
+    pipeline = UsePredefinedEvents([AddLagsY([1]), RandomForestRegressor()])
     pred, trained_pipeline, artifacts = train_backtest(
         pipeline, X, y, splitter, events=events, return_artifacts=True
     )

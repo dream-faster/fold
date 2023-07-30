@@ -171,6 +171,9 @@ def train(
         processed_artifacts = concat_on_index_override_duplicate_rows(
             processed_artifacts
         )
+        assert processed_artifacts.index.equals(
+            concat_on_index_override_duplicate_rows(processed_predictions).index
+        )
         if return_insample:
             return trained_pipelines, processed_artifacts, processed_predictions
         else:

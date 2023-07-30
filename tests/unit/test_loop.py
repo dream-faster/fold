@@ -135,7 +135,7 @@ def test_score_results():
 
     back_shifted = y.shift(1)
     events = FixedForwardHorizon(
-        time_horizon=1, labeling_strategy=NoLabel(), weighing_strategy=None
+        time_horizon=1, labeling_strategy=NoLabel(), weighting_strategy=None
     ).label_events(back_shifted.index, back_shifted)
     assert (y[:-1] == events.label).all()
 

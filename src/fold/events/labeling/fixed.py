@@ -6,8 +6,8 @@ import pandas as pd
 
 from ...base import PredefinedFunction
 from ...utils.forward import create_forward_rolling
-from ..base import EventDataFrame, Labeler, LabelingStrategy, WeighingStrategy
-from ..weights import NoWeighing, WeightBySumWithLookahead
+from ..base import EventDataFrame, Labeler, LabelingStrategy, WeightingStrategy
+from ..weights import NoWeighting, WeightBySumWithLookahead
 
 
 class FixedForwardHorizon(Labeler):
@@ -17,18 +17,18 @@ class FixedForwardHorizon(Labeler):
         self,
         time_horizon: int,
         labeling_strategy: LabelingStrategy,
-        weighing_strategy: Optional[WeighingStrategy],
-        weighing_strategy_test: WeighingStrategy = WeightBySumWithLookahead(),
+        weighting_strategy: Optional[WeightingStrategy],
+        weighting_strategy_test: WeightingStrategy = WeightBySumWithLookahead(),
         aggregate_function: Union[
             str, PredefinedFunction, Callable
         ] = PredefinedFunction.sum,
     ):
         self.time_horizon = time_horizon
         self.labeling_strategy = labeling_strategy
-        self.weighing_strategy = (
-            weighing_strategy if weighing_strategy else NoWeighing()
+        self.weighting_strategy = (
+            weighting_strategy if weighting_strategy else NoWeighting()
         )
-        self.weighing_strategy_test = weighing_strategy_test
+        self.weighting_strategy_test = weighting_strategy_test
         self.aggregate_function = (
             aggregate_function
             if isinstance(aggregate_function, Callable)
@@ -50,8 +50,8 @@ class FixedForwardHorizon(Labeler):
 
         labels = self.labeling_strategy.label(event_candidates)
         raw_returns = forward_rolling_aggregated[event_start_times]
-        sample_weights = self.weighing_strategy.calculate(raw_returns)
-        test_sample_weights = self.weighing_strategy_test.calculate(raw_returns)
+        sample_weights = self.weighting_strategy.calculate(raw_returns)
+        test_sample_weights = self.weighting_strategy_test.calculate(raw_returns)
 
         offset = pd.Timedelta(value=self.time_horizon, unit=y.index.freqstr)
         return EventDataFrame.from_data(
