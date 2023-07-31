@@ -60,8 +60,7 @@ def test_cache(pipeline) -> None:
         pipeline, X, y, splitter, return_artifacts=True, return_insample=True
     )
     assert pred_first.equals(pred_second)
-    for in_first, in_second in zip(insample_first, insample_second):
-        assert in_first.equals(in_second)
+    assert insample_first.equals(insample_second)
     assert artifacts_first.replace({pd.NaT: pd.Timedelta(seconds=0)}).equals(
         artifacts_second.replace({pd.NaT: pd.Timedelta(seconds=0)})
     )

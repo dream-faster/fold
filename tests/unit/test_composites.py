@@ -28,12 +28,12 @@ def test_concat_and_metadata():
     pipeline2 = AddLagsY([1])
     concat = Concat([pipeline1, pipeline2], if_duplicate_keep="first")
     splitter = ExpandingWindowSplitter(0.2, 0.1)
-    trained_pipelines = train(concat, X, y, splitter)
-    preds = backtest(trained_pipelines, X, y, splitter)
+    trained = train(concat, X, y, splitter)
+    preds = backtest(trained, X, y, splitter)
     assert preds["y_lag_1"] is not None
     assert preds["sine~mean_10"] is not None
     for i in range(0, 8):
-        assert trained_pipelines[0].iloc[i].metadata.fold_index == i
+        assert trained.pipeline[0].iloc[i].metadata.fold_index == i
 
 
 def test_concat_resolution_left():

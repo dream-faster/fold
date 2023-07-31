@@ -5,7 +5,9 @@ from typing import Optional, Tuple, Union
 
 import pandas as pd
 
-from ..base import Artifact, EventDataFrame, OutOfSamplePredictions, TrainedPipelines
+from fold.base.classes import TrainedPipelineCard
+
+from ..base import Artifact, EventDataFrame, OutOfSamplePredictions
 from ..splitters import Splitter
 from ..utils.dataframe import concat_on_index
 from ..utils.list import unpack_list_of_tuples
@@ -17,7 +19,7 @@ from .types import Backend, BackendType
 
 
 def backtest(
-    trained_pipelines: TrainedPipelines,
+    trained_pipelinecard: TrainedPipelineCard,
     X: Optional[pd.DataFrame],
     y: pd.Series,
     splitter: Splitter,
@@ -30,12 +32,12 @@ def backtest(
     disable_memory: bool = False,
 ) -> Union[OutOfSamplePredictions, Tuple[OutOfSamplePredictions, Artifact]]:
     """
-    Run backtest on TrainedPipelines and given data.
+    Run backtest on TrainedPipelineCard and given data.
 
     Parameters
     ----------
 
-    trained_pipelines: TrainedPipelines
+    trained_pipelines: TrainedPipelineCard
         The fitted pipelines, for all folds.
     X: pd.DataFrame, optional
         Exogenous Data.
@@ -69,7 +71,7 @@ def backtest(
     results, artifacts = unpack_list_of_tuples(
         backend.backtest_pipeline(
             _backtest_on_window,
-            trained_pipelines,
+            trained_pipelinecard.pipeline,
             splitter.splits(index=X.index),
             X,
             y,

@@ -12,10 +12,10 @@ from fold.utils.tests import generate_sine_wave_data, tuneability_test
 def test_difference(lag: int):
     X, y = generate_sine_wave_data(length=100)
     splitter = SingleWindowSplitter(train_window=50)
-    pred, trained_pipelines = train_backtest(Difference(lag), X, y, splitter)
+    pred, trained = train_backtest(Difference(lag), X, y, splitter)
     assert np.allclose(
         X.squeeze()[pred.index],
-        trained_pipelines[0]
+        trained.pipeline[0]
         .iloc[0]
         .inverse_transform(to_series(pred), in_sample=True)
         .squeeze(),

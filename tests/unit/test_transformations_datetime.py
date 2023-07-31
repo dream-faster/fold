@@ -151,10 +151,10 @@ def test_holiday_features_daily() -> None:
     y.index = new_index
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    trained_pipelines = train(
+    trained = train(
         AddHolidayFeatures(["US", "DE"], labeling="holiday_binary"), X, y, splitter
     )
-    pred = backtest(trained_pipelines, X, y, splitter)
+    pred = backtest(trained, X, y, splitter)
 
     assert np.allclose((X.squeeze()[pred.index]), (pred["sine"]))
     assert (
@@ -173,10 +173,9 @@ def test_holiday_features_minute() -> None:
     y.index = new_index
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    trained_pipelines = train(
+    pred, _ = train_backtest(
         AddHolidayFeatures(["US", "DE"], labeling="holiday_binary"), X, y, splitter
     )
-    pred = backtest(trained_pipelines, X, y, splitter)
 
     assert np.allclose(X.squeeze()[pred.index], pred["sine"])
     assert (
@@ -188,16 +187,15 @@ def test_holiday_features_minute() -> None:
     assert pd.api.types.is_integer_dtype(pred["holiday_US"].dtype)
     assert pd.api.types.is_integer_dtype(pred["holiday_DE"].dtype)
 
-    trained_pipelines = train(
+    pred, _ = train_backtest(
         AddHolidayFeatures(["DE"], labeling="weekday_weekend_holiday"), X, y, splitter
     )
-    pred = backtest(trained_pipelines, X, y, splitter)
     assert (
         pred["holiday_DE"]["2021-12-25"].mean() == 2
     ), "2021-12-25 should be both a holiday and a weekend (holiday taking precedence)."
     assert pd.api.types.is_integer_dtype(pred["holiday_DE"].dtype)
 
-    trained_pipelines = train(
+    pred, _ = train_backtest(
         AddHolidayFeatures(
             ["US"],
             labeling=LabelingMethod.weekday_weekend_uniqueholiday_string,
@@ -206,7 +204,6 @@ def test_holiday_features_minute() -> None:
         y,
         splitter,
     )
-    pred = backtest(trained_pipelines, X, y, splitter)
     assert (
         pred["holiday_US"]["2021-12-25"].iloc[0] == "Christmas Day"
     ), "2021-12-25 should be a holiday string."

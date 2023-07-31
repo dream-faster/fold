@@ -9,10 +9,11 @@ from ..base import (
     Artifact,
     DeployablePipeline,
     EventDataFrame,
+    InSamplePredictions,
     Pipeline,
-    TrainedPipelines,
+    PipelineCard,
+    TrainedPipelineCard,
 )
-from ..base.classes import InSamplePredictions
 from ..splitters import Fold, SlidingWindowSplitter, Splitter
 from ..utils.dataframe import concat_on_index_override_duplicate_rows
 from ..utils.list import unpack_list_of_tuples, wrap_in_list
@@ -25,13 +26,8 @@ from .utils import _extract_trained_pipelines
 from .wrap import wrap_transformation_if_needed
 
 
-class PipelineCard:
-    preprocessing: Pipeline
-    pipeline: Pipeline
-
-
 def train(
-    pipeline: PipelineCard,
+    pipelinecard: Union[PipelineCard, Pipeline],
     X: Optional[pd.DataFrame],
     y: pd.Series,
     splitter: Splitter,
@@ -44,9 +40,9 @@ def train(
     return_insample: bool = False,
     disable_memory: bool = False,
 ) -> Union[
-    TrainedPipelines,
-    Tuple[TrainedPipelines, Artifact],
-    Tuple[TrainedPipelines, Artifact, InSamplePredictions],
+    TrainedPipelineCard,
+    Tuple[TrainedPipelineCard, Artifact],
+    Tuple[TrainedPipelineCard, Artifact, InSamplePredictions],
 ]:
     """
     Trains a pipeline on a given dataset, for all folds returned by the Splitter.
@@ -77,14 +73,40 @@ def train(
 
     Returns
     -------
-    TrainedPipelines
+    TrainedPipelineCard
         The fitted pipelines, for all folds.
     """
+    pipelinecard = (
+        pipelinecard
+        if isinstance(pipelinecard, PipelineCard)
+        else PipelineCard(preprocessing=None, pipeline=pipelinecard)
+    )
     X, y = check_types(X, y)
     artifact = Artifact.from_events_sample_weights(X.index, events, sample_weights)
     X, y, artifact = trim_initial_nans(X, y, artifact)
     train_method = TrainMethod.from_str(train_method)
     backend = get_backend(backend)
+
+    if pipelinecard.preprocessing is not None:
+        preprocessing_pipeline = wrap_in_list(pipelinecard.preprocessing)
+        preprocessing_pipeline = wrap_transformation_if_needed(preprocessing_pipeline)
+        (
+            _,
+            trained_preprocessing_pipeline,
+            preprocessed_X,
+            preprocessed_artifacts,
+        ) = _train_on_window(
+            X,
+            y,
+            artifact,
+            preprocessing_pipeline,
+            Fold(0, 0, 0, len(X), 0, 0, 0, len(X)),
+            never_update=True,
+            backend=backend,
+            disable_memory=disable_memory,
+        )
+        assert preprocessed_X.shape == X.shape
+        assert preprocessed_artifacts.shape == artifact.shape
 
     if isinstance(splitter, SlidingWindowSplitter):
         assert train_method != TrainMethod.sequential, (
@@ -92,7 +114,7 @@ def train(
             " TrainMethod.sequential"
         )
 
-    pipeline = wrap_in_list(pipeline)
+    pipeline = wrap_in_list(pipelinecard.pipeline)
     pipeline = wrap_transformation_if_needed(pipeline)
 
     splits = splitter.splits(index=X.index)
@@ -171,21 +193,34 @@ def train(
             pipeline, X, y, splits, artifact, backend, disable_memory=disable_memory
         )
 
-    trained_pipelines = _extract_trained_pipelines(processed_idx, processed_pipelines)
+    trained_pipelines = TrainedPipelineCard(
+        preprocessing=trained_preprocessing_pipeline
+        if pipelinecard.preprocessing
+        else None,
+        pipeline=_extract_trained_pipelines(processed_idx, processed_pipelines),
+    )
+
     if return_artifacts is True:
         processed_artifacts = concat_on_index_override_duplicate_rows(
             processed_artifacts
         )
-        assert processed_artifacts.index.equals(
-            concat_on_index_override_duplicate_rows(processed_predictions).index
+        processed_predictions = concat_on_index_override_duplicate_rows(
+            processed_predictions
         )
+        assert processed_artifacts.index.equals(processed_predictions.index)
         if return_insample:
-            return trained_pipelines, processed_artifacts, processed_predictions
+            return (
+                trained_pipelines,
+                processed_artifacts,
+                processed_predictions,
+            )
         else:
             return trained_pipelines, processed_artifacts
     else:
         if return_insample:
-            return trained_pipelines, processed_predictions
+            return trained_pipelines, concat_on_index_override_duplicate_rows(
+                processed_predictions
+            )
         else:
             return trained_pipelines
 

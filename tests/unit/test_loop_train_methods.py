@@ -59,7 +59,7 @@ def test_loop_parallel_minibatch_call_times() -> None:
     X, y = generate_sine_wave_data()
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=200)
-    trained_pipelines = train(
+    trained = train(
         get_transformations_to_test(mode=Transformation.Properties.Mode.minibatch),
         X,
         y,
@@ -67,43 +67,43 @@ def test_loop_parallel_minibatch_call_times() -> None:
         train_method=TrainMethod.parallel,
     )
 
-    assert trained_pipelines[0].iloc[0].no_of_calls_fit == 1
-    assert trained_pipelines[0].iloc[0].no_of_calls_update == 0
-    assert trained_pipelines[0].iloc[0].no_of_calls_transform_insample == 1
-    assert trained_pipelines[0].iloc[0].no_of_calls_transform_outofsample == 0
+    assert trained.pipeline[0].iloc[0].no_of_calls_fit == 1
+    assert trained.pipeline[0].iloc[0].no_of_calls_update == 0
+    assert trained.pipeline[0].iloc[0].no_of_calls_transform_insample == 1
+    assert trained.pipeline[0].iloc[0].no_of_calls_transform_outofsample == 0
 
-    assert trained_pipelines[0].iloc[1].no_of_calls_fit == 1
-    assert trained_pipelines[0].iloc[1].no_of_calls_update == 0
-    assert trained_pipelines[0].iloc[1].no_of_calls_transform_insample == 1
-    assert trained_pipelines[0].iloc[1].no_of_calls_transform_outofsample == 0
+    assert trained.pipeline[0].iloc[1].no_of_calls_fit == 1
+    assert trained.pipeline[0].iloc[1].no_of_calls_update == 0
+    assert trained.pipeline[0].iloc[1].no_of_calls_transform_insample == 1
+    assert trained.pipeline[0].iloc[1].no_of_calls_transform_outofsample == 0
 
-    assert trained_pipelines[0].iloc[2].no_of_calls_fit == 1
-    assert trained_pipelines[0].iloc[2].no_of_calls_update == 0
-    assert trained_pipelines[0].iloc[2].no_of_calls_transform_insample == 1
-    assert trained_pipelines[0].iloc[2].no_of_calls_transform_outofsample == 0
+    assert trained.pipeline[0].iloc[2].no_of_calls_fit == 1
+    assert trained.pipeline[0].iloc[2].no_of_calls_update == 0
+    assert trained.pipeline[0].iloc[2].no_of_calls_transform_insample == 1
+    assert trained.pipeline[0].iloc[2].no_of_calls_transform_outofsample == 0
 
-    _ = backtest(trained_pipelines, X, y, splitter, mutate=True)
-    assert trained_pipelines[0].iloc[0].no_of_calls_fit == 1
-    assert trained_pipelines[0].iloc[0].no_of_calls_update == 0
-    assert trained_pipelines[0].iloc[0].no_of_calls_transform_insample == 1
-    assert trained_pipelines[0].iloc[0].no_of_calls_transform_outofsample == 1
+    _ = backtest(trained, X, y, splitter, mutate=True)
+    assert trained.pipeline[0].iloc[0].no_of_calls_fit == 1
+    assert trained.pipeline[0].iloc[0].no_of_calls_update == 0
+    assert trained.pipeline[0].iloc[0].no_of_calls_transform_insample == 1
+    assert trained.pipeline[0].iloc[0].no_of_calls_transform_outofsample == 1
 
-    assert trained_pipelines[0].iloc[1].no_of_calls_fit == 1
-    assert trained_pipelines[0].iloc[1].no_of_calls_update == 0
-    assert trained_pipelines[0].iloc[1].no_of_calls_transform_insample == 1
-    assert trained_pipelines[0].iloc[1].no_of_calls_transform_outofsample == 1
+    assert trained.pipeline[0].iloc[1].no_of_calls_fit == 1
+    assert trained.pipeline[0].iloc[1].no_of_calls_update == 0
+    assert trained.pipeline[0].iloc[1].no_of_calls_transform_insample == 1
+    assert trained.pipeline[0].iloc[1].no_of_calls_transform_outofsample == 1
 
-    assert trained_pipelines[0].iloc[2].no_of_calls_fit == 1
-    assert trained_pipelines[0].iloc[2].no_of_calls_update == 0
-    assert trained_pipelines[0].iloc[2].no_of_calls_transform_insample == 1
-    assert trained_pipelines[0].iloc[2].no_of_calls_transform_outofsample == 1
+    assert trained.pipeline[0].iloc[2].no_of_calls_fit == 1
+    assert trained.pipeline[0].iloc[2].no_of_calls_update == 0
+    assert trained.pipeline[0].iloc[2].no_of_calls_transform_insample == 1
+    assert trained.pipeline[0].iloc[2].no_of_calls_transform_outofsample == 1
 
 
 def test_loop_parallel_online_call_times() -> None:
     X, y = generate_sine_wave_data()
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=200)
-    trained_pipelines = train(
+    trained = train(
         get_transformations_to_test(mode=Transformation.Properties.Mode.online),
         X,
         y,
@@ -111,43 +111,43 @@ def test_loop_parallel_online_call_times() -> None:
         train_method=TrainMethod.parallel,
     )
 
-    assert trained_pipelines[0].iloc[0].no_of_calls_fit == 1
-    assert trained_pipelines[0].iloc[0].no_of_calls_update == 0
-    assert trained_pipelines[0].iloc[0].no_of_calls_transform_insample == 1
-    assert trained_pipelines[0].iloc[0].no_of_calls_transform_outofsample == 0
+    assert trained.pipeline[0].iloc[0].no_of_calls_fit == 1
+    assert trained.pipeline[0].iloc[0].no_of_calls_update == 0
+    assert trained.pipeline[0].iloc[0].no_of_calls_transform_insample == 1
+    assert trained.pipeline[0].iloc[0].no_of_calls_transform_outofsample == 0
 
-    assert trained_pipelines[0].iloc[1].no_of_calls_fit == 1
-    assert trained_pipelines[0].iloc[1].no_of_calls_update == 0
-    assert trained_pipelines[0].iloc[1].no_of_calls_transform_insample == 1
-    assert trained_pipelines[0].iloc[1].no_of_calls_transform_outofsample == 0
+    assert trained.pipeline[0].iloc[1].no_of_calls_fit == 1
+    assert trained.pipeline[0].iloc[1].no_of_calls_update == 0
+    assert trained.pipeline[0].iloc[1].no_of_calls_transform_insample == 1
+    assert trained.pipeline[0].iloc[1].no_of_calls_transform_outofsample == 0
 
-    assert trained_pipelines[0].iloc[2].no_of_calls_fit == 1
-    assert trained_pipelines[0].iloc[2].no_of_calls_update == 0
-    assert trained_pipelines[0].iloc[2].no_of_calls_transform_insample == 1
-    assert trained_pipelines[0].iloc[2].no_of_calls_transform_outofsample == 0
+    assert trained.pipeline[0].iloc[2].no_of_calls_fit == 1
+    assert trained.pipeline[0].iloc[2].no_of_calls_update == 0
+    assert trained.pipeline[0].iloc[2].no_of_calls_transform_insample == 1
+    assert trained.pipeline[0].iloc[2].no_of_calls_transform_outofsample == 0
 
-    _ = backtest(trained_pipelines, X, y, splitter, mutate=True)
-    assert trained_pipelines[0].iloc[0].no_of_calls_fit == 1
-    assert trained_pipelines[0].iloc[0].no_of_calls_update == 200
-    assert trained_pipelines[0].iloc[0].no_of_calls_transform_insample == 1
-    assert trained_pipelines[0].iloc[0].no_of_calls_transform_outofsample == 200
+    _ = backtest(trained, X, y, splitter, mutate=True)
+    assert trained.pipeline[0].iloc[0].no_of_calls_fit == 1
+    assert trained.pipeline[0].iloc[0].no_of_calls_update == 200
+    assert trained.pipeline[0].iloc[0].no_of_calls_transform_insample == 1
+    assert trained.pipeline[0].iloc[0].no_of_calls_transform_outofsample == 200
 
-    assert trained_pipelines[0].iloc[1].no_of_calls_fit == 1
-    assert trained_pipelines[0].iloc[1].no_of_calls_update == 200
-    assert trained_pipelines[0].iloc[1].no_of_calls_transform_insample == 1
-    assert trained_pipelines[0].iloc[1].no_of_calls_transform_outofsample == 200
+    assert trained.pipeline[0].iloc[1].no_of_calls_fit == 1
+    assert trained.pipeline[0].iloc[1].no_of_calls_update == 200
+    assert trained.pipeline[0].iloc[1].no_of_calls_transform_insample == 1
+    assert trained.pipeline[0].iloc[1].no_of_calls_transform_outofsample == 200
 
-    assert trained_pipelines[0].iloc[2].no_of_calls_fit == 1
-    assert trained_pipelines[0].iloc[2].no_of_calls_update == 200
-    assert trained_pipelines[0].iloc[2].no_of_calls_transform_insample == 1
-    assert trained_pipelines[0].iloc[2].no_of_calls_transform_outofsample == 200
+    assert trained.pipeline[0].iloc[2].no_of_calls_fit == 1
+    assert trained.pipeline[0].iloc[2].no_of_calls_update == 200
+    assert trained.pipeline[0].iloc[2].no_of_calls_transform_insample == 1
+    assert trained.pipeline[0].iloc[2].no_of_calls_transform_outofsample == 200
 
 
 def test_loop_sequential_minibatch_call_times() -> None:
     X, y = generate_sine_wave_data()
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=200)
-    trained_pipelines = train(
+    trained = train(
         get_transformations_to_test(mode=Transformation.Properties.Mode.minibatch),
         X,
         y,
@@ -155,43 +155,43 @@ def test_loop_sequential_minibatch_call_times() -> None:
         train_method=TrainMethod.sequential,
     )
 
-    assert trained_pipelines[0].iloc[0].no_of_calls_fit == 1
-    assert trained_pipelines[0].iloc[0].no_of_calls_update == 0
-    assert trained_pipelines[0].iloc[0].no_of_calls_transform_insample == 1
-    assert trained_pipelines[0].iloc[0].no_of_calls_transform_outofsample == 0
+    assert trained.pipeline[0].iloc[0].no_of_calls_fit == 1
+    assert trained.pipeline[0].iloc[0].no_of_calls_update == 0
+    assert trained.pipeline[0].iloc[0].no_of_calls_transform_insample == 1
+    assert trained.pipeline[0].iloc[0].no_of_calls_transform_outofsample == 0
 
-    assert trained_pipelines[0].iloc[1].no_of_calls_fit == 1
-    assert trained_pipelines[0].iloc[1].no_of_calls_update == 1
-    assert trained_pipelines[0].iloc[1].no_of_calls_transform_insample == 1
-    assert trained_pipelines[0].iloc[1].no_of_calls_transform_outofsample == 1
+    assert trained.pipeline[0].iloc[1].no_of_calls_fit == 1
+    assert trained.pipeline[0].iloc[1].no_of_calls_update == 1
+    assert trained.pipeline[0].iloc[1].no_of_calls_transform_insample == 1
+    assert trained.pipeline[0].iloc[1].no_of_calls_transform_outofsample == 1
 
-    assert trained_pipelines[0].iloc[2].no_of_calls_fit == 1
-    assert trained_pipelines[0].iloc[2].no_of_calls_update == 2
-    assert trained_pipelines[0].iloc[2].no_of_calls_transform_insample == 1
-    assert trained_pipelines[0].iloc[2].no_of_calls_transform_outofsample == 2
+    assert trained.pipeline[0].iloc[2].no_of_calls_fit == 1
+    assert trained.pipeline[0].iloc[2].no_of_calls_update == 2
+    assert trained.pipeline[0].iloc[2].no_of_calls_transform_insample == 1
+    assert trained.pipeline[0].iloc[2].no_of_calls_transform_outofsample == 2
 
-    _ = backtest(trained_pipelines, X, y, splitter, mutate=True)
-    assert trained_pipelines[0].iloc[0].no_of_calls_fit == 1
-    assert trained_pipelines[0].iloc[0].no_of_calls_update == 0
-    assert trained_pipelines[0].iloc[0].no_of_calls_transform_insample == 1
-    assert trained_pipelines[0].iloc[0].no_of_calls_transform_outofsample == 1
+    _ = backtest(trained, X, y, splitter, mutate=True)
+    assert trained.pipeline[0].iloc[0].no_of_calls_fit == 1
+    assert trained.pipeline[0].iloc[0].no_of_calls_update == 0
+    assert trained.pipeline[0].iloc[0].no_of_calls_transform_insample == 1
+    assert trained.pipeline[0].iloc[0].no_of_calls_transform_outofsample == 1
 
-    assert trained_pipelines[0].iloc[1].no_of_calls_fit == 1
-    assert trained_pipelines[0].iloc[1].no_of_calls_update == 1
-    assert trained_pipelines[0].iloc[1].no_of_calls_transform_insample == 1
-    assert trained_pipelines[0].iloc[1].no_of_calls_transform_outofsample == 2
+    assert trained.pipeline[0].iloc[1].no_of_calls_fit == 1
+    assert trained.pipeline[0].iloc[1].no_of_calls_update == 1
+    assert trained.pipeline[0].iloc[1].no_of_calls_transform_insample == 1
+    assert trained.pipeline[0].iloc[1].no_of_calls_transform_outofsample == 2
 
-    assert trained_pipelines[0].iloc[2].no_of_calls_fit == 1
-    assert trained_pipelines[0].iloc[2].no_of_calls_update == 2
-    assert trained_pipelines[0].iloc[2].no_of_calls_transform_insample == 1
-    assert trained_pipelines[0].iloc[2].no_of_calls_transform_outofsample == 3
+    assert trained.pipeline[0].iloc[2].no_of_calls_fit == 1
+    assert trained.pipeline[0].iloc[2].no_of_calls_update == 2
+    assert trained.pipeline[0].iloc[2].no_of_calls_transform_insample == 1
+    assert trained.pipeline[0].iloc[2].no_of_calls_transform_outofsample == 3
 
 
 def test_loop_method_sequential_online_call_times() -> None:
     X, y = generate_sine_wave_data()
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=200)
-    trained_pipelines = train(
+    trained = train(
         get_transformations_to_test(mode=Transformation.Properties.Mode.online),
         X,
         y,
@@ -199,33 +199,33 @@ def test_loop_method_sequential_online_call_times() -> None:
         train_method=TrainMethod.sequential,
     )
 
-    assert trained_pipelines[0].iloc[0].no_of_calls_fit == 1
-    assert trained_pipelines[0].iloc[0].no_of_calls_update == 0
-    assert trained_pipelines[0].iloc[0].no_of_calls_transform_insample == 1
-    assert trained_pipelines[0].iloc[0].no_of_calls_transform_outofsample == 0
+    assert trained.pipeline[0].iloc[0].no_of_calls_fit == 1
+    assert trained.pipeline[0].iloc[0].no_of_calls_update == 0
+    assert trained.pipeline[0].iloc[0].no_of_calls_transform_insample == 1
+    assert trained.pipeline[0].iloc[0].no_of_calls_transform_outofsample == 0
 
-    assert trained_pipelines[0].iloc[1].no_of_calls_fit == 1
-    assert trained_pipelines[0].iloc[1].no_of_calls_update == 200
-    assert trained_pipelines[0].iloc[1].no_of_calls_transform_insample == 1
-    assert trained_pipelines[0].iloc[1].no_of_calls_transform_outofsample == 200
+    assert trained.pipeline[0].iloc[1].no_of_calls_fit == 1
+    assert trained.pipeline[0].iloc[1].no_of_calls_update == 200
+    assert trained.pipeline[0].iloc[1].no_of_calls_transform_insample == 1
+    assert trained.pipeline[0].iloc[1].no_of_calls_transform_outofsample == 200
 
-    assert trained_pipelines[0].iloc[2].no_of_calls_fit == 1
-    assert trained_pipelines[0].iloc[2].no_of_calls_update == 400
-    assert trained_pipelines[0].iloc[2].no_of_calls_transform_insample == 1
-    assert trained_pipelines[0].iloc[2].no_of_calls_transform_outofsample == 400
+    assert trained.pipeline[0].iloc[2].no_of_calls_fit == 1
+    assert trained.pipeline[0].iloc[2].no_of_calls_update == 400
+    assert trained.pipeline[0].iloc[2].no_of_calls_transform_insample == 1
+    assert trained.pipeline[0].iloc[2].no_of_calls_transform_outofsample == 400
 
-    _ = backtest(trained_pipelines, X, y, splitter, mutate=True)
-    assert trained_pipelines[0].iloc[0].no_of_calls_fit == 1
-    assert trained_pipelines[0].iloc[0].no_of_calls_update == 200
-    assert trained_pipelines[0].iloc[0].no_of_calls_transform_insample == 1
-    assert trained_pipelines[0].iloc[0].no_of_calls_transform_outofsample == 200
+    _ = backtest(trained, X, y, splitter, mutate=True)
+    assert trained.pipeline[0].iloc[0].no_of_calls_fit == 1
+    assert trained.pipeline[0].iloc[0].no_of_calls_update == 200
+    assert trained.pipeline[0].iloc[0].no_of_calls_transform_insample == 1
+    assert trained.pipeline[0].iloc[0].no_of_calls_transform_outofsample == 200
 
-    assert trained_pipelines[0].iloc[1].no_of_calls_fit == 1
-    assert trained_pipelines[0].iloc[1].no_of_calls_update == 400
-    assert trained_pipelines[0].iloc[1].no_of_calls_transform_insample == 1
-    assert trained_pipelines[0].iloc[1].no_of_calls_transform_outofsample == 400
+    assert trained.pipeline[0].iloc[1].no_of_calls_fit == 1
+    assert trained.pipeline[0].iloc[1].no_of_calls_update == 400
+    assert trained.pipeline[0].iloc[1].no_of_calls_transform_insample == 1
+    assert trained.pipeline[0].iloc[1].no_of_calls_transform_outofsample == 400
 
-    assert trained_pipelines[0].iloc[2].no_of_calls_fit == 1
-    assert trained_pipelines[0].iloc[2].no_of_calls_update == 600
-    assert trained_pipelines[0].iloc[2].no_of_calls_transform_insample == 1
-    assert trained_pipelines[0].iloc[2].no_of_calls_transform_outofsample == 600
+    assert trained.pipeline[0].iloc[2].no_of_calls_fit == 1
+    assert trained.pipeline[0].iloc[2].no_of_calls_update == 600
+    assert trained.pipeline[0].iloc[2].no_of_calls_transform_insample == 1
+    assert trained.pipeline[0].iloc[2].no_of_calls_transform_outofsample == 600
