@@ -181,7 +181,7 @@ class WrapSKLearnFeatureSelector(FeatureSelector, Tunable):
         return pd.DataFrame(
             {f"selected_features_{self.name}": [self.selected_features]},
             index=X.index[-1:],
-        )
+        ).reindex(X.index)
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         return X[self.selected_features]
