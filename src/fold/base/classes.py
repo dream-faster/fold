@@ -272,7 +272,9 @@ Pipeline = Union[Block, List[Block]]
 Pipelines = List[Pipeline]
 """Multiple, independent `Pipeline`s."""
 
-TransformationPipeline = Union[Transformation, List[Transformation]]
+TransformationPipeline = Union[
+    Union[Transformation, Composite], List[Union[Transformation, Composite]]
+]
 
 
 TrainedPipeline = Pipeline

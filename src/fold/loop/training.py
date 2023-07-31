@@ -94,7 +94,7 @@ def train(
             _,
             trained_preprocessing_pipeline,
             preprocessed_X,
-            preprocessed_artifacts,
+            preprocessed_artifact,
         ) = _train_on_window(
             X,
             y,
@@ -105,8 +105,10 @@ def train(
             backend=backend,
             disable_memory=disable_memory,
         )
-        assert preprocessed_X.shape == X.shape
-        assert preprocessed_artifacts.shape == artifact.shape
+        assert preprocessed_X.shape[0] == X.shape[0]
+        assert preprocessed_artifact.shape[0] == artifact.shape[0]
+        X = preprocessed_X
+        artifact = preprocessed_artifact
 
     if isinstance(splitter, SlidingWindowSplitter):
         assert train_method != TrainMethod.sequential, (

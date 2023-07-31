@@ -11,6 +11,7 @@ from ..base import (
     InSamplePredictions,
     OutOfSamplePredictions,
     Pipeline,
+    PipelineCard,
     TrainedPipelineCard,
 )
 from ..base.scoring import score_results
@@ -101,7 +102,7 @@ def backtest_score(
 
 
 def train_backtest(
-    pipeline: Pipeline,
+    pipeline: Union[Pipeline, PipelineCard],
     X: Optional[pd.DataFrame],
     y: pd.Series,
     splitter: Splitter,
@@ -123,7 +124,7 @@ def train_backtest(
 
     Parameters
     ----------
-    pipeline: Pipeline
+    pipeline: Union[Pipeline, PipelineCard]
         The pipeline to be fitted.
     X: Optional[pd.DataFrame]
         Exogenous Data.
@@ -197,7 +198,7 @@ def train_backtest(
 
 
 def train_evaluate(
-    pipeline: Pipeline,
+    pipeline: Union[Pipeline, PipelineCard],
     X: Optional[pd.DataFrame],
     y: pd.Series,
     splitter: Splitter,
@@ -228,7 +229,7 @@ def train_evaluate(
 
     Parameters
     ----------
-    pipeline: Pipeline
+    pipeline: Union[Pipeline, PipelineCard]
         The pipeline to be fitted.
     X: pd.DataFrame, optional
         Exogenous Data.
