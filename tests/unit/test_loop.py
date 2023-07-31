@@ -2,8 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from fold.base import Transformations
-from fold.base.classes import Artifact
+from fold.base.classes import Artifact, Pipeline
 from fold.base.scoring import score_results
 from fold.composites.concat import Concat, Sequence
 from fold.events.labeling.fixed import FixedForwardHorizon
@@ -27,7 +26,7 @@ from fold.utils.tests import (
 
 
 def run_loop(
-    train_method: TrainMethod, backend: BackendType, transformations: Transformations
+    train_method: TrainMethod, backend: BackendType, transformations: Pipeline
 ) -> None:
     # the naive model returns X as prediction, so y.shift(1) should be == pred
     X, y = generate_sine_wave_data(length=1000)

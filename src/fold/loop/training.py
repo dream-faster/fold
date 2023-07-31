@@ -25,8 +25,13 @@ from .utils import _extract_trained_pipelines
 from .wrap import wrap_transformation_if_needed
 
 
+class PipelineCard:
+    preprocessing: Pipeline
+    pipeline: Pipeline
+
+
 def train(
-    pipeline: Pipeline,
+    pipeline: PipelineCard,
     X: Optional[pd.DataFrame],
     y: pd.Series,
     splitter: Splitter,

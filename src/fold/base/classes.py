@@ -267,16 +267,11 @@ class FeatureSelector(Transformation):
     selected_features: List[str]
 
 
-Transformations = Union[
-    Transformation,
-    Composite,
-    List[Union[Transformation, Composite]],
-]
-
 Pipeline = Union[Block, List[Block]]
 """A list of `fold` objects that are executed sequentially. Or a single object."""
 Pipelines = List[Pipeline]
 """Multiple, independent `Pipeline`s."""
+
 
 TrainedPipeline = Pipeline
 TrainedPipelines = List[pd.Series]

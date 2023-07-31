@@ -9,13 +9,7 @@ import pandas as pd
 
 from fold.base.classes import Artifact
 
-from ..base import (
-    Composite,
-    Pipeline,
-    Pipelines,
-    Transformations,
-    get_concatenated_names,
-)
+from ..base import Composite, Pipeline, Pipelines, get_concatenated_names
 from ..transformations.columns import SelectColumns
 from ..transformations.dev import Identity
 from ..utils.dataframe import ResolutionStrategy, concat_on_columns_with_duplicates
@@ -154,7 +148,7 @@ class Sequence(Composite):
 
 def TransformColumn(
     columns: Union[List[str], str],
-    pipeline: Transformations,
+    pipeline: Pipeline,
     name: Optional[str] = None,
 ) -> Composite:
     """

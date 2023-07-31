@@ -21,7 +21,6 @@ from ..base import (
     TrainedPipeline,
     TrainedPipelines,
     Transformation,
-    Transformations,
     X,
     traverse_apply,
 )
@@ -493,7 +492,7 @@ def _process_optimizer(
 def __process_candidates(
     optimizer: Optimizer,
     index: int,
-    child_transform: Transformations,
+    child_transform: Pipeline,
     X: pd.DataFrame,
     y: Optional[pd.Series],
     artifacts: Artifact,
@@ -501,7 +500,7 @@ def __process_candidates(
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
     disable_memory: bool,
-) -> Tuple[Transformations, X, Artifact]:
+) -> Tuple[Pipeline, X, Artifact]:
     splits = optimizer.splitter.splits(y.index)
 
     (
@@ -535,7 +534,7 @@ def __process_candidates(
 def __process_primary_child_transform(
     composite: Union[Composite, Sampler],
     index: int,
-    child_transform: Transformations,
+    child_transform: Pipeline,
     X: pd.DataFrame,
     y: Optional[pd.Series],
     artifacts: Artifact,
@@ -543,7 +542,7 @@ def __process_primary_child_transform(
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
     disable_memory: bool,
-) -> Tuple[Transformations, X, Optional[pd.Series], Artifact]:
+) -> Tuple[Pipeline, X, Optional[pd.Series], Artifact]:
     X, y, artifacts = composite.preprocess_primary(
         X=X, index=index, y=y, artifact=artifacts, fit=stage.is_fit_or_update()
     )
@@ -562,7 +561,7 @@ def __process_primary_child_transform(
 def __process_secondary_child_transform(
     composite: Composite,
     index: int,
-    child_transform: Transformations,
+    child_transform: Pipeline,
     X: pd.DataFrame,
     y: Optional[pd.Series],
     artifacts: Artifact,
@@ -570,7 +569,7 @@ def __process_secondary_child_transform(
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
     disable_memory: bool,
-) -> Tuple[Transformations, X, Artifact]:
+) -> Tuple[Pipeline, X, Artifact]:
     X, y, artifacts = composite.preprocess_secondary(
         X=X,
         y=y,
