@@ -11,12 +11,11 @@ from ..base import (
     Clonable,
     Pipeline,
     TrainedPipelines,
-    Transformations,
     get_flat_list_of_transformations,
 )
 
 
-def deepcopy_pipelines(transformation: Transformations) -> Transformations:
+def deepcopy_pipelines(transformation: Pipeline) -> Pipeline:
     if isinstance(transformation, List) or isinstance(transformation, Tuple):
         return [deepcopy_pipelines(t) for t in transformation]
     elif isinstance(transformation, Clonable):
@@ -29,7 +28,7 @@ def replace_with(transformations: List[Block]) -> Callable:
     transformations = get_flat_list_of_transformations(transformations)
     mapping = {t.id: t for t in transformations}
 
-    def replace(transformation: Transformations) -> Transformations:
+    def replace(transformation: Pipeline) -> Pipeline:
         if isinstance(transformation, List) or isinstance(transformation, Tuple):
             return [replace(t) for t in transformation]
         elif isinstance(transformation, Clonable):
