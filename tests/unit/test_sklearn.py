@@ -95,8 +95,10 @@ def test_sklearn_partial_fit() -> None:
     ]
     trained_pipelines = train(transformations, X, y, splitter)
     _ = backtest(trained_pipelines, X, y, splitter)
-    assert trained_pipelines[0].iloc[0].transformation.fit_called is False
-    assert trained_pipelines[0].iloc[0].transformation.partial_fit_called is True
+    assert trained_pipelines.pipeline[0].iloc[0].transformation.fit_called is False
+    assert (
+        trained_pipelines.pipeline[0].iloc[0].transformation.partial_fit_called is True
+    )
 
 
 def test_nested_transformations_with_feature_selection() -> None:

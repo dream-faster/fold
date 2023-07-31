@@ -5,8 +5,10 @@ from typing import Optional, Tuple, Union
 
 import pandas as pd
 
-from ..base import Artifact, EventDataFrame, OutOfSamplePredictions, TrainedPipelines
-from ..splitters import Splitter
+from fold.base.classes import TrainedPipelineCard
+
+from ..base import Artifact, EventDataFrame, OutOfSamplePredictions
+from ..splitters import Fold, Splitter
 from ..utils.dataframe import concat_on_index
 from ..utils.list import unpack_list_of_tuples
 from ..utils.trim import trim_initial_nans, trim_initial_nans_single
@@ -17,7 +19,7 @@ from .types import Backend, BackendType
 
 
 def backtest(
-    trained_pipelines: TrainedPipelines,
+    trained_pipelinecard: TrainedPipelineCard,
     X: Optional[pd.DataFrame],
     y: pd.Series,
     splitter: Splitter,
@@ -30,12 +32,12 @@ def backtest(
     disable_memory: bool = False,
 ) -> Union[OutOfSamplePredictions, Tuple[OutOfSamplePredictions, Artifact]]:
     """
-    Run backtest on TrainedPipelines and given data.
+    Run backtest on TrainedPipelineCard and given data.
 
     Parameters
     ----------
 
-    trained_pipelines: TrainedPipelines
+    trained_pipelines: TrainedPipelineCard
         The fitted pipelines, for all folds.
     X: pd.DataFrame, optional
         Exogenous Data.
@@ -66,10 +68,27 @@ def backtest(
     artifact = Artifact.from_events_sample_weights(X.index, events, sample_weights)
     X, y, artifact = trim_initial_nans(X, y, artifact)
 
+    if trained_pipelinecard.preprocessing is not None:
+        preprocessed_X, preprocessed_artifacts = _backtest_on_window(
+            [pd.Series(trained_pipelinecard.preprocessing, index=[0])],
+            Fold(0, 0, 0, len(X), 0, 0, 0, len(X)),
+            X,
+            y,
+            artifact,
+            backend,
+            mutate=mutate,
+            disable_memory=disable_memory,
+        )
+
+        assert preprocessed_X.shape[0] == X.shape[0]
+        assert preprocessed_artifacts.shape[0] == artifact.shape[0]
+        X = preprocessed_X
+        artifact = preprocessed_artifacts
+
     results, artifacts = unpack_list_of_tuples(
         backend.backtest_pipeline(
             _backtest_on_window,
-            trained_pipelines,
+            trained_pipelinecard.pipeline,
             splitter.splits(index=X.index),
             X,
             y,

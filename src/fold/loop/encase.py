@@ -5,16 +5,16 @@ from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple, Union
 
 import pandas as pd
 
-from fold.base.classes import InSamplePredictions
-from fold.base.scoring import score_results
-
 from ..base import (
     Artifact,
     EventDataFrame,
+    InSamplePredictions,
     OutOfSamplePredictions,
     Pipeline,
-    TrainedPipelines,
+    PipelineCard,
+    TrainedPipelineCard,
 )
+from ..base.scoring import score_results
 from ..splitters import Splitter
 from ..utils.dataframe import ResolutionStrategy, concat_on_columns_with_duplicates
 from .backtesting import backtest
@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
 
 def backtest_score(
-    trained_pipelines: TrainedPipelines,
+    trained_pipelines: TrainedPipelineCard,
     X: Optional[pd.DataFrame],
     y: pd.Series,
     splitter: Splitter,
@@ -47,7 +47,7 @@ def backtest_score(
 
     Parameters
     ----------
-    trained_pipelines: TrainedPipelines
+    trained_pipelines: TrainedPipelineCard
         The fitted pipelines, for all folds.
     X: Optional[pd.DataFrame]
         Exogenous Data.
@@ -102,7 +102,7 @@ def backtest_score(
 
 
 def train_backtest(
-    pipeline: Pipeline,
+    pipeline: Union[Pipeline, PipelineCard],
     X: Optional[pd.DataFrame],
     y: pd.Series,
     splitter: Splitter,
@@ -115,16 +115,16 @@ def train_backtest(
     return_insample: bool = False,
     disable_memory: bool = False,
 ) -> Union[
-    Tuple[OutOfSamplePredictions, TrainedPipelines],
-    Tuple[OutOfSamplePredictions, TrainedPipelines, Artifact],
-    Tuple[OutOfSamplePredictions, TrainedPipelines, Artifact, InSamplePredictions],
+    Tuple[OutOfSamplePredictions, TrainedPipelineCard],
+    Tuple[OutOfSamplePredictions, TrainedPipelineCard, Artifact],
+    Tuple[OutOfSamplePredictions, TrainedPipelineCard, Artifact, InSamplePredictions],
 ]:
     """
     Run train and backtest.
 
     Parameters
     ----------
-    pipeline: Pipeline
+    pipeline: Union[Pipeline, PipelineCard]
         The pipeline to be fitted.
     X: Optional[pd.DataFrame]
         Exogenous Data.
@@ -150,7 +150,7 @@ def train_backtest(
     -------
     OutOfSamplePredictions
         Predictions for all folds, concatenated.
-    TrainedPipelines
+    TrainedPipelineCard
         The fitted pipelines, for all folds.
     """
     trained_pipelines, train_artifacts, insample_predictions = train(
@@ -198,7 +198,7 @@ def train_backtest(
 
 
 def train_evaluate(
-    pipeline: Pipeline,
+    pipeline: Union[Pipeline, PipelineCard],
     X: Optional[pd.DataFrame],
     y: pd.Series,
     splitter: Splitter,
@@ -214,12 +214,12 @@ def train_evaluate(
     Tuple[
         "ScoreCard",
         OutOfSamplePredictions,
-        TrainedPipelines,
+        TrainedPipelineCard,
     ],
     Tuple[
         "ScoreCard",
         OutOfSamplePredictions,
-        TrainedPipelines,
+        TrainedPipelineCard,
         Artifact,
     ],
 ]:
@@ -229,7 +229,7 @@ def train_evaluate(
 
     Parameters
     ----------
-    pipeline: Pipeline
+    pipeline: Union[Pipeline, PipelineCard]
         The pipeline to be fitted.
     X: pd.DataFrame, optional
         Exogenous Data.
@@ -256,7 +256,7 @@ def train_evaluate(
         A ScoreCard from `krisi`.
     OutOfSamplePredictions
         Predictions for all folds, concatenated.
-    TrainedPipelines
+    TrainedPipelineCard
         The fitted pipelines, for all folds.
     """
     trained_pipelines, train_artifacts = train(

@@ -35,7 +35,7 @@ def test_grid_hpo() -> None:
     )
 
     pred, trained_pipelines = train_backtest(pipeline, X, y, splitter)
-    assert len(trained_pipelines[0].iloc[0].param_permutations) > 4
+    assert len(trained_pipelines.pipeline[0].iloc[0].param_permutations) > 4
 
 
 def test_gridsearch_sklearn() -> None:
@@ -84,8 +84,8 @@ def test_grid_passthrough():
         is_scorer_loss=True,
     )
 
-    pred, trained_pipelines = train_backtest(pipeline, X, y, splitter)
-    assert len(trained_pipelines[0].iloc[0].param_permutations) >= 4
+    pred, trained = train_backtest(pipeline, X, y, splitter)
+    assert len(trained.pipeline[0].iloc[0].param_permutations) >= 4
     assert (X.loc[pred.index].squeeze() == pred.squeeze()).all()
 
 

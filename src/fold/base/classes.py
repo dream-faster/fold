@@ -272,6 +272,10 @@ Pipeline = Union[Block, List[Block]]
 Pipelines = List[Pipeline]
 """Multiple, independent `Pipeline`s."""
 
+TransformationPipeline = Union[
+    Union[Transformation, Composite], List[Union[Transformation, Composite]]
+]
+
 
 TrainedPipeline = Pipeline
 TrainedPipelines = List[pd.Series]
@@ -282,6 +286,18 @@ InSamplePredictions = pd.DataFrame
 """The backtest's resulting in-sample output."""
 DeployablePipeline = Pipeline
 """A trained `Pipeline`, to be used for deployment."""
+
+
+@dataclass
+class PipelineCard:
+    preprocessing: Optional[TransformationPipeline]
+    pipeline: Pipeline
+
+
+@dataclass
+class TrainedPipelineCard:
+    preprocessing: TrainedPipeline
+    pipeline: TrainedPipelines
 
 
 def fit_noop(

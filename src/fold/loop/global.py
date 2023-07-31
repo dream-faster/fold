@@ -5,7 +5,7 @@ from typing import Iterable, Optional, Tuple, Union
 
 import pandas as pd
 
-from ..base import Pipeline, TrainedPipelines
+from ..base import Pipeline, TrainedPipelineCard
 from ..splitters import Splitter
 from ..utils.list import wrap_in_list
 from .backend import get_backend
@@ -21,7 +21,7 @@ def _train_global(
     splitter: Splitter,
     backend: Union[BackendType, str] = BackendType.no,
     silent: bool = False,
-) -> TrainedPipelines:
+) -> TrainedPipelineCard:
     """
     Don't use it, it's not tested or ready.
     Trains a global pipeline on multiple time series.
