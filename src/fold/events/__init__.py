@@ -12,7 +12,7 @@ from ..utils.dataframe import (
     concat_on_columns_with_duplicates,
 )
 from ..utils.list import wrap_in_double_list_if_needed, wrap_in_list
-from .base import EventFilter, Labeler, LabelingStrategy, WeighingStrategy
+from .base import EventFilter, Labeler, LabelingStrategy, WeightingStrategy
 from .filters import EveryNth, FilterZero, NoFilter
 from .labeling import *  # noqa
 from .weights import *  # noqa
@@ -132,23 +132,6 @@ class UsePredefinedEvents(Composite):
             X.loc[events.index],
             events.event_label,
             events,
-        )
-
-    def postprocess_result_primary(
-        self, results: List[pd.DataFrame], y: Optional[pd.Series], fit: bool
-    ) -> pd.DataFrame:
-        return results[0].reindex(y.index)
-
-    def postprocess_artifacts_primary(
-        self,
-        primary_artifacts: List[Artifact],
-        results: List[pd.DataFrame],
-        original_artifact: Artifact,
-        fit: bool,
-    ) -> pd.DataFrame:
-        return concat_on_columns_with_duplicates(
-            primary_artifacts,
-            strategy=ResolutionStrategy.last,
         )
 
     def clone(self, clone_children: Callable) -> UsePredefinedEvents:

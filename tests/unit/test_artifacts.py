@@ -4,7 +4,7 @@ from fold.composites.optimize import OptimizeGridSearch
 from fold.events import CreateEvents
 from fold.events.filters.everynth import EveryNth
 from fold.events.labeling import FixedForwardHorizon, NoLabel
-from fold.events.weights import NoWeighing
+from fold.events.weights import NoWeighting
 from fold.loop import train, train_evaluate
 from fold.models import DummyRegressor
 from fold.splitters import ExpandingWindowSplitter
@@ -25,7 +25,7 @@ def test_artifacts_transformation_fit() -> None:
                 DummyRegressor(predicted_value=1.0),
             ],
             FixedForwardHorizon(
-                time_horizon=1, labeling_strategy=NoLabel(), weighing_strategy=None
+                time_horizon=1, labeling_strategy=NoLabel(), weighting_strategy=None
             ),
             EveryNth(2),
         )
@@ -70,7 +70,7 @@ def test_artifacts_events() -> None:
             FixedForwardHorizon(
                 time_horizon=3,
                 labeling_strategy=NoLabel(),
-                weighing_strategy=NoWeighing(),
+                weighting_strategy=NoWeighting(),
             ),
             EveryNth(2),
         )

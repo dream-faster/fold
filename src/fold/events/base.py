@@ -33,7 +33,7 @@ class LabelingStrategy(ABC):
         raise NotImplementedError
 
 
-class WeighingStrategy(ABC):
+class WeightingStrategy(ABC):
     @abstractmethod
     def calculate(self, series: pd.Series) -> pd.Series:
         raise NotImplementedError

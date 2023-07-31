@@ -9,7 +9,7 @@ from fold.composites.select import SelectBest
 from fold.events import CreateEvents, UsePredefinedEvents
 from fold.events.filters.everynth import EveryNth
 from fold.events.labeling import BinarizeSign, FixedForwardHorizon
-from fold.events.weights import NoWeighing
+from fold.events.weights import NoWeighting
 from fold.loop import train, train_evaluate
 from fold.loop.backend.ray import RayBackend
 from fold.loop.backtesting import backtest
@@ -32,7 +32,7 @@ def test_on_weather_data_backends(backend: str) -> None:
         shorten=1000,
     )
     events = FixedForwardHorizon(
-        2, BinarizeSign(), weighing_strategy=NoWeighing()
+        2, BinarizeSign(), weighting_strategy=NoWeighting()
     ).label_events(EveryNth(3).get_event_start_times(y), y)
     splitter = SlidingWindowSplitter(train_window=0.2, step=0.2)
     pipeline = [
@@ -85,6 +85,8 @@ def test_on_weather_data_backends(backend: str) -> None:
     )
     assert pred_disable_memory.equals(pred)
 
+    train_evaluate(pipeline, X, y, splitter, backend=backend, events=events)
+
 
 def test_train_evaluate() -> None:
     X, y = get_preprocessed_dataset(
@@ -122,7 +124,7 @@ def test_train_evaluate_probabilities() -> None:
         CreateEvents(
             RandomForestClassifier(),
             FixedForwardHorizon(
-                1, labeling_strategy=BinarizeSign(), weighing_strategy=None
+                1, labeling_strategy=BinarizeSign(), weighting_strategy=None
             ),
         ),
     ]
@@ -156,7 +158,7 @@ def test_integration_events() -> None:
                 FixedForwardHorizon(
                     time_horizon=5,
                     labeling_strategy=BinarizeSign(),
-                    weighing_strategy=None,
+                    weighting_strategy=None,
                 ),
                 EveryNth(2),
             ),

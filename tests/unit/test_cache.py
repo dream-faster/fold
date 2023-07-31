@@ -8,7 +8,7 @@ from fold.composites import Cache
 from fold.events import CreateEvents
 from fold.events.filters.everynth import EveryNth
 from fold.events.labeling import FixedForwardHorizon, NoLabel
-from fold.events.weights import NoWeighing
+from fold.events.weights import NoWeighting
 from fold.loop import train_backtest
 from fold.models.random import RandomClassifier
 from fold.splitters import ExpandingWindowSplitter
@@ -25,7 +25,7 @@ events_pipeline = [
             FixedForwardHorizon(
                 time_horizon=3,
                 labeling_strategy=NoLabel(),
-                weighing_strategy=NoWeighing(),
+                weighting_strategy=NoWeighting(),
             ),
             EveryNth(2),
         ),
