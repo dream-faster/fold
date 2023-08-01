@@ -279,14 +279,9 @@ def test_preprocessing():
         MinMaxScaler(),
     ]
 
-    pred, _ = train_backtest(
-        pipeline,
-        X,
-        y,
-        splitter,
-    )
+    pred, _, insample = train_backtest(pipeline, X, y, splitter, return_insample=True)
 
-    pred_preprocessing, _ = train_backtest(
+    pred_preprocessing, _, preprocessing_insample = train_backtest(
         PipelineCard(
             preprocessing=equivalent_preprocessing_pipeline,
             pipeline=[Identity(), Identity()],
@@ -294,5 +289,7 @@ def test_preprocessing():
         X,
         y,
         splitter,
+        return_insample=True,
     )
+    assert np.allclose(insample, preprocessing_insample, atol=1e-20)
     assert np.allclose(pred_preprocessing, pred, atol=1e-20)
