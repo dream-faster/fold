@@ -288,7 +288,8 @@ def test_preprocessing():
 
     pred_preprocessing, _ = train_backtest(
         PipelineCard(
-            preprocessing=equivalent_preprocessing_pipeline, pipeline=Identity()
+            preprocessing=equivalent_preprocessing_pipeline,
+            pipeline=[Identity(), Identity()],
         ),
         X,
         y,
