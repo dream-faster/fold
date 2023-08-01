@@ -14,11 +14,10 @@ from fold.loop.encase import train_backtest
 from fold.loop.types import TrainMethod
 from fold.models.baseline import Naive
 from fold.splitters import ExpandingWindowSplitter, SlidingWindowSplitter
-from fold.transformations.dev import Test
+from fold.transformations.dev import Identity, Test
 from fold.transformations.features import AddWindowFeatures
 from fold.transformations.function import ApplyFunction
 from fold.transformations.lags import AddLagsX, AddLagsY
-from fold.transformations.scaling import MinMaxScaler
 from fold.utils.dataset import get_preprocessed_dataset
 from fold.utils.tests import (
     generate_all_zeros,
@@ -241,7 +240,7 @@ def test_preprocessing():
                 ),
             ]
         ),
-        MinMaxScaler(),
+        Identity(),
     ]
 
     def assert_len_can_be_divided_by_window_size(x, in_sample):
@@ -276,6 +275,7 @@ def test_preprocessing():
                 ),
             ]
         ),
+        Identity(),
     ]
 
     pred, trained, insample = train_backtest(
@@ -285,12 +285,15 @@ def test_preprocessing():
     pred_preprocessing, trained_preprocessing, preprocessing_insample = train_backtest(
         PipelineCard(
             preprocessing=equivalent_preprocessing_pipeline,
-            pipeline=[MinMaxScaler()],
+            pipeline=[Identity()],  # MinMaxScaler()
         ),
         X,
         y,
         splitter,
         return_insample=True,
     )
-    # assert np.allclose(insample, preprocessing_insample, atol=1e-2)
+    # insample results should be different, as AddLagsX's first values are gonna be 0.0s in-sample,
+    # also 0.0s may skew the scaler
+    assert not np.allclose(insample, preprocessing_insample, atol=1e-2)
+
     assert np.allclose(pred_preprocessing, pred, atol=1e-20)

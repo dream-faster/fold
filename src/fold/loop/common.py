@@ -617,7 +617,6 @@ def _train_on_window(
     )
     X_train: pd.DataFrame = X.iloc[window_start:window_end]  # type: ignore
     y_train = y.iloc[window_start:window_end]
-
     artifact_train = artifact.iloc[window_start:window_end]
 
     pipeline = deepcopy_pipelines(pipeline)
