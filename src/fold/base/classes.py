@@ -190,8 +190,9 @@ class Transformation(Block, ABC):
         requires_X: bool
         mode: Mode = Mode.minibatch
         memory_size: Optional[
-            int
-        ] = None  # if not `None`, will inject past window with size of `memory` to update() & transformation(). if `0`, it'll remember all data. during the in_sample period, it'll contain all data.
+            Union[int, float]
+        ] = None  # During the in_sample period, memory will contain all data. During inference, if not `None`, it will inject past window with size of `memory` to update() & transformation(). if `inf`, it'll remember all data.
+        disable_memory: bool = False  # If `True`, memory will not be used at all, even if `memory_size` is not `None`.
         model_type: Optional[ModelType] = None
         _internal_supports_minibatch_backtesting: bool = False  # internal, during backtesting, calls predict_in_sample() instead of predict()
 

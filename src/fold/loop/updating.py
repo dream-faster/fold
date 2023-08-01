@@ -16,7 +16,6 @@ def update(
     y: pd.Series,
     sample_weights: Optional[pd.Series] = None,
     events: Optional[EventDataFrame] = None,
-    disable_memory: bool = False,
 ) -> DeployablePipeline:
     """
     Update a set of Transformations with new data.
@@ -35,6 +34,5 @@ def update(
         transformations,
         stage=Stage.update,
         backend=backend,
-        disable_memory=disable_memory,
     )
     return transformations

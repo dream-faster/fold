@@ -32,7 +32,7 @@ class ApplyFunction(Transformation, Tunable):
         self.output_dtype = output_dtype
         self.params_to_try = params_to_try
         self.properties = Transformation.Properties(
-            requires_X=True, memory_size=past_window_size
+            requires_X=True, memory_size=past_window_size, disable_memory=True
         )
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:

@@ -18,9 +18,8 @@ def preprocess_X_y_with_memory(
     y: T,
     sample_weights: S,
     in_sample: bool,
-    disable_memory: bool,
 ) -> Tuple[pd.DataFrame, T, S]:
-    if disable_memory:
+    if transformation.properties.disable_memory:
         return X, y, sample_weights
     memory_size = transformation.properties.memory_size
     if (
@@ -54,7 +53,7 @@ def preprocess_X_y_with_memory(
             y,
             sample_weights,
         )
-    elif in_sample is True or memory_size == 0:
+    elif in_sample is True:
         memory_y.name = y.name
         return (
             concat_on_index([memory_X, X], copy=True),
@@ -84,9 +83,8 @@ def postprocess_X_y_into_memory_(
     y: pd.Series,
     sample_weights: Optional[pd.Series],
     in_sample: bool,
-    disable_memory: bool,
 ) -> None:
-    if disable_memory:
+    if transformation.properties.disable_memory:
         return
     # This function mutates the transformation's state property
     # don't update the transformation if we're in inference mode (y is None)
@@ -94,7 +92,7 @@ def postprocess_X_y_into_memory_(
     if memory_size is None or y is None:
         return
 
-    window_size = len(X) if memory_size == 0 else memory_size
+    window_size = memory_size
     if in_sample:
         # store the whole training X and y
         transformation._state = Transformation.State(

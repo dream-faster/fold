@@ -29,7 +29,6 @@ def backtest(
     silent: bool = False,
     mutate: bool = False,
     return_artifacts: bool = False,
-    disable_memory: bool = False,
 ) -> Union[OutOfSamplePredictions, Tuple[OutOfSamplePredictions, Artifact]]:
     """
     Run backtest on TrainedPipelineCard and given data.
@@ -77,7 +76,6 @@ def backtest(
             artifact,
             backend,
             mutate=mutate,
-            disable_memory=disable_memory,
         )
 
         assert preprocessed_X.shape[0] == X.shape[0]
@@ -96,7 +94,6 @@ def backtest(
             backend,
             mutate=mutate,
             silent=silent,
-            disable_memory=disable_memory,
         )
     )
     results = trim_initial_nans_single(concat_on_index(results, copy=False))

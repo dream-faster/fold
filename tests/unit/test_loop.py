@@ -2,8 +2,9 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from fold.base.classes import Artifact, Pipeline, PipelineCard
+from fold.base.classes import Artifact, Clonable, Pipeline, PipelineCard
 from fold.base.scoring import score_results
+from fold.base.utils import traverse_apply
 from fold.composites.concat import Concat, Sequence
 from fold.events.labeling.fixed import FixedForwardHorizon
 from fold.events.labeling.strategies import NoLabel
@@ -142,14 +143,10 @@ def test_disable_memory():
     splitter = SlidingWindowSplitter(train_window=0.2, step=0.2)
     memory_size = 30
 
-    def assert_len_can_be_divided_by_memory_size(x, in_sample):
+    def assert_len_can_be_divided_by_memory_size_2x(x, in_sample):
         if not in_sample:
-            assert (len(x) - memory_size) % 100 == 0
+            assert (len(x) - memory_size * 2) % 100 == 0
 
-    test_trans = Test(
-        fit_func=lambda x: x, transform_func=assert_len_can_be_divided_by_memory_size
-    )
-    test_trans.properties.memory_size = memory_size
     pipeline = Concat(
         [
             Concat(
@@ -158,7 +155,11 @@ def test_disable_memory():
                         AddLagsX(columns_and_lags=[("pressure", list(range(1, 3)))])
                     ),
                     AddWindowFeatures(("pressure", 14, "mean")),
-                    test_trans,
+                    Test(
+                        fit_func=lambda x: x,
+                        transform_func=assert_len_can_be_divided_by_memory_size_2x,
+                        memory_size=30,
+                    ),
                 ]
             ),
             AddWindowFeatures(("humidity", 26, "std")),
@@ -175,15 +176,26 @@ def test_disable_memory():
         X,
         y,
         splitter,
-        disable_memory=False,
     )
 
+    def assert_len_can_be_divided_by_memory_size(x, in_sample):
+        if not in_sample:
+            assert (len(x) - memory_size) % 100 == 0
+
+    def modify_pipeline(x, clone_children):
+        if isinstance(x, Test):
+            x.properties.disable_memory = True
+            x.transform_func = assert_len_can_be_divided_by_memory_size
+        if isinstance(x, Clonable):
+            return x.clone(clone_children)
+        else:
+            return x
+
     pred_disable_memory, _ = train_backtest(
-        pipeline,
+        traverse_apply(pipeline, modify_pipeline),
         X,
         y,
         splitter,
-        disable_memory=True,
     )
     assert np.allclose(pred_disable_memory, pred, atol=1e-20)
 
@@ -205,6 +217,7 @@ def test_preprocessing():
         fit_func=lambda x: x, transform_func=assert_len_can_be_divided_by_memory_size
     )
     test_trans.properties.memory_size = memory_size
+    test_trans.properties.disable_memory = True
     pipeline = Concat(
         [
             Concat(
@@ -227,12 +240,14 @@ def test_preprocessing():
 
     def assert_len_can_be_divided_by_window_size(x, in_sample):
         if not in_sample:
-            assert len(x) % 100 == 0
+            assert len(x) == len(X)
 
     test_trans_preprocessing = Test(
         fit_func=lambda x: x, transform_func=assert_len_can_be_divided_by_window_size
     )
     test_trans_preprocessing.properties.memory_size = memory_size
+    test_trans_preprocessing.properties.disable_memory = True
+
     equivalent_preprocessing_pipeline = Concat(
         [
             Concat(
