@@ -218,25 +218,30 @@ def test_preprocessing():
     )
     test_trans.properties.memory_size = memory_size
     test_trans.properties.disable_memory = True
-    pipeline = Concat(
-        [
-            Concat(
-                [
-                    Sequence(
-                        AddLagsX(columns_and_lags=[("pressure", list(range(1, 3)))])
-                    ),
-                    AddWindowFeatures(("pressure", 14, "mean")),
-                    test_trans,
-                ]
-            ),
-            AddWindowFeatures(("humidity", 26, "std")),
-            Concat(
-                [
-                    ApplyFunction(lambda x: x.rolling(30).mean(), past_window_size=30),
-                ]
-            ),
-        ]
-    )
+    pipeline = [
+        Concat(
+            [
+                Concat(
+                    [
+                        Sequence(
+                            AddLagsX(columns_and_lags=[("pressure", list(range(1, 3)))])
+                        ),
+                        AddWindowFeatures(("pressure", 14, "mean")),
+                        test_trans,
+                    ]
+                ),
+                AddWindowFeatures(("humidity", 26, "std")),
+                Concat(
+                    [
+                        ApplyFunction(
+                            lambda x: x.rolling(30).mean(), past_window_size=30
+                        ),
+                    ]
+                ),
+            ]
+        ),
+        Identity(),
+    ]
 
     def assert_len_can_be_divided_by_window_size(x, in_sample):
         if not in_sample:
@@ -248,39 +253,47 @@ def test_preprocessing():
     test_trans_preprocessing.properties.memory_size = memory_size
     test_trans_preprocessing.properties.disable_memory = True
 
-    equivalent_preprocessing_pipeline = Concat(
-        [
-            Concat(
-                [
-                    Sequence(
-                        AddLagsX(columns_and_lags=[("pressure", list(range(1, 3)))])
-                    ),
-                    AddWindowFeatures(("pressure", 14, "mean")),
-                    test_trans_preprocessing,
-                ]
-            ),
-            AddWindowFeatures(("humidity", 26, "std")),
-            Concat(
-                [
-                    ApplyFunction(lambda x: x.rolling(30).mean(), past_window_size=30),
-                ]
-            ),
-        ]
+    equivalent_preprocessing_pipeline = [
+        Concat(
+            [
+                Concat(
+                    [
+                        Sequence(
+                            AddLagsX(columns_and_lags=[("pressure", list(range(1, 3)))])
+                        ),
+                        AddWindowFeatures(("pressure", 14, "mean")),
+                        test_trans_preprocessing,
+                    ]
+                ),
+                AddWindowFeatures(("humidity", 26, "std")),
+                Concat(
+                    [
+                        ApplyFunction(
+                            lambda x: x.rolling(30).mean(), past_window_size=30
+                        ),
+                    ]
+                ),
+            ]
+        ),
+        Identity(),
+    ]
+
+    pred, trained, insample = train_backtest(
+        pipeline, X, y, splitter, return_insample=True
     )
 
-    pred, _ = train_backtest(
-        pipeline,
-        X,
-        y,
-        splitter,
-    )
-
-    pred_preprocessing, _ = train_backtest(
+    pred_preprocessing, trained_preprocessing, preprocessing_insample = train_backtest(
         PipelineCard(
-            preprocessing=equivalent_preprocessing_pipeline, pipeline=Identity()
+            preprocessing=equivalent_preprocessing_pipeline,
+            pipeline=[Identity()],  # MinMaxScaler()
         ),
         X,
         y,
         splitter,
+        return_insample=True,
     )
+    # insample results should be different, as AddLagsX's first values are gonna be 0.0s in-sample,
+    # also 0.0s may skew the scaler
+    assert not np.allclose(insample, preprocessing_insample, atol=1e-2)
+
     assert np.allclose(pred_preprocessing, pred, atol=1e-20)

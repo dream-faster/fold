@@ -2,6 +2,7 @@ import pytest
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.linear_model import LogisticRegression
 
+from fold.base.classes import PipelineCard
 from fold.composites import Concat
 from fold.composites.concat import Sequence
 from fold.composites.optimize import OptimizeGridSearch
@@ -35,30 +36,36 @@ def test_on_weather_data_backends(backend: str) -> None:
         2, BinarizeSign(), weighting_strategy=NoWeighting()
     ).label_events(EveryNth(3).get_event_start_times(y), y)
     splitter = SlidingWindowSplitter(train_window=0.2, step=0.2)
-    pipeline = [
-        Concat(
-            [
-                Concat(
-                    [
-                        Sequence(
-                            AddLagsX(columns_and_lags=[("pressure", list(range(1, 3)))])
-                        ),
-                        AddWindowFeatures(("pressure", 14, "mean")),
-                    ]
-                ),
-                AddWindowFeatures(("humidity", 26, "std")),
-                Concat(
-                    [
-                        ApplyFunction(
-                            lambda x: x.rolling(30).mean(), past_window_size=30
-                        ),
-                    ]
-                ),
-            ]
-        ),
-        RemoveLowVarianceFeatures(),
-        UsePredefinedEvents(RandomForestRegressor(random_state=42)),
-    ]
+    pipeline = PipelineCard(
+        preprocessing=[
+            Concat(
+                [
+                    Concat(
+                        [
+                            Sequence(
+                                AddLagsX(
+                                    columns_and_lags=[("pressure", list(range(1, 3)))]
+                                )
+                            ),
+                            AddWindowFeatures(("pressure", 14, "mean")),
+                        ]
+                    ),
+                    AddWindowFeatures(("humidity", 26, "std")),
+                    Concat(
+                        [
+                            ApplyFunction(
+                                lambda x: x.rolling(30).mean(), past_window_size=30
+                            ),
+                        ]
+                    ),
+                ]
+            ),
+        ],
+        pipeline=[
+            RemoveLowVarianceFeatures(),
+            UsePredefinedEvents(RandomForestRegressor(random_state=42)),
+        ],
+    )
 
     pred, _, insample_predictions = train_backtest(
         pipeline,
@@ -85,11 +92,13 @@ def test_train_evaluate() -> None:
     )
 
     splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.2)
-    pipeline = [
-        AddLagsX(columns_and_lags=[("pressure", list(range(1, 3)))]),
-        AddLagsY(list(range(1, 10))),
-        RandomForestRegressor(),
-    ]
+    pipeline = PipelineCard(
+        preprocessing=[
+            AddLagsX(columns_and_lags=[("pressure", list(range(1, 3)))]),
+            AddLagsY(list(range(1, 10))),
+        ],
+        pipeline=RandomForestRegressor(),
+    )
 
     splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.2)
     scorecard, pred, trained_trained_pipelines = train_evaluate(
@@ -107,16 +116,18 @@ def test_train_evaluate_probabilities() -> None:
 
     splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.2)
 
-    pipeline = [
-        AddLagsX(columns_and_lags=[("pressure", list(range(1, 3)))]),
-        AddLagsY(list(range(1, 3))),
-        CreateEvents(
+    pipeline = PipelineCard(
+        preprocessing=[
+            AddLagsX(columns_and_lags=[("pressure", list(range(1, 3)))]),
+            AddLagsY(list(range(1, 3))),
+        ],
+        pipeline=CreateEvents(
             RandomForestClassifier(),
             FixedForwardHorizon(
                 1, labeling_strategy=BinarizeSign(), weighting_strategy=None
             ),
         ),
-    ]
+    )
 
     splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.2)
     scorecard, pred, trained_trained_pipelines = train_evaluate(
@@ -133,26 +144,30 @@ def test_integration_events() -> None:
     y = y.pct_change()
 
     splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.1)
-    pipeline = OptimizeGridSearch(
-        [
+    pipeline = PipelineCard(
+        preprocessing=[
             AddLagsY(list(range(1, 3))),
             AddLagsX(columns_and_lags=[("pressure", list(range(1, 10)))]),
-            CreateEvents(
-                SelectBest(
-                    [
-                        WrapSKLearnClassifier.from_model(LogisticRegression()),
-                        WrapSKLearnClassifier.from_model(RandomForestClassifier()),
-                    ]
-                ),
-                FixedForwardHorizon(
-                    time_horizon=5,
-                    labeling_strategy=BinarizeSign(),
-                    weighting_strategy=None,
-                ),
-                EveryNth(2),
-            ),
         ],
-        krisi_metric_key="f_one_score_macro",
+        pipeline=OptimizeGridSearch(
+            [
+                CreateEvents(
+                    SelectBest(
+                        [
+                            WrapSKLearnClassifier.from_model(LogisticRegression()),
+                            WrapSKLearnClassifier.from_model(RandomForestClassifier()),
+                        ]
+                    ),
+                    FixedForwardHorizon(
+                        time_horizon=5,
+                        labeling_strategy=BinarizeSign(),
+                        weighting_strategy=None,
+                    ),
+                    EveryNth(2),
+                ),
+            ],
+            krisi_metric_key="f_one_score_macro",
+        ),
     )
     trained_pipeline = train(
         pipeline,

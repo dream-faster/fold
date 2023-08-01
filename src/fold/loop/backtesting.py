@@ -69,7 +69,7 @@ def backtest(
 
     if trained_pipelinecard.preprocessing is not None:
         preprocessed_X, preprocessed_artifacts = _backtest_on_window(
-            [pd.Series(trained_pipelinecard.preprocessing, index=[0])],
+            trained_pipelinecard.preprocessing,
             Fold(0, 0, 0, len(X), 0, 0, 0, len(X)),
             X,
             y,

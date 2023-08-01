@@ -54,6 +54,14 @@ T = TypeVar(
 )
 
 
+def __post_checks(
+    pipeline: T, X: pd.DataFrame, artifacts: Artifact
+) -> Tuple[T, X, Artifact]:
+    assert X.shape[0] == artifacts.shape[0]
+    assert X.index.equals(artifacts.index)
+    return pipeline, X, artifacts
+
+
 def recursively_transform(
     X: X,
     y: Optional[pd.Series],
@@ -70,13 +78,6 @@ def recursively_transform(
         f'called "recursively_transform()" with {transformations.__class__.__name__} with stage {stage}'
     )
 
-    def post_checks(
-        pipeline: T, X: pd.DataFrame, artifacts: Artifact
-    ) -> Tuple[T, X, Artifact]:
-        assert X.shape[0] == artifacts.shape[0]
-        assert X.index.equals(artifacts.index)
-        return pipeline, X, artifacts
-
     if isinstance(transformations, List) or isinstance(transformations, Tuple):
         processed_transformations = []
         for transformation in transformations:
@@ -89,10 +90,10 @@ def recursively_transform(
                 backend,
             )
             processed_transformations.append(processed_transformation)
-        return post_checks(processed_transformations, X, artifacts)
+        return __post_checks(processed_transformations, X, artifacts)
 
     elif isinstance(transformations, UsePredefinedEvents):
-        return post_checks(
+        return __post_checks(
             *_process_use_predefined_events(
                 transformations,
                 X,
@@ -104,7 +105,7 @@ def recursively_transform(
         )
 
     elif isinstance(transformations, Composite):
-        return post_checks(
+        return __post_checks(
             *_process_composite(
                 transformations,
                 X,
@@ -115,7 +116,7 @@ def recursively_transform(
             )
         )
     elif isinstance(transformations, Optimizer):
-        return post_checks(
+        return __post_checks(
             *_process_optimizer(
                 transformations,
                 X,
@@ -127,7 +128,7 @@ def recursively_transform(
         )
 
     elif isinstance(transformations, Sampler):
-        return post_checks(
+        return __post_checks(
             *_process_sampler(
                 transformations,
                 X,
@@ -147,7 +148,7 @@ def recursively_transform(
             and stage in [Stage.update, Stage.update_online_only]
             and not transformations.properties._internal_supports_minibatch_backtesting
         ):
-            return post_checks(
+            return __post_checks(
                 *_process_with_inner_loop(transformations, X, y, artifacts)
             )
         # If the transformation is "online" but also supports our internal "mini-batch"-style updating
@@ -156,7 +157,7 @@ def recursively_transform(
             and stage in [Stage.update, Stage.update_online_only]
             and transformations.properties._internal_supports_minibatch_backtesting
         ):
-            return post_checks(
+            return __post_checks(
                 *_process_internal_online_model_minibatch_inference_and_update(
                     transformations, X, y, artifacts
                 )
@@ -164,7 +165,7 @@ def recursively_transform(
 
         # or perform "mini-batch" updating OR the initial fit.
         else:
-            return post_checks(
+            return __post_checks(
                 *_process_minibatch_transformation(
                     transformations,
                     X,
@@ -616,7 +617,6 @@ def _train_on_window(
     )
     X_train: pd.DataFrame = X.iloc[window_start:window_end]  # type: ignore
     y_train = y.iloc[window_start:window_end]
-
     artifact_train = artifact.iloc[window_start:window_end]
 
     pipeline = deepcopy_pipelines(pipeline)
