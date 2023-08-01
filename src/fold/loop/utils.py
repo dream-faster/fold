@@ -45,14 +45,6 @@ def replace_with(transformations: List[Block]) -> Callable:
 def _extract_trained_pipelines(
     processed_idx: List[int], processed_pipelines: List[Pipeline]
 ) -> TrainedPipelines:
-    if len(processed_pipelines) == 1:
-        return [
-            pd.Series(
-                processed_pipelines[0],
-                index=processed_idx,
-                name=processed_pipelines[0].name,
-            )
-        ]
     return [
         pd.Series(
             transformation_over_time,

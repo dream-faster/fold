@@ -16,7 +16,11 @@ from ..base import (
 )
 from ..splitters import Fold, SlidingWindowSplitter, Splitter
 from ..utils.dataframe import concat_on_index_override_duplicate_rows
-from ..utils.list import unpack_list_of_tuples, wrap_in_list
+from ..utils.list import (
+    unpack_list_of_tuples,
+    wrap_in_double_list_if_needed,
+    wrap_in_list,
+)
 from ..utils.trim import trim_initial_nans
 from .backend import get_backend
 from .checks import check_types
@@ -87,7 +91,9 @@ def train(
     backend = get_backend(backend)
 
     if pipelinecard.preprocessing is not None:
-        preprocessing_pipeline = wrap_in_list(pipelinecard.preprocessing)
+        preprocessing_pipeline = wrap_in_double_list_if_needed(
+            pipelinecard.preprocessing
+        )
         preprocessing_pipeline = wrap_transformation_if_needed(preprocessing_pipeline)
         (
             _,
