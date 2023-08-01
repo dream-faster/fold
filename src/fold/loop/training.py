@@ -189,7 +189,9 @@ def train(
         ) = _sequential_train_on_window(pipeline, X, y, splits, artifact, backend)
 
     trained_pipelines = TrainedPipelineCard(
-        preprocessing=trained_preprocessing_pipeline
+        preprocessing=_extract_trained_pipelines(
+            [0] * len(trained_preprocessing_pipeline), trained_preprocessing_pipeline
+        )
         if pipelinecard.preprocessing
         else None,
         pipeline=_extract_trained_pipelines(processed_idx, processed_pipelines),

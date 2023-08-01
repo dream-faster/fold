@@ -18,6 +18,7 @@ from fold.transformations.dev import Identity, Test
 from fold.transformations.features import AddWindowFeatures
 from fold.transformations.function import ApplyFunction
 from fold.transformations.lags import AddLagsX, AddLagsY
+from fold.transformations.scaling import MinMaxScaler
 from fold.utils.dataset import get_preprocessed_dataset
 from fold.utils.tests import (
     generate_all_zeros,
@@ -218,25 +219,30 @@ def test_preprocessing():
     )
     test_trans.properties.memory_size = memory_size
     test_trans.properties.disable_memory = True
-    pipeline = Concat(
-        [
-            Concat(
-                [
-                    Sequence(
-                        AddLagsX(columns_and_lags=[("pressure", list(range(1, 3)))])
-                    ),
-                    AddWindowFeatures(("pressure", 14, "mean")),
-                    test_trans,
-                ]
-            ),
-            AddWindowFeatures(("humidity", 26, "std")),
-            Concat(
-                [
-                    ApplyFunction(lambda x: x.rolling(30).mean(), past_window_size=30),
-                ]
-            ),
-        ]
-    )
+    pipeline = [
+        Concat(
+            [
+                Concat(
+                    [
+                        Sequence(
+                            AddLagsX(columns_and_lags=[("pressure", list(range(1, 3)))])
+                        ),
+                        AddWindowFeatures(("pressure", 14, "mean")),
+                        test_trans,
+                    ]
+                ),
+                AddWindowFeatures(("humidity", 26, "std")),
+                Concat(
+                    [
+                        ApplyFunction(
+                            lambda x: x.rolling(30).mean(), past_window_size=30
+                        ),
+                    ]
+                ),
+            ]
+        ),
+        MinMaxScaler(),
+    ]
 
     def assert_len_can_be_divided_by_window_size(x, in_sample):
         if not in_sample:
@@ -248,25 +254,30 @@ def test_preprocessing():
     test_trans_preprocessing.properties.memory_size = memory_size
     test_trans_preprocessing.properties.disable_memory = True
 
-    equivalent_preprocessing_pipeline = Concat(
-        [
-            Concat(
-                [
-                    Sequence(
-                        AddLagsX(columns_and_lags=[("pressure", list(range(1, 3)))])
-                    ),
-                    AddWindowFeatures(("pressure", 14, "mean")),
-                    test_trans_preprocessing,
-                ]
-            ),
-            AddWindowFeatures(("humidity", 26, "std")),
-            Concat(
-                [
-                    ApplyFunction(lambda x: x.rolling(30).mean(), past_window_size=30),
-                ]
-            ),
-        ]
-    )
+    equivalent_preprocessing_pipeline = [
+        Concat(
+            [
+                Concat(
+                    [
+                        Sequence(
+                            AddLagsX(columns_and_lags=[("pressure", list(range(1, 3)))])
+                        ),
+                        AddWindowFeatures(("pressure", 14, "mean")),
+                        test_trans_preprocessing,
+                    ]
+                ),
+                AddWindowFeatures(("humidity", 26, "std")),
+                Concat(
+                    [
+                        ApplyFunction(
+                            lambda x: x.rolling(30).mean(), past_window_size=30
+                        ),
+                    ]
+                ),
+            ]
+        ),
+        MinMaxScaler(),
+    ]
 
     pred, _ = train_backtest(
         pipeline,
