@@ -74,17 +74,6 @@ def test_on_weather_data_backends(backend: str) -> None:
         len(insample_predictions) <= 800
     ), "length of insample predictions should be always <= length of outofsample predictions"
 
-    pred_disable_memory, _ = train_backtest(
-        pipeline,
-        X,
-        y,
-        splitter,
-        events=events,
-        backend=backend,
-        disable_memory=True,
-    )
-    assert pred_disable_memory.equals(pred)
-
     train_evaluate(pipeline, X, y, splitter, backend=backend, events=events)
 
 

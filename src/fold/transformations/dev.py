@@ -84,12 +84,15 @@ class Test(InvertibleTransformation):
         transform_func: Callable,
         update_func: Optional[Callable] = None,
         inverse_transform_func: Optional[Callable] = None,
+        memory_size: Optional[int] = None,
     ) -> None:
         self.fit_func = fit_func
         self.transform_func = transform_func
         self.update_func = update_func
         self.inverse_transform_func = inverse_transform_func
-        self.properties = InvertibleTransformation.Properties(requires_X=False)
+        self.properties = InvertibleTransformation.Properties(
+            requires_X=False, memory_size=memory_size
+        )
 
     def fit(
         self,
@@ -164,7 +167,7 @@ class Lookahead(Transformation):
     properties = Transformation.Properties(
         requires_X=False,
         mode=Transformation.Properties.Mode.online,
-        memory_size=0,
+        memory_size=1,
         _internal_supports_minibatch_backtesting=True,
     )
 

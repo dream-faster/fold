@@ -145,6 +145,7 @@ class AddLagsX(Transformation, Tunable):
         self.properties = Transformation.Properties(
             requires_X=True,
             memory_size=max(flatten([l for _, l in self.columns_and_lags])),
+            disable_memory=True,
         )
         self.keep_original = keep_original
         self.name = name or f"AddLagsX-{self.columns_and_lags}"

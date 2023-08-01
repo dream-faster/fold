@@ -22,12 +22,9 @@ def train_pipeline(
     never_update: bool,
     backend: Backend,
     silent: bool,
-    disable_memory: bool,
 ):
     return thread_map(
-        lambda split: func(
-            X, y, artifact, pipeline, split, never_update, backend, disable_memory
-        ),
+        lambda split: func(X, y, artifact, pipeline, split, never_update, backend),
         splits,
         disable=silent,
     )
@@ -44,12 +41,9 @@ def backtest_pipeline(
     backend: Backend,
     mutate: bool,
     silent: bool,
-    disable_memory: bool,
 ):
     return thread_map(
-        lambda split: func(
-            pipeline, split, X, y, artifact, backend, mutate, disable_memory
-        ),
+        lambda split: func(pipeline, split, X, y, artifact, backend, mutate),
         splits,
         disable=silent,
     )
@@ -66,7 +60,6 @@ def process_child_transformations(
     stage: Stage,
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
-    disable_memory: bool,
 ):
     list_of_child_transformations_with_index = [
         {"index": index, "child_transformation": child_transformation}
@@ -83,7 +76,6 @@ def process_child_transformations(
             stage,
             backend,
             results_primary,
-            disable_memory,
         ),
         list_of_child_transformations_with_index,
         disable=True,

@@ -20,7 +20,6 @@ def _process_minibatch_transformation(
     y: Optional[pd.Series],
     artifacts: Artifact,
     stage: Stage,
-    disable_memory: bool,
 ) -> Tuple[Transformation, X, Artifact]:
     if not is_X_available(X) and transformation.properties.requires_X:
         raise ValueError(
@@ -39,7 +38,6 @@ def _process_minibatch_transformation(
         y,
         Artifact.get_sample_weights(artifacts),
         in_sample=in_sample,
-        disable_memory=disable_memory,
     )
     # The order is:
     # 1. fit (if we're in the initial_fit stage)
@@ -54,7 +52,6 @@ def _process_minibatch_transformation(
             y_with_memory,
             sample_weights_with_memory,
             in_sample=stage == Stage.inital_fit,
-            disable_memory=disable_memory,
         )
         artifacts = concat_on_columns([artifact, artifacts], copy=False)
     # 2. transform (inference)
@@ -68,7 +65,6 @@ def _process_minibatch_transformation(
         y,
         Artifact.get_sample_weights(artifacts),
         in_sample=False,
-        disable_memory=disable_memory,
     )
     return_value = transformation.transform(X_with_memory, in_sample=in_sample)
     # 3. update (if we're in the update stage)
@@ -83,7 +79,6 @@ def _process_minibatch_transformation(
             y,
             Artifact.get_sample_weights(artifacts),
             in_sample=False,
-            disable_memory=disable_memory,
         )
     return transformation, return_value.loc[X.index], artifacts
 
@@ -93,7 +88,6 @@ def _process_internal_online_model_minibatch_inference_and_update(
     X: pd.DataFrame,
     y: Optional[pd.Series],
     artifacts: Artifact,
-    disable_memory: bool,
 ) -> Tuple[Transformation, X, Artifact]:
     (
         X_with_memory,
@@ -105,7 +99,6 @@ def _process_internal_online_model_minibatch_inference_and_update(
         y,
         Artifact.get_sample_weights(artifacts),
         in_sample=True,
-        disable_memory=disable_memory,
     )
     postprocess_X_y_into_memory_(
         transformation,
@@ -113,7 +106,6 @@ def _process_internal_online_model_minibatch_inference_and_update(
         y_with_memory,
         sample_weights_with_memory,
         in_sample=True,
-        disable_memory=disable_memory,
     )
     return_value = transformation.transform(X_with_memory, in_sample=True)
 
@@ -126,7 +118,6 @@ def _process_internal_online_model_minibatch_inference_and_update(
         y,
         Artifact.get_sample_weights(artifacts),
         in_sample=False,
-        disable_memory=disable_memory,
     )
     return (
         transformation,

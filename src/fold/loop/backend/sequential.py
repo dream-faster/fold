@@ -24,14 +24,13 @@ def train_pipeline(
     never_update: bool,
     backend: Backend,
     silent: bool,
-    disable_memory: bool,
 ):
     if DEBUG_MULTI_PROCESSING:
         from ray.cloudpickle import dumps, loads
 
         pipeline = loads(dumps(pipeline))
     return [
-        func(X, y, artifact, pipeline, split, never_update, backend, disable_memory)
+        func(X, y, artifact, pipeline, split, never_update, backend)
         for split in tqdm(splits, desc="Training", disable=silent)
     ]
 
@@ -47,14 +46,13 @@ def backtest_pipeline(
     backend: Backend,
     mutate: bool,
     silent: bool,
-    disable_memory: bool,
 ):
     if DEBUG_MULTI_PROCESSING:
         from ray.cloudpickle import dumps, loads
 
         pipeline = loads(dumps(pipeline))
     return [
-        func(pipeline, split, X, y, artifact, backend, mutate, disable_memory)
+        func(pipeline, split, X, y, artifact, backend, mutate)
         for split in tqdm(splits, desc="Backtesting", disable=silent)
     ]
 
@@ -70,7 +68,6 @@ def process_child_transformations(
     stage: Stage,
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
-    disable_memory: bool,
 ):
     if DEBUG_MULTI_PROCESSING:
         from ray.cloudpickle import dumps, loads
@@ -89,7 +86,6 @@ def process_child_transformations(
             stage,
             backend,
             results_primary,
-            disable_memory,
         )
         for index, child_transformation in list_of_child_transformations_with_index
     ]

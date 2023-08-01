@@ -88,7 +88,7 @@ class AddWindowFeatures(Transformation, Tunable):
             [replace_nan(window) for _, window, _ in self.column_window_func]
         )
         self.properties = Transformation.Properties(
-            requires_X=True, memory_size=max_memory
+            requires_X=True, memory_size=max_memory, disable_memory=True
         )
         self.fillna = fillna
         self.keep_original = keep_original
@@ -211,7 +211,9 @@ class AddFeatures(Transformation, Tunable):
         ]
 
         self.properties = Transformation.Properties(
-            requires_X=True, memory_size=past_window_size
+            requires_X=True,
+            memory_size=past_window_size,
+            disable_memory=True,
         )
         self.fillna = fillna
         self.keep_original = keep_original
@@ -269,7 +271,9 @@ class AddRollingCorrelation(Transformation, Tunable):
             len(pair) == 2 for pair in self.column_pairs
         ), "All column pairs must be of length 2"
         self.window = window
-        self.properties = Transformation.Properties(requires_X=True, memory_size=window)
+        self.properties = Transformation.Properties(
+            requires_X=True, memory_size=window, disable_memory=True
+        )
         self.keep_original = keep_original
         self.output_dtype = output_dtype
         self.params_to_try = params_to_try

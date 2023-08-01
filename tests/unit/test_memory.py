@@ -7,9 +7,7 @@ def test_memory_in_sample():
     X, y = generate_sine_wave_data()
     sample_weights = y.copy()
     naive = Naive()
-    postprocess_X_y_into_memory_(
-        naive, X, y, sample_weights, in_sample=True, disable_memory=False
-    )
+    postprocess_X_y_into_memory_(naive, X, y, sample_weights, in_sample=True)
     assert naive._state.memory_X.equals(X)
     assert naive._state.memory_y.equals(y)
     assert naive._state.memory_sample_weights.equals(sample_weights)
@@ -19,7 +17,6 @@ def test_memory_in_sample():
         y,
         sample_weights,
         in_sample=True,
-        disable_memory=False,
     )
     assert X_with_mem.equals(X)
     assert y_with_mem.equals(y)
@@ -47,7 +44,6 @@ def test_memory_out_of_sample():
         y_train,
         sample_weights_train,
         in_sample=True,
-        disable_memory=False,
     )
     # Then postprocess_X_y_into_memory is called with in_sample=False, during inference
     postprocess_X_y_into_memory_(
@@ -56,7 +52,6 @@ def test_memory_out_of_sample():
         y_train,
         sample_weights_train,
         in_sample=False,
-        disable_memory=False,
     )
     assert naive._state.memory_X.equals(X_train.iloc[-1:None])
     assert naive._state.memory_y.equals(y_train.iloc[-1:None])
@@ -67,7 +62,6 @@ def test_memory_out_of_sample():
         y_test,
         sample_weights_test,
         in_sample=False,
-        disable_memory=False,
     )
     assert len(X_with_mem) == len(y_with_mem)
     assert X_with_mem.index.equals(y_with_mem.index)

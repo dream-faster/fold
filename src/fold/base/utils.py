@@ -35,7 +35,11 @@ def traverse(
         yield pipeline
         yield from traverse(pipeline.get_children_primary())
     elif isinstance(pipeline, Optimizer):
-        raise ValueError("Optimizer is not supported within an Optimizer.")
+        yield pipeline
+        if pipeline.get_optimized_pipeline() is not None:
+            yield pipeline.get_optimized_pipeline()
+        else:
+            yield pipeline.get_candidates()[0]
     else:
         yield pipeline
 
