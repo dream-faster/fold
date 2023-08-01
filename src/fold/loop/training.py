@@ -189,15 +189,11 @@ def train(
         ) = _sequential_train_on_window(pipeline, X, y, splits, artifact, backend)
 
     trained_pipelines = TrainedPipelineCard(
-        preprocessing=_extract_trained_pipelines(
-            [0],
-            [trained_preprocessing_pipeline],
-        )
+        preprocessing=[pd.Series(p, index=[0]) for p in trained_preprocessing_pipeline]
         if pipelinecard.preprocessing
         else None,
         pipeline=_extract_trained_pipelines(processed_idx, processed_pipelines),
     )
-
     if return_artifacts is True:
         processed_artifacts = concat_on_index_override_duplicate_rows(
             processed_artifacts
