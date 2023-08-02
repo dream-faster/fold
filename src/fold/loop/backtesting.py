@@ -68,13 +68,12 @@ def backtest(
 
     if trained_pipelinecard.preprocessing is not None:
         preprocessed_X, preprocessed_artifacts = _backtest_on_window(
-            trained_pipelinecard.preprocessing,
-            Fold(0, 0, 0, len(X), 0, 0, 0, len(X)),
-            X,
-            y,
-            artifact,
-            events,
-            backend,
+            trained_pipelines=trained_pipelinecard.preprocessing,
+            split=Fold(0, 0, 0, len(X), 0, 0, 0, len(X)),
+            X=X,
+            y=y,
+            artifact=artifact,
+            backend=backend,
             mutate=mutate,
         )
 

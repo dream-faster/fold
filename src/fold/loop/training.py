@@ -96,12 +96,11 @@ def train(
             preprocessed_X,
             preprocessed_artifact,
         ) = _train_on_window(
-            X,
-            y,
-            artifact,
-            None,
-            preprocessing_pipeline,
-            Fold(0, 0, 0, len(X), 0, 0, 0, len(X)),
+            X=X,
+            y=y,
+            artifact=artifact,
+            pipeline=preprocessing_pipeline,
+            split=Fold(0, 0, 0, len(X), 0, 0, 0, len(X)),
             never_update=True,
             backend=backend,
             show_progress=True,
@@ -136,12 +135,11 @@ def train(
             first_batch_predictions,
             first_batch_artifacts,
         ) = _train_on_window(
-            X,
-            y,
-            artifact,
-            events,
-            pipeline,
-            splits[0],
+            X=X,
+            y=y,
+            artifact=artifact,
+            pipeline=pipeline,
+            split=splits[0],
             never_update=True,
             backend=backend,
         )
@@ -244,12 +242,11 @@ def train_for_deployment(
     pipeline = wrap_in_list(pipeline)
     pipeline = wrap_transformation_if_needed(pipeline)
     _, transformations, predictions, artifacts = _train_on_window(
-        X,
-        y,
-        artifact,
-        events,
-        pipeline,
-        Fold(
+        X=X,
+        y=y,
+        artifact=artifact,
+        pipeline=pipeline,
+        split=Fold(
             order=0,
             model_index=0,
             train_window_start=0,
