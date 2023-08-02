@@ -612,9 +612,6 @@ def _backtest_on_window(
     X_test = _cut_to_backtesting_window(X, split, current_pipeline)
     y_test = _cut_to_backtesting_window(y, split, current_pipeline)
     artifact_test = _cut_to_backtesting_window(artifact, split, current_pipeline)
-    events_test = None
-    if events is not None:
-        events_test = _cut_to_backtesting_window(events, split, current_pipeline)
 
     results, artifacts = recursively_transform(
         X=X_test,
