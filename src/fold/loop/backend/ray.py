@@ -7,7 +7,7 @@ import pandas as pd
 import ray
 from tqdm import tqdm
 
-from ...base import Artifact, Composite, EventDataFrame, Pipeline, TrainedPipeline, X
+from ...base import Artifact, Composite, Pipeline, TrainedPipeline, X
 from ...splitters import Fold
 from ..types import Backend, Stage
 
@@ -19,7 +19,6 @@ def train_pipeline(
     X: X,
     y: pd.Series,
     artifact: Artifact,
-    events: Optional[EventDataFrame],
     splits: List[Fold],
     never_update: bool,
     backend: Backend,
@@ -33,7 +32,6 @@ def train_pipeline(
             X,
             y,
             artifact,
-            events,
             pipeline,
             split,
             never_update,

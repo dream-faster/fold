@@ -73,6 +73,7 @@ def backtest(
             X,
             y,
             artifact,
+            events,
             backend,
             mutate=mutate,
         )

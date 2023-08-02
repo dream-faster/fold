@@ -9,7 +9,6 @@ from typing import List, Optional, Tuple, TypeVar, Union
 import pandas as pd
 from tqdm import tqdm
 
-from fold.base.classes import EventDataFrame
 from fold.events import UsePredefinedEvents
 
 from ..base import (
@@ -599,7 +598,6 @@ def _backtest_on_window(
     X: pd.DataFrame,
     y: pd.Series,
     artifact: Artifact,
-    events: Optional[EventDataFrame],
     backend: Backend,
     mutate: bool,
 ) -> Tuple[X, Artifact]:
@@ -614,14 +612,15 @@ def _backtest_on_window(
     X_test = _cut_to_backtesting_window(X, split, current_pipeline)
     y_test = _cut_to_backtesting_window(y, split, current_pipeline)
     artifact_test = _cut_to_backtesting_window(artifact, split, current_pipeline)
-    events_test = _cut_to_backtesting_window(events, split, current_pipeline)
+    events_test = None
+    if events is not None:
+        events_test = _cut_to_backtesting_window(events, split, current_pipeline)
 
     results, artifacts = recursively_transform(
-        X_test,
-        y_test,
-        artifact_test,
-        events_test,
-        current_pipeline,
+        X=X_test,
+        y=y_test,
+        artifacts=artifact_test,
+        transformations=current_pipeline,
         stage=Stage.update_online_only,
         backend=backend,
     )[1:]
@@ -635,7 +634,6 @@ def _train_on_window(
     X: pd.DataFrame,
     y: pd.Series,
     artifact: Artifact,
-    events: Optional[EventDataFrame],
     pipeline: Pipeline,
     split: Fold,
     never_update: bool,
@@ -645,23 +643,21 @@ def _train_on_window(
     pd.options.mode.copy_on_write = True
     stage = Stage.inital_fit if (split.order == 0 or never_update) else Stage.update
 
-    X_train: pd.DataFrame = _cut_to_train_window(X, split, stage)  # type: ignore
+    X_train: pd.DataFrame = _cut_to_train_window(X, split, stage)
     y_train = _cut_to_train_window(y, split, stage)
     artifact_train = _cut_to_train_window(artifact, split, stage)
-    if events is not None:
-        events_train = _cut_to_train_window(events, split, stage)
 
     pipeline = deepcopy_pipelines(pipeline)
     pipeline = _set_metadata(
         pipeline, Composite.Metadata(fold_index=split.order, target=y.name)
     )
     trained_pipeline, X_train, artifacts = recursively_transform(
-        X_train,
-        y_train,
-        artifact_train,
-        pipeline,
-        stage,
-        backend,
+        X=X_train,
+        y=y_train,
+        artifacts=artifact_train,
+        transformations=pipeline,
+        stage=stage,
+        backend=backend,
         tqdm=tqdm() if show_progress else None,
     )
 
@@ -674,7 +670,6 @@ def _sequential_train_on_window(
     y: pd.Series,
     splits: List[Fold],
     artifact: Artifact,
-    events: Optional[EventDataFrame],
     backend: Backend,
 ) -> Tuple[List[int], List[Pipeline], List[X], List[Artifact]]:
     processed_idx = []
@@ -692,7 +687,6 @@ def _sequential_train_on_window(
             X,
             y,
             artifact,
-            events,
             processed_pipeline,
             split,
             False,

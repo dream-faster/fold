@@ -2,7 +2,7 @@
 
 
 from copy import deepcopy
-from typing import Callable, List, Tuple
+from typing import Callable, List, Tuple, TypeVar
 
 import pandas as pd
 
@@ -73,19 +73,20 @@ def _set_metadata(
     return traverse_apply(pipeline, set_)
 
 
-def _cut_to_train_window(df: pd.DataFrame, fold: Fold, stage: Stage) -> pd.DataFrame:
+T = TypeVar("T")
+
+
+def _cut_to_train_window(df: T, fold: Fold, stage: Stage) -> T:
     window_start = (
         fold.update_window_start if stage == Stage.update else fold.train_window_start
     )
     window_end = (
         fold.update_window_end if stage == Stage.update else fold.train_window_end
     )
-    return df.iloc[window_start:window_end]
+    return df.iloc[window_start:window_end]  # type: ignore
 
 
-def _cut_to_backtesting_window(
-    df: pd.DataFrame, fold: Fold, pipeline: Pipeline
-) -> pd.DataFrame:
+def _cut_to_backtesting_window(df: T, fold: Fold, pipeline: Pipeline) -> T:
     overlap = _get_maximum_memory_size(pipeline)
     test_window_start = max(fold.test_window_start - overlap, 0)
-    return df.iloc[test_window_start : fold.test_window_end]
+    return df.iloc[test_window_start : fold.test_window_end]  # type: ignore
