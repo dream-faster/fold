@@ -7,7 +7,7 @@ from fold.composites import Concat
 from fold.composites.concat import Sequence
 from fold.composites.optimize import OptimizeGridSearch
 from fold.composites.select import SelectBest
-from fold.events import CreateEvents, UsePredefinedEvents
+from fold.events import UsePredefinedEvents
 from fold.events.filters.everynth import EveryNth
 from fold.events.labeling import BinarizeSign, FixedForwardHorizon
 from fold.events.weights import NoWeighting
@@ -121,11 +121,9 @@ def test_train_evaluate_probabilities() -> None:
             AddLagsX(columns_and_lags=[("pressure", list(range(1, 3)))]),
             AddLagsY(list(range(1, 3))),
         ],
-        pipeline=CreateEvents(
-            RandomForestClassifier(),
-            FixedForwardHorizon(
-                1, labeling_strategy=BinarizeSign(), weighting_strategy=None
-            ),
+        pipeline=[RandomForestClassifier()],
+        event_labeler=FixedForwardHorizon(
+            1, labeling_strategy=BinarizeSign(), weighting_strategy=None
         ),
     )
 
@@ -149,25 +147,23 @@ def test_integration_events() -> None:
             AddLagsY(list(range(1, 3))),
             AddLagsX(columns_and_lags=[("pressure", list(range(1, 10)))]),
         ],
-        pipeline=OptimizeGridSearch(
-            [
-                CreateEvents(
-                    SelectBest(
-                        [
-                            WrapSKLearnClassifier.from_model(LogisticRegression()),
-                            WrapSKLearnClassifier.from_model(RandomForestClassifier()),
-                        ]
-                    ),
-                    FixedForwardHorizon(
-                        time_horizon=5,
-                        labeling_strategy=BinarizeSign(),
-                        weighting_strategy=None,
-                    ),
-                    EveryNth(2),
+        pipeline=[
+            OptimizeGridSearch(
+                pipeline=SelectBest(
+                    [
+                        WrapSKLearnClassifier.from_model(LogisticRegression()),
+                        WrapSKLearnClassifier.from_model(RandomForestClassifier()),
+                    ]
                 ),
-            ],
-            krisi_metric_key="f_one_score_macro",
+                krisi_metric_key="f_one_score_macro",
+            )
+        ],
+        event_labeler=FixedForwardHorizon(
+            time_horizon=5,
+            labeling_strategy=BinarizeSign(),
+            weighting_strategy=None,
         ),
+        event_filter=EveryNth(2),
     )
     trained_pipeline = train(
         pipeline,
