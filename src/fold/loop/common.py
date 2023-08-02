@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Callable, List, Optional, Tuple, TypeVar, Union
+from typing import List, Optional, Tuple, TypeVar, Union
 
 import pandas as pd
 from tqdm import tqdm
@@ -13,8 +13,6 @@ from fold.events import UsePredefinedEvents
 
 from ..base import (
     Artifact,
-    Block,
-    Clonable,
     Composite,
     Optimizer,
     Pipeline,
@@ -23,9 +21,7 @@ from ..base import (
     TrainedPipelines,
     Transformation,
     X,
-    traverse_apply,
 )
-from ..base.utils import _get_maximum_memory_size
 from ..models.base import Model
 from ..splitters import Fold
 from ..utils.checks import is_prediction
@@ -38,7 +34,14 @@ from .process.process_minibatch import (
     _process_minibatch_transformation,
 )
 from .types import Backend, Stage
-from .utils import _extract_trained_pipelines, deepcopy_pipelines, replace_with
+from .utils import (
+    _cut_to_backtesting_window,
+    _cut_to_train_window,
+    _extract_trained_pipelines,
+    _set_metadata,
+    deepcopy_pipelines,
+    replace_with,
+)
 
 logger = logging.getLogger("fold:loop")
 DEBUG_MULTI_PROCESSING = False
@@ -509,7 +512,9 @@ def __process_candidates(
         processed_pipelines,
         processed_predictions,
         processed_artifacts,
-    ) = _sequential_train_on_window(child_transform, X, y, splits, artifacts, backend)
+    ) = _sequential_train_on_window(
+        child_transform, X, y, splits, artifacts, backend=backend
+    )
     trained_pipelines = _extract_trained_pipelines(processed_idx, processed_pipelines)
 
     result, artifact = _backtest_on_window(
@@ -604,19 +609,27 @@ def _backtest_on_window(
     if not mutate:
         current_pipeline = deepcopy_pipelines(current_pipeline)
 
-    overlap = _get_maximum_memory_size(current_pipeline)
-    test_window_start = max(split.test_window_start - overlap, 0)
-    X_test = X.iloc[test_window_start : split.test_window_end]
-    y_test = y.iloc[test_window_start : split.test_window_end]
-    artifact_test = artifact.iloc[test_window_start : split.test_window_end]
+    X_test = _cut_to_backtesting_window(X, split, current_pipeline)
+    y_test = _cut_to_backtesting_window(y, split, current_pipeline)
+    artifact_test = _cut_to_backtesting_window(artifact, split, current_pipeline)
+
+    original_idx = X_test.index
+    X_test, y_test, artifact_test = _get_X_y_based_on_events(
+        X_test, y_test, artifact_test
+    )
+    assert artifact_test.dropna().shape[0] == y_test.shape[0]
+
     results, artifacts = recursively_transform(
-        X_test,
-        y_test,
-        artifact_test,
-        current_pipeline,
+        X=X_test,
+        y=y_test,
+        artifacts=artifact_test,
+        transformations=current_pipeline,
         stage=Stage.update_online_only,
         backend=backend,
     )[1:]
+    if len(results.index) != len(original_idx):
+        results = results.reindex(original_idx)
+        artifacts = artifacts.reindex(original_idx)
     return (
         results.loc[X.index[split.test_window_start] :],
         artifacts.loc[X.index[split.test_window_start] :],
@@ -635,31 +648,34 @@ def _train_on_window(
 ) -> Tuple[int, TrainedPipeline, X, Artifact]:
     pd.options.mode.copy_on_write = True
     stage = Stage.inital_fit if (split.order == 0 or never_update) else Stage.update
-    window_start = (
-        split.update_window_start if stage == Stage.update else split.train_window_start
+
+    X_train: pd.DataFrame = _cut_to_train_window(X, split, stage)
+    y_train = _cut_to_train_window(y, split, stage)
+    artifact_train = _cut_to_train_window(artifact, split, stage)
+
+    original_idx = X_train.index
+    X_train, y_train, artifact_train = _get_X_y_based_on_events(
+        X_train, y_train, artifact_train
     )
-    window_end = (
-        split.update_window_end if stage == Stage.update else split.train_window_end
-    )
-    X_train: pd.DataFrame = X.iloc[window_start:window_end]  # type: ignore
-    y_train = y.iloc[window_start:window_end]
-    artifact_train = artifact.iloc[window_start:window_end]
 
     pipeline = deepcopy_pipelines(pipeline)
-    pipeline = set_metadata(
+    pipeline = _set_metadata(
         pipeline, Composite.Metadata(fold_index=split.order, target=y.name)
     )
-    trained_pipeline, X_train, artifacts = recursively_transform(
-        X_train,
-        y_train,
-        artifact_train,
-        pipeline,
-        stage,
-        backend,
+    trained_pipeline, X_train, artifact_train = recursively_transform(
+        X=X_train,
+        y=y_train,
+        artifacts=artifact_train,
+        transformations=pipeline,
+        stage=stage,
+        backend=backend,
         tqdm=tqdm() if show_progress else None,
     )
+    if len(X_train.index) != len(original_idx):
+        X_train = X_train.reindex(original_idx)
+        artifact_train = artifact_train.reindex(original_idx)
 
-    return split.model_index, trained_pipeline, X_train, artifacts
+    return split.model_index, trained_pipeline, X_train, artifact_train
 
 
 def _sequential_train_on_window(
@@ -703,15 +719,13 @@ def _sequential_train_on_window(
     )
 
 
-def set_metadata(
-    pipeline: Pipeline,
-    metadata: Composite.Metadata,
-) -> Pipeline:
-    def set_(block: Block, clone_children: Callable) -> Block:
-        if isinstance(block, Clonable):
-            block = block.clone(clone_children)
-            if isinstance(block, Composite):
-                block.metadata = metadata
-        return block
-
-    return traverse_apply(pipeline, set_)
+def _get_X_y_based_on_events(
+    X: pd.DataFrame,
+    y: pd.Series,
+    artifact: Artifact,
+) -> Tuple[pd.DataFrame, pd.Series, Artifact]:
+    events = Artifact.get_events(artifact)
+    if events is None:
+        return X, y, artifact
+    events = events.dropna()
+    return X.loc[events.index], events.event_label, artifact.loc[events.index]

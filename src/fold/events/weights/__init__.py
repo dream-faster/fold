@@ -1,6 +1,6 @@
 import pandas as pd
 
-from ..base import WeightingStrategy
+from ...base import WeightingStrategy
 from .max import *  # noqa
 
 

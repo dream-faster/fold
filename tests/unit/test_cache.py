@@ -4,8 +4,8 @@ import shutil
 import pandas as pd
 import pytest
 
+from fold.base.classes import PipelineCard
 from fold.composites import Cache
-from fold.events import CreateEvents
 from fold.events.filters.everynth import EveryNth
 from fold.events.labeling import FixedForwardHorizon, NoLabel
 from fold.events.weights import NoWeighting
@@ -18,20 +18,20 @@ from fold.utils.tests import generate_monotonous_data
 folder = "tests/unit/cache/"
 os.makedirs("tests/unit/cache/", exist_ok=True)
 
-events_pipeline = [
-    Cache(
-        CreateEvents(
-            RandomClassifier(all_classes=[0, 1]),
-            FixedForwardHorizon(
-                time_horizon=3,
-                labeling_strategy=NoLabel(),
-                weighting_strategy=NoWeighting(),
-            ),
-            EveryNth(2),
-        ),
+events_pipeline = PipelineCard(
+    preprocessing=None,
+    pipeline=Cache(
+        RandomClassifier(all_classes=[0, 1]),
         path=folder,
-    )
-]
+    ),
+    event_labeler=FixedForwardHorizon(
+        time_horizon=3,
+        labeling_strategy=NoLabel(),
+        weighting_strategy=NoWeighting(),
+    ),
+    event_filter=EveryNth(2),
+)
+
 
 normal_pipeline = [
     Cache(

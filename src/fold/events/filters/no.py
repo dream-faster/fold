@@ -1,6 +1,6 @@
 import pandas as pd
 
-from ..base import EventFilter
+from ...base import EventFilter
 
 
 class NoFilter(EventFilter):

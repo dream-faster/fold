@@ -1,13 +1,13 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
 
+import logging
 from typing import Optional, Tuple, Union
 
 import pandas as pd
 
-from fold.base.classes import TrainedPipelineCard
-
-from ..base import Artifact, EventDataFrame, OutOfSamplePredictions
+from ..base import Artifact, EventDataFrame, OutOfSamplePredictions, TrainedPipelineCard
+from ..events import _create_events
 from ..splitters import Fold, Splitter
 from ..utils.dataframe import concat_on_index
 from ..utils.list import unpack_list_of_tuples
@@ -16,6 +16,8 @@ from .backend import get_backend
 from .checks import check_types
 from .common import _backtest_on_window
 from .types import Backend, BackendType
+
+logger = logging.getLogger("fold:loop")
 
 
 def backtest(
@@ -64,17 +66,22 @@ def backtest(
     """
     backend = get_backend(backend)
     X, y = check_types(X, y)
+    if events is None:
+        events = _create_events(y, trained_pipelinecard)
+    if events is not None and events.shape[0] != X.shape[0]:
+        logger.warning("The number of events does not match the number of samples.")
+        events = events.reindex(X.index)
     artifact = Artifact.from_events_sample_weights(X.index, events, sample_weights)
     X, y, artifact = trim_initial_nans(X, y, artifact)
 
     if trained_pipelinecard.preprocessing is not None:
         preprocessed_X, preprocessed_artifacts = _backtest_on_window(
-            trained_pipelinecard.preprocessing,
-            Fold(0, 0, 0, len(X), 0, 0, 0, len(X)),
-            X,
-            y,
-            artifact,
-            backend,
+            trained_pipelines=trained_pipelinecard.preprocessing,
+            split=Fold(0, 0, 0, len(X), 0, 0, 0, len(X)),
+            X=X,
+            y=y,
+            artifact=artifact,
+            backend=backend,
             mutate=mutate,
         )
 

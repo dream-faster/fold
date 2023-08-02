@@ -1,6 +1,7 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
 
+import logging
 from typing import Optional, Tuple, Union
 
 import pandas as pd
@@ -14,6 +15,7 @@ from ..base import (
     PipelineCard,
     TrainedPipelineCard,
 )
+from ..events import _create_events
 from ..splitters import Fold, SlidingWindowSplitter, Splitter
 from ..utils.dataframe import concat_on_index_override_duplicate_rows
 from ..utils.list import unpack_list_of_tuples, wrap_in_list
@@ -24,6 +26,8 @@ from .common import _sequential_train_on_window, _train_on_window
 from .types import Backend, BackendType, TrainMethod
 from .utils import _extract_trained_pipelines
 from .wrap import wrap_transformation_if_needed
+
+logger = logging.getLogger("fold:loop")
 
 
 def train(
@@ -81,6 +85,11 @@ def train(
         else PipelineCard(preprocessing=None, pipeline=pipelinecard)
     )
     X, y = check_types(X, y)
+    if events is None:
+        events = _create_events(y, pipelinecard)
+    if events is not None and events.shape[0] != X.shape[0]:
+        logger.warning("The number of events does not match the number of samples.")
+        events = events.reindex(X.index)
     artifact = Artifact.from_events_sample_weights(X.index, events, sample_weights)
     X, y, artifact = trim_initial_nans(X, y, artifact)
     train_method = TrainMethod.from_str(train_method)
@@ -95,11 +104,11 @@ def train(
             preprocessed_X,
             preprocessed_artifact,
         ) = _train_on_window(
-            X,
-            y,
-            artifact,
-            preprocessing_pipeline,
-            Fold(0, 0, 0, len(X), 0, 0, 0, len(X)),
+            X=X,
+            y=y,
+            artifact=artifact,
+            pipeline=preprocessing_pipeline,
+            split=Fold(0, 0, 0, len(X), 0, 0, 0, len(X)),
             never_update=True,
             backend=backend,
             show_progress=True,
@@ -129,11 +138,11 @@ def train(
             first_batch_predictions,
             first_batch_artifacts,
         ) = _train_on_window(
-            X,
-            y,
-            artifact,
-            pipeline,
-            splits[0],
+            X=X,
+            y=y,
+            artifact=artifact,
+            pipeline=pipeline,
+            split=splits[0],
             never_update=True,
             backend=backend,
         )
@@ -194,6 +203,8 @@ def train(
         if pipelinecard.preprocessing
         else None,
         pipeline=_extract_trained_pipelines(processed_idx, processed_pipelines),
+        event_labeler=pipelinecard.event_labeler,
+        event_filter=pipelinecard.event_filter,
     )
     if return_artifacts is True:
         processed_artifacts = concat_on_index_override_duplicate_rows(
@@ -234,11 +245,11 @@ def train_for_deployment(
     pipeline = wrap_in_list(pipeline)
     pipeline = wrap_transformation_if_needed(pipeline)
     _, transformations, predictions, artifacts = _train_on_window(
-        X,
-        y,
-        artifact,
-        pipeline,
-        Fold(
+        X=X,
+        y=y,
+        artifact=artifact,
+        pipeline=pipeline,
+        split=Fold(
             order=0,
             model_index=0,
             train_window_start=0,

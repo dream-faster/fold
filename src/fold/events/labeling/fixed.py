@@ -4,9 +4,14 @@ from typing import Callable, List, Optional, Union
 
 import pandas as pd
 
-from ...base import PredefinedFunction
+from ...base import (
+    EventDataFrame,
+    Labeler,
+    LabelingStrategy,
+    PredefinedFunction,
+    WeightingStrategy,
+)
 from ...utils.forward import create_forward_rolling
-from ..base import EventDataFrame, Labeler, LabelingStrategy, WeightingStrategy
 from ..weights import NoWeighting, WeightBySumWithLookahead
 
 

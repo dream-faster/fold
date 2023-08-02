@@ -24,11 +24,11 @@ def train_pipeline(
     backend: Backend,
     silent: bool,
 ):
-    func = ray.remote(func)
+    func = ray.remote(func).options(num_cpus=self.limit_threads)
     X = ray.put(X)
     y = ray.put(y)
     futures = [
-        func.options(num_cpus=self.limit_threads).remote(
+        func.remote(
             X,
             y,
             artifact,
@@ -56,7 +56,7 @@ def backtest_pipeline(
     mutate: bool,
     silent: bool,
 ):
-    func = ray.remote(func)
+    func = ray.remote(func).options(num_cpus=self.limit_threads)
     X = ray.put(X)
     y = ray.put(y)
     pipeline = ray.put(pipeline)
@@ -74,9 +74,7 @@ def backtest_pipeline(
     # return_value_1 = sorted(ray.get(result_refs), key=lambda x: x[0].index[0])
 
     futures = [
-        func.options(num_cpus=self.limit_threads).remote(
-            pipeline, split, X, y, artifact, backend, mutate
-        )
+        func.remote(pipeline, split, X, y, artifact, backend, mutate)
         for split in splits
     ]
     return_value = ray.get(futures)

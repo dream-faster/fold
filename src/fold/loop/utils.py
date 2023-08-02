@@ -2,17 +2,21 @@
 
 
 from copy import deepcopy
-from typing import Callable, List, Tuple
+from typing import Callable, List, Tuple, TypeVar
 
 import pandas as pd
 
 from ..base import (
     Block,
     Clonable,
+    Composite,
     Pipeline,
     TrainedPipelines,
     get_flat_list_of_transformations,
 )
+from ..base.utils import _get_maximum_memory_size, traverse_apply
+from ..splitters import Fold
+from .types import Stage
 
 
 def deepcopy_pipelines(transformation: Pipeline) -> Pipeline:
@@ -53,3 +57,36 @@ def _extract_trained_pipelines(
         )
         for transformation_over_time in zip(*processed_pipelines)
     ]
+
+
+def _set_metadata(
+    pipeline: Pipeline,
+    metadata: Composite.Metadata,
+) -> Pipeline:
+    def set_(block: Block, clone_children: Callable) -> Block:
+        if isinstance(block, Clonable):
+            block = block.clone(clone_children)
+            if isinstance(block, Composite):
+                block.metadata = metadata
+        return block
+
+    return traverse_apply(pipeline, set_)
+
+
+T = TypeVar("T")
+
+
+def _cut_to_train_window(df: T, fold: Fold, stage: Stage) -> T:
+    window_start = (
+        fold.update_window_start if stage == Stage.update else fold.train_window_start
+    )
+    window_end = (
+        fold.update_window_end if stage == Stage.update else fold.train_window_end
+    )
+    return df.iloc[window_start:window_end]  # type: ignore
+
+
+def _cut_to_backtesting_window(df: T, fold: Fold, pipeline: Pipeline) -> T:
+    overlap = _get_maximum_memory_size(pipeline)
+    test_window_start = max(fold.test_window_start - overlap, 0)
+    return df.iloc[test_window_start : fold.test_window_end]  # type: ignore
