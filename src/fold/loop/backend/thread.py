@@ -4,6 +4,7 @@
 from typing import Callable, List, Optional
 
 import pandas as pd
+from tqdm import tqdm
 from tqdm.contrib.concurrent import thread_map
 
 from ...base import Artifact, Composite, Pipeline, TrainedPipeline, X
@@ -60,6 +61,7 @@ def process_child_transformations(
     stage: Stage,
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
+    tqdm: Optional[tqdm] = None,
 ):
     list_of_child_transformations_with_index = [
         {"index": index, "child_transformation": child_transformation}
@@ -76,6 +78,7 @@ def process_child_transformations(
             stage,
             backend,
             results_primary,
+            tqdm,
         ),
         list_of_child_transformations_with_index,
         disable=True,

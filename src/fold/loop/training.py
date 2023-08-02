@@ -102,6 +102,7 @@ def train(
             Fold(0, 0, 0, len(X), 0, 0, 0, len(X)),
             never_update=True,
             backend=backend,
+            show_progress=True,
         )
         assert preprocessed_X.shape[0] == X.shape[0]
         assert preprocessed_artifact.shape[0] == artifact.shape[0]
