@@ -63,6 +63,10 @@ def backtest(
     """
     backend = get_backend(backend)
     X, y = check_types(X, y)
+    if events is None:
+        events = _create_events(y, trained_pipelinecard)
+    if events is not None:
+        assert events.shape[0] == X.shape[0]
     artifact = Artifact.from_events_sample_weights(X.index, events, sample_weights)
     X, y, artifact = trim_initial_nans(X, y, artifact)
 
@@ -81,11 +85,6 @@ def backtest(
         assert preprocessed_artifacts.shape[0] == artifact.shape[0]
         X = preprocessed_X
         artifact = preprocessed_artifacts
-
-    if events is None:
-        events = _create_events(y, trained_pipelinecard)
-    if events is not None:
-        assert events.shape[0] == X.shape[0]
 
     results, artifacts = unpack_list_of_tuples(
         backend.backtest_pipeline(

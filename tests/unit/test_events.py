@@ -66,6 +66,7 @@ def test_predefined_events(agg_func: str) -> None:
     )
     assert len(usepredefined_pred) == 1000
     assert len(usepredefined_pred.dropna()) == 998
+    assert len(usepredefined_artifact) == len(X)
 
     pipeline_card = PipelineCard(
         preprocessing=None,
@@ -80,3 +81,4 @@ def test_predefined_events(agg_func: str) -> None:
     assert len(pred) == 1000
     assert len(pred.dropna()) == 998
     assert pred.equals(usepredefined_pred)
+    assert len(artifact) == len(X)

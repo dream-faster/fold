@@ -16,7 +16,7 @@ from ..base import (
 )
 from ..base.scoring import score_results
 from ..splitters import Splitter
-from ..utils.dataframe import ResolutionStrategy, concat_on_columns_with_duplicates
+from ..utils.dataframe import concat_on_index_override_duplicate_rows
 from .backtesting import backtest
 from .training import train
 from .types import Backend, BackendType, TrainMethod
@@ -177,10 +177,10 @@ def train_backtest(
     )
 
     if return_artifacts:
-        artifacts = concat_on_columns_with_duplicates(
+        artifacts = concat_on_index_override_duplicate_rows(
             [train_artifacts, backtest_artifacts],
-            strategy=ResolutionStrategy.last,
         )
+        assert artifacts.index.is_monotonic_increasing
         if return_insample:
             return pred, trained_pipelines, artifacts, insample_predictions
         else:
@@ -284,8 +284,8 @@ def train_evaluate(
             scorecard,
             pred,
             trained_pipelines,
-            concat_on_columns_with_duplicates(
-                [train_artifacts, backtest_artifacts], strategy=ResolutionStrategy.last
+            concat_on_index_override_duplicate_rows(
+                [train_artifacts, backtest_artifacts]
             ),
         )
     else:

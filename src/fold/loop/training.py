@@ -82,6 +82,10 @@ def train(
         else PipelineCard(preprocessing=None, pipeline=pipelinecard)
     )
     X, y = check_types(X, y)
+    if events is None:
+        events = _create_events(y, pipelinecard)
+    if events is not None:
+        assert events.shape[0] == X.shape[0]
     artifact = Artifact.from_events_sample_weights(X.index, events, sample_weights)
     X, y, artifact = trim_initial_nans(X, y, artifact)
     train_method = TrainMethod.from_str(train_method)
@@ -115,11 +119,6 @@ def train(
             "SlidingWindowSplitter is conceptually incompatible with"
             " TrainMethod.sequential"
         )
-
-    if events is None:
-        events = _create_events(y, pipelinecard)
-    if events is not None:
-        assert events.shape[0] == X.shape[0]
 
     pipeline = wrap_in_list(pipelinecard.pipeline)
     pipeline = wrap_transformation_if_needed(pipeline)
