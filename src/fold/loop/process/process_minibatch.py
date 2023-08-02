@@ -68,7 +68,7 @@ def _process_minibatch_transformation(
     )
     return_value = transformation.transform(X_with_memory, in_sample=in_sample)
     # 3. update (if we're in the update stage)
-    if stage == Stage.update:
+    if stage == Stage.update and transformation.properties.updateable:
         artifact = transformation.update(
             X_with_memory, y_with_memory, sample_weights_with_memory
         )
