@@ -5,7 +5,17 @@ from typing import Callable, List, Optional, Tuple
 
 import pandas as pd
 
-from ..base import Artifact, Composite, Pipeline, Pipelines, T, Transformation, fit_noop
+from ..base import (
+    Artifact,
+    Composite,
+    EventDataFrame,
+    Pipeline,
+    PipelineCard,
+    Pipelines,
+    T,
+    Transformation,
+    fit_noop,
+)
 from ..utils.dataframe import (
     ResolutionStrategy,
     concat_on_columns,
@@ -173,3 +183,16 @@ class _EventLabelWrapper(Transformation):
         elif in_sample is False and not events.dropna().empty:
             self.properties.memory_size = 1
         return events.reindex(X.index)
+
+
+def _create_events(
+    y: pd.Series, pipeline_card: PipelineCard
+) -> Optional[EventDataFrame]:
+    if pipeline_card.event_filter is None:
+        return None
+    start_times = (
+        pipeline_card.event_filter.get_event_start_times(y)
+        if pipeline_card.event_filter is not None
+        else y.index
+    )
+    return pipeline_card.event_labeler.label_events(start_times, y).reindex(y.index)

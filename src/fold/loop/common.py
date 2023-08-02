@@ -9,7 +9,7 @@ from typing import List, Optional, Tuple, TypeVar, Union
 import pandas as pd
 from tqdm import tqdm
 
-from fold.base.classes import EventDataFrame, PipelineCard
+from fold.base.classes import EventDataFrame
 from fold.events import UsePredefinedEvents
 
 from ..base import (
@@ -640,11 +640,13 @@ def _train_on_window(
     show_progress: bool = False,
 ) -> Tuple[int, TrainedPipeline, X, Artifact]:
     pd.options.mode.copy_on_write = True
-
     stage = Stage.inital_fit if (split.order == 0 or never_update) else Stage.update
+
     X_train: pd.DataFrame = __cut_to_train_window(X, split, stage)  # type: ignore
     y_train = __cut_to_train_window(y, split, stage)
     artifact_train = __cut_to_train_window(artifact, split, stage)
+    if events is not None:
+        events_train = __cut_to_train_window(events, split, stage)
 
     pipeline = deepcopy_pipelines(pipeline)
     pipeline = _set_metadata(
@@ -714,16 +716,3 @@ def _sequential_train_on_window(
         processed_predictions,
         processed_artifacts,
     )
-
-
-def _create_events(
-    y: pd.Series, pipeline_card: PipelineCard
-) -> Optional[EventDataFrame]:
-    if pipeline_card.event_filter is None:
-        return None
-    start_times = (
-        pipeline_card.event_filter.get_event_start_times(y)
-        if pipeline_card.event_filter is not None
-        else y.index
-    )
-    return pipeline_card.event_labeler.label_events(start_times, y).reindex(y.index)

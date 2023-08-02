@@ -14,13 +14,14 @@ from ..base import (
     PipelineCard,
     TrainedPipelineCard,
 )
+from ..events import _create_events
 from ..splitters import Fold, SlidingWindowSplitter, Splitter
 from ..utils.dataframe import concat_on_index_override_duplicate_rows
 from ..utils.list import unpack_list_of_tuples, wrap_in_list
 from ..utils.trim import trim_initial_nans
 from .backend import get_backend
 from .checks import check_types
-from .common import _create_events, _sequential_train_on_window, _train_on_window
+from .common import _sequential_train_on_window, _train_on_window
 from .types import Backend, BackendType, TrainMethod
 from .utils import _extract_trained_pipelines
 from .wrap import wrap_transformation_if_needed
