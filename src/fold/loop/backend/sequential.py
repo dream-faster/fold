@@ -4,7 +4,8 @@
 from typing import Callable, List, Optional
 
 import pandas as pd
-from tqdm.auto import tqdm
+from tqdm import tqdm
+from tqdm.auto import tqdm as tqdm_auto
 
 from ...base import Artifact, Composite, Pipeline, TrainedPipeline, X
 from ...splitters import Fold
@@ -31,7 +32,7 @@ def train_pipeline(
         pipeline = loads(dumps(pipeline))
     return [
         func(X, y, artifact, pipeline, split, never_update, backend)
-        for split in tqdm(splits, desc="Training", disable=silent)
+        for split in tqdm_auto(splits, desc="Training", disable=silent)
     ]
 
 
@@ -68,6 +69,7 @@ def process_child_transformations(
     stage: Stage,
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
+    tqdm: Optional[tqdm] = None,
 ):
     if DEBUG_MULTI_PROCESSING:
         from ray.cloudpickle import dumps, loads
@@ -86,13 +88,14 @@ def process_child_transformations(
             stage,
             backend,
             results_primary,
+            tqdm,
         )
         for index, child_transformation in list_of_child_transformations_with_index
     ]
 
 
 class NoBackend(Backend):
-    name = "pathos"
+    name = "no"
     process_child_transformations = process_child_transformations
     train_pipeline = train_pipeline
     backtest_pipeline = backtest_pipeline

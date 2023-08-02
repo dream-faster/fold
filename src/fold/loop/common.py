@@ -7,6 +7,7 @@ import logging
 from typing import Callable, List, Optional, Tuple, TypeVar, Union
 
 import pandas as pd
+from tqdm import tqdm
 
 from fold.events import UsePredefinedEvents
 
@@ -69,14 +70,16 @@ def recursively_transform(
     transformations: T,
     stage: Stage,
     backend: Backend,
+    tqdm: Optional[tqdm] = None,
 ) -> Tuple[T, X, Artifact]:
     """
     The main function to transform (and fit or update) a pipline of transformations.
     `stage` is used to determine whether to run the inner loop for online models.
     """
-    logger.debug(
-        f'called "recursively_transform()" with {transformations.__class__.__name__} with stage {stage}'
-    )
+    logger.debug(f"Processing {transformations.__class__.__name__} with stage {stage}")
+
+    if tqdm is not None and hasattr(transformations, "name"):
+        tqdm.set_description(f"Processing: {transformations.name}")
 
     if isinstance(transformations, List) or isinstance(transformations, Tuple):
         processed_transformations = []
@@ -88,6 +91,7 @@ def recursively_transform(
                 transformation,
                 stage,
                 backend,
+                tqdm,
             )
             processed_transformations.append(processed_transformation)
         return __post_checks(processed_transformations, X, artifacts)
@@ -101,6 +105,7 @@ def recursively_transform(
                 artifacts,
                 stage,
                 backend,
+                tqdm,
             )
         )
 
@@ -113,6 +118,7 @@ def recursively_transform(
                 artifacts,
                 stage,
                 backend,
+                tqdm,
             )
         )
     elif isinstance(transformations, Optimizer):
@@ -124,6 +130,7 @@ def recursively_transform(
                 artifacts,
                 stage,
                 backend,
+                tqdm,
             )
         )
 
@@ -136,6 +143,7 @@ def recursively_transform(
                 artifacts,
                 stage,
                 backend,
+                tqdm,
             )
         )
 
@@ -189,6 +197,7 @@ def _process_composite(
     artifacts: Artifact,
     stage: Stage,
     backend: Backend,
+    tqdm: Optional[tqdm] = None,
 ) -> Tuple[Composite, X, Artifact]:
     composite.before_fit(X)
     primary_transformations = composite.get_children_primary()
@@ -209,6 +218,7 @@ def _process_composite(
             stage,
             backend,
             None,
+            tqdm,
         )
     )
     if composite.properties.artifacts_length_should_match:
@@ -270,6 +280,7 @@ def _process_composite(
             stage,
             backend,
             results_primary,
+            tqdm,
         )
     )
     composite = composite.clone(replace_with(secondary_transformations))
@@ -306,6 +317,7 @@ def _process_use_predefined_events(
     artifacts: Artifact,
     stage: Stage,
     backend: Backend,
+    tqdm: Optional[tqdm] = None,
 ) -> Tuple[UsePredefinedEvents, X, Artifact]:
     primary_transformations = composite.get_children_primary()
 
@@ -325,6 +337,7 @@ def _process_use_predefined_events(
             stage,
             backend,
             None,
+            tqdm,
         )
     )
     if composite.properties.artifacts_length_should_match:
@@ -365,6 +378,7 @@ def _process_sampler(
     artifacts: Artifact,
     stage: Stage,
     backend: Backend,
+    tqdm: Optional[tqdm] = None,
 ) -> Tuple[Composite, X, Artifact]:
     primary_transformations = sampler.get_children_primary()
 
@@ -384,6 +398,7 @@ def _process_sampler(
             stage,
             backend,
             None,
+            tqdm,
         )
     )
     sampler = sampler.clone(replace_with(primary_transformations))
@@ -411,6 +426,7 @@ def _process_sampler(
                 Stage.infer,
                 backend,
                 None,
+                tqdm,
             )
         )
 
@@ -429,7 +445,10 @@ def _process_optimizer(
     artifacts: Artifact,
     stage: Stage,
     backend: Backend,
+    tqdm: Optional[tqdm] = None,
 ) -> Tuple[Pipeline, X, Artifact]:
+    if tqdm is not None:
+        tqdm.set_description(f"Processing: {optimizer.name}")
     optimized_pipeline = optimizer.get_optimized_pipeline()
     artifact = None
     if optimized_pipeline is None:
@@ -448,6 +467,7 @@ def _process_optimizer(
                     artifacts,
                     stage,
                     backend,
+                    None,
                     None,
                 )
             )
@@ -480,6 +500,7 @@ def __process_candidates(
     stage: Stage,
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
+    tqdm: Optional[tqdm] = None,
 ) -> Tuple[Pipeline, X, Artifact]:
     splits = optimizer.splitter.splits(y.index)
 
@@ -518,6 +539,7 @@ def __process_primary_child_transform(
     stage: Stage,
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
+    tqdm: Optional[tqdm] = None,
 ) -> Tuple[Pipeline, X, Optional[pd.Series], Artifact]:
     X, y, artifacts = composite.preprocess_primary(
         X=X, index=index, y=y, artifact=artifacts, fit=stage.is_fit_or_update()
@@ -529,6 +551,7 @@ def __process_primary_child_transform(
         child_transform,
         stage,
         backend,
+        tqdm,
     )
     return transformations, X, y, artifacts
 
@@ -543,6 +566,7 @@ def __process_secondary_child_transform(
     stage: Stage,
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
+    tqdm: Optional[tqdm] = None,
 ) -> Tuple[Pipeline, X, Artifact]:
     X, y, artifacts = composite.preprocess_secondary(
         X=X,
@@ -559,6 +583,7 @@ def __process_secondary_child_transform(
         child_transform,
         stage,
         backend,
+        tqdm,
     )
 
 
@@ -606,6 +631,7 @@ def _train_on_window(
     split: Fold,
     never_update: bool,
     backend: Backend,
+    show_progress: bool = False,
 ) -> Tuple[int, TrainedPipeline, X, Artifact]:
     pd.options.mode.copy_on_write = True
     stage = Stage.inital_fit if (split.order == 0 or never_update) else Stage.update
@@ -630,6 +656,7 @@ def _train_on_window(
         pipeline,
         stage,
         backend,
+        tqdm=tqdm() if show_progress else None,
     )
 
     return split.model_index, trained_pipeline, X_train, artifacts

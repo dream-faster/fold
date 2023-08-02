@@ -5,6 +5,7 @@ from typing import Callable, List, Optional
 
 import pandas as pd
 import ray
+from tqdm import tqdm
 
 from ...base import Artifact, Composite, Pipeline, TrainedPipeline, X
 from ...splitters import Fold
@@ -95,6 +96,7 @@ def process_child_transformations(
     stage: Stage,
     backend: Backend,
     results_primary: Optional[List[pd.DataFrame]],
+    tqdm: Optional[tqdm] = None,
 ):
     # list_of_child_transformations_with_index = list(
     #     list_of_child_transformations_with_index
@@ -116,6 +118,7 @@ def process_child_transformations(
             stage,
             backend,
             results_primary,
+            tqdm,
         )
         for index, child_transformation in list_of_child_transformations_with_index
     ]
