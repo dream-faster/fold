@@ -613,6 +613,12 @@ def _backtest_on_window(
     y_test = _cut_to_backtesting_window(y, split, current_pipeline)
     artifact_test = _cut_to_backtesting_window(artifact, split, current_pipeline)
 
+    original_idx = X_test.index
+    X_test, y_test, artifact_test = _get_X_y_based_on_events(
+        X_test, y_test, artifact_test
+    )
+    assert artifact_test.dropna().shape[0] == y_test.shape[0]
+
     results, artifacts = recursively_transform(
         X=X_test,
         y=y_test,
@@ -621,6 +627,9 @@ def _backtest_on_window(
         stage=Stage.update_online_only,
         backend=backend,
     )[1:]
+    if len(results.index) != len(original_idx):
+        results = results.reindex(original_idx)
+        artifacts = artifacts.reindex(original_idx)
     return (
         results.loc[X.index[split.test_window_start] :],
         artifacts.loc[X.index[split.test_window_start] :],
@@ -644,11 +653,16 @@ def _train_on_window(
     y_train = _cut_to_train_window(y, split, stage)
     artifact_train = _cut_to_train_window(artifact, split, stage)
 
+    original_idx = X_train.index
+    X_train, y_train, artifact_train = _get_X_y_based_on_events(
+        X_train, y_train, artifact_train
+    )
+
     pipeline = deepcopy_pipelines(pipeline)
     pipeline = _set_metadata(
         pipeline, Composite.Metadata(fold_index=split.order, target=y.name)
     )
-    trained_pipeline, X_train, artifacts = recursively_transform(
+    trained_pipeline, X_train, artifact_train = recursively_transform(
         X=X_train,
         y=y_train,
         artifacts=artifact_train,
@@ -657,8 +671,11 @@ def _train_on_window(
         backend=backend,
         tqdm=tqdm() if show_progress else None,
     )
+    if len(X_train.index) != len(original_idx):
+        X_train = X_train.reindex(original_idx)
+        artifact_train = artifact_train.reindex(original_idx)
 
-    return split.model_index, trained_pipeline, X_train, artifacts
+    return split.model_index, trained_pipeline, X_train, artifact_train
 
 
 def _sequential_train_on_window(
@@ -700,3 +717,15 @@ def _sequential_train_on_window(
         processed_predictions,
         processed_artifacts,
     )
+
+
+def _get_X_y_based_on_events(
+    X: pd.DataFrame,
+    y: pd.Series,
+    artifact: Artifact,
+) -> Tuple[pd.DataFrame, pd.Series, Artifact]:
+    events = Artifact.get_events(artifact)
+    if events is None:
+        return X, y, artifact
+    events = events.dropna()
+    return X.loc[events.index], events.event_label, artifact.loc[events.index]

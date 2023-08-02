@@ -2,7 +2,7 @@ from typing import List
 
 import pandas as pd
 
-from ..base import LabelingStrategy
+from ...base import LabelingStrategy
 
 
 class BinarizeSign(LabelingStrategy):

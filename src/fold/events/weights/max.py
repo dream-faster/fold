@@ -2,7 +2,7 @@ from typing import Optional, Union
 
 import pandas as pd
 
-from ..base import WeightingStrategy
+from ...base import WeightingStrategy
 from ..utils import calculate_rolling_window_size
 
 

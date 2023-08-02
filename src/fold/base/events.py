@@ -3,7 +3,7 @@ from typing import List
 
 import pandas as pd
 
-from ..base import EventDataFrame
+from .classes import EventDataFrame
 
 
 class EventFilter(ABC):

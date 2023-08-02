@@ -11,11 +11,15 @@ from ..base import (
     Artifact,
     Composite,
     EventDataFrame,
+    EventFilter,
+    Labeler,
+    LabelingStrategy,
     Pipeline,
     PipelineCard,
     Pipelines,
     T,
     Transformation,
+    WeightingStrategy,
     fit_noop,
 )
 from ..utils.dataframe import (
@@ -24,7 +28,6 @@ from ..utils.dataframe import (
     concat_on_columns_with_duplicates,
 )
 from ..utils.list import wrap_in_double_list_if_needed, wrap_in_list
-from .base import EventFilter, Labeler, LabelingStrategy, WeightingStrategy
 from .filters import EveryNth, FilterZero, NoFilter
 from .labeling import *  # noqa
 from .weights import *  # noqa
