@@ -4,7 +4,7 @@ import enum
 import uuid
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Callable, List, Optional, Tuple, TypeVar, Union
+from typing import Callable, List, Optional, Tuple, TypeVar, Union
 
 import pandas as pd
 from typing_extensions import Self
@@ -293,16 +293,16 @@ DeployablePipeline = Pipeline
 class PipelineCard:
     preprocessing: Optional[TransformationPipeline]
     pipeline: Pipeline
-    event_labeler: Any = None
-    event_filter: Any = None
+    event_labeler: Optional[Labeler] = None
+    event_filter: Optional[EventFilter] = None
 
 
 @dataclass
 class TrainedPipelineCard:
     preprocessing: TrainedPipeline
     pipeline: TrainedPipelines
-    event_labeler: Any
-    event_filter: Any
+    event_labeler: Optional[Labeler]
+    event_filter: Optional[EventFilter]
 
 
 def fit_noop(
@@ -455,3 +455,36 @@ class PredefinedFunction(ParsableEnum):
     cov = "cov"
     skew = "skew"
     sem = "sem"
+
+
+class EventFilter(ABC):
+    @abstractmethod
+    def get_event_start_times(self, y: pd.Series) -> pd.DatetimeIndex:
+        raise NotImplementedError
+
+
+class Labeler(ABC):
+    @abstractmethod
+    def label_events(
+        self, event_start_times: pd.DatetimeIndex, y: pd.Series
+    ) -> EventDataFrame:
+        raise NotImplementedError
+
+    def get_all_possible_labels(self) -> List[int]:
+        raise NotImplementedError
+
+
+class LabelingStrategy(ABC):
+    @abstractmethod
+    def label(self, series: pd.Series) -> pd.Series:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_all_labels(self) -> List[int]:
+        raise NotImplementedError
+
+
+class WeightingStrategy(ABC):
+    @abstractmethod
+    def calculate(self, series: pd.Series) -> pd.Series:
+        raise NotImplementedError
