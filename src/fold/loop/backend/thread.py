@@ -7,7 +7,7 @@ import pandas as pd
 from tqdm import tqdm
 from tqdm.contrib.concurrent import thread_map
 
-from ...base import Artifact, Composite, Pipeline, TrainedPipeline, X
+from ...base import Artifact, Composite, EventDataFrame, Pipeline, TrainedPipeline, X
 from ...splitters import Fold
 from ..types import Backend, Stage
 
@@ -19,13 +19,16 @@ def train_pipeline(
     X: pd.DataFrame,
     y: pd.Series,
     artifact: Artifact,
+    events: Optional[EventDataFrame],
     splits: List[Fold],
     never_update: bool,
     backend: Backend,
     silent: bool,
 ):
     return thread_map(
-        lambda split: func(X, y, artifact, pipeline, split, never_update, backend),
+        lambda split: func(
+            X, y, artifact, events, pipeline, split, never_update, backend
+        ),
         splits,
         disable=silent,
     )

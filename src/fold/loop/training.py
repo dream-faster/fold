@@ -117,7 +117,8 @@ def train(
         )
 
     events = _create_events(y, pipelinecard)
-    assert events.shape[0] == X.shape[0]
+    if events is not None:
+        assert events.shape[0] == X.shape[0]
 
     pipeline = wrap_in_list(pipelinecard.pipeline)
     pipeline = wrap_transformation_if_needed(pipeline)
@@ -155,6 +156,7 @@ def train(
                 X,
                 y,
                 artifact,
+                events,
                 splits[1:],
                 False,
                 backend,
@@ -179,6 +181,7 @@ def train(
                 X,
                 y,
                 artifact,
+                events,
                 splits,
                 True,
                 backend,

@@ -7,7 +7,7 @@ import pandas as pd
 from tqdm import tqdm
 from tqdm.auto import tqdm as tqdm_auto
 
-from ...base import Artifact, Composite, Pipeline, TrainedPipeline, X
+from ...base import Artifact, Composite, EventDataFrame, Pipeline, TrainedPipeline, X
 from ...splitters import Fold
 from ..types import Backend, Stage
 
@@ -21,6 +21,7 @@ def train_pipeline(
     X: pd.DataFrame,
     y: pd.Series,
     artifact: Artifact,
+    events: Optional[EventDataFrame],
     splits: List[Fold],
     never_update: bool,
     backend: Backend,
@@ -31,7 +32,7 @@ def train_pipeline(
 
         pipeline = loads(dumps(pipeline))
     return [
-        func(X, y, artifact, pipeline, split, never_update, backend)
+        func(X, y, artifact, events, pipeline, split, never_update, backend)
         for split in tqdm_auto(splits, desc="Training", disable=silent)
     ]
 

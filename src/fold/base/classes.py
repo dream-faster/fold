@@ -293,8 +293,8 @@ DeployablePipeline = Pipeline
 class PipelineCard:
     preprocessing: Optional[TransformationPipeline]
     pipeline: Pipeline
-    event_labeler: Any
-    event_filter: Any
+    event_labeler: Any = None
+    event_filter: Any = None
 
 
 @dataclass
