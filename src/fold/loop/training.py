@@ -1,6 +1,7 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
 
+import logging
 from typing import Optional, Tuple, Union
 
 import pandas as pd
@@ -25,6 +26,8 @@ from .common import _sequential_train_on_window, _train_on_window
 from .types import Backend, BackendType, TrainMethod
 from .utils import _extract_trained_pipelines
 from .wrap import wrap_transformation_if_needed
+
+logger = logging.getLogger("fold:loop")
 
 
 def train(
@@ -84,8 +87,9 @@ def train(
     X, y = check_types(X, y)
     if events is None:
         events = _create_events(y, pipelinecard)
-    if events is not None:
-        assert events.shape[0] == X.shape[0]
+    if events is not None and events.shape[0] != X.shape[0]:
+        logger.warning("The number of events does not match the number of samples.")
+        events = events.reindex(X.index)
     artifact = Artifact.from_events_sample_weights(X.index, events, sample_weights)
     X, y, artifact = trim_initial_nans(X, y, artifact)
     train_method = TrainMethod.from_str(train_method)

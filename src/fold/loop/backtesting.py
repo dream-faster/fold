@@ -1,6 +1,7 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
 
+import logging
 from typing import Optional, Tuple, Union
 
 import pandas as pd
@@ -15,6 +16,8 @@ from .backend import get_backend
 from .checks import check_types
 from .common import _backtest_on_window
 from .types import Backend, BackendType
+
+logger = logging.getLogger("fold:loop")
 
 
 def backtest(
@@ -65,8 +68,9 @@ def backtest(
     X, y = check_types(X, y)
     if events is None:
         events = _create_events(y, trained_pipelinecard)
-    if events is not None:
-        assert events.shape[0] == X.shape[0]
+    if events is not None and events.shape[0] != X.shape[0]:
+        logger.warning("The number of events does not match the number of samples.")
+        events = events.reindex(X.index)
     artifact = Artifact.from_events_sample_weights(X.index, events, sample_weights)
     X, y, artifact = trim_initial_nans(X, y, artifact)
 
