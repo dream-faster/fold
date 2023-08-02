@@ -98,6 +98,7 @@ def train(
             X,
             y,
             artifact,
+            None,
             preprocessing_pipeline,
             Fold(0, 0, 0, len(X), 0, 0, 0, len(X)),
             never_update=True,
@@ -135,6 +136,7 @@ def train(
             X,
             y,
             artifact,
+            events,
             pipeline,
             splits[0],
             never_update=True,
@@ -190,7 +192,9 @@ def train(
             processed_pipelines,
             processed_predictions,
             processed_artifacts,
-        ) = _sequential_train_on_window(pipeline, X, y, splits, artifact, backend)
+        ) = _sequential_train_on_window(
+            pipeline, X, y, splits, artifact, events, backend
+        )
 
     trained_pipelines = TrainedPipelineCard(
         preprocessing=[pd.Series(p, index=[0]) for p in trained_preprocessing_pipeline]
@@ -240,6 +244,7 @@ def train_for_deployment(
         X,
         y,
         artifact,
+        events,
         pipeline,
         Fold(
             order=0,

@@ -512,7 +512,9 @@ def __process_candidates(
         processed_pipelines,
         processed_predictions,
         processed_artifacts,
-    ) = _sequential_train_on_window(child_transform, X, y, splits, artifacts, backend)
+    ) = _sequential_train_on_window(
+        child_transform, X, y, splits, artifacts, events=None, backend=backend
+    )
     trained_pipelines = _extract_trained_pipelines(processed_idx, processed_pipelines)
 
     result, artifact = _backtest_on_window(
@@ -677,6 +679,7 @@ def _sequential_train_on_window(
     y: pd.Series,
     splits: List[Fold],
     artifact: Artifact,
+    events: Optional[EventDataFrame],
     backend: Backend,
 ) -> Tuple[List[int], List[Pipeline], List[X], List[Artifact]]:
     processed_idx = []
@@ -694,6 +697,7 @@ def _sequential_train_on_window(
             X,
             y,
             artifact,
+            events,
             processed_pipeline,
             split,
             False,
