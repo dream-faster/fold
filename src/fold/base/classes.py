@@ -4,7 +4,7 @@ import enum
 import uuid
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Callable, List, Optional, Tuple, TypeVar, Union
+from typing import Any, Callable, List, Optional, Tuple, TypeVar, Union
 
 import pandas as pd
 from typing_extensions import Self
@@ -293,6 +293,8 @@ DeployablePipeline = Pipeline
 class PipelineCard:
     preprocessing: Optional[TransformationPipeline]
     pipeline: Pipeline
+    event_labeler: Any
+    event_filter: Any
 
 
 @dataclass

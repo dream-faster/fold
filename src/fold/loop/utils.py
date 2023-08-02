@@ -6,9 +6,12 @@ from typing import Callable, List, Tuple
 
 import pandas as pd
 
+from fold.base.utils import traverse_apply
+
 from ..base import (
     Block,
     Clonable,
+    Composite,
     Pipeline,
     TrainedPipelines,
     get_flat_list_of_transformations,
@@ -53,3 +56,17 @@ def _extract_trained_pipelines(
         )
         for transformation_over_time in zip(*processed_pipelines)
     ]
+
+
+def _set_metadata(
+    pipeline: Pipeline,
+    metadata: Composite.Metadata,
+) -> Pipeline:
+    def set_(block: Block, clone_children: Callable) -> Block:
+        if isinstance(block, Clonable):
+            block = block.clone(clone_children)
+            if isinstance(block, Composite):
+                block.metadata = metadata
+        return block
+
+    return traverse_apply(pipeline, set_)

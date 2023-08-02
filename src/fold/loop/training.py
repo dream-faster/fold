@@ -20,7 +20,7 @@ from ..utils.list import unpack_list_of_tuples, wrap_in_list
 from ..utils.trim import trim_initial_nans
 from .backend import get_backend
 from .checks import check_types
-from .common import _sequential_train_on_window, _train_on_window
+from .common import _create_events, _sequential_train_on_window, _train_on_window
 from .types import Backend, BackendType, TrainMethod
 from .utils import _extract_trained_pipelines
 from .wrap import wrap_transformation_if_needed
@@ -114,6 +114,9 @@ def train(
             "SlidingWindowSplitter is conceptually incompatible with"
             " TrainMethod.sequential"
         )
+
+    events = _create_events(y, pipelinecard)
+    assert events.shape[0] == X.shape[0]
 
     pipeline = wrap_in_list(pipelinecard.pipeline)
     pipeline = wrap_transformation_if_needed(pipeline)

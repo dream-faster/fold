@@ -4,17 +4,16 @@
 from __future__ import annotations
 
 import logging
-from typing import Callable, List, Optional, Tuple, TypeVar, Union
+from typing import List, Optional, Tuple, TypeVar, Union
 
 import pandas as pd
 from tqdm import tqdm
 
+from fold.base.classes import EventDataFrame, PipelineCard
 from fold.events import UsePredefinedEvents
 
 from ..base import (
     Artifact,
-    Block,
-    Clonable,
     Composite,
     Optimizer,
     Pipeline,
@@ -23,7 +22,6 @@ from ..base import (
     TrainedPipelines,
     Transformation,
     X,
-    traverse_apply,
 )
 from ..base.utils import _get_maximum_memory_size
 from ..models.base import Model
@@ -38,7 +36,12 @@ from .process.process_minibatch import (
     _process_minibatch_transformation,
 )
 from .types import Backend, Stage
-from .utils import _extract_trained_pipelines, deepcopy_pipelines, replace_with
+from .utils import (
+    _extract_trained_pipelines,
+    _set_metadata,
+    deepcopy_pipelines,
+    replace_with,
+)
 
 logger = logging.getLogger("fold:loop")
 DEBUG_MULTI_PROCESSING = False
@@ -627,6 +630,7 @@ def _train_on_window(
     X: pd.DataFrame,
     y: pd.Series,
     artifact: Artifact,
+    events: Optional[EventDataFrame],
     pipeline: Pipeline,
     split: Fold,
     never_update: bool,
@@ -634,19 +638,14 @@ def _train_on_window(
     show_progress: bool = False,
 ) -> Tuple[int, TrainedPipeline, X, Artifact]:
     pd.options.mode.copy_on_write = True
+
     stage = Stage.inital_fit if (split.order == 0 or never_update) else Stage.update
-    window_start = (
-        split.update_window_start if stage == Stage.update else split.train_window_start
-    )
-    window_end = (
-        split.update_window_end if stage == Stage.update else split.train_window_end
-    )
-    X_train: pd.DataFrame = X.iloc[window_start:window_end]  # type: ignore
-    y_train = y.iloc[window_start:window_end]
-    artifact_train = artifact.iloc[window_start:window_end]
+    X_train: pd.DataFrame = __cut_to_train_window(X, split, stage)  # type: ignore
+    y_train = __cut_to_train_window(y, split, stage)
+    artifact_train = __cut_to_train_window(artifact, split, stage)
 
     pipeline = deepcopy_pipelines(pipeline)
-    pipeline = set_metadata(
+    pipeline = _set_metadata(
         pipeline, Composite.Metadata(fold_index=split.order, target=y.name)
     )
     trained_pipeline, X_train, artifacts = recursively_transform(
@@ -660,6 +659,16 @@ def _train_on_window(
     )
 
     return split.model_index, trained_pipeline, X_train, artifacts
+
+
+def __cut_to_train_window(df: pd.DataFrame, fold: Fold, stage: Stage):
+    window_start = (
+        fold.update_window_start if stage == Stage.update else fold.train_window_start
+    )
+    window_end = (
+        fold.update_window_end if stage == Stage.update else fold.train_window_end
+    )
+    return df.iloc[window_start:window_end]
 
 
 def _sequential_train_on_window(
@@ -703,15 +712,14 @@ def _sequential_train_on_window(
     )
 
 
-def set_metadata(
-    pipeline: Pipeline,
-    metadata: Composite.Metadata,
-) -> Pipeline:
-    def set_(block: Block, clone_children: Callable) -> Block:
-        if isinstance(block, Clonable):
-            block = block.clone(clone_children)
-            if isinstance(block, Composite):
-                block.metadata = metadata
-        return block
-
-    return traverse_apply(pipeline, set_)
+def _create_events(
+    y: pd.Series, pipeline_card: PipelineCard
+) -> Optional[EventDataFrame]:
+    if pipeline_card.event_filter is None:
+        return None
+    start_times = (
+        pipeline_card.event_filter.get_event_start_times(y)
+        if pipeline_card.event_filter is not None
+        else y.index
+    )
+    return pipeline_card.event_labeler.label_events(start_times, y).reindex(y.index)
