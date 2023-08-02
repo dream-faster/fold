@@ -6,8 +6,6 @@ from typing import Callable, List, Tuple
 
 import pandas as pd
 
-from fold.base.utils import traverse_apply
-
 from ..base import (
     Block,
     Clonable,
@@ -16,6 +14,9 @@ from ..base import (
     TrainedPipelines,
     get_flat_list_of_transformations,
 )
+from ..base.utils import _get_maximum_memory_size, traverse_apply
+from ..splitters import Fold
+from .types import Stage
 
 
 def deepcopy_pipelines(transformation: Pipeline) -> Pipeline:
@@ -70,3 +71,21 @@ def _set_metadata(
         return block
 
     return traverse_apply(pipeline, set_)
+
+
+def _cut_to_train_window(df: pd.DataFrame, fold: Fold, stage: Stage) -> pd.DataFrame:
+    window_start = (
+        fold.update_window_start if stage == Stage.update else fold.train_window_start
+    )
+    window_end = (
+        fold.update_window_end if stage == Stage.update else fold.train_window_end
+    )
+    return df.iloc[window_start:window_end]
+
+
+def _cut_to_backtesting_window(
+    df: pd.DataFrame, fold: Fold, pipeline: Pipeline
+) -> pd.DataFrame:
+    overlap = _get_maximum_memory_size(pipeline)
+    test_window_start = max(fold.test_window_start - overlap, 0)
+    return df.iloc[test_window_start : fold.test_window_end]

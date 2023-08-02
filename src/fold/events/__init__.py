@@ -1,9 +1,11 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 from __future__ import annotations
 
-from typing import Callable, List, Optional, Tuple
+from typing import Callable, List, Optional, Tuple, Union
 
 import pandas as pd
+
+from fold.base.classes import TrainedPipelineCard
 
 from ..base import (
     Artifact,
@@ -186,7 +188,7 @@ class _EventLabelWrapper(Transformation):
 
 
 def _create_events(
-    y: pd.Series, pipeline_card: PipelineCard
+    y: pd.Series, pipeline_card: Union[PipelineCard, TrainedPipelineCard]
 ) -> Optional[EventDataFrame]:
     if pipeline_card.event_filter is None:
         return None

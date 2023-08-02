@@ -301,6 +301,8 @@ class PipelineCard:
 class TrainedPipelineCard:
     preprocessing: TrainedPipeline
     pipeline: TrainedPipelines
+    event_labeler: Any
+    event_filter: Any
 
 
 def fit_noop(

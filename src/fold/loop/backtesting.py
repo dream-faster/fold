@@ -5,9 +5,8 @@ from typing import Optional, Tuple, Union
 
 import pandas as pd
 
-from fold.base.classes import TrainedPipelineCard
-
-from ..base import Artifact, EventDataFrame, OutOfSamplePredictions
+from ..base import Artifact, EventDataFrame, OutOfSamplePredictions, TrainedPipelineCard
+from ..events import _create_events
 from ..splitters import Fold, Splitter
 from ..utils.dataframe import concat_on_index
 from ..utils.list import unpack_list_of_tuples
@@ -82,6 +81,11 @@ def backtest(
         assert preprocessed_artifacts.shape[0] == artifact.shape[0]
         X = preprocessed_X
         artifact = preprocessed_artifacts
+
+    if events is None:
+        events = _create_events(y, trained_pipelinecard)
+    if events is not None:
+        assert events.shape[0] == X.shape[0]
 
     results, artifacts = unpack_list_of_tuples(
         backend.backtest_pipeline(

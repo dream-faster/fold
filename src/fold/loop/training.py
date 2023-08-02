@@ -117,7 +117,8 @@ def train(
             " TrainMethod.sequential"
         )
 
-    events = _create_events(y, pipelinecard)
+    if events is None:
+        events = _create_events(y, pipelinecard)
     if events is not None:
         assert events.shape[0] == X.shape[0]
 
@@ -205,6 +206,8 @@ def train(
         if pipelinecard.preprocessing
         else None,
         pipeline=_extract_trained_pipelines(processed_idx, processed_pipelines),
+        event_labeler=pipelinecard.event_labeler,
+        event_filter=pipelinecard.event_filter,
     )
     if return_artifacts is True:
         processed_artifacts = concat_on_index_override_duplicate_rows(

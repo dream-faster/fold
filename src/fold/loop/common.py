@@ -23,7 +23,6 @@ from ..base import (
     Transformation,
     X,
 )
-from ..base.utils import _get_maximum_memory_size
 from ..models.base import Model
 from ..splitters import Fold
 from ..utils.checks import is_prediction
@@ -37,6 +36,8 @@ from .process.process_minibatch import (
 )
 from .types import Backend, Stage
 from .utils import (
+    _cut_to_backtesting_window,
+    _cut_to_train_window,
     _extract_trained_pipelines,
     _set_metadata,
     deepcopy_pipelines,
@@ -598,6 +599,7 @@ def _backtest_on_window(
     X: pd.DataFrame,
     y: pd.Series,
     artifact: Artifact,
+    events: Optional[EventDataFrame],
     backend: Backend,
     mutate: bool,
 ) -> Tuple[X, Artifact]:
@@ -609,15 +611,16 @@ def _backtest_on_window(
     if not mutate:
         current_pipeline = deepcopy_pipelines(current_pipeline)
 
-    overlap = _get_maximum_memory_size(current_pipeline)
-    test_window_start = max(split.test_window_start - overlap, 0)
-    X_test = X.iloc[test_window_start : split.test_window_end]
-    y_test = y.iloc[test_window_start : split.test_window_end]
-    artifact_test = artifact.iloc[test_window_start : split.test_window_end]
+    X_test = _cut_to_backtesting_window(X, split, current_pipeline)
+    y_test = _cut_to_backtesting_window(y, split, current_pipeline)
+    artifact_test = _cut_to_backtesting_window(artifact, split, current_pipeline)
+    events_test = _cut_to_backtesting_window(events, split, current_pipeline)
+
     results, artifacts = recursively_transform(
         X_test,
         y_test,
         artifact_test,
+        events_test,
         current_pipeline,
         stage=Stage.update_online_only,
         backend=backend,
@@ -642,11 +645,11 @@ def _train_on_window(
     pd.options.mode.copy_on_write = True
     stage = Stage.inital_fit if (split.order == 0 or never_update) else Stage.update
 
-    X_train: pd.DataFrame = __cut_to_train_window(X, split, stage)  # type: ignore
-    y_train = __cut_to_train_window(y, split, stage)
-    artifact_train = __cut_to_train_window(artifact, split, stage)
+    X_train: pd.DataFrame = _cut_to_train_window(X, split, stage)  # type: ignore
+    y_train = _cut_to_train_window(y, split, stage)
+    artifact_train = _cut_to_train_window(artifact, split, stage)
     if events is not None:
-        events_train = __cut_to_train_window(events, split, stage)
+        events_train = _cut_to_train_window(events, split, stage)
 
     pipeline = deepcopy_pipelines(pipeline)
     pipeline = _set_metadata(
@@ -663,16 +666,6 @@ def _train_on_window(
     )
 
     return split.model_index, trained_pipeline, X_train, artifacts
-
-
-def __cut_to_train_window(df: pd.DataFrame, fold: Fold, stage: Stage):
-    window_start = (
-        fold.update_window_start if stage == Stage.update else fold.train_window_start
-    )
-    window_end = (
-        fold.update_window_end if stage == Stage.update else fold.train_window_end
-    )
-    return df.iloc[window_start:window_end]
 
 
 def _sequential_train_on_window(
