@@ -1,11 +1,15 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
-from typing import Tuple
+from typing import Optional, Tuple
 
+import pandas as pd
 from sklearn.preprocessing import MinMaxScaler as SKLearnMinMaxScaler
 from sklearn.preprocessing import StandardScaler as SKLearnStandardScaler
 
+from fold.base.classes import Artifact, Transformation
 from fold.transformations.sklearn import WrapInvertibleSKLearnTransformation
+
+from fold.utils.dataframe import fill_na_inf
 
 
 class StandardScaler(WrapInvertibleSKLearnTransformation):
@@ -53,6 +57,78 @@ class StandardScaler(WrapInvertibleSKLearnTransformation):
 
     def __init__(self):
         super().__init__(SKLearnStandardScaler, init_args=dict())
+
+
+class ExpandingStandardScaler(Transformation):
+    """
+    Standardize features by removing the mean and scaling to unit variance.
+
+    Capable of further updates after the initial fit.
+
+    Examples
+    --------
+    ```pycon
+    >>> from fold.loop import train_backtest
+    >>> from fold.splitters import SlidingWindowSplitter
+    >>> from fold.transformations import StandardScaler
+    >>> from fold.utils.tests import generate_sine_wave_data
+    >>> X, y  = generate_sine_wave_data()
+    >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
+    >>> pipeline = ExpandingStandardScaler()
+    >>> X["sine"].head()
+    2021-12-31 07:20:00    0.0000
+    2021-12-31 07:21:00    0.0126
+    2021-12-31 07:22:00    0.0251
+    2021-12-31 07:23:00    0.0377
+    2021-12-31 07:24:00    0.0502
+    Freq: T, Name: sine, dtype: float64
+    >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+    >>> preds["sine"].head()
+    2021-12-31 15:40:00   -0.000000
+    2021-12-31 15:41:00    0.017819
+    2021-12-31 15:42:00    0.035497
+    2021-12-31 15:43:00    0.053316
+    2021-12-31 15:44:00    0.070994
+    Freq: T, Name: sine, dtype: float64
+
+    ```
+    """
+
+    name = "ExpandingStandardScaler"
+
+    def __init__(
+        self,
+        fill_na: bool = True,
+        name: Optional[str] = None,
+    ) -> None:
+        self.fill_na = fill_na
+        self.properties = Transformation.Properties(requires_X=False)
+
+    def fit(
+        self,
+        X: pd.DataFrame,
+        y: pd.Series,
+        sample_weights: Optional[pd.Series] = None,
+    ) -> Optional[Artifact]:
+        self.last_std = X.std()
+        self.last_mean = X.mean()
+
+    def update(
+        self,
+        X: pd.DataFrame,
+        y: pd.Series,
+        sample_weights: Optional[pd.Series] = None,
+    ) -> Optional[Artifact]:
+        self.last_values_X = X.iloc[-1:None]
+
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
+        fill_na = fill_na_inf if self.fill_na else lambda x: x
+
+        if in_sample:
+            expanding = X.expanding()
+            return fill_na((X - expanding.mean()) / expanding.std())
+        else:
+            
 
 
 class MinMaxScaler(WrapInvertibleSKLearnTransformation):
