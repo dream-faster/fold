@@ -8,7 +8,6 @@ from fold.events.filters.no import NoFilter
 from fold.events.labeling import BinarizeSign
 from fold.events.labeling.strategies import NoLabel
 from fold.events.weights import NoWeighting
-from fold.loop import backtest, train
 from fold.loop.encase import train_backtest
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.dev import Identity
@@ -27,8 +26,9 @@ def test_create_event() -> None:
         ),
         event_filter=EveryNth(5),
     )
-    trained_pipeline, artifacts = train(pipeline, X, y, splitter, return_artifacts=True)
-    pred = backtest(trained_pipeline, X, y, splitter)
+    pred, trained_pipeline, artifacts = train_backtest(
+        pipeline, X, y, splitter, return_artifacts=True
+    )
     assert len(pred) == 1000
     assert len(pred.dropna()) == 200
 
@@ -38,12 +38,27 @@ def test_create_event() -> None:
         event_labeler=FixedForwardHorizon(
             10, labeling_strategy=BinarizeSign(), weighting_strategy=None
         ),
+        event_filter=NoFilter(),
+    )
+    pred, trained_pipeline, artifacts = train_backtest(
+        pipeline, X, y, splitter, return_artifacts=True
+    )
+    assert len(pred) == 1000
+    assert len(pred.dropna()) == 990
+
+    pipeline = PipelineCard(
+        preprocessing=None,
+        pipeline=Identity(),
+        event_labeler=FixedForwardHorizon(
+            10, labeling_strategy=BinarizeSign(), weighting_strategy=None
+        ),
         event_filter=EveryNth(5),
     )
-    trained_pipeline, artifacts = train(pipeline, X, y, splitter, return_artifacts=True)
-    pred = backtest(trained_pipeline, X, y, splitter)
+    pred, trained_pipeline, artifacts = train_backtest(
+        pipeline, X, y, splitter, return_artifacts=True
+    )
     assert len(pred) == 1000
-    assert len(pred.dropna()) == 190
+    assert len(pred.dropna()) == 198
 
 
 @pytest.mark.parametrize("agg_func", ["mean", "std", "max", "min"])
