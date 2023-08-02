@@ -513,7 +513,7 @@ def __process_candidates(
         processed_predictions,
         processed_artifacts,
     ) = _sequential_train_on_window(
-        child_transform, X, y, splits, artifacts, events=None, backend=backend
+        child_transform, X, y, splits, artifacts, backend=backend
     )
     trained_pipelines = _extract_trained_pipelines(processed_idx, processed_pipelines)
 
