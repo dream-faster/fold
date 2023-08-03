@@ -27,6 +27,7 @@ class FixedForwardHorizon(Labeler):
         aggregate_function: Union[
             str, PredefinedFunction, Callable
         ] = PredefinedFunction.sum,
+        flip_sign: bool = False,
     ):
         self.time_horizon = time_horizon
         self.labeling_strategy = labeling_strategy
@@ -42,6 +43,7 @@ class FixedForwardHorizon(Labeler):
                 PredefinedFunction.from_str(aggregate_function).value,
             )
         )
+        self.flip_sign = flip_sign
 
     def label_events(
         self, event_start_times: pd.DatetimeIndex, y: pd.Series
@@ -57,6 +59,12 @@ class FixedForwardHorizon(Labeler):
         raw_returns = forward_rolling_aggregated[event_start_times]
         sample_weights = self.weighting_strategy.calculate(raw_returns)
         test_sample_weights = self.weighting_strategy_test.calculate(raw_returns)
+
+        if self.flip_sign:
+            if len(labels.dropna().unique()) != 2:
+                labels = labels * -1
+            else:
+                labels = 1 - labels
 
         offset = pd.Timedelta(value=self.time_horizon, unit=y.index.freqstr)
         return EventDataFrame.from_data(
