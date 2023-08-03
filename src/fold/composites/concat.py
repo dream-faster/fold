@@ -7,7 +7,7 @@ from typing import Callable, List, Optional, Union
 
 import pandas as pd
 
-from fold.base.classes import Artifact
+from fold.base.classes import Artifact, Tunable
 
 from ..base import Composite, Pipeline, Pipelines, get_concatenated_names
 from ..transformations.columns import SelectColumns
@@ -16,7 +16,7 @@ from ..utils.dataframe import ResolutionStrategy, concat_on_columns_with_duplica
 from ..utils.list import wrap_in_double_list_if_needed, wrap_in_list
 
 
-class Concat(Composite):
+class Concat(Composite, Tunable):
     """
     Concatenates the results of multiple pipelines.
 
@@ -62,6 +62,7 @@ class Concat(Composite):
             Callable[[List[pd.DataFrame]], pd.DataFrame]
         ] = None,
         name: Optional[str] = None,
+        params_to_try: Optional[dict] = None,
     ) -> None:
         self.pipelines = pipelines
         self.if_duplicate_keep = ResolutionStrategy.from_str(if_duplicate_keep)
@@ -69,6 +70,7 @@ class Concat(Composite):
         self.name = name or "Concat-" + get_concatenated_names(pipelines)
         self.properties = Composite.Properties()
         self.metadata = None
+        self.params_to_try = params_to_try
 
     def postprocess_result_primary(
         self,
@@ -106,8 +108,24 @@ class Concat(Composite):
         clone.metadata = self.metadata
         return clone
 
+    def get_params(self) -> dict:
+        return dict(
+            pipelines=self.pipelines,
+            if_duplicate_keep=self.if_duplicate_keep,
+            name=self.name,
+        )
 
-class Sequence(Composite):
+    def clone_with_params(
+        self, parameters: dict, clone_children: Optional[Callable] = None
+    ) -> Tunable:
+        return Concat(
+            pipelines=clone_children(self.pipelines),
+            name=parameters["name"],
+            if_duplicate_keep=parameters["if_duplicate_keep"],
+        )
+
+
+class Sequence(Composite, Tunable):
     """
     An optional wrappers that is equivalent to using a single array for the transformations.
     It executes the transformations sequentially, in the order they are provided.
@@ -124,11 +142,13 @@ class Sequence(Composite):
         self,
         pipeline: Pipeline,
         name: Optional[str] = None,
+        params_to_try: Optional[dict] = None,
     ) -> None:
         self.pipeline = wrap_in_double_list_if_needed(pipeline)
         self.name = name or "Sequence-" + get_concatenated_names(pipeline)
         self.properties = Composite.Properties(primary_only_single_pipeline=True)
         self.metadata = None
+        self.params_to_try = params_to_try
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series], fit: bool
@@ -144,6 +164,14 @@ class Sequence(Composite):
         clone.name = self.name
         clone.metadata = self.metadata
         return clone
+
+    def get_params(self) -> dict:
+        return dict(pipeline=self.pipeline, name=self.name)
+
+    def clone_with_params(
+        self, parameters: dict, clone_children: Optional[Callable] = None
+    ) -> Tunable:
+        return Pipeline(pipeline=clone_children(self.pipeline), name=parameters["name"])
 
 
 def TransformColumn(

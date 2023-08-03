@@ -9,6 +9,7 @@ import pandas as pd
 
 from fold.base import Transformation, Tunable
 from fold.loop import train_backtest
+from fold.loop.utils import deepcopy_pipelines
 from fold.splitters import SingleWindowSplitter
 
 
@@ -140,7 +141,9 @@ def tuneability_test(
         preds_different
     ), "The output of the two instances with different parameters should be different"
 
-    reconstructed_instance = different_instance.clone_with_params(params)
+    reconstructed_instance = different_instance.clone_with_params(
+        params, clone_children=deepcopy_pipelines
+    )
 
     preds_reconstructed, _ = train_backtest(reconstructed_instance, X, y, splitter)
     if tolerance is None:
