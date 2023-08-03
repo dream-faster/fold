@@ -60,6 +60,22 @@ def test_create_event() -> None:
     assert len(pred) == 1000
     assert len(pred.dropna()) == 198
 
+    pipeline = PipelineCard(
+        preprocessing=None,
+        pipeline=Identity(),
+        event_labeler=FixedForwardHorizon(
+            10,
+            labeling_strategy=BinarizeSign(),
+            weighting_strategy=None,
+            flip_sign=True,
+        ),
+        event_filter=EveryNth(5),
+    )
+    pred_flipped, _, flipped_artifacts = train_backtest(
+        pipeline, X, y, splitter, return_artifacts=True
+    )
+    assert flipped_artifacts.event_label.equals(1 - artifacts.event_label)
+
 
 @pytest.mark.parametrize("agg_func", ["mean", "std", "max", "min"])
 def test_predefined_events(agg_func: str) -> None:
