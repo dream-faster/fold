@@ -93,6 +93,14 @@ def test_predefined_events(agg_func: str) -> None:
     events = labeler.label_events(original_start_times, y).reindex(y.index)
 
     model = [AddLagsY([1]), RandomForestRegressor(random_state=0)]
+    usepredefined_pipeline = PipelineCard(preprocessing=None, pipeline=model)
+    usepredefined_pred, _, usepredefined_artifact = train_backtest(
+        usepredefined_pipeline, X, y, splitter, events=events, return_artifacts=True
+    )
+    assert len(usepredefined_pred) == 1000
+    assert len(usepredefined_pred.dropna()) == 998
+    assert len(usepredefined_artifact) == len(X)
+
     pipeline_card = PipelineCard(
         preprocessing=None,
         pipeline=model,

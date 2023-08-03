@@ -62,7 +62,7 @@ def test_on_weather_data_backends(backend: str) -> None:
         ],
         pipeline=[
             RemoveLowVarianceFeatures(),
-            UsePredefinedEvents(RandomForestRegressor(random_state=42)),
+            RandomForestRegressor(random_state=42),
         ],
     )
 
