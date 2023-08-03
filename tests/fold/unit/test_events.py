@@ -2,7 +2,7 @@ import pytest
 from sklearn.ensemble import RandomForestRegressor
 
 from fold.base.classes import PipelineCard
-from fold.events import FixedForwardHorizon, UsePredefinedEvents
+from fold.events import FixedForwardHorizon
 from fold.events.filters.everynth import EveryNth
 from fold.events.filters.no import NoFilter
 from fold.events.labeling import BinarizeSign
@@ -93,7 +93,7 @@ def test_predefined_events(agg_func: str) -> None:
     events = labeler.label_events(original_start_times, y).reindex(y.index)
 
     model = [AddLagsY([1]), RandomForestRegressor(random_state=0)]
-    usepredefined_pipeline = UsePredefinedEvents(model)
+    usepredefined_pipeline = PipelineCard(preprocessing=None, pipeline=model)
     usepredefined_pred, _, usepredefined_artifact = train_backtest(
         usepredefined_pipeline, X, y, splitter, events=events, return_artifacts=True
     )

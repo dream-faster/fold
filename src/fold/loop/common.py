@@ -9,8 +9,6 @@ from typing import List, Optional, Tuple, TypeVar, Union
 import pandas as pd
 from tqdm import tqdm
 
-from fold.events import UsePredefinedEvents
-
 from ..base import (
     Artifact,
     Composite,
@@ -98,19 +96,6 @@ def recursively_transform(
             )
             processed_transformations.append(processed_transformation)
         return __post_checks(processed_transformations, X, artifacts)
-
-    elif isinstance(transformations, UsePredefinedEvents):
-        return __post_checks(
-            *_process_use_predefined_events(
-                transformations,
-                X,
-                y,
-                artifacts,
-                stage,
-                backend,
-                tqdm,
-            )
-        )
 
     elif isinstance(transformations, Composite):
         return __post_checks(
@@ -310,67 +295,6 @@ def _process_composite(
         composite.postprocess_artifacts_secondary(
             artifacts_primary, artifacts_secondary, artifacts
         ),
-    )
-
-
-def _process_use_predefined_events(
-    composite: UsePredefinedEvents,
-    X: pd.DataFrame,
-    y: Optional[pd.Series],
-    artifacts: Artifact,
-    stage: Stage,
-    backend: Backend,
-    tqdm: Optional[tqdm] = None,
-) -> Tuple[UsePredefinedEvents, X, Artifact]:
-    primary_transformations = composite.get_children_primary()
-
-    (
-        primary_transformations,
-        results_primary,
-        y_primary,
-        artifacts_primary,
-    ) = unpack_list_of_tuples(
-        backend.process_child_transformations(
-            __process_primary_child_transform,
-            enumerate(primary_transformations),
-            composite,
-            X,
-            y,
-            artifacts,
-            stage,
-            backend,
-            None,
-            tqdm,
-        )
-    )
-    if composite.properties.artifacts_length_should_match:
-        assert all(
-            [
-                r.shape[0] == a.shape[0]
-                for r, a in zip(results_primary, artifacts_primary)
-            ]
-        ), ValueError("Artifacts shape doesn't match result's length.")
-    composite = composite.clone(replace_with(primary_transformations))
-
-    if composite.properties.primary_only_single_pipeline:
-        assert len(results_primary) == 1, ValueError(
-            "Expected single output from primary transformations, got"
-            f" {len(results_primary)} instead."
-        )
-    if composite.properties.primary_requires_predictions:
-        assert is_prediction(results_primary[0]), ValueError(
-            "Expected predictions from primary transformations, but got something else."
-        )
-
-    results_primary = results_primary[0].reindex(y.index)
-    artifacts_primary = artifacts_primary[0].reindex(y.index)
-    assert artifacts_primary.shape[0] == results_primary.shape[0], ValueError(
-        f"Artifacts shape doesn't match result's length after {composite.__class__.__name__}.postprocess_artifacts_primary() was called"
-    )
-    return (
-        composite,
-        results_primary,
-        artifacts_primary,
     )
 
 

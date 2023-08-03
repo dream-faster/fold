@@ -7,7 +7,6 @@ from fold.composites import Concat
 from fold.composites.concat import Sequence
 from fold.composites.optimize import OptimizeGridSearch
 from fold.composites.select import SelectBest
-from fold.events import UsePredefinedEvents
 from fold.events.filters.everynth import EveryNth
 from fold.events.labeling import BinarizeSign, FixedForwardHorizon
 from fold.events.weights import NoWeighting
@@ -63,7 +62,7 @@ def test_on_weather_data_backends(backend: str) -> None:
         ],
         pipeline=[
             RemoveLowVarianceFeatures(),
-            UsePredefinedEvents(RandomForestRegressor(random_state=42)),
+            RandomForestRegressor(random_state=42),
         ],
     )
 
