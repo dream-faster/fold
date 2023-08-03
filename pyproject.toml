@@ -63,7 +63,6 @@ pyarrow = {version = ">=2.0", optional = true}
 sktime = {version = ">=0.16.0", optional = true}
 pmdarima = {version = ">=2.0.0", optional = true}
 statsforecast = {version = ">=1.5", optional = true}
-statsmodels = {version = ">=0.12.1", optional = true}
 xgboost = {version = ">=1.4.2", optional = true}
 prophet = {version = ">=1.0.1", optional = true}
 neuralforecast = {version = ">=1.4", optional = true}
