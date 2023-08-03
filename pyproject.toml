@@ -65,7 +65,6 @@ pmdarima = {version = ">=2.0.0", optional = true}
 statsforecast = {version = ">=1.5", optional = true}
 xgboost = {version = ">=1.4.2", optional = true}
 prophet = {version = ">=1.0.1", optional = true}
-neuralforecast = {version = ">=1.4", optional = true}
 lightgbm = {version = ">=3.2.1", optional = true}
 arch = {version = ">=5.0", optional = true}
 
@@ -126,9 +125,7 @@ xgboost = [
 prophet = [
   "prophet"
 ]
-neuralforecast = [
-  "neuralforecast",
-]
+
 lightgbm = [
   "lightgbm"
 ]
