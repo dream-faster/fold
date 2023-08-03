@@ -96,7 +96,6 @@ class WrapSKLearnTransformation(Transformation, Tunable):
             raise ValueError(
                 f"Unexpected number of arguments in {self.transformation.__class__.__name__}.partial_fit"
             )
-        # if we don't have partial_fit, we can't update the model (maybe throw an exception, and force user to wrap it into `DontUpdate`?)
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         def convert_dtype_if_needed(df: pd.DataFrame) -> pd.DataFrame:

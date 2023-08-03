@@ -13,4 +13,3 @@ from .lags import *
 from .math import *
 from .scaling import *
 from .sklearn import *
-from .update import *

@@ -60,7 +60,6 @@ class WrapSKLearnClassifier(Model, Tunable):
     ) -> Optional[Artifact]:
         if hasattr(self.model, "partial_fit"):
             self.model.partial_fit(X, y, sample_weights)
-        # if we don't have partial_fit, we can't update the model (maybe throw an exception, and force user to wrap it into `DontUpdate`?)
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         probabilities = pd.DataFrame(
@@ -142,7 +141,6 @@ class WrapSKLearnRegressor(Model, Tunable):
     ) -> Optional[Artifact]:
         if hasattr(self.model, "partial_fit"):
             self.model.partial_fit(X, y, sample_weights)
-        # if we don't have partial_fit, we can't update the model (maybe throw an exception, and force user to wrap it into `DontUpdate`?)
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         return pd.Series(

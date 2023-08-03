@@ -189,6 +189,7 @@ class Transformation(Block, ABC):
 
         requires_X: bool
         mode: Mode = Mode.minibatch
+        updateable: bool = True
         memory_size: Optional[
             Union[int, float]
         ] = None  # During the in_sample period, memory will contain all data. During inference, if not `None`, it will inject past window with size of `memory` to update() & transformation().

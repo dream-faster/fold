@@ -8,10 +8,11 @@ from fold.composites.columns import TransformEachColumn
 from fold.composites.concat import TransformColumn
 from fold.loop import backtest, train
 from fold.loop.encase import train_backtest
+from fold.loop.types import TrainMethod
 from fold.splitters import ExpandingWindowSplitter, SingleWindowSplitter
 from fold.transformations import AddFeatures
 from fold.transformations.columns import DropColumns, SelectColumns
-from fold.transformations.dev import Identity, Lookahead
+from fold.transformations.dev import Identity, Lookahead, Test
 from fold.transformations.features import AddRollingCorrelation, AddWindowFeatures
 from fold.transformations.lags import AddLagsX, AddLagsY
 from fold.transformations.math import AddConstant, MultiplyBy, TakeLog, TurnPositive
@@ -361,3 +362,25 @@ def test_add_rolling_corr():
     assert "sine_sine2~rolling_corr_10" in pred.columns
     assert pred.shape == (200, 3)
     assert pred["sine_sine2~rolling_corr_10"].max() <= 0.7
+
+
+def test_updateable():
+    X, y = generate_sine_wave_data(length=600)
+    splitter = ExpandingWindowSplitter(initial_train_window=400, step=100)
+
+    def throw_error(x):
+        raise NotImplementedError
+
+    pipeline = Test(
+        fit_func=lambda x: x, transform_func=lambda x: x, update_func=throw_error
+    )
+    pipeline.properties.updateable = False
+    pred, _ = train_backtest(
+        pipeline, X, y, splitter, train_method=TrainMethod.sequential
+    )
+
+    pipeline.properties.updateable = True
+    with pytest.raises(NotImplementedError):
+        pred, _ = train_backtest(
+            pipeline, X, y, splitter, train_method=TrainMethod.sequential
+        )
