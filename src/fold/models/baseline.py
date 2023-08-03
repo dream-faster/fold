@@ -87,12 +87,12 @@ class NaiveSeasonal(TimeSeriesModel, Tunable):
         return pd.Series(
             past_y.iloc[-self.seasonal_length].squeeze(),
             index=X.index[-1:None],
-        )
+        ).fillna(0.0)
 
     def predict_in_sample(
         self, X: pd.DataFrame, past_y: pd.Series
     ) -> Union[pd.Series, pd.DataFrame]:
-        return past_y.shift(self.seasonal_length - 1)
+        return past_y.shift(self.seasonal_length - 1).fillna(0.0)
 
     fit = fit_noop
     update = fit
@@ -123,13 +123,14 @@ class MovingAverage(TimeSeriesModel, Tunable):
     ) -> Union[pd.Series, pd.DataFrame]:
         # it's an online transformation, so len(X) will be always 1,
         return pd.Series(
-            past_y.rolling(self.window_size).mean()[-1], index=X.index[-1:None]
-        )
+            past_y.rolling(self.window_size, min_periods=0).mean()[-1],
+            index=X.index[-1:None],
+        ).fillna(0.0)
 
     def predict_in_sample(
         self, X: pd.DataFrame, past_y: pd.Series
     ) -> Union[pd.Series, pd.DataFrame]:
-        return past_y.rolling(self.window_size).mean()
+        return past_y.rolling(self.window_size, min_periods=0).mean().fillna(0.0)
 
     fit = fit_noop
     update = fit
@@ -160,14 +161,20 @@ class ExponentiallyWeightedMovingAverage(TimeSeriesModel, Tunable):
     ) -> Union[pd.Series, pd.DataFrame]:
         # it's an online transformation, so len(X) will be always 1,
         return pd.Series(
-            past_y.ewm(alpha=1 / self.window_size, adjust=True).mean()[-1],
+            past_y.ewm(alpha=1 / self.window_size, adjust=True, min_periods=0).mean()[
+                -1
+            ],
             index=X.index[-1:None],
-        )
+        ).fillna(0.0)
 
     def predict_in_sample(
         self, X: pd.DataFrame, past_y: pd.Series
     ) -> Union[pd.Series, pd.DataFrame]:
-        return past_y.ewm(alpha=1 / self.window_size, adjust=True).mean()
+        return (
+            past_y.ewm(alpha=1 / self.window_size, adjust=True, min_periods=0)
+            .mean()
+            .fillna(0.0)
+        )
 
     fit = fit_noop
     update = fit

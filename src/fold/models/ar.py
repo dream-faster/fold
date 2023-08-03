@@ -80,7 +80,7 @@ class AR(TimeSeriesModel, Tunable):
     def predict(
         self, X: pd.DataFrame, past_y: pd.Series
     ) -> Union[pd.Series, pd.DataFrame]:
-        return _predict(self.models, past_y, indices=X.index)
+        return _predict(self.models, past_y, indices=X.index).fillna(0.0)
 
     predict_in_sample = predict
 
