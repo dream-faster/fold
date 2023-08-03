@@ -60,7 +60,15 @@ fold-wrappers = {version = "~=0.1", optional = true}
 p_tqdm = {version = ">=1.3", optional = true}
 statsmodels = {version = ">=0.12.1", optional = true}
 pyarrow = {version = ">=2.0", optional = true}
-
+sktime = {version = ">=0.16.0", optional = true}
+pmdarima = {version = ">=2.0.0", optional = true}
+statsforecast = {version = ">=1.5", optional = true}
+statsmodels = {version = ">=0.12.1", optional = true}
+xgboost = {version = ">=1.4.2", optional = true}
+prophet = {version = ">=1.0.1", optional = true}
+neuralforecast = {version = ">=1.4", optional = true}
+lightgbm = {version = ">=3.2.1", optional = true}
+arch = {version = ">=5.0", optional = true}
 
 [project.urls]
 Documentation = "https://dream-faster.github.io/fold"
@@ -102,6 +110,31 @@ all = [
   "fold-wrappers",
   "p_tqdm",
   "statsmodels",
+]
+sktime = [
+  "sktime",
+  "pmdarima"
+]
+statsforecast = [
+  "statsforecast"
+]
+statsmodels = [
+  "statsmodels"
+]
+xgboost = [
+  "xgboost"
+]
+prophet = [
+  "prophet"
+]
+neuralforecast = [
+  "neuralforecast",
+]
+lightgbm = [
+  "lightgbm"
+]
+arch = [
+  "arch"
 ]
 
 
