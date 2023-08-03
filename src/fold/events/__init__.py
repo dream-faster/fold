@@ -26,47 +26,6 @@ from .labeling import *  # noqa
 from .weights import *  # noqa
 
 
-class UsePredefinedEvents(Composite):
-    name = "UsePredefinedEvents"
-
-    def __init__(
-        self,
-        wrapped_pipeline: Pipeline,
-    ) -> None:
-        self.wrapped_pipeline = wrap_in_double_list_if_needed(wrapped_pipeline)
-        self.properties = Composite.Properties(
-            primary_only_single_pipeline=True, artifacts_length_should_match=False
-        )
-        self.metadata = None
-
-    def get_children_primary(self) -> Pipelines:
-        return self.wrapped_pipeline
-
-    def preprocess_primary(
-        self, X: pd.DataFrame, index: int, y: T, artifact: Artifact, fit: bool
-    ) -> Tuple[pd.DataFrame, T, Artifact]:
-        events = Artifact.get_events(artifact)
-        if events is None:
-            raise ValueError(
-                "You need to pass in `events` for `UsePredefinedEvents` to use when calling train() / backtest()."
-            )
-        events = events.dropna()
-        return (
-            X.loc[events.index],
-            events.event_label,
-            events,
-        )
-
-    def clone(self, clone_children: Callable) -> UsePredefinedEvents:
-        clone = UsePredefinedEvents(
-            clone_children(self.wrapped_pipeline),
-        )
-        clone.properties = self.properties
-        clone.name = self.name
-        clone.metadata = self.metadata
-        return clone
-
-
 def _create_events(
     y: pd.Series, pipeline_card: Union[PipelineCard, TrainedPipelineCard]
 ) -> Optional[EventDataFrame]:

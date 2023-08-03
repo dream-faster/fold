@@ -7,7 +7,6 @@ from fold.composites import Concat
 from fold.composites.concat import Sequence
 from fold.composites.optimize import OptimizeGridSearch
 from fold.composites.select import SelectBest
-from fold.events import UsePredefinedEvents
 from fold.events.filters.everynth import EveryNth
 from fold.events.labeling import BinarizeSign, FixedForwardHorizon
 from fold.events.weights import NoWeighting
