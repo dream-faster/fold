@@ -5,7 +5,7 @@ from fold.models.garch import ARCH
 from fold.splitters import ExpandingWindowSplitter
 from fold.utils.tests import generate_sine_wave_data
 
-# from fold_wrappers.arch import WrapArch
+# from fold.models.wrappers.arch import WrapArch
 
 
 def test_garch_equivalent() -> None:

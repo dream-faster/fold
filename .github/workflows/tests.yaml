@@ -37,7 +37,7 @@ jobs:
           pip install --upgrade --no-deps --force-reinstall --no-cache-dir https://github.com/dream-faster/krisi/archive/main.zip
 
       - name: run-tests
-        run: pytest tests/unit -s --cov --durations 0
+        run: pytest tests/fold/unit -s --cov --durations 0
 
       - uses: codecov/codecov-action@v3
 
@@ -71,7 +71,7 @@ jobs:
           pip install --upgrade --no-deps --force-reinstall --no-cache-dir https://github.com/dream-faster/krisi/archive/main.zip
 
       - name: run-tests
-        run: pytest tests/integration -s --durations 0
+        run: pytest tests/fold/integration -s --durations 0
 
 
 

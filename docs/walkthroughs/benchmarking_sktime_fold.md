@@ -346,7 +346,7 @@ The models are static, stuck in the past between end of the training windows, th
 ```python
 from fold import train_evaluate, ExpandingWindowSplitter, BackendType
 from fold.transformations import AddLagsX
-from fold_wrappers import WrapXGB, WrapStatsModels
+from fold.models.wrappers import WrapXGB, WrapStatsModels
 from fold.models import Naive
 from statsmodels.tsa.arima.model import ARIMA as StatsModelARIMA
 import ray

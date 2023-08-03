@@ -3,7 +3,7 @@ from fold.models.ar import AR
 from fold.splitters import ExpandingWindowSplitter
 from fold.utils.tests import generate_monotonous_data
 
-# from fold_wrappers import WrapStatsForecast, WrapStatsModels
+# from fold.models.wrappers import WrapStatsForecast, WrapStatsModels
 # from statsmodels.tsa.ar_model import AutoReg as StatsModelAR
 
 

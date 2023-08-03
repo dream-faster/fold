@@ -9,6 +9,13 @@ from sklearn.feature_selection import SelectorMixin
 
 from ..base import Clonable, Pipeline, Transformation
 from ..models.sklearn import WrapSKLearnClassifier, WrapSKLearnRegressor
+from ..models.wrappers.convenience import (
+    _wrap_lightgbm,
+    _wrap_prophet,
+    _wrap_sktime,
+    _wrap_statsforecast,
+    _wrap_xgboost,
+)
 from ..transformations.function import ApplyFunction
 from ..transformations.sklearn import (
     WrapSKLearnFeatureSelector,
@@ -33,11 +40,22 @@ def wrap_transformation_if_needed(
         return WrapSKLearnTransformation.from_model(transformation)
     elif isinstance(transformation, Clonable):
         return transformation.clone(wrap_transformation_if_needed)
+    elif find_spec("xgboost") is not None and _wrap_xgboost(transformation) is not None:
+        return _wrap_xgboost(transformation)  # type: ignore (we already check if it's not None)
+    elif (
+        find_spec("lightgbm") is not None and _wrap_lightgbm(transformation) is not None
+    ):
+        return _wrap_xgboost(transformation)  # type: ignore
+    elif find_spec("prophet") is not None and _wrap_prophet(transformation) is not None:
+        return _wrap_prophet(transformation)  # type: ignore
+    elif find_spec("sktime") is not None and _wrap_sktime(transformation) is not None:
+        return _wrap_sktime(transformation)  # type: ignore
+    elif (
+        find_spec("statsforecast") is not None
+        and _wrap_statsforecast(transformation) is not None
+    ):
+        return _wrap_statsforecast(transformation)  # type: ignore
     elif isinstance(transformation, Transformation):
         return transformation
-    elif find_spec("fold_wrappers") is not None:
-        from fold_wrappers.convenience import wrap_transformation_if_possible
-
-        return wrap_transformation_if_possible(transformation)
     else:
         raise ValueError(f"Transformation {transformation} is not supported")
