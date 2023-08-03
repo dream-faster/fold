@@ -132,7 +132,7 @@ profile = "black"
 pythonpath = [
   "src"
 ]
-testpaths = ["tests"]
+testpaths = ["tests/fold"]
 addopts = [
   "--doctest-modules",
   "--durations=0",

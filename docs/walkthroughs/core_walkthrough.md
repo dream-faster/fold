@@ -409,7 +409,7 @@ Let's train a [MSTL](https://arxiv.org/abs/2107.13462) model that's implemented 
 
 ```python
 from statsforecast.models import MSTL
-from fold_wrappers import WrapStatsForecast, WrapStatsModels
+from fold.models.wrappers import WrapStatsForecast, WrapStatsModels
 
 mstl = WrapStatsForecast.from_model(MSTL([24, 168]))
 ```
@@ -748,7 +748,7 @@ lregression = [
 
 ```python
 from xgboost import XGBRegressor
-from fold_wrappers.xgboost import WrapXGB
+from fold.models.wrappers.xgboost import WrapXGB
 
 xgboost = [
     AddLagsX(('all',range(1,3))),

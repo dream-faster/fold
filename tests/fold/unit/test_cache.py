@@ -15,8 +15,8 @@ from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.scaling import StandardScaler
 from fold.utils.tests import generate_monotonous_data
 
-folder = "tests/unit/cache/"
-os.makedirs("tests/unit/cache/", exist_ok=True)
+folder = "tests/fold/unit/cache/"
+os.makedirs("tests/fold/unit/cache/", exist_ok=True)
 
 events_pipeline = PipelineCard(
     preprocessing=None,

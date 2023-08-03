@@ -2,13 +2,14 @@
 Ensembling (Composite Models)
 ===========================
 """
-# mkdocs_gallery_thumbnail_path = 'images/example_thumnail.png'
-from fold_wrappers import WrapStatsForecast
 from statsforecast.models import ARIMA
 from xgboost import XGBRegressor
 
 from fold.composites import Concat, Ensemble
 from fold.loop import train_evaluate
+
+# mkdocs_gallery_thumbnail_path = 'images/example_thumnail.png'
+from fold.models.wrappers import WrapStatsForecast
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations import AddLagsX, AddWindowFeatures, Difference
 from fold.utils.dataset import get_preprocessed_dataset
