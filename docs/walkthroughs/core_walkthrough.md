@@ -582,12 +582,12 @@ What if we could use a lightweight, "online" model, that can be updated on every
 
 And.. what if we just repeat the last value?
 
-That'd be the `Naive` model you can load from `fold_models`.
+That'd be the `Naive` model you can load from `fold.models`.
 
 
 ```python
 from fold import train_evaluate
-from fold_models import Naive
+from fold.models import Naive
 
 scorecard, predictions, trained_pipeline = train_evaluate(Naive(), None, y, splitter, krisi_args={"model_name":"naive"})
 results.append((scorecard, predictions))
