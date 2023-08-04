@@ -121,4 +121,4 @@ venv.bak/
 # MKdocs Gallery Generated
 docs/generated/*
 archive/*
-tests/unit/cache/**
+tests/fold/unit/cache/**
