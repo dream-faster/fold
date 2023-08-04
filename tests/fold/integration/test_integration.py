@@ -11,6 +11,7 @@ from fold.events.filters.everynth import EveryNth
 from fold.events.labeling import BinarizeSign, FixedForwardHorizon
 from fold.events.weights import NoWeighting
 from fold.loop import train, train_evaluate
+from fold.loop.backend.joblib import JoblibBackend
 from fold.loop.backend.ray import RayBackend
 from fold.loop.backtesting import backtest
 from fold.loop.encase import train_backtest
@@ -23,7 +24,13 @@ from fold.utils.dataset import get_preprocessed_dataset
 
 
 @pytest.mark.parametrize(
-    "backend", ["no", "ray", "thread", RayBackend(limit_threads=2)]
+    "backend",
+    [
+        "no",
+        "thread",
+        RayBackend(limit_threads=2),
+        JoblibBackend(limit_threads=2, prefer_threads=True),
+    ],
 )
 def test_on_weather_data_backends(backend: str) -> None:
     X, y = get_preprocessed_dataset(

@@ -29,5 +29,10 @@ def get_backend(backend_type: Union[str, BackendType, Backend]) -> Backend:
         from .thread import ThreadBackend
 
         return ThreadBackend()
+    elif backend_type == BackendType.joblib:
+        from .joblib import JoblibBackend
+
+        return JoblibBackend()
+
     else:
         raise ValueError(f"Backend type {backend_type} not supported.")
