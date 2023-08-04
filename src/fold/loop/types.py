@@ -40,6 +40,7 @@ class BackendType(ParsableEnum):
     ray = "ray"
     pathos = "pathos"
     thread = "thread"
+    joblib = "joblib"
 
 
 class TrainMethod(ParsableEnum):
