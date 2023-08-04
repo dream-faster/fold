@@ -52,7 +52,7 @@ def backtest_pipeline(
     )(
         [
             delayed(func)(pipeline, split, X, y, artifact, backend, mutate)
-            for split in tqdm(splits, desc="Backtesting", disable=silent)
+            for split in splits
         ]
     )
 
@@ -70,25 +70,40 @@ def process_child_transformations(
     results_primary: Optional[List[pd.DataFrame]],
     tqdm: Optional[tqdm] = None,
 ):
-    return Parallel(
-        n_jobs=self.limit_threads, prefer="threads" if self.prefer_threads else None
-    )(
-        [
-            delayed(func)(
-                composite,
-                index,
-                child_transformation,
-                X,
-                y,
-                artifacts,
-                stage,
-                backend,
-                results_primary,
-                tqdm,
-            )
-            for index, child_transformation in list_of_child_transformations_with_index
-        ]
-    )
+    # return Parallel(
+    #     n_jobs=self.limit_threads, prefer="threads" if self.prefer_threads else None
+    # )(
+    #     [
+    #         delayed(func)(
+    #             composite,
+    #             index,
+    #             child_transformation,
+    #             X,
+    #             y,
+    #             artifacts,
+    #             stage,
+    #             backend,
+    #             results_primary,
+    #             None,
+    #         )
+    #         for index, child_transformation in list_of_child_transformations_with_index
+    #     ]
+    # )
+    return [
+        func(
+            composite,
+            index,
+            child_transformation,
+            X,
+            y,
+            artifacts,
+            stage,
+            backend,
+            results_primary,
+            tqdm,
+        )
+        for index, child_transformation in list_of_child_transformations_with_index
+    ]
 
 
 class JoblibBackend(Backend):
