@@ -33,7 +33,7 @@ def wrap_transformation_if_needed(
     elif (
         find_spec("lightgbm") is not None and _wrap_lightgbm(transformation) is not None
     ):
-        return _wrap_xgboost(transformation)  # type: ignore
+        return _wrap_lightgbm(transformation)  # type: ignore
     elif find_spec("prophet") is not None and _wrap_prophet(transformation) is not None:
         return _wrap_prophet(transformation)  # type: ignore
     elif find_spec("sktime") is not None and _wrap_sktime(transformation) is not None:
