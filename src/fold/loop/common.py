@@ -575,6 +575,11 @@ def _train_on_window(
 
     X_train: pd.DataFrame = _cut_to_train_window(X, split, stage)
     y_train = _cut_to_train_window(y, split, stage)
+    if y_train.nunique() == 1:
+        raise ValueError(
+            "Only a single unique value in `y_train`. This means models can't learn anything."
+        )
+
     artifact_train = _cut_to_train_window(artifact, split, stage)
 
     original_idx = X_train.index

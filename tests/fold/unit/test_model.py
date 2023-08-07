@@ -8,15 +8,11 @@ from fold.models.random import RandomBinaryClassifier, RandomClassifier
 from fold.splitters import ExpandingWindowSplitter, SingleWindowSplitter
 from fold.transformations.columns import OnlyPredictions
 from fold.transformations.dev import Test
-from fold.utils.tests import (
-    generate_all_zeros,
-    generate_sine_wave_data,
-    generate_zeros_and_ones,
-)
+from fold.utils.tests import generate_sine_wave_data, generate_zeros_and_ones
 
 
 def test_random_classifier() -> None:
-    X, y = generate_all_zeros(1000)
+    X, y = generate_zeros_and_ones(1000)
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     transformations = [RandomClassifier(all_classes=[0, 1]), OnlyPredictions()]

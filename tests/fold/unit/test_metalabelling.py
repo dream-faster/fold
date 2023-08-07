@@ -3,11 +3,11 @@ from fold.loop import backtest, train
 from fold.models.dummy import DummyClassifier
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.columns import OnlyPredictions
-from fold.utils.tests import generate_all_zeros
+from fold.utils.tests import generate_zeros_and_ones
 
 
 def test_metalabeling() -> None:
-    X, y = generate_all_zeros(1000)
+    X, y = generate_zeros_and_ones(1000)
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     transformations = [

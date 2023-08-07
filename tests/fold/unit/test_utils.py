@@ -12,7 +12,7 @@ from fold.transformations.difference import Difference
 from fold.transformations.math import TakeLog
 from fold.transformations.sklearn import WrapSKLearnFeatureSelector
 from fold.utils.dataframe import apply_function_batched, to_series
-from fold.utils.tests import generate_all_zeros
+from fold.utils.tests import generate_zeros_and_ones
 from fold.utils.trim import (
     get_first_valid_index,
     trim_initial_nans,
@@ -157,7 +157,7 @@ def test_unique_id_per_instance() -> None:
 
 
 def test_sort_probabilities_columns() -> None:
-    X, y = generate_all_zeros()
+    X, y = generate_zeros_and_ones()
     X["predicitions_a"] = y
     X["probabilities_a_1"] = y
     X["probabilities_a_0"] = y
