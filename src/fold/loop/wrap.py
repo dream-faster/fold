@@ -28,18 +28,6 @@ def wrap_transformation_if_needed(
 ) -> Pipeline:
     if isinstance(transformation, List) or isinstance(transformation, Tuple):
         return [wrap_transformation_if_needed(t) for t in transformation]
-    elif isinstance(transformation, RegressorMixin):
-        return WrapSKLearnRegressor.from_model(transformation)
-    elif isinstance(transformation, ClassifierMixin):
-        return WrapSKLearnClassifier.from_model(transformation)
-    elif isinstance(transformation, Callable):
-        return ApplyFunction(transformation, None)
-    elif isinstance(transformation, SelectorMixin):
-        return WrapSKLearnFeatureSelector.from_model(transformation)
-    elif isinstance(transformation, TransformerMixin):
-        return WrapSKLearnTransformation.from_model(transformation)
-    elif isinstance(transformation, Clonable):
-        return transformation.clone(wrap_transformation_if_needed)
     elif find_spec("xgboost") is not None and _wrap_xgboost(transformation) is not None:
         return _wrap_xgboost(transformation)  # type: ignore (we already check if it's not None)
     elif (
@@ -55,6 +43,18 @@ def wrap_transformation_if_needed(
         and _wrap_statsforecast(transformation) is not None
     ):
         return _wrap_statsforecast(transformation)  # type: ignore
+    elif isinstance(transformation, RegressorMixin):
+        return WrapSKLearnRegressor.from_model(transformation)
+    elif isinstance(transformation, ClassifierMixin):
+        return WrapSKLearnClassifier.from_model(transformation)
+    elif isinstance(transformation, Callable):
+        return ApplyFunction(transformation, None)
+    elif isinstance(transformation, SelectorMixin):
+        return WrapSKLearnFeatureSelector.from_model(transformation)
+    elif isinstance(transformation, TransformerMixin):
+        return WrapSKLearnTransformation.from_model(transformation)
+    elif isinstance(transformation, Clonable):
+        return transformation.clone(wrap_transformation_if_needed)
     elif isinstance(transformation, Transformation):
         return transformation
     else:
