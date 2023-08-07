@@ -22,7 +22,7 @@ def test_sklearn_classifier() -> None:
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     pipeline = [DummyClassifier(strategy="constant", constant=0), OnlyPredictions()]
     pred, _ = train_backtest(pipeline, X, y, splitter)
-    assert (pred.squeeze() == y[pred.index]).all()
+    assert (pred.squeeze() == 0.0).all()
 
     tuneability_test(
         instance=WrapSKLearnClassifier.from_model(pipeline[0]),
@@ -43,7 +43,7 @@ def test_sklearn_regressor() -> None:
         OnlyPredictions(),
     ]
     pred, _ = train_backtest(pipeline, X, y, splitter)
-    assert (pred.squeeze() == y[pred.index]).all()
+    assert (pred.squeeze() == 0.0).all()
 
     tuneability_test(
         instance=WrapSKLearnRegressor.from_model(pipeline[0]),
