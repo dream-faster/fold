@@ -87,6 +87,6 @@ def _cut_to_train_window(df: T, fold: Fold, stage: Stage) -> T:
 
 
 def _cut_to_backtesting_window(df: T, fold: Fold, pipeline: Pipeline) -> T:
-    overlap = _get_maximum_memory_size(pipeline)
+    overlap = get_maximum_memory_size(pipeline)
     test_window_start = max(fold.test_window_start - overlap, 0)
     return df.iloc[test_window_start : fold.test_window_end]  # type: ignore

@@ -306,6 +306,14 @@ class TrainedPipelineCard:
     event_filter: Optional[EventFilter]
 
 
+@dataclass
+class DeployablePipelineCard:
+    preprocessing: TrainedPipeline
+    pipeline: TrainedPipeline
+    event_labeler: Optional[Labeler]
+    event_filter: Optional[EventFilter]
+
+
 def fit_noop(
     self,
     X: pd.DataFrame,
@@ -383,6 +391,10 @@ class Artifact(pd.DataFrame):
     @staticmethod
     def empty(index: pd.Index) -> Artifact:
         return pd.DataFrame(index=index)  # type: ignore
+
+    @staticmethod
+    def fill_events(index: pd.Index) -> Artifact:
+        return
 
     @staticmethod
     def get_sample_weights(artifact: Artifact) -> Optional[pd.Series]:
