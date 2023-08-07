@@ -15,9 +15,11 @@ from fold.loop.backend.joblib import JoblibBackend
 from fold.loop.backend.ray import RayBackend
 from fold.loop.backtesting import backtest
 from fold.loop.encase import train_backtest
+from fold.loop.inference import infer
 from fold.models import WrapSKLearnClassifier
 from fold.splitters import ExpandingWindowSplitter, SlidingWindowSplitter
 from fold.transformations import AddWindowFeatures, RemoveLowVarianceFeatures
+from fold.transformations.dev import Identity
 from fold.transformations.function import ApplyFunction
 from fold.transformations.lags import AddLagsX, AddLagsY
 from fold.utils.dataset import get_preprocessed_dataset
@@ -66,6 +68,7 @@ def test_on_weather_data_backends(backend: str) -> None:
                     ),
                 ]
             ),
+            Identity(),
         ],
         pipeline=[
             RemoveLowVarianceFeatures(),
@@ -73,7 +76,7 @@ def test_on_weather_data_backends(backend: str) -> None:
         ],
     )
 
-    pred, _, insample_predictions = train_backtest(
+    pred, trained_pipeline, insample_predictions = train_backtest(
         pipeline,
         X,
         y,
@@ -88,6 +91,9 @@ def test_on_weather_data_backends(backend: str) -> None:
     ), "length of insample predictions should be always <= length of outofsample predictions"
 
     train_evaluate(pipeline, X, y, splitter, backend=backend, events=events)
+
+    inference_output = infer(trained_pipeline, X)
+    assert len(inference_output) == len(X)
 
 
 def test_train_evaluate() -> None:

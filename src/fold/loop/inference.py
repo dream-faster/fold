@@ -35,7 +35,7 @@ def infer(
             X,
             None,
             Artifact.dummy_events(X.index),
-            pipelinecard.preprocessing,
+            [series.iloc[-1] for series in pipelinecard.preprocessing],
             stage=Stage.infer,
             backend=get_backend(BackendType.no),
         )
