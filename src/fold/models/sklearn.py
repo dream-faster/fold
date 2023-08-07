@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+from inspect import getfullargspec
 from typing import Callable, Optional, Type, Union
 
 import pandas as pd
+from sklearn.base import BaseEstimator
 
 from ..base import Artifact, Tunable
 from .base import Model
@@ -50,7 +52,7 @@ class WrapSKLearnClassifier(Model, Tunable):
         if hasattr(self.model, "partial_fit"):
             self.model.partial_fit(X, y, sample_weights)
         else:
-            self.model.fit(X, y, sample_weights)
+            fit_with_parameters(self.model, X, y, sample_weights)
 
     def update(
         self,
@@ -131,7 +133,7 @@ class WrapSKLearnRegressor(Model, Tunable):
         if hasattr(self.model, "partial_fit"):
             self.model.partial_fit(X, y, sample_weights)
         else:
-            self.model.fit(X, y, sample_weights)
+            fit_with_parameters(self.model, X, y, sample_weights)
 
     def update(
         self,
@@ -161,4 +163,21 @@ class WrapSKLearnRegressor(Model, Tunable):
             model_class=self.model.__class__,
             init_args=parameters,
             name=self.name,
+        )
+
+
+def fit_with_parameters(
+    instance: BaseEstimator,
+    X: pd.DataFrame,
+    y: pd.Series,
+    sample_weights: Optional[pd.Series],
+) -> None:
+    argspec = getfullargspec(instance.fit)  # type: ignore
+    if len(argspec.args) == 1:
+        instance.fit(X, y)  # type: ignore
+    elif len(argspec.args) == 2:
+        instance.fit(X, y, sample_weights)  # type: ignore
+    else:
+        raise ValueError(
+            f"Expected 2 or 3 arguments for fit, but got {len(argspec.args)}."
         )

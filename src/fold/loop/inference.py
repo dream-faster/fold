@@ -19,9 +19,11 @@ def infer(
     If X is None it will predict one step ahead.
     """
     assert isinstance(X, pd.DataFrame), "X must be a pandas DataFrame."
+    last_pipeline = [series.iloc[-1] for series in pipelinecard.pipeline[-1:]]
+
     maximum_memory_size = max(
         get_maximum_memory_size(pipelinecard.preprocessing),
-        get_maximum_memory_size(pipelinecard.pipeline),
+        get_maximum_memory_size(last_pipeline),
     )
     assert len(X) > maximum_memory_size, (
         f"X must be larger than {maximum_memory_size} rows, "
@@ -37,8 +39,6 @@ def infer(
             stage=Stage.infer,
             backend=get_backend(BackendType.no),
         )
-
-    last_pipeline = [series.iloc[-1] for series in pipelinecard.pipeline[-1:]]
 
     _, results, _ = recursively_transform(
         X,
