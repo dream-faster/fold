@@ -3,11 +3,11 @@ import pandas as pd
 from fold.composites.columns import SkipNA
 from fold.loop import backtest, train
 from fold.splitters import ExpandingWindowSplitter
-from fold.utils.tests import generate_all_zeros
+from fold.utils.tests import generate_zeros_and_ones
 
 
 def test_skipna() -> None:
-    X, y = generate_all_zeros(1000)
+    X, y = generate_zeros_and_ones(1000)
     X[70:100] = pd.NA
     y[70:100] = pd.NA
 

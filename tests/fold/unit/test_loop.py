@@ -19,11 +19,7 @@ from fold.transformations.features import AddWindowFeatures
 from fold.transformations.function import ApplyFunction
 from fold.transformations.lags import AddLagsX, AddLagsY
 from fold.utils.dataset import get_preprocessed_dataset
-from fold.utils.tests import (
-    generate_all_zeros,
-    generate_sine_wave_data,
-    generate_zeros_and_ones,
-)
+from fold.utils.tests import generate_sine_wave_data, generate_zeros_and_ones
 
 naive = Naive()
 
@@ -97,7 +93,7 @@ def test_sample_weights() -> None:
         fit_func=assert_sample_weights_exist, transform_func=lambda X: X
     )
 
-    X, y = generate_all_zeros(1000)
+    X, y = generate_zeros_and_ones(1000)
     sample_weights = y
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)

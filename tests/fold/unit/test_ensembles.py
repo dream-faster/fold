@@ -8,7 +8,7 @@ from fold.composites.ensemble import Ensemble
 from fold.loop import backtest, train
 from fold.models.dummy import DummyClassifier
 from fold.splitters import ExpandingWindowSplitter
-from fold.utils.tests import generate_all_zeros, generate_sine_wave_data
+from fold.utils.tests import generate_sine_wave_data, generate_zeros_and_ones
 
 
 def test_ensemble_regression() -> None:
@@ -31,7 +31,7 @@ def test_ensemble_regression() -> None:
 
 
 def test_ensemble_classification() -> None:
-    X, y = generate_all_zeros(1000)
+    X, y = generate_zeros_and_ones(1000)
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     pipeline = [
@@ -95,7 +95,7 @@ def test_per_column_transform_predictions() -> None:
 
 
 def test_dummy_pipeline_classification() -> None:
-    X, y = generate_all_zeros(1000)
+    X, y = generate_zeros_and_ones(1000)
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     pipeline = Sequence(

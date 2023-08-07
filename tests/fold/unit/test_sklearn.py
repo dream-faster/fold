@@ -10,14 +10,14 @@ from fold.models.sklearn import WrapSKLearnClassifier, WrapSKLearnRegressor
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.columns import OnlyPredictions, RenameColumns, SelectColumns
 from fold.utils.tests import (
-    generate_all_zeros,
     generate_sine_wave_data,
+    generate_zeros_and_ones,
     tuneability_test,
 )
 
 
 def test_sklearn_classifier() -> None:
-    X, y = generate_all_zeros(1000)
+    X, y = generate_zeros_and_ones(1000)
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     pipeline = [DummyClassifier(strategy="constant", constant=0), OnlyPredictions()]
@@ -35,7 +35,7 @@ def test_sklearn_classifier() -> None:
 
 
 def test_sklearn_regressor() -> None:
-    X, y = generate_all_zeros(1000)
+    X, y = generate_zeros_and_ones(1000)
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     pipeline = [
@@ -68,7 +68,7 @@ def test_sklearn_transformation_variable_columns() -> None:
 
 
 def test_sklearn_partial_fit() -> None:
-    X, y = generate_all_zeros(1000)
+    X, y = generate_zeros_and_ones(1000)
 
     class TestEstimator(TransformerMixin):
         fit_called = False
