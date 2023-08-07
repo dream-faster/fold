@@ -61,7 +61,7 @@ def get_concatenated_names(transformations: Union[Pipelines, Pipeline]) -> str:
     )
 
 
-def _get_maximum_memory_size(pipeline: Pipeline) -> int:
+def get_maximum_memory_size(pipeline: Pipeline) -> int:
     memory_sizes = [
         t.properties.memory_size
         for t in get_flat_list_of_transformations(pipeline)

@@ -28,6 +28,21 @@ def wrap_transformation_if_needed(
 ) -> Pipeline:
     if isinstance(transformation, List) or isinstance(transformation, Tuple):
         return [wrap_transformation_if_needed(t) for t in transformation]
+    elif find_spec("xgboost") is not None and _wrap_xgboost(transformation) is not None:
+        return _wrap_xgboost(transformation)  # type: ignore (we already check if it's not None)
+    elif (
+        find_spec("lightgbm") is not None and _wrap_lightgbm(transformation) is not None
+    ):
+        return _wrap_lightgbm(transformation)  # type: ignore
+    elif find_spec("prophet") is not None and _wrap_prophet(transformation) is not None:
+        return _wrap_prophet(transformation)  # type: ignore
+    elif find_spec("sktime") is not None and _wrap_sktime(transformation) is not None:
+        return _wrap_sktime(transformation)  # type: ignore
+    elif (
+        find_spec("statsforecast") is not None
+        and _wrap_statsforecast(transformation) is not None
+    ):
+        return _wrap_statsforecast(transformation)  # type: ignore
     elif isinstance(transformation, RegressorMixin):
         return WrapSKLearnRegressor.from_model(transformation)
     elif isinstance(transformation, ClassifierMixin):
@@ -40,21 +55,6 @@ def wrap_transformation_if_needed(
         return WrapSKLearnTransformation.from_model(transformation)
     elif isinstance(transformation, Clonable):
         return transformation.clone(wrap_transformation_if_needed)
-    elif find_spec("xgboost") is not None and _wrap_xgboost(transformation) is not None:
-        return _wrap_xgboost(transformation)  # type: ignore (we already check if it's not None)
-    elif (
-        find_spec("lightgbm") is not None and _wrap_lightgbm(transformation) is not None
-    ):
-        return _wrap_xgboost(transformation)  # type: ignore
-    elif find_spec("prophet") is not None and _wrap_prophet(transformation) is not None:
-        return _wrap_prophet(transformation)  # type: ignore
-    elif find_spec("sktime") is not None and _wrap_sktime(transformation) is not None:
-        return _wrap_sktime(transformation)  # type: ignore
-    elif (
-        find_spec("statsforecast") is not None
-        and _wrap_statsforecast(transformation) is not None
-    ):
-        return _wrap_statsforecast(transformation)  # type: ignore
     elif isinstance(transformation, Transformation):
         return transformation
     else:

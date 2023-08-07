@@ -286,8 +286,6 @@ OutOfSamplePredictions = pd.DataFrame
 """The backtest's resulting out-of-sample output."""
 InSamplePredictions = pd.DataFrame
 """The backtest's resulting in-sample output."""
-DeployablePipeline = Pipeline
-"""A trained `Pipeline`, to be used for deployment."""
 
 
 @dataclass
@@ -383,6 +381,20 @@ class Artifact(pd.DataFrame):
     @staticmethod
     def empty(index: pd.Index) -> Artifact:
         return pd.DataFrame(index=index)  # type: ignore
+
+    @staticmethod
+    def dummy_events(index: pd.Index) -> Artifact:
+        return pd.DataFrame(
+            index=index,
+            data={
+                "event_start": index,
+                "event_end": index,
+                "event_label": [1.0] * len(index),
+                "event_raw": [9.0] * len(index),
+                "event_sample_weights": [1.0] * len(index),
+                "event_test_sample_weights": [1.0] * len(index),
+            },
+        )  # type: ignore
 
     @staticmethod
     def get_sample_weights(artifact: Artifact) -> Optional[pd.Series]:
