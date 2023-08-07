@@ -14,7 +14,7 @@ from ..base import (
     TrainedPipelines,
     get_flat_list_of_transformations,
 )
-from ..base.utils import _get_maximum_memory_size, traverse_apply
+from ..base.utils import get_maximum_memory_size, traverse_apply
 from ..splitters import Fold
 from .types import Stage
 

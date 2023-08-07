@@ -393,8 +393,18 @@ class Artifact(pd.DataFrame):
         return pd.DataFrame(index=index)  # type: ignore
 
     @staticmethod
-    def fill_events(index: pd.Index) -> Artifact:
-        return
+    def dummy_events(index: pd.Index) -> Artifact:
+        return pd.DataFrame(
+            index=index,
+            data={
+                "event_start": index,
+                "event_end": index,
+                "event_label": [1.0] * len(index),
+                "event_raw": [9.0] * len(index),
+                "event_sample_weights": [1.0] * len(index),
+                "event_test_sample_weights": [1.0] * len(index),
+            },
+        )  # type: ignore
 
     @staticmethod
     def get_sample_weights(artifact: Artifact) -> Optional[pd.Series]:
