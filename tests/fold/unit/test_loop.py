@@ -94,7 +94,7 @@ def test_sample_weights() -> None:
     )
 
     X, y = generate_zeros_and_ones(1000)
-    sample_weights = y
+    sample_weights = pd.Series(0, index=y.index)
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     transformations = [
