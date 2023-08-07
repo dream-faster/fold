@@ -1,6 +1,6 @@
 import pandas as pd
 
-from fold.base.classes import DeployablePipelineCard
+from fold.base.classes import TrainedPipelineCard
 
 from ..base import Artifact, OutOfSamplePredictions, get_maximum_memory_size
 from .backend import get_backend
@@ -9,7 +9,7 @@ from .types import BackendType, Stage
 
 
 def infer(
-    pipelinecard: DeployablePipelineCard,
+    pipelinecard: TrainedPipelineCard,
     X: pd.DataFrame,
 ) -> OutOfSamplePredictions:
     """

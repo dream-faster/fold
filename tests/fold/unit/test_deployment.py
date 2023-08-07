@@ -1,7 +1,8 @@
 import numpy as np
 
-from fold.loop import infer, train_for_deployment, update
+from fold.loop import infer, train, update
 from fold.models.baseline import Naive
+from fold.splitters import ExpandingWindowSplitter
 from fold.utils.tests import generate_sine_wave_data
 
 
@@ -14,7 +15,13 @@ def test_deployment() -> None:
     y_test = y[900:]
 
     transformations = [Naive()]
-    deployable_transformations = train_for_deployment(transformations, X_train, y_train)
+    deployable_transformations = train(
+        transformations,
+        X_train,
+        y_train,
+        splitter=ExpandingWindowSplitter(0.2, 0.1),
+        for_deployment=True,
+    )
 
     first_prediction = infer(
         deployable_transformations,

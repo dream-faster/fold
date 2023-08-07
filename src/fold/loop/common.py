@@ -632,8 +632,8 @@ def _sequential_train_on_window(
             artifact,
             processed_pipeline,
             split,
-            False,
-            backend,
+            never_update=False,
+            backend=backend,
         )
         processed_idx.append(processed_id)
         processed_pipelines.append(processed_pipeline)

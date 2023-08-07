@@ -286,8 +286,6 @@ OutOfSamplePredictions = pd.DataFrame
 """The backtest's resulting out-of-sample output."""
 InSamplePredictions = pd.DataFrame
 """The backtest's resulting in-sample output."""
-DeployablePipeline = Pipeline
-"""A trained `Pipeline`, to be used for deployment."""
 
 
 @dataclass
@@ -302,14 +300,6 @@ class PipelineCard:
 class TrainedPipelineCard:
     preprocessing: TrainedPipeline
     pipeline: TrainedPipelines
-    event_labeler: Optional[Labeler]
-    event_filter: Optional[EventFilter]
-
-
-@dataclass
-class DeployablePipelineCard:
-    preprocessing: TrainedPipeline
-    pipeline: TrainedPipeline
     event_labeler: Optional[Labeler]
     event_filter: Optional[EventFilter]
 
