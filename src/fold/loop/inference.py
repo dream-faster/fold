@@ -28,7 +28,7 @@ def infer(
         f"but only {len(X)} rows were given."
     )
 
-    if pipelinecard.preprocessing is None:
+    if pipelinecard.preprocessing is not None:
         _, X, _ = recursively_transform(
             X,
             None,
@@ -37,11 +37,14 @@ def infer(
             stage=Stage.infer,
             backend=get_backend(BackendType.no),
         )
+
+    last_pipeline = [series.iloc[-1] for series in pipelinecard.pipeline[-1:]]
+
     _, results, _ = recursively_transform(
         X,
         None,
         Artifact.dummy_events(X.index),
-        pipelinecard.pipeline,
+        last_pipeline,
         stage=Stage.infer,
         backend=get_backend(BackendType.no),
     )
