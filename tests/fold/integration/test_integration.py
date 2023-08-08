@@ -87,7 +87,7 @@ def test_on_weather_data_backends(backend: str) -> None:
     inference_output = infer(trained_pipeline, X)
     assert len(inference_output) == len(X)
     assert (
-        inference_output.isna().sum() == 0
+        inference_output.isna().sum().sum() == 0
     )  # inference should be emitting events for all rows
 
 
