@@ -18,7 +18,7 @@ class ApplyFunction(Transformation, Tunable):
         self,
         func: Callable,
         past_window_size: Optional[int],
-        fillna: bool = True,
+        fillna: bool = False,
         batch_columns: Optional[int] = None,
         output_dtype: Optional[type] = None,
         name: Optional[str] = None,

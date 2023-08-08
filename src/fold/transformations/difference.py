@@ -157,12 +157,12 @@ class TakeReturns(Transformation, Tunable):
     def __init__(
         self,
         log_returns: bool = False,
-        fill_na: bool = True,
+        fillna: bool = False,
         name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
     ) -> None:
         self.log_returns = log_returns
-        self.fill_na = fill_na
+        self.fillna = fillna
         self.params_to_try = params_to_try
         description = "log" if log_returns else "arithmetic"
         self.name = name or f"TakeReturns-{description}"
@@ -191,7 +191,7 @@ class TakeReturns(Transformation, Tunable):
             else:
                 return df.pct_change()
 
-        fill_na = fill_na_inf if self.fill_na else lambda x: x
+        fill_na = fill_na_inf if self.fillna else lambda x: x
 
         if in_sample:
             return fill_na(operation(X))
