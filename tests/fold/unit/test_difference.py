@@ -51,7 +51,7 @@ def test_difference_inverse(lag: int):
 def test_returns():
     X, y = generate_sine_wave_data(length=100)
     splitter = SingleWindowSplitter(train_window=50)
-    pred, _ = train_backtest(TakeReturns(fill_na=False), X, y, splitter)
+    pred, _ = train_backtest(TakeReturns(fillna=False), X, y, splitter)
     assert pred.squeeze().equals(X.squeeze().pct_change().loc[pred.index])
 
 
