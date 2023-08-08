@@ -19,7 +19,7 @@ def infer(
     If X is None it will predict one step ahead.
     """
     assert isinstance(X, pd.DataFrame), "X must be a pandas DataFrame."
-    last_pipeline = [series.iloc[-1] for series in pipelinecard.pipeline[-1:]]
+    last_pipeline = [series.iloc[-1] for series in pipelinecard.pipeline]
 
     maximum_memory_size = max(
         get_maximum_memory_size(pipelinecard.preprocessing),

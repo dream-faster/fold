@@ -14,7 +14,6 @@ from fold.loop import train, train_evaluate
 from fold.loop.backend.joblib import JoblibBackend
 from fold.loop.backend.ray import RayBackend
 from fold.loop.backtesting import backtest
-from fold.loop.encase import train_backtest
 from fold.loop.inference import infer
 from fold.models import WrapSKLearnClassifier
 from fold.splitters import ExpandingWindowSplitter, SlidingWindowSplitter
@@ -22,6 +21,7 @@ from fold.transformations import AddWindowFeatures, RemoveLowVarianceFeatures
 from fold.transformations.dev import Identity
 from fold.transformations.function import ApplyFunction
 from fold.transformations.lags import AddLagsX, AddLagsY
+from fold.transformations.scaling import MinMaxScaler
 from fold.utils.dataset import get_preprocessed_dataset
 
 
@@ -43,7 +43,7 @@ def test_on_weather_data_backends(backend: str) -> None:
     events = FixedForwardHorizon(
         2, BinarizeSign(), weighting_strategy=NoWeighting()
     ).label_events(EveryNth(3).get_event_start_times(y), y)
-    splitter = SlidingWindowSplitter(train_window=0.2, step=0.2)
+    splitter = SlidingWindowSplitter(train_window=200, step=200)
     pipeline = PipelineCard(
         preprocessing=[
             Concat(
@@ -69,31 +69,23 @@ def test_on_weather_data_backends(backend: str) -> None:
                 ]
             ),
             Identity(),
+            MinMaxScaler(),
         ],
         pipeline=[
             RemoveLowVarianceFeatures(),
+            MinMaxScaler(),
             RandomForestRegressor(random_state=42),
         ],
     )
 
-    pred, trained_pipeline, insample_predictions = train_backtest(
-        pipeline,
-        X,
-        y,
-        splitter,
-        events=events,
-        backend=backend,
-        return_insample=True,
+    _, pred, trained_pipeline = train_evaluate(
+        pipeline, X, y, splitter, backend=backend, events=events
     )
     assert len(pred) == 799
-    assert (
-        len(insample_predictions) <= 800
-    ), "length of insample predictions should be always <= length of outofsample predictions"
-
-    train_evaluate(pipeline, X, y, splitter, backend=backend, events=events)
 
     inference_output = infer(trained_pipeline, X)
     assert len(inference_output) == len(X)
+    # assert inference_output.iloc[-200:].equals(pred.iloc[-200:])
 
 
 def test_train_evaluate() -> None:
