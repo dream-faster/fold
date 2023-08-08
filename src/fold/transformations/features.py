@@ -34,7 +34,7 @@ class AddWindowFeatures(Transformation, Tunable):
     column_window_func : ColumnWindowFunction, List[ColumnWindowFunction]
         A list of tuples, where each tuple contains the column name, the window size and the function to apply.
         The function can be a predefined function (see PredefinedFunction) or a Callable (with a single parameter).
-    fillna: bool = True
+    fillna: bool = False
         Fill NaNs in the resulting DataFrame
 
 
@@ -64,7 +64,7 @@ class AddWindowFeatures(Transformation, Tunable):
     def __init__(
         self,
         column_window_func: Union[ColumnWindowFunction, List[ColumnWindowFunction]],
-        fillna: bool = True,
+        fillna: bool = False,
         keep_original: bool = True,
         batch_columns: Optional[int] = None,
         output_dtype: Optional[type] = None,
@@ -157,7 +157,7 @@ class AddFeatures(Transformation, Tunable):
     ----------
     column_func: Tuple[Union[str, List[str]], Callable]
         A tuple of a column or list of columns and a function to apply to them.
-    fillna: bool = True
+    fillna: bool = False
         Fill NaNs in the resulting DataFrame
     name: str
         Name of the transformation.
@@ -198,7 +198,7 @@ class AddFeatures(Transformation, Tunable):
         self,
         column_func: Union[ColumnFunction, List[ColumnFunction]],
         past_window_size: Optional[int] = None,
-        fillna: bool = True,
+        fillna: bool = False,
         keep_original: bool = True,
         batch_columns: Optional[int] = None,
         output_dtype: Optional[type] = None,
@@ -259,7 +259,7 @@ class AddRollingCorrelation(Transformation, Tunable):
         self,
         column_pairs: Union[Tuple[str], List[Tuple[str]]],
         window: int,
-        fillna: bool = True,
+        fillna: bool = False,
         keep_original: bool = True,
         output_dtype: Optional[type] = None,
         name: Optional[str] = None,

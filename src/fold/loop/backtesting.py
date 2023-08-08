@@ -11,7 +11,7 @@ from ..events import _create_events
 from ..splitters import Fold, Splitter
 from ..utils.dataframe import concat_on_index
 from ..utils.list import unpack_list_of_tuples
-from ..utils.trim import trim_initial_nans, trim_initial_nans_single
+from ..utils.trim import trim_initial_nans_single
 from .backend import get_backend
 from .checks import check_types
 from .common import _backtest_on_window
@@ -72,7 +72,6 @@ def backtest(
         logger.warning("The number of events does not match the number of samples.")
         events = events.reindex(X.index)
     artifact = Artifact.from_events_sample_weights(X.index, events, sample_weights)
-    X, y, artifact = trim_initial_nans(X, y, artifact)
 
     if trained_pipelinecard.preprocessing is not None:
         preprocessed_X, preprocessed_artifacts = _backtest_on_window(

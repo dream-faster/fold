@@ -61,6 +61,7 @@ def test_sklearn_transformation_variable_columns() -> None:
     X["sine3"] = X["sine"].shift(3)
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     pipeline = [
+        lambda X: X.fillna(0.0),
         PCA(n_components=2),
     ]
     pred, _ = train_backtest(pipeline, X, y, splitter)

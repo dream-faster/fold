@@ -5,8 +5,8 @@ from __future__ import annotations
 from inspect import getfullargspec
 from typing import Callable, Optional, Type
 
+import numpy as np
 import pandas as pd
-from sklearn.feature_selection import VarianceThreshold
 
 from ..base import (
     Artifact,
@@ -200,8 +200,30 @@ class WrapSKLearnFeatureSelector(FeatureSelector, Tunable):
     update = fit_noop
 
 
-class RemoveLowVarianceFeatures(WrapSKLearnFeatureSelector):
-    name = "RemoveLowVarianceFeatures"
+class RemoveLowVarianceFeatures(FeatureSelector):
+    def __init__(self, threshold: float = 1e-5, name: Optional[str] = None) -> None:
+        self.threshold = threshold
+        self.properties = Transformation.Properties(requires_X=True)
+        self.name = name or "RemoveLowVarianceFeatures"
 
-    def __init__(self, name: Optional[str] = None):
-        super().__init__(VarianceThreshold, init_args=dict(threshold=1e-5), name=name)
+    def fit(
+        self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
+    ) -> Optional[Artifact]:
+        self.variances_ = np.nanvar(X, axis=0)
+        if self.threshold == 0:
+            peak_to_peaks = np.ptp(X, axis=0)
+            compare_arr = np.array([self.variances_, peak_to_peaks])
+            self.variances_ = np.nanmin(compare_arr, axis=0)
+
+        if np.all(~np.isfinite(self.variances_) | (self.variances_ <= self.threshold)):
+            msg = "No feature in X meets the variance threshold {0:.5f}"
+            if X.shape[0] == 1:
+                msg += " (X contains only one sample)"
+            raise ValueError(msg.format(self.threshold))
+        mask = self.variances_ > self.threshold
+        self.selected_features = X.columns[mask].to_list()
+
+    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
+        return X[self.selected_features]
+
+    update = fit_noop

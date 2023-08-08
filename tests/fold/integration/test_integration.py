@@ -75,6 +75,7 @@ def test_on_weather_data_backends(backend: str) -> None:
         pipeline=[
             RemoveLowVarianceFeatures(),
             MinMaxScaler(),
+            lambda X: X.fillna(0.0),
             RandomForestRegressor(random_state=42),
         ],
     )
