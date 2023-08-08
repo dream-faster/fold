@@ -14,6 +14,7 @@ from fold.loop import train, train_evaluate
 from fold.loop.backend.joblib import JoblibBackend
 from fold.loop.backend.ray import RayBackend
 from fold.loop.backtesting import backtest
+from fold.loop.encase import train_backtest
 from fold.loop.inference import infer
 from fold.models import WrapSKLearnClassifier
 from fold.splitters import ExpandingWindowSplitter, SlidingWindowSplitter
@@ -85,7 +86,51 @@ def test_on_weather_data_backends(backend: str) -> None:
 
     inference_output = infer(trained_pipeline, X)
     assert len(inference_output) == len(X)
-    # assert inference_output.iloc[-200:].equals(pred.iloc[-200:])
+    assert (
+        inference_output.isna().sum().sum() == 0
+    )  # inference should be emitting events for all rows
+
+
+def test_inference() -> None:
+    X, y = get_preprocessed_dataset(
+        "weather/historical_hourly_la",
+        target_col="temperature",
+        shorten=1000,
+    )
+    splitter = SlidingWindowSplitter(train_window=200, step=200)
+    pipeline = PipelineCard(
+        preprocessing=[
+            Concat(
+                [
+                    Concat(
+                        [
+                            Sequence(
+                                AddLagsX(
+                                    columns_and_lags=[("pressure", list(range(1, 3)))]
+                                )
+                            ),
+                            AddWindowFeatures(("pressure", 14, "mean")),
+                        ]
+                    ),
+                    AddWindowFeatures(("humidity", 26, "std")),
+                    Concat(
+                        [
+                            ApplyFunction(
+                                lambda x: x.rolling(30).mean(), past_window_size=30
+                            ),
+                        ]
+                    ),
+                ]
+            ),
+            Identity(),
+            MinMaxScaler(),
+        ],
+        pipeline=Identity(),
+    )
+
+    pred, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+    inference_output = infer(trained_pipeline, X)
+    assert inference_output.loc[pred.index].equals(pred)
 
 
 def test_train_evaluate() -> None:
