@@ -27,13 +27,14 @@ def replace_with(transformations: List[Block]) -> Callable:
     def replace(transformation: Pipeline) -> Pipeline:
         if isinstance(transformation, List) or isinstance(transformation, Tuple):
             return [replace(t) for t in transformation]
-        elif isinstance(transformation, Clonable):
+
+        if transformation.id in mapping:
+            return mapping[transformation.id]
+
+        if isinstance(transformation, Clonable):
             return transformation.clone(replace)
-        else:
-            if transformation.id in mapping:
-                return mapping[transformation.id]
-            else:
-                return transformation
+
+        return transformation
 
     return replace
 
