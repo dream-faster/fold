@@ -104,6 +104,7 @@ class Concat(Composite):
         clone.properties = self.properties
         clone.name = self.name
         clone.metadata = self.metadata
+        clone.id = self.id
         return clone
 
 
@@ -143,6 +144,7 @@ class Sequence(Composite):
         clone.properties = self.properties
         clone.name = self.name
         clone.metadata = self.metadata
+        clone.id = self.id
         return clone
 
 

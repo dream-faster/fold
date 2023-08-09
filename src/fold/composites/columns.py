@@ -88,6 +88,7 @@ class EnsembleEachColumn(Composite):
         clone.properties = self.properties
         clone.name = self.name
         clone.metadata = self.metadata
+        clone.id = self.id
         return clone
 
 
@@ -174,6 +175,8 @@ class TransformEachColumn(Composite):
         )
         clone.properties = self.properties
         clone.name = self.name
+        clone.metadata = self.metadata
+        clone.id = self.id
         return clone
 
 
@@ -259,6 +262,7 @@ class SkipNA(Composite):
         clone.name = self.name
         clone.metadata = self.metadata
         clone.isna = self.isna
+        clone.id = self.id
         return clone
 
 

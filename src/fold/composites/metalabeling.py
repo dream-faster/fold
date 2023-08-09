@@ -178,6 +178,7 @@ class MetaLabeling(Composite):
         clone.properties = self.properties
         clone.name = self.name
         clone.metadata = self.metadata
+        clone.id = self.id
         return clone
 
 

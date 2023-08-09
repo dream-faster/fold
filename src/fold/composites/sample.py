@@ -85,4 +85,5 @@ class Sample(Sampler):
             pipeline=clone_children(self.pipeline),
         )
         clone.name = self.name
+        clone.id = self.id
         return clone

@@ -33,11 +33,13 @@ class SelectBest(Composite, Tunable):
         selected_: Optional[str],
         name: Optional[str],
         metadata: Optional[Composite.Metadata],
+        id: str,
     ) -> SelectBest:
         instance = cls(choose_from)
         instance.selected_ = selected_
         instance.name = name
         instance.metadata = metadata
+        instance.id = id
         return instance
 
     def postprocess_result_primary(
@@ -61,6 +63,7 @@ class SelectBest(Composite, Tunable):
             selected_=self.selected_,
             name=self.name,
             metadata=self.metadata,
+            id=self.id,
         )
 
     def get_params(self) -> dict:
@@ -93,6 +96,7 @@ class SelectBest(Composite, Tunable):
             selected_=parameters["selected_"],
             name=self.name,
             metadata=self.metadata,
+            id=self.id,
         )
 
 
