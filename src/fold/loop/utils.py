@@ -6,15 +6,8 @@ from typing import Callable, List, Tuple, TypeVar
 
 import pandas as pd
 
-from ..base import (
-    Block,
-    Clonable,
-    Composite,
-    Pipeline,
-    TrainedPipelines,
-    get_flat_list_of_transformations,
-)
-from ..base.utils import get_maximum_memory_size, traverse_apply
+from ..base import Block, Clonable, Composite, Pipeline, TrainedPipelines
+from ..base.utils import get_maximum_memory_size, traverse, traverse_apply
 from ..splitters import Fold
 from .types import Stage
 
@@ -29,8 +22,7 @@ def deepcopy_pipelines(transformation: Pipeline) -> Pipeline:
 
 
 def replace_with(transformations: List[Block]) -> Callable:
-    transformations = get_flat_list_of_transformations(transformations)
-    mapping = {t.id: t for t in transformations}
+    mapping = {t.id: t for t in traverse(transformations)}
 
     def replace(transformation: Pipeline) -> Pipeline:
         if isinstance(transformation, List) or isinstance(transformation, Tuple):

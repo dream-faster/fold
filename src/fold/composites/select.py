@@ -68,7 +68,6 @@ class SelectBest(Composite, Tunable):
 
     def get_params(self) -> dict:
         return dict(
-            choose_from=self.choose_from,
             selected_=self.selected_,
             name=self.name,
         )
