@@ -242,7 +242,7 @@ class InvertibleTransformation(Transformation, ABC):
         raise NotImplementedError
 
 
-class Tunable(Block, ABC):
+class Tunable(ABC):
     params_to_try: Optional[dict]
 
     def get_params(self) -> dict:
