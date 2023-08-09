@@ -1,9 +1,12 @@
+from copy import deepcopy
+
 import numpy as np
 import pandas as pd
 import pytest
 from sklearn.feature_selection import SelectKBest, VarianceThreshold, f_regression
 
 from fold.base import Artifact, Composite, traverse, traverse_apply
+from fold.composites.concat import Concat
 from fold.composites.target import TransformTarget
 from fold.composites.utils import _clean_params
 from fold.models.base import postpostprocess_output
@@ -154,6 +157,36 @@ def test_unique_id_per_instance() -> None:
         ),
     ]
     assert transformations[0].id != transformations[1].id
+
+
+def test_cloning() -> None:
+    transformations = [
+        Difference(),
+        Difference(),
+    ]
+    assert deepcopy(transformations[0]).id == transformations[0].id
+    assert deepcopy(transformations[1]).id == transformations[1].id
+    assert deepcopy(transformations)[0].id == transformations[0].id
+    assert deepcopy(transformations)[1].id == transformations[1].id
+
+    transformations = [
+        WrapSKLearnFeatureSelector.from_model(VarianceThreshold()),
+        WrapSKLearnFeatureSelector.from_model(
+            SelectKBest(score_func=f_regression, k=1),
+        ),
+    ]
+    assert deepcopy(transformations[0]).id == transformations[0].id
+    assert deepcopy(transformations[1]).id == transformations[1].id
+    assert deepcopy(transformations)[0].id == transformations[0].id
+    assert deepcopy(transformations)[1].id == transformations[1].id
+
+    composites = [
+        Concat([Difference(), Difference()]),
+        Concat([Difference(), Difference()]),
+    ]
+    assert deepcopy(composites[0]).id == composites[0].id
+    assert deepcopy(composites[1]).id == composites[1].id
+    assert composites[0].clone(deepcopy).id == composites[0].id
 
 
 def test_sort_probabilities_columns() -> None:

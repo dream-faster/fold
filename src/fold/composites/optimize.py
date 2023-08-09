@@ -64,6 +64,7 @@ class OptimizeGridSearch(Optimizer):
         selected_pipeline_: Optional[Tunable],
         scores_: Optional[List[float]],
         name: Optional[str],
+        id: str,
     ) -> OptimizeGridSearch:
         instance = cls(
             pipeline=pipeline,
@@ -77,6 +78,7 @@ class OptimizeGridSearch(Optimizer):
         instance.selected_pipeline_ = selected_pipeline_
         instance.scores_ = scores_
         instance.name = name
+        instance.id = id
         return instance
 
     def get_candidates(self) -> List[Pipeline]:
@@ -139,4 +141,5 @@ class OptimizeGridSearch(Optimizer):
             selected_pipeline_=self.selected_pipeline_,
             scores_=self.scores_,
             name=self.name,
+            id=self.id,
         )
