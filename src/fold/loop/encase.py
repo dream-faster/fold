@@ -203,6 +203,7 @@ def train_evaluate(
     train_method: Union[TrainMethod, str] = TrainMethod.parallel,
     silent: bool = False,
     return_artifacts: bool = False,
+    return_insample_scorecard: bool = False,
     krisi_args: Optional[Dict[str, Any]] = None,
 ) -> Union[
     Tuple[
@@ -214,7 +215,20 @@ def train_evaluate(
         "ScoreCard",
         OutOfSamplePredictions,
         TrainedPipelineCard,
+        "ScoreCard",
         Artifact,
+    ],
+    Tuple[
+        "ScoreCard",
+        OutOfSamplePredictions,
+        TrainedPipelineCard,
+        Artifact,
+    ],
+    Tuple[
+        "ScoreCard",
+        OutOfSamplePredictions,
+        TrainedPipelineCard,
+        "ScoreCard",
     ],
 ]:
     """
@@ -253,7 +267,7 @@ def train_evaluate(
     TrainedPipelineCard
         The fitted pipelines, for all folds.
     """
-    trained_pipelines, train_artifacts = train(
+    trained_pipelines, train_artifacts, insample_predictions = train(
         pipeline,
         X,
         y,
@@ -264,6 +278,7 @@ def train_evaluate(
         backend=backend,
         silent=silent,
         return_artifacts=True,
+        return_insample=True,
     )
 
     scorecard, pred, backtest_artifacts = backtest_score(
@@ -276,17 +291,22 @@ def train_evaluate(
         events=events,
         silent=silent,
         return_artifacts=True,
-        krisi_args=krisi_args,
+        krisi_args=dict(sample_type="validation", **(krisi_args or {})),
     )
 
-    if return_artifacts:
-        return (
-            scorecard,
-            pred,
-            trained_pipelines,
-            concat_on_index_override_duplicate_rows(
-                [train_artifacts, backtest_artifacts]
-            ),
+    return_object = [scorecard, pred, trained_pipelines]
+    if return_insample_scorecard:
+        scorecard_insample = score_results(
+            insample_predictions,
+            y,
+            artifacts=train_artifacts,
+            krisi_args=dict(sample_type="insample", **(krisi_args or {})),
         )
-    else:
-        return scorecard, pred, trained_pipelines
+        return_object.append(scorecard_insample)
+
+    if return_artifacts:
+        concatinated_artifacts = concat_on_index_override_duplicate_rows(
+            [train_artifacts, backtest_artifacts]
+        )
+        return_object.append(concatinated_artifacts)
+    return tuple(return_object)

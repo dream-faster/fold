@@ -42,7 +42,7 @@ def train(
     return_insample: bool = False,
     for_deployment: bool = False,
 ) -> Union[
-    TrainedPipelineCard,
+    Tuple[TrainedPipelineCard],
     Tuple[TrainedPipelineCard, Artifact],
     Tuple[TrainedPipelineCard, Artifact, InSamplePredictions],
 ]:
