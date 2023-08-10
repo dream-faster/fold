@@ -215,8 +215,8 @@ def train_evaluate(
         "ScoreCard",
         OutOfSamplePredictions,
         TrainedPipelineCard,
-        "ScoreCard",
         Artifact,
+        "ScoreCard",
     ],
     Tuple[
         "ScoreCard",
@@ -295,6 +295,13 @@ def train_evaluate(
     )
 
     return_object = [scorecard, pred, trained_pipelines]
+
+    if return_artifacts:
+        concatinated_artifacts = concat_on_index_override_duplicate_rows(
+            [train_artifacts, backtest_artifacts]
+        )
+        return_object.append(concatinated_artifacts)
+
     if return_insample_scorecard:
         scorecard_insample = score_results(
             insample_predictions,
@@ -304,9 +311,4 @@ def train_evaluate(
         )
         return_object.append(scorecard_insample)
 
-    if return_artifacts:
-        concatinated_artifacts = concat_on_index_override_duplicate_rows(
-            [train_artifacts, backtest_artifacts]
-        )
-        return_object.append(concatinated_artifacts)
     return tuple(return_object)
