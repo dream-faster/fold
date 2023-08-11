@@ -279,7 +279,6 @@ TransformationPipeline = Union[
 ]
 
 
-TrainedPipeline = Pipeline
 TrainedPipelines = List[pd.Series]
 """A list of trained `Pipeline`s, to be used for backtesting."""
 OutOfSamplePredictions = pd.DataFrame
@@ -298,7 +297,7 @@ class PipelineCard:
 
 @dataclass
 class TrainedPipelineCard:
-    preprocessing: TrainedPipeline
+    preprocessing: TrainedPipelines
     pipeline: TrainedPipelines
     event_labeler: Optional[Labeler]
     event_filter: Optional[EventFilter]
