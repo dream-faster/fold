@@ -279,6 +279,7 @@ TransformationPipeline = Union[
 ]
 
 
+TrainedPipeline = Pipeline
 TrainedPipelines = List[pd.Series]
 """A list of trained `Pipeline`s, to be used for backtesting."""
 OutOfSamplePredictions = pd.DataFrame
