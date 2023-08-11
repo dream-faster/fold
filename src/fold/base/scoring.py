@@ -1,5 +1,5 @@
 import importlib
-from typing import Optional, Tuple
+from typing import TYPE_CHECKING, Optional, Tuple
 
 import pandas as pd
 
@@ -9,7 +9,10 @@ from ..utils.checks import (
     get_probabilities_columns,
 )
 from ..utils.enums import ParsableEnum
-from .classes import Artifact
+from .classes import Artifact, OutOfSamplePredictions
+
+if TYPE_CHECKING and importlib.util.find_spec("krisi") is not None:
+    from krisi import ScoreCard
 
 
 class ScoreOn(ParsableEnum):
@@ -22,7 +25,7 @@ def score_results(
     y: pd.Series,
     artifacts: Artifact,
     krisi_args: Optional[dict] = None,
-):
+) -> Tuple["ScoreCard", OutOfSamplePredictions]:
     y, pred_point, probabilities, test_sample_weights = align_result_with_events(
         y=y,
         result=result,
@@ -31,14 +34,17 @@ def score_results(
     if importlib.util.find_spec("krisi") is not None:
         from krisi import score
 
-        return score(
-            y=y,
-            predictions=pred_point,
-            probabilities=probabilities,
-            sample_weight=test_sample_weights
-            if test_sample_weights is not None
-            else None,
-            **(krisi_args if krisi_args is not None else {}),
+        return (
+            score(
+                y=y,
+                predictions=pred_point,
+                probabilities=probabilities,
+                sample_weight=test_sample_weights
+                if test_sample_weights is not None
+                else None,
+                **(krisi_args if krisi_args is not None else {}),
+            ),
+            pred_point,
         )
     else:
         raise ImportError(

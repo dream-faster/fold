@@ -87,7 +87,7 @@ def backtest_score(
         return_artifacts=True,
     )
 
-    scorecard = score_results(
+    scorecard, pred = score_results(
         pred,
         y,
         artifacts=artifacts,
@@ -303,7 +303,7 @@ def train_evaluate(
         return_object.append(concatinated_artifacts)
 
     if return_insample_scorecard:
-        scorecard_insample = score_results(
+        scorecard_insample, _ = score_results(
             insample_predictions,
             y,
             artifacts=train_artifacts,
