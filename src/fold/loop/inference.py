@@ -1,8 +1,12 @@
 import pandas as pd
 
-from fold.base.classes import TrainedPipelineCard
-
-from ..base import Artifact, OutOfSamplePredictions, get_maximum_memory_size
+from ..base import (
+    Artifact,
+    OutOfSamplePredictions,
+    TrainedPipelineCard,
+    get_last_trained_pipeline,
+    get_maximum_memory_size,
+)
 from .backend import get_backend
 from .common import recursively_transform
 from .types import BackendType, Stage
@@ -19,7 +23,7 @@ def infer(
     If X is None it will predict one step ahead.
     """
     assert isinstance(X, pd.DataFrame), "X must be a pandas DataFrame."
-    last_pipeline = [series.iloc[-1] for series in pipelinecard.pipeline]
+    last_pipeline = (get_last_trained_pipeline(pipelinecard.pipeline),)
 
     maximum_memory_size = max(
         get_maximum_memory_size(pipelinecard.preprocessing),
@@ -35,7 +39,7 @@ def infer(
             X,
             None,
             Artifact.dummy_events(X.index),
-            [series.iloc[-1] for series in pipelinecard.preprocessing],
+            get_last_trained_pipeline(pipelinecard.preprocessing),
             stage=Stage.infer,
             backend=get_backend(BackendType.no),
         )

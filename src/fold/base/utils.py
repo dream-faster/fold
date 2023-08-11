@@ -1,7 +1,16 @@
 from typing import Callable, List, Tuple, Union
 
 from ..utils.list import empty_if_none, flatten
-from .classes import Composite, Optimizer, Pipeline, Pipelines, Sampler, Transformation
+from .classes import (
+    Composite,
+    Optimizer,
+    Pipeline,
+    Pipelines,
+    Sampler,
+    TrainedPipeline,
+    TrainedPipelines,
+    Transformation,
+)
 
 
 def traverse_apply(pipeline: Pipeline, apply_func: Callable) -> Pipeline:
@@ -71,3 +80,7 @@ def get_maximum_memory_size(pipeline: Pipeline) -> int:
         return 0
     else:
         return max(memory_sizes)
+
+
+def get_last_trained_pipeline(trained_pipelines: TrainedPipelines) -> TrainedPipeline:
+    return [series.iloc[-1] for series in trained_pipelines]
