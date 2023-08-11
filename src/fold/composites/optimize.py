@@ -113,7 +113,7 @@ class OptimizeGridSearch(Optimizer):
                 y=y[-len(result) :],
                 artifacts=artifact,
                 krisi_args=self.krisi_args,
-            )[self.krisi_metric_key].result
+            )[0][self.krisi_metric_key].result
             for result, artifact in zip(results, artifacts)
         ]
         selected_index = (

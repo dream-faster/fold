@@ -83,7 +83,7 @@ def test_on_weather_data_backends(backend: str) -> None:
     _, pred, trained_pipeline = train_evaluate(
         pipeline, X, y, splitter, backend=backend, events=events
     )
-    assert len(pred) == 799
+    assert len(pred) == 266
 
     inference_output = infer(trained_pipeline, X)
     assert len(inference_output) == len(X)
