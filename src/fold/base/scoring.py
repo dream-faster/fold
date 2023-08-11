@@ -44,7 +44,7 @@ def score_results(
                 else None,
                 **(krisi_args if krisi_args is not None else {}),
             ),
-            pred_point,
+            pd.concat([pred_point, probabilities], axis="columns"),
         )
     else:
         raise ImportError(
