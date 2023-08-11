@@ -107,7 +107,7 @@ def test_score_results():
     X, y = generate_zeros_and_ones(length=1000)
 
     results = pd.DataFrame({"x_predictions": y.squeeze()})
-    sc = score_results(
+    sc, _ = score_results(
         results,
         y,
         artifacts=Artifact.empty(y.index),
@@ -122,7 +122,7 @@ def test_score_results():
     assert (y[:-1] == events.label).all()
 
     # test that there's a "label" in artifacts, it is used for scoring
-    sc = score_results(
+    sc, _ = score_results(
         results[:-1],
         pd.Series(0, index=results[:-1].index),
         artifacts=events,
