@@ -28,6 +28,7 @@ class FixedForwardHorizon(Labeler):
             str, PredefinedFunction, Callable
         ] = PredefinedFunction.sum,
         flip_sign: bool = False,
+        shift_by: Optional[int] = None,
     ):
         self.time_horizon = time_horizon
         self.labeling_strategy = labeling_strategy
@@ -44,12 +45,13 @@ class FixedForwardHorizon(Labeler):
             )
         )
         self.flip_sign = flip_sign
+        self.shift_by = shift_by
 
     def label_events(
         self, event_start_times: pd.DatetimeIndex, y: pd.Series
     ) -> EventDataFrame:
         forward_rolling_aggregated = create_forward_rolling(
-            self.aggregate_function, y, self.time_horizon
+            self.aggregate_function, y, self.time_horizon, self.shift_by
         )
         cutoff_point = y.index[-self.time_horizon]
         event_start_times = event_start_times[event_start_times < cutoff_point]
