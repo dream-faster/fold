@@ -88,6 +88,7 @@ tests = [
   "statsmodels",
   "krisi",
   "pyarrow",
+  "pandas_market_calendars"
 ]
 docs = [
   "mkdocs-material",
