@@ -657,4 +657,5 @@ def _get_X_y_based_on_events(
     if events is None:
         return X, y, artifact
     events = events.dropna()
+    assert len(events) > 0, "No events found in fold"
     return X.loc[events.index], events.event_label, artifact.loc[events.index]
