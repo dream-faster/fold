@@ -24,6 +24,7 @@ class FixedForwardHorizon(Labeler):
         labeling_strategy: LabelingStrategy,
         weighting_strategy: Optional[WeightingStrategy],
         weighting_strategy_test: WeightingStrategy = WeightBySumWithLookahead(),
+        transformation_function: Optional[Callable] = None,
         aggregate_function: Union[
             str, PredefinedFunction, Callable
         ] = PredefinedFunction.sum,
@@ -36,6 +37,7 @@ class FixedForwardHorizon(Labeler):
             weighting_strategy if weighting_strategy else NoWeighting()
         )
         self.weighting_strategy_test = weighting_strategy_test
+        self.transformation_function = transformation_function
         self.aggregate_function = (
             aggregate_function
             if isinstance(aggregate_function, Callable)
@@ -51,7 +53,11 @@ class FixedForwardHorizon(Labeler):
         self, event_start_times: pd.DatetimeIndex, y: pd.Series
     ) -> EventDataFrame:
         forward_rolling_aggregated = create_forward_rolling(
-            self.aggregate_function, y, self.time_horizon, self.shift_by
+            transformation_func=self.transformation_function,
+            agg_func=self.aggregate_function,
+            series=y,
+            period=self.time_horizon,
+            shift_by=self.shift_by,
         )
         cutoff_point = y.index[-self.time_horizon]
         event_start_times = event_start_times[event_start_times < cutoff_point]
