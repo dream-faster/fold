@@ -184,7 +184,7 @@ class AddExchangeHolidayFeatures(Transformation, Tunable):
         if "all" in self.exchange_codes:
             self.exchange_codes = all_supported_exchanges
 
-        assert labeling in [
+        assert self.labeling in [
             LabelingMethod.holiday_binary,
             LabelingMethod.weekday_weekend_holiday,
         ], "Only holiday_binary and weekday_weekend_holiday are supported for stockexchanges"
