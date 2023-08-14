@@ -181,6 +181,9 @@ class AddExchangeHolidayFeatures(Transformation, Tunable):
 
         all_supported_exchanges = mcal.get_calendar_names()
 
+        if "all" in self.exchange_codes:
+            self.exchange_codes = all_supported_exchanges
+
         assert labeling in [
             LabelingMethod.holiday_binary,
             LabelingMethod.weekday_weekend_holiday,
