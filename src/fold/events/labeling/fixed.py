@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from logging import getLogger
 from typing import Callable, List, Optional, Union
 
 import pandas as pd
@@ -13,6 +14,8 @@ from ...base import (
 )
 from ...utils.forward import create_forward_rolling
 from ..weights import NoWeighting, WeightBySumWithLookahead
+
+logger = getLogger("fold:labeling")
 
 
 class FixedForwardHorizon(Labeler):
@@ -69,10 +72,14 @@ class FixedForwardHorizon(Labeler):
         test_sample_weights = self.weighting_strategy_test.calculate(raw_returns)
 
         if self.flip_sign:
-            if len(labels.dropna().unique()) != 2:
+            if len(labels.dropna().unique()) == 3:
                 labels = labels * -1
-            else:
+            elif len(labels.dropna().unique()) == 2:
                 labels = 1 - labels
+            else:
+                logger.warn(
+                    f"{len(labels.dropna().unique())} classes detected, can't flip sign"
+                )
 
         offset = pd.Timedelta(value=self.time_horizon, unit=y.index.freqstr)
         return EventDataFrame.from_data(

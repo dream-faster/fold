@@ -13,5 +13,6 @@ def create_forward_rolling(
     assert period > 0
     indexer = pd.api.indexers.FixedForwardWindowIndexer(window_size=period)
     shift_by = shift_by if shift_by is not None else -int(max(1, period / 2))
+    assert shift_by < 0
     transformation_func = transformation_func if transformation_func else lambda x: x
     return agg_func(transformation_func(series).rolling(window=indexer)).shift(shift_by)
