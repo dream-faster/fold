@@ -205,7 +205,7 @@ def test_integration_events() -> None:
                         WrapSKLearnClassifier.from_model(RandomForestClassifier()),
                     ]
                 ),
-                krisi_metric_key="f_one_score_macro",
+                krisi_metric_key="f_one_score_binary",
             )
         ],
         event_labeler=FixedForwardHorizon(
