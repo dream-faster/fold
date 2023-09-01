@@ -45,6 +45,7 @@ def update(
         backend=backend,
     )
     return TrainedPipelineCard(
+        name=pipelinecard.name,
         preprocessing=preprocessing_pipelines,
         pipeline=pipeline,
         event_filter=pipelinecard.event_filter,

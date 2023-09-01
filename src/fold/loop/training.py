@@ -112,6 +112,7 @@ def train(
             split=Fold(0, 0, 0, len(X), 0, 0, 0, len(X)),
             never_update=True,
             backend=backend,
+            project_name=f"{pipelinecard.name}-Preprocessing" or "Preprocessing",
             show_progress=True,
         )
         assert preprocessed_X.shape[0] == X.shape[0]
@@ -148,6 +149,7 @@ def train(
                 splits[-1:],
                 True,
                 backend,
+                f"{pipelinecard.name}-Pipeline" or "Pipeline",
                 silent,
             )
         )
@@ -166,6 +168,7 @@ def train(
             split=splits[0],
             never_update=True,
             backend=backend,
+            project_name=f"{pipelinecard.name}-Pipeline" or "Pipeline",
         )
 
         (
@@ -183,6 +186,7 @@ def train(
                 splits[1:],
                 False,
                 backend,
+                f"{pipelinecard.name}-Pipeline" or "Pipeline",
                 silent,
             )
         )
@@ -207,6 +211,7 @@ def train(
                 splits,
                 True,
                 backend,
+                f"{pipelinecard.name}-Pipeline" or "Pipeline",
                 silent,
             )
         )
@@ -217,9 +222,18 @@ def train(
             processed_pipelines,
             processed_predictions,
             processed_artifacts,
-        ) = _sequential_train_on_window(pipeline, X, y, splits, artifact, backend)
+        ) = _sequential_train_on_window(
+            pipeline,
+            X,
+            y,
+            splits,
+            artifact,
+            backend,
+            project_name=f"{pipelinecard.name}-Pipeline" or "Pipeline",
+        )
 
     trained_pipelines = TrainedPipelineCard(
+        name=pipelinecard.name,
         preprocessing=[pd.Series(p, index=[0]) for p in trained_preprocessing_pipeline]
         if pipelinecard.preprocessing
         else None,

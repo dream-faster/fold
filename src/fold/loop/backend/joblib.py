@@ -23,13 +23,16 @@ def train_pipeline(
     splits: List[Fold],
     never_update: bool,
     backend: Backend,
+    project_name: str,
     silent: bool,
 ):
     return Parallel(
         n_jobs=self.limit_threads, prefer="threads" if self.prefer_threads else None
     )(
         [
-            delayed(func)(X, y, artifact, pipeline, split, never_update, backend)
+            delayed(func)(
+                X, y, artifact, pipeline, split, never_update, backend, project_name
+            )
             for split in splits
         ]
     )

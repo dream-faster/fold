@@ -437,7 +437,13 @@ def __process_candidates(
         processed_predictions,
         processed_artifacts,
     ) = _sequential_train_on_window(
-        child_transform, X, y, splits, artifacts, backend=backend
+        child_transform,
+        X,
+        y,
+        splits,
+        artifacts,
+        backend=backend,
+        project_name=f"HPO-{optimizer.name}",
     )
     trained_pipelines = _extract_trained_pipelines(processed_idx, processed_pipelines)
 
@@ -541,7 +547,10 @@ def _backtest_on_window(
     X_test, y_test, artifact_test = _get_X_y_based_on_events(
         X_test, y_test, artifact_test
     )
-    assert artifact_test.dropna().shape[0] == y_test.shape[0]
+    artifacts_to_check = Artifact.get_events(artifact_test)
+    if artifacts_to_check is None:
+        artifacts_to_check = artifact_test
+    assert artifacts_to_check.dropna().shape[0] == y_test.shape[0]
 
     results, artifacts = recursively_transform(
         X=X_test,
@@ -568,6 +577,7 @@ def _train_on_window(
     split: Fold,
     never_update: bool,
     backend: Backend,
+    project_name: str,
     show_progress: bool = False,
 ) -> Tuple[int, TrainedPipeline, X, Artifact]:
     pd.options.mode.copy_on_write = True
@@ -589,7 +599,10 @@ def _train_on_window(
 
     pipeline = deepcopy_pipelines(pipeline)
     pipeline = _set_metadata(
-        pipeline, Composite.Metadata(fold_index=split.order, target=y.name)
+        pipeline,
+        Composite.Metadata(
+            project_name=project_name, fold_index=split.order, target=y.name
+        ),
     )
     trained_pipeline, X_train, artifact_train = recursively_transform(
         X=X_train,
@@ -614,6 +627,7 @@ def _sequential_train_on_window(
     splits: List[Fold],
     artifact: Artifact,
     backend: Backend,
+    project_name: str,
 ) -> Tuple[List[int], List[Pipeline], List[X], List[Artifact]]:
     processed_idx = []
     processed_pipelines: List[Pipeline] = []
@@ -634,6 +648,7 @@ def _sequential_train_on_window(
             split,
             never_update=False,
             backend=backend,
+            project_name=project_name,
         )
         processed_idx.append(processed_id)
         processed_pipelines.append(processed_pipeline)

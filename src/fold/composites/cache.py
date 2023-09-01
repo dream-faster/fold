@@ -50,12 +50,23 @@ class Cache(Composite):
         y: Optional[pd.Series],
         fit: bool,
     ) -> pd.DataFrame:
+        metadata: Composite.Metadata = self.metadata  # type: ignore
         if os.path.exists(self.path) and os.path.exists(
-            _result_path(self.path, self.metadata.fold_index, self.metadata.target, fit)
+            _result_path(
+                self.path,
+                metadata.project_name,
+                metadata.fold_index,
+                metadata.target,
+                fit,
+            )
         ):
             return pd.read_feather(
                 _result_path(
-                    self.path, self.metadata.fold_index, self.metadata.target, fit
+                    self.path,
+                    metadata.project_name,
+                    metadata.fold_index,
+                    metadata.target,
+                    fit,
                 ),
                 use_threads=False,
             ).set_index("index")
@@ -63,7 +74,11 @@ class Cache(Composite):
             os.makedirs(os.path.dirname(self.path), exist_ok=True)
             results[0].reset_index().to_feather(
                 _result_path(
-                    self.path, self.metadata.fold_index, self.metadata.target, fit
+                    self.path,
+                    metadata.project_name,
+                    metadata.fold_index,
+                    metadata.target,
+                    fit,
                 )
             )
             return results[0]
@@ -75,14 +90,23 @@ class Cache(Composite):
         original_artifact: Artifact,
         fit: bool,
     ) -> pd.DataFrame:
+        metadata: Composite.Metadata = self.metadata  # type: ignore
         if os.path.exists(self.path) and os.path.exists(
             _artifacts_path(
-                self.path, self.metadata.fold_index, self.metadata.target, fit
+                self.path,
+                metadata.project_name,
+                metadata.fold_index,
+                metadata.target,
+                fit,
             )
         ):
             return pd.read_feather(
                 _artifacts_path(
-                    self.path, self.metadata.fold_index, self.metadata.target, fit
+                    self.path,
+                    metadata.project_name,
+                    metadata.fold_index,
+                    metadata.target,
+                    fit,
                 ),
                 use_threads=False,
             ).set_index("index")
@@ -94,7 +118,11 @@ class Cache(Composite):
             )
             artifacts.reset_index().to_feather(
                 _artifacts_path(
-                    self.path, self.metadata.fold_index, self.metadata.target, fit
+                    self.path,
+                    metadata.project_name,
+                    metadata.fold_index,
+                    metadata.target,
+                    fit,
                 )
             )
             return primary_artifacts[0]
@@ -104,7 +132,11 @@ class Cache(Composite):
             return self.pipeline
         if os.path.exists(self.path) and os.path.exists(
             _result_path(
-                self.path, self.metadata.fold_index, self.metadata.target, False
+                self.path,
+                self.metadata.project_name,
+                self.metadata.fold_index,
+                self.metadata.target,
+                False,
             )
         ):
             return [Identity()]
@@ -126,13 +158,19 @@ def __fit_to_str(fit: bool) -> str:
     return "fit" if fit else "predict"
 
 
-def _result_path(path, fold_index: int, y_name: str, fit: bool) -> str:
+def _result_path(
+    path, project_name: str, fold_index: int, y_name: str, fit: bool
+) -> str:
     return os.path.join(
-        path, f"result_{y_name}_fold{str(fold_index)}_{__fit_to_str(fit)}.feather"
+        path,
+        f"result_{project_name}_{y_name}_fold{str(fold_index)}_{__fit_to_str(fit)}.feather",
     )
 
 
-def _artifacts_path(path, fold_index: int, y_name: str, fit: bool) -> str:
+def _artifacts_path(
+    path, project_name: str, fold_index: int, y_name: str, fit: bool
+) -> str:
     return os.path.join(
-        path, f"artifacts_{y_name}_fold{str(fold_index)}_{__fit_to_str(fit)}.feather"
+        path,
+        f"artifacts_{project_name}_{y_name}_fold{str(fold_index)}_{__fit_to_str(fit)}.feather",
     )
