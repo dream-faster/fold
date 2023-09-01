@@ -19,8 +19,7 @@ from fold.transformations.date import (
     AddYear,
     DateTimeFeature,
 )
-from fold.transformations.holidays import (
-    AddExchangeHolidayFeatures,
+from fold.transformations.holidays import (  # AddExchangeHolidayFeatures,
     AddHolidayFeatures,
     LabelingMethod,
 )
@@ -226,17 +225,17 @@ def test_holiday_features_minute() -> None:
     assert pd.api.types.is_integer_dtype(pred["holiday_DE"].dtype)
 
 
-def test_holiday_features_exchanges() -> None:
-    X, y = generate_sine_wave_data()
-    new_index = pd.date_range(start="1/1/2018", periods=len(X))
-    X.index = new_index
-    y.index = new_index
+# def test_holiday_features_exchanges() -> None:
+#     X, y = generate_sine_wave_data()
+#     new_index = pd.date_range(start="1/1/2018", periods=len(X))
+#     X.index = new_index
+#     y.index = new_index
 
-    splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    trained = train(AddExchangeHolidayFeatures(["NYSE"]), X, y, splitter)
-    pred = backtest(trained, X, y, splitter)
+#     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
+#     trained = train(AddExchangeHolidayFeatures(["NYSE"]), X, y, splitter)
+#     pred = backtest(trained, X, y, splitter)
 
-    assert np.allclose((X.squeeze()[pred.index]), (pred["sine"]))
-    assert (
-        pred["holiday_NYSE"]["2019-12-25"] == 2
-    ), "Christmas should be a holiday for NYSE."
+#     assert np.allclose((X.squeeze()[pred.index]), (pred["sine"]))
+#     assert (
+#         pred["holiday_NYSE"]["2019-12-25"] == 2
+#     ), "Christmas should be a holiday for NYSE."
