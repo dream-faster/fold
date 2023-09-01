@@ -22,6 +22,7 @@ def train_pipeline(
     splits: List[Fold],
     never_update: bool,
     backend: Backend,
+    project_name: str,
     silent: bool,
 ):
     func = ray.remote(func).options(num_cpus=self.limit_threads)
@@ -36,6 +37,7 @@ def train_pipeline(
             split,
             never_update,
             backend,
+            project_name,
         )
         for split in splits
     ]

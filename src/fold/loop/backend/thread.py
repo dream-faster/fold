@@ -22,10 +22,13 @@ def train_pipeline(
     splits: List[Fold],
     never_update: bool,
     backend: Backend,
+    project_name: str,
     silent: bool,
 ):
     return thread_map(
-        lambda split: func(X, y, artifact, pipeline, split, never_update, backend),
+        lambda split: func(
+            X, y, artifact, pipeline, split, never_update, backend, project_name
+        ),
         splits,
         disable=silent,
     )
