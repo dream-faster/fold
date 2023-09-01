@@ -547,7 +547,10 @@ def _backtest_on_window(
     X_test, y_test, artifact_test = _get_X_y_based_on_events(
         X_test, y_test, artifact_test
     )
-    assert Artifact.get_events(artifact_test).dropna().shape[0] == y_test.shape[0]
+    artifacts_to_check = Artifact.get_events(artifact_test)
+    if artifacts_to_check is None:
+        artifacts_to_check = artifact_test
+    assert artifacts_to_check.dropna().shape[0] == y_test.shape[0]
 
     results, artifacts = recursively_transform(
         X=X_test,
