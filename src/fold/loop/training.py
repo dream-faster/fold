@@ -149,6 +149,7 @@ def train(
                 splits[-1:],
                 True,
                 backend,
+                f"{pipelinecard.name}-Pipeline" or "Pipeline",
                 silent,
             )
         )
@@ -185,6 +186,7 @@ def train(
                 splits[1:],
                 False,
                 backend,
+                f"{pipelinecard.name}-Pipeline" or "Pipeline",
                 silent,
             )
         )
@@ -209,6 +211,7 @@ def train(
                 splits,
                 True,
                 backend,
+                f"{pipelinecard.name}-Pipeline" or "Pipeline",
                 silent,
             )
         )
