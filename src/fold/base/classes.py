@@ -60,6 +60,7 @@ class Composite(Block, Clonable, ABC):
 
     @dataclass
     class Metadata:
+        project_name: str
         fold_index: int
         target: str
 
@@ -294,10 +295,12 @@ class PipelineCard:
     pipeline: Pipeline
     event_labeler: Optional[Labeler] = None
     event_filter: Optional[EventFilter] = None
+    name: Optional[str] = None
 
 
 @dataclass
 class TrainedPipelineCard:
+    name: Optional[str]
     preprocessing: TrainedPipelines
     pipeline: TrainedPipelines
     event_labeler: Optional[Labeler]
