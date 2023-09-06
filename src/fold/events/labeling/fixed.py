@@ -64,12 +64,15 @@ class FixedForwardHorizon(Labeler):
         )
         cutoff_point = y.index[-self.time_horizon]
         event_start_times = event_start_times[event_start_times < cutoff_point]
-        event_candidates = forward_rolling_aggregated[event_start_times]
+        forward_rolling_aggregated = forward_rolling_aggregated[
+            event_start_times
+        ]  # filter based on events
 
-        labels = self.labeling_strategy.label(event_candidates)
-        raw_returns = forward_rolling_aggregated[event_start_times]
-        sample_weights = self.weighting_strategy.calculate(raw_returns)
-        test_sample_weights = self.weighting_strategy_test.calculate(raw_returns)
+        labels = self.labeling_strategy.label(forward_rolling_aggregated)
+        sample_weights = self.weighting_strategy.calculate(forward_rolling_aggregated)
+        test_sample_weights = self.weighting_strategy_test.calculate(
+            forward_rolling_aggregated
+        )
 
         if self.flip_sign:
             if len(labels.dropna().unique()) == 3:
@@ -86,7 +89,7 @@ class FixedForwardHorizon(Labeler):
             start=event_start_times,
             end=(event_start_times + offset).astype("datetime64[s]"),
             label=labels,
-            raw=raw_returns,
+            raw=forward_rolling_aggregated,
             sample_weights=sample_weights,
             test_sample_weights=test_sample_weights,
         )
