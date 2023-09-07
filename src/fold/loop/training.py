@@ -233,7 +233,7 @@ def train(
         )
 
     trained_pipelines = TrainedPipelineCard(
-        name=pipelinecard.name,
+        name=pipelinecard.name or "",
         preprocessing=[pd.Series(p, index=[0]) for p in trained_preprocessing_pipeline]
         if pipelinecard.preprocessing
         else None,

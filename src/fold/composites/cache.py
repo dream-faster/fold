@@ -51,6 +51,8 @@ class Cache(Composite):
         fit: bool,
     ) -> pd.DataFrame:
         metadata: Composite.Metadata = self.metadata  # type: ignore
+        if metadata.inference is True:
+            return results[0]
         if os.path.exists(self.path) and os.path.exists(
             _result_path(
                 self.path,
@@ -91,6 +93,8 @@ class Cache(Composite):
         fit: bool,
     ) -> pd.DataFrame:
         metadata: Composite.Metadata = self.metadata  # type: ignore
+        if metadata.inference is True:
+            return primary_artifacts[0]
         if os.path.exists(self.path) and os.path.exists(
             _artifacts_path(
                 self.path,
@@ -129,6 +133,8 @@ class Cache(Composite):
 
     def get_children_primary(self) -> Pipelines:
         if self.metadata is None:
+            return self.pipeline
+        if self.metadata.inference is True:
             return self.pipeline
         if os.path.exists(self.path) and os.path.exists(
             _result_path(
