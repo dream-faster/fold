@@ -63,6 +63,7 @@ class Composite(Block, Clonable, ABC):
         project_name: str
         fold_index: int
         target: str
+        inference: bool
 
     properties: Properties
     metadata: Optional[Metadata]
@@ -300,7 +301,7 @@ class PipelineCard:
 
 @dataclass
 class TrainedPipelineCard:
-    name: Optional[str]
+    name: str
     preprocessing: TrainedPipelines
     pipeline: TrainedPipelines
     event_labeler: Optional[Labeler]

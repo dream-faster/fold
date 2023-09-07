@@ -1,5 +1,8 @@
 import pandas as pd
 
+from fold.base.classes import Composite
+from fold.loop.utils import _set_metadata
+
 from ..base import (
     Artifact,
     OutOfSamplePredictions,
@@ -23,7 +26,16 @@ def infer(
     If X is None it will predict one step ahead.
     """
     assert isinstance(X, pd.DataFrame), "X must be a pandas DataFrame."
-    last_pipeline = (get_last_trained_pipeline(pipelinecard.pipeline),)
+    last_pipeline = get_last_trained_pipeline(pipelinecard.pipeline)
+    last_pipeline = _set_metadata(
+        last_pipeline,
+        Composite.Metadata(
+            project_name=pipelinecard.name,
+            fold_index=0,
+            target="target",
+            inference=True,
+        ),
+    )
 
     maximum_memory_size = max(
         get_maximum_memory_size(pipelinecard.preprocessing),

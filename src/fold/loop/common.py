@@ -601,7 +601,10 @@ def _train_on_window(
     pipeline = _set_metadata(
         pipeline,
         Composite.Metadata(
-            project_name=project_name, fold_index=split.order, target=y.name
+            project_name=project_name,
+            fold_index=split.order,
+            target=y.name,
+            inference=False,
         ),
     )
     trained_pipeline, X_train, artifact_train = recursively_transform(
