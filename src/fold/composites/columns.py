@@ -269,9 +269,12 @@ class SkipNA(Composite):
 def average_results(
     results: List[pd.DataFrame],
     name: str,
+    reconstruct_predictions_from_probabilities: bool = False,
 ) -> pd.DataFrame:
     if all_have_probabilities(results):
-        return _average_results_classification(results, name)
+        return _average_results_classification(
+            results, name, reconstruct_predictions_from_probabilities
+        )
     else:
         return _average_results_regression(results, name)
 
@@ -300,25 +303,11 @@ def _average_results_regression(
 def _average_results_classification(
     results: List[pd.DataFrame],
     name: str,
+    reconstruct_predictions_from_probabilities: bool = False,
 ) -> pd.DataFrame:
     columns = results[0].columns.to_list()
     probabilities_columns = [col for col in columns if col.startswith("probabilities_")]
     classes = unique([line.split("_")[-1] for line in probabilities_columns])
-
-    predictions = (
-        pd.concat(
-            [
-                df[
-                    [col for col in df.columns if col.startswith("predictions_")]
-                ].squeeze()
-                for df in results
-            ],
-            axis="columns",
-            copy=False,
-        )
-        .mean(axis="columns")
-        .rename(f"predictions_{name}")
-    )
 
     probabilities = [
         (
@@ -341,4 +330,24 @@ def _average_results_classification(
         )
         for selected_class in classes
     ]
+    if reconstruct_predictions_from_probabilities:
+        above_05 = probabilities[1] >= 0.5
+        predictions = above_05.astype(int).rename(f"predictions_{name}")
+
+    else:
+        predictions = (
+            pd.concat(
+                [
+                    df[
+                        [col for col in df.columns if col.startswith("predictions_")]
+                    ].squeeze()
+                    for df in results
+                ],
+                axis="columns",
+                copy=False,
+            )
+            .mean(axis="columns")
+            .rename(f"predictions_{name}")
+        )
+
     return pd.concat([predictions] + probabilities, copy=True, axis="columns")
