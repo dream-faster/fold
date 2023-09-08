@@ -44,16 +44,26 @@ class Ensemble(Composite):
         Freq: T, Name: predictions_Ensemble-DummyRegressor-0.1-DummyRegressor-0.9, dtype: float64
     """
 
-    def __init__(self, pipelines: Pipelines, name: Optional[str] = None) -> None:
+    def __init__(
+        self,
+        pipelines: Pipelines,
+        reconstruct_predictions_from_probabilities: bool = False,
+        name: Optional[str] = None,
+    ) -> None:
         self.pipelines = pipelines
         self.name = name or "Ensemble-" + get_concatenated_names(pipelines)
+        self.reconstruct_predictions_from_probabilities = (
+            reconstruct_predictions_from_probabilities
+        )
         self.properties = Composite.Properties()
         self.metadata = None
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series], fit: bool
     ) -> pd.DataFrame:
-        return average_results(results, self.name)
+        return average_results(
+            results, self.name, self.reconstruct_predictions_from_probabilities
+        )
 
     def get_children_primary(self) -> Pipelines:
         return self.pipelines
@@ -61,6 +71,7 @@ class Ensemble(Composite):
     def clone(self, clone_children: Callable) -> Ensemble:
         clone = Ensemble(
             pipelines=clone_children(self.pipelines),
+            reconstruct_predictions_from_probabilities=self.reconstruct_predictions_from_probabilities,
         )
         clone.properties = self.properties
         clone.name = self.name
