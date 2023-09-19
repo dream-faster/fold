@@ -91,8 +91,10 @@ def is_X_available(X: pd.DataFrame) -> bool:
 def get_column_names(column: str, X: pd.DataFrame) -> pd.Index:
     if column == "all":
         return X.columns
-    if "*" in column:
+    if column.startswith("*"):
         return [col for col in X.columns if col.startswith(column.split("*")[0])]
+    if column.endswith("*"):
+        return [col for col in X.columns if col.endswith(column.split("*")[1])]
     else:
         return [column]
 
