@@ -104,7 +104,8 @@ class WrapXGB(Model, Tunable):
                 data=self.model.predict_proba(X),
                 index=X.index,
                 columns=[
-                    f"probabilities_{self.name}_{item}" for item in self.model.classes_
+                    f"probabilities_{self.name}_{float(item)}"
+                    for item in self.model.classes_
                 ],
             )
             return pd.concat([predictions, probabilities], axis="columns")

@@ -7,6 +7,8 @@ from typing import Callable, List, Optional
 
 import pandas as pd
 
+from fold.utils.checks import get_probabilities_columns, has_probabilities
+
 from ..base import Composite, Pipelines, get_concatenated_names
 from .columns import average_results
 
@@ -48,6 +50,7 @@ class Ensemble(Composite):
         self,
         pipelines: Pipelines,
         reconstruct_predictions_from_probabilities: bool = False,
+        verbose: bool = False,
         name: Optional[str] = None,
     ) -> None:
         self.pipelines = pipelines
@@ -55,12 +58,21 @@ class Ensemble(Composite):
         self.reconstruct_predictions_from_probabilities = (
             reconstruct_predictions_from_probabilities
         )
+        self.verbose = verbose
         self.properties = Composite.Properties()
         self.metadata = None
 
     def postprocess_result_primary(
         self, results: List[pd.DataFrame], y: Optional[pd.Series], fit: bool
     ) -> pd.DataFrame:
+        if self.verbose and all([has_probabilities(result) for result in results]):
+            probs = pd.concat(
+                [get_probabilities_columns(result).iloc[:, 0] for result in results],
+                axis="columns",
+            )
+            print(
+                f"Ensemble - Avg correlation of probabilities: {probs.corr().mean().mean()}"
+            )
         return average_results(
             results, self.name, self.reconstruct_predictions_from_probabilities
         )
@@ -72,6 +84,7 @@ class Ensemble(Composite):
         clone = Ensemble(
             pipelines=clone_children(self.pipelines),
             reconstruct_predictions_from_probabilities=self.reconstruct_predictions_from_probabilities,
+            verbose=self.verbose,
         )
         clone.properties = self.properties
         clone.name = self.name
