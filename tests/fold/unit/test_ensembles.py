@@ -34,27 +34,26 @@ def test_ensemble_classification() -> None:
     X, y = generate_zeros_and_ones(1000)
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    pipeline = [
-        Ensemble(
-            [
-                DummyClassifier(
-                    predicted_value=1,
-                    all_classes=[1, 0],
-                    predicted_probabilities=[1.0, 0.0],
-                ),
-                DummyClassifier(
-                    predicted_value=1,
-                    all_classes=[1, 0],
-                    predicted_probabilities=[0.5, 0.5],
-                ),
-                DummyClassifier(
-                    predicted_value=0,
-                    all_classes=[1, 0],
-                    predicted_probabilities=[0.0, 1.0],
-                ),
-            ]
-        ),
-    ]
+    pipeline = Ensemble(
+        [
+            DummyClassifier(
+                predicted_value=1,
+                all_classes=[1, 0],
+                predicted_probabilities=[1.0, 0.0],
+            ),
+            DummyClassifier(
+                predicted_value=1,
+                all_classes=[1, 0],
+                predicted_probabilities=[0.5, 0.5],
+            ),
+            DummyClassifier(
+                predicted_value=0,
+                all_classes=[1, 0],
+                predicted_probabilities=[0.0, 1.0],
+            ),
+        ],
+        verbose=True,
+    )
 
     trained_pipelines = train(pipeline, X, y, splitter)
     pred = backtest(trained_pipelines, X, y, splitter)

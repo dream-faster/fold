@@ -8,16 +8,10 @@ from ..utils.checks import (
     get_prediction_column,
     get_probabilities_columns,
 )
-from ..utils.enums import ParsableEnum
 from .classes import Artifact, OutOfSamplePredictions
 
 if TYPE_CHECKING and importlib.util.find_spec("krisi") is not None:
     from krisi import ScoreCard
-
-
-class ScoreOn(ParsableEnum):
-    predictions = "predictions"
-    probabilities = "probabilities"
 
 
 def score_results(
