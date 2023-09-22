@@ -88,20 +88,23 @@ def is_X_available(X: pd.DataFrame) -> bool:
     return not (X.shape[1] == 1 and X.columns[0] == "X_not_available")
 
 
-def get_column_names(column: str, X: pd.DataFrame) -> pd.Index:
-    if column == "all":
+def get_column_names(column_pattern: str, X: pd.DataFrame) -> pd.Index:
+    if column_pattern == "all":
         return X.columns
-    if column.startswith("*"):
-        return [col for col in X.columns if col.startswith(column.split("*")[0])]
-    if column.endswith("*"):
-        return [col for col in X.columns if col.endswith(column.split("*")[1])]
+    if column_pattern.endswith("*"):
+        to_match = column_pattern.split("*")[0]
+        return [col for col in X.columns if col.startswith(to_match)]
+    if column_pattern.startswith("*"):
+        to_match = column_pattern.split("*")[1]
+        return [col for col in X.columns if col.endswith(to_match)]
     else:
-        return [column]
+        return [column_pattern]
 
 
 def get_list_column_names(
     columns: List[str], X: pd.DataFrame
 ) -> Union[List[str], pd.Index]:
+    assert isinstance(columns, list)
     if len(columns) == 1:
         return get_column_names(columns[0], X)
     else:

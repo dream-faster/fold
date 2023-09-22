@@ -14,6 +14,7 @@ from fold.transformations.dev import Lookahead, Test
 from fold.transformations.difference import Difference
 from fold.transformations.math import TakeLog
 from fold.transformations.sklearn import WrapSKLearnFeatureSelector
+from fold.utils.checks import get_column_names
 from fold.utils.dataframe import apply_function_batched, to_series
 from fold.utils.tests import generate_zeros_and_ones
 from fold.utils.trim import (
@@ -247,3 +248,35 @@ def test_apply_function_batched():
     assert apply_function_batched(df, np.log, 2).equals(np.log(df))
     assert apply_function_batched(df, np.log, 3).equals(np.log(df))
     assert apply_function_batched(df, np.log, 4).equals(np.log(df))
+
+
+@pytest.fixture
+def sample_dataframe():
+    return pd.DataFrame(
+        {"col1": [1, 2, 3], "nocol2": ["a", "b", "c"], "nocol3": [True, False, True]}
+    )
+
+
+def test_get_column_names_all(sample_dataframe):
+    expected = ["col1", "nocol2", "nocol3"]
+    assert get_column_names("all", sample_dataframe).to_list() == expected
+
+
+def test_get_column_names_exact_match(sample_dataframe):
+    expected = ["nocol2"]
+    assert get_column_names("nocol2", sample_dataframe) == expected
+
+
+def test_get_column_names_prefix_match(sample_dataframe):
+    expected = ["col1"]
+    assert get_column_names("col*", sample_dataframe) == expected
+
+
+def test_get_column_names_suffix_match(sample_dataframe):
+    expected = ["nocol3"]
+    assert get_column_names("*3", sample_dataframe) == expected
+
+
+def test_get_column_names_no_match(sample_dataframe):
+    expected = ["nonexistent_column"]
+    assert get_column_names("nonexistent_column", sample_dataframe) == expected
