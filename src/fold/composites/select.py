@@ -7,7 +7,7 @@ from typing import Callable, List, Optional, Union
 
 import pandas as pd
 
-from ..base import Composite, Pipelines, Transformation, Tunable
+from ..base import Artifact, Composite, Pipelines, Transformation, Tunable
 from ..utils.list import wrap_in_list
 from .utils import _check_for_duplicate_names
 
@@ -43,7 +43,11 @@ class SelectBest(Composite, Tunable):
         return instance
 
     def postprocess_result_primary(
-        self, results: List[pd.DataFrame], y: Optional[pd.Series], fit: bool
+        self,
+        results: List[pd.DataFrame],
+        y: Optional[pd.Series],
+        original_artifact: Artifact,
+        fit: bool,
     ) -> pd.DataFrame:
         assert self.selected_ is not None, ValueError(
             "SelectBest only works within an `Optimize` class."

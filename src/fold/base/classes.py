@@ -81,6 +81,7 @@ class Composite(Block, Clonable, ABC):
         self,
         results: List[pd.DataFrame],
         y: Optional[pd.Series],
+        original_artifact: Artifact,
         fit: bool,
     ) -> pd.DataFrame:
         raise NotImplementedError

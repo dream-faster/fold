@@ -232,8 +232,9 @@ def _process_composite(
 
     original_results_primary = results_primary
     results_primary = composite.postprocess_result_primary(
-        results_primary,
-        y_primary[0],
+        results=results_primary,
+        y=y_primary[0],
+        original_artifact=artifacts,
         fit=stage.is_fit_or_update(),
     )
     artifacts_primary = composite.postprocess_artifacts_primary(

@@ -48,6 +48,7 @@ class Cache(Composite):
         self,
         results: List[pd.DataFrame],
         y: Optional[pd.Series],
+        original_artifact: Artifact,
         fit: bool,
     ) -> pd.DataFrame:
         metadata: Composite.Metadata = self.metadata  # type: ignore

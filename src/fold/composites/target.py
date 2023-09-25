@@ -107,7 +107,11 @@ class TransformTarget(Composite):
         return X, to_series(results_primary), artifact
 
     def postprocess_result_primary(
-        self, results: List[pd.DataFrame], y: Optional[pd.Series], fit: bool
+        self,
+        results: List[pd.DataFrame],
+        y: Optional[pd.Series],
+        original_artifact: Artifact,
+        fit: bool,
     ) -> pd.DataFrame:
         return results[0]
 
