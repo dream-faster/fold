@@ -72,6 +72,7 @@ class EnsembleEachColumn(Composite):
         self,
         results: List[pd.DataFrame],
         y: Optional[pd.Series],
+        original_artifact: Artifact,
         fit: bool,
     ) -> pd.DataFrame:
         return average_results(results, self.name)
@@ -161,6 +162,7 @@ class TransformEachColumn(Composite):
         self,
         results: List[pd.DataFrame],
         y: Optional[pd.Series],
+        original_artifact: Artifact,
         fit: bool,
     ) -> pd.DataFrame:
         return pd.concat(results, copy=False, axis="columns")
@@ -237,6 +239,7 @@ class SkipNA(Composite):
         self,
         results: List[pd.DataFrame],
         y: Optional[pd.Series],
+        original_artifact: Artifact,
         fit: bool,
     ) -> pd.DataFrame:
         return results[0].reindex(self.original_index)

@@ -9,7 +9,7 @@ import pandas as pd
 
 from fold.utils.checks import get_probabilities_columns, has_probabilities
 
-from ..base import Composite, Pipelines, get_concatenated_names
+from ..base import Artifact, Composite, Pipelines, get_concatenated_names
 from .columns import average_results
 
 
@@ -63,7 +63,11 @@ class Ensemble(Composite):
         self.metadata = None
 
     def postprocess_result_primary(
-        self, results: List[pd.DataFrame], y: Optional[pd.Series], fit: bool
+        self,
+        results: List[pd.DataFrame],
+        y: Optional[pd.Series],
+        original_artifact: Artifact,
+        fit: bool,
     ) -> pd.DataFrame:
         if self.verbose and all([has_probabilities(result) for result in results]):
             probs = pd.concat(

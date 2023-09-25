@@ -74,6 +74,7 @@ class Concat(Composite):
         self,
         results: List[pd.DataFrame],
         y: Optional[pd.Series],
+        original_artifact: Artifact,
         fit: bool,
     ) -> pd.DataFrame:
         if self.custom_merge_logic is not None:
@@ -132,7 +133,11 @@ class Sequence(Composite):
         self.metadata = None
 
     def postprocess_result_primary(
-        self, results: List[pd.DataFrame], y: Optional[pd.Series], fit: bool
+        self,
+        results: List[pd.DataFrame],
+        y: Optional[pd.Series],
+        original_artifact: Artifact,
+        fit: bool,
     ) -> pd.DataFrame:
         return results[0]
 
