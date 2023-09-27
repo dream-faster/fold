@@ -67,7 +67,7 @@ class DropColumns(Transformation, Tunable):
         self.properties = Transformation.Properties(requires_X=True)
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
-        return X.drop(columns=get_list_column_names(self.columns, X))
+        return X.drop(columns=get_list_column_names(self.columns, X), errors="ignore")
 
     fit = fit_noop
     update = fit
