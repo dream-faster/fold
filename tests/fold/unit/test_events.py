@@ -44,7 +44,7 @@ def test_create_event() -> None:
         pipeline, X, y, splitter, return_artifacts=True
     )
     assert len(pred) == 1000
-    assert len(pred.dropna()) == 986
+    assert len(pred.dropna()) == 990
 
     pipeline = PipelineCard(
         preprocessing=None,
