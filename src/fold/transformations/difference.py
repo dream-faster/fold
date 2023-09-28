@@ -187,7 +187,7 @@ class TakeReturns(Transformation, Tunable):
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         def operation(df):
             if self.log_returns:
-                return take_log(df).diff()
+                return take_log(df / df.shift(1))
             else:
                 return df.pct_change()
 
