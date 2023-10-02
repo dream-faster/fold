@@ -101,6 +101,8 @@ class Test(InvertibleTransformation):
         sample_weights: Optional[pd.Series] = None,
     ) -> Optional[Artifact]:
         self.no_of_calls_fit += 1
+        self.input_columns_fit = X.columns.to_list()
+
         argspec = getfullargspec(self.fit_func)
         if len(argspec.args) == 1:
             self.fit_func(X)
@@ -121,8 +123,11 @@ class Test(InvertibleTransformation):
         sample_weights: Optional[pd.Series] = None,
     ) -> Optional[Artifact]:
         self.no_of_calls_update += 1
+        self.input_columns_update = X.columns.to_list()
+
         if self.update_func is None:
             return
+
         argspec = getfullargspec(self.update_func)
         if len(argspec.args) == 1:
             self.update_func(X)
@@ -137,6 +142,8 @@ class Test(InvertibleTransformation):
             )
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
+        self.input_columns_transform = X.columns.to_list()
+
         if in_sample:
             self.no_of_calls_transform_insample += 1
         else:
