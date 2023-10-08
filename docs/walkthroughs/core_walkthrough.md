@@ -748,7 +748,7 @@ lregression = [
 
 ```python
 from xgboost import XGBRegressor
-from fold.models.wrappers.xgboost import WrapXGB
+from fold.models.wrappers.gbd import WrapXGB
 
 xgboost = [
     AddLagsX(('all',range(1,3))),
