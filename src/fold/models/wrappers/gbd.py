@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import abstractmethod
 from math import sqrt
 from typing import Any, Callable, Optional, Type, Union
 
@@ -11,7 +12,7 @@ from fold.models.base import Model
 from .types import ClassWeightingStrategy
 
 
-class WrapXGB(Model, Tunable):
+class WrapGBM(Model, Tunable):
     def __init__(
         self,
         model_class: Type,
@@ -20,29 +21,25 @@ class WrapXGB(Model, Tunable):
         set_class_weights: Union[
             ClassWeightingStrategy, str
         ] = ClassWeightingStrategy.none,
-        name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
+        name: Optional[str] = None,
     ) -> None:
         self.init_args = init_args
         self.model_class = model_class
-        self.set_class_weights = ClassWeightingStrategy.from_str(set_class_weights)
 
         self.model = model_class(**init_args) if instance is None else instance
-        from xgboost import XGBClassifier, XGBRegressor, XGBRFClassifier, XGBRFRegressor
+        self.set_class_weights = ClassWeightingStrategy.from_str(set_class_weights)
 
-        if isinstance(self.model, XGBRegressor) or isinstance(
-            self.model, XGBRFRegressor
-        ):
-            model_type = Model.Properties.ModelType.regressor
-        elif isinstance(self.model, XGBClassifier) or isinstance(
-            self.model, XGBRFClassifier
-        ):
-            model_type = Model.Properties.ModelType.classifier
-        else:
-            raise ValueError(f"Unknown model type: {type(self.model)}")
-        self.properties = Model.Properties(requires_X=True, model_type=model_type)
+        self.properties = Model.Properties(
+            requires_X=True, model_type=self.get_model_type(self.model)
+        )
+
         self.name = name or self.model.__class__.__name__
         self.params_to_try = params_to_try
+
+    @abstractmethod
+    def get_model_type(self, model) -> Model.Properties.ModelType:
+        raise NotImplementedError
 
     @classmethod
     def from_model(
@@ -53,8 +50,8 @@ class WrapXGB(Model, Tunable):
         ] = ClassWeightingStrategy.none,
         name: Optional[str] = None,
         params_to_try: Optional[dict] = None,
-    ) -> WrapXGB:
-        return WrapXGB(
+    ):
+        return cls(
             model.__class__,
             init_args=model.get_params(),
             instance=model,
@@ -88,12 +85,7 @@ class WrapXGB(Model, Tunable):
     def update(
         self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
     ) -> None:
-        self.model.fit(
-            X=X,
-            y=y,
-            xgb_model=self.model.get_booster(),
-            sample_weight=sample_weights,
-        )
+        raise NotImplementedError
 
     def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
         predictions = pd.Series(self.model.predict(X), index=X.index).rename(
@@ -125,9 +117,57 @@ class WrapXGB(Model, Tunable):
     ) -> Tunable:
         if "set_class_weights" in parameters:
             set_class_weights = parameters.pop("set_class_weights")
-        return WrapXGB(
-            model_class=self.model_class,
+        return self.__class__(
+            self.model_class,
             init_args=parameters,
             set_class_weights=set_class_weights,
             name=self.name,
+        )
+
+
+class WrapLGBM(WrapGBM):
+    def get_model_type(self, model) -> Model.Properties.ModelType:
+        from lightgbm import LGBMClassifier, LGBMRegressor
+
+        if isinstance(model, LGBMRegressor):
+            return Model.Properties.ModelType.regressor
+        elif isinstance(model, LGBMClassifier):
+            return Model.Properties.ModelType.classifier
+        else:
+            raise ValueError(f"Unknown model type: {type(model)}")
+
+    def update(
+        self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
+    ) -> None:
+        self.model.fit(
+            X,
+            y,
+            sample_weight=sample_weights,
+            init_model=self.model.get_booster(),
+        )
+
+
+class WrapXGB(WrapGBM):
+    def get_model_type(self, model) -> Model.Properties.ModelType:
+        from xgboost import XGBClassifier, XGBRegressor, XGBRFClassifier, XGBRFRegressor
+
+        if isinstance(self.model, XGBRegressor) or isinstance(
+            self.model, XGBRFRegressor
+        ):
+            return Model.Properties.ModelType.regressor
+        elif isinstance(self.model, XGBClassifier) or isinstance(
+            self.model, XGBRFClassifier
+        ):
+            return Model.Properties.ModelType.classifier
+        else:
+            raise ValueError(f"Unknown model type: {type(self.model)}")
+
+    def update(
+        self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
+    ) -> None:
+        self.model.fit(
+            X=X,
+            y=y,
+            xgb_model=self.model.get_booster(),
+            sample_weight=sample_weights,
         )
