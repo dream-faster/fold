@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 from fold.loop import train_backtest
-from fold.models.wrappers.lightgbm import WrapLGBM
+from fold.models.wrappers.gbd import WrapLGBM
 from fold.splitters import ExpandingWindowSplitter, SingleWindowSplitter
 from fold.utils.tests import (
     generate_monotonous_data,

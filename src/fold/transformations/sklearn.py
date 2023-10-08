@@ -52,7 +52,7 @@ class WrapSKLearnTransformation(Transformation, Tunable):
     ) -> WrapSKLearnTransformation:
         return cls(
             transformation_class=model.__class__,
-            init_args=model.get_params(),
+            init_args=model.get_params(deep=False),
             output_dtype=output_dtype,
             name=name,
             params_to_try=params_to_try,
@@ -112,7 +112,7 @@ class WrapSKLearnTransformation(Transformation, Tunable):
             return pd.DataFrame(result, index=X.index, columns=columns)
 
     def get_params(self) -> dict:
-        return self.transformation.get_params()
+        return self.transformation.get_params(deep=False)
 
     def clone_with_params(
         self, parameters: dict, clone_children: Optional[Callable] = None
@@ -162,7 +162,7 @@ class WrapSKLearnFeatureSelector(FeatureSelector, Tunable):
     ) -> WrapSKLearnFeatureSelector:
         return cls(
             transformation_class=model.__class__,
-            init_args=model.get_params(),
+            init_args=model.get_params(deep=False),
             name=name,
             params_to_try=params_to_try,
         )
@@ -186,7 +186,7 @@ class WrapSKLearnFeatureSelector(FeatureSelector, Tunable):
         return X[self.selected_features]
 
     def get_params(self) -> dict:
-        return self.transformation.get_params()
+        return self.transformation.get_params(deep=False)
 
     def clone_with_params(
         self, parameters: dict, clone_children: Optional[Callable] = None

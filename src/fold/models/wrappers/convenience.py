@@ -1,7 +1,7 @@
 def _wrap_xgboost(model):
     from xgboost import XGBClassifier, XGBRegressor, XGBRFClassifier, XGBRFRegressor
 
-    from .xgboost import WrapXGB
+    from .gbd import WrapXGB
 
     if (
         isinstance(model, XGBRegressor)
@@ -17,7 +17,7 @@ def _wrap_xgboost(model):
 def _wrap_lightgbm(model):
     from lightgbm import LGBMClassifier, LGBMRegressor
 
-    from .lightgbm import WrapLGBM
+    from .gbd import WrapLGBM
 
     if isinstance(model, LGBMClassifier) or isinstance(model, LGBMRegressor):
         return WrapLGBM.from_model(model)
