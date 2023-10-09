@@ -1,6 +1,3 @@
-import numpy as np
-import pandas as pd
-
 from fold.loop import train_backtest
 from fold.models.wrappers.gbd import WrapXGB
 from fold.splitters import ExpandingWindowSplitter, SingleWindowSplitter
@@ -17,13 +14,10 @@ def test_xgboost_regression() -> None:
     from xgboost import XGBRegressor
 
     X, y = generate_sine_wave_data()
-    sample_weights = pd.Series(np.ones(len(y)), index=y.index)
 
     splitter = ExpandingWindowSplitter(initial_train_window=500, step=100)
     transformations = WrapXGB.from_model(XGBRegressor())
-    pred, _ = train_backtest(
-        transformations, X, y, splitter, sample_weights=sample_weights
-    )
+    pred, _ = train_backtest(transformations, X, y, splitter)
     assert (y.squeeze()[pred.index] - pred.squeeze()).abs().sum() < 20
     tuneability_test(
         WrapXGB.from_model(XGBRegressor(n_estimators=1)),
@@ -36,13 +30,10 @@ def test_xgboost_classification() -> None:
     from xgboost import XGBClassifier
 
     X, y = generate_zeros_and_ones()
-    sample_weights = pd.Series(np.ones(len(y)), index=y.index)
 
     splitter = ExpandingWindowSplitter(initial_train_window=500, step=100)
     transformations = WrapXGB.from_model(XGBClassifier())
-    pred, _ = train_backtest(
-        transformations, X, y, splitter, sample_weights=sample_weights
-    )
+    pred, _ = train_backtest(transformations, X, y, splitter)
     assert "predictions_XGBClassifier" in pred.columns
     assert "probabilities_XGBClassifier_0.0" in pred.columns
     assert "probabilities_XGBClassifier_1.0" in pred.columns
@@ -52,13 +43,10 @@ def test_xgboost_classification_skewed() -> None:
     from xgboost import XGBClassifier
 
     X, y = generate_zeros_and_ones_skewed()
-    sample_weights = pd.Series(np.ones(len(y)), index=y.index)
 
     splitter = ExpandingWindowSplitter(initial_train_window=500, step=100)
     transformations = WrapXGB.from_model(XGBClassifier(), set_class_weights="balanced")
-    pred, _ = train_backtest(
-        transformations, X, y, splitter, sample_weights=sample_weights
-    )
+    pred, _ = train_backtest(transformations, X, y, splitter)
     assert "predictions_XGBClassifier" in pred.columns
     assert "probabilities_XGBClassifier_0.0" in pred.columns
     assert "probabilities_XGBClassifier_1.0" in pred.columns
