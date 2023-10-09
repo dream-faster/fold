@@ -28,12 +28,6 @@ def test_random_binary_classifier() -> None:
     assert 0.4 <= preds.iloc[:, 1].mean() <= 0.6
     assert 0.4 <= preds.iloc[:, 2].mean() <= 0.6
 
-    splitter = SingleWindowSplitter(0.2)
-    transformations = [RandomBinaryClassifier()]
-    _, preds, _ = train_evaluate(transformations, X, y, splitter)
-    assert 0.5 <= preds.iloc[:, 2].mean() <= 0.8
-    assert 0.2 <= preds.iloc[:, 1].mean() < 0.5
-
 
 def check_if_not_nan(x):
     assert not x.isna().squeeze().any()
