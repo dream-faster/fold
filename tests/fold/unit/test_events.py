@@ -62,7 +62,7 @@ def test_create_event() -> None:
 
     def assert_sample_weights_exist(X, y, sample_weight):
         assert sample_weight is not None
-        assert sample_weight[0] == 0
+        assert sample_weight[0] == 1.0
 
     test_sample_weights_exist = Test(
         fit_func=assert_sample_weights_exist, transform_func=lambda X: X
