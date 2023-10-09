@@ -13,7 +13,6 @@ from ..splitters import SingleWindowSplitter
 from ..utils.dataframe import ResolutionStrategy, concat_on_columns_with_duplicates
 from ..utils.enums import ParsableEnum
 from ..utils.introspection import get_initialization_parameters
-from ..utils.list import filter_none
 
 T = TypeVar("T", Optional[pd.Series], pd.Series)
 X = pd.DataFrame
@@ -403,12 +402,6 @@ class Artifact(pd.DataFrame):
 
     @staticmethod
     def get_sample_weights(artifact: Artifact) -> Optional[pd.Series]:
-        if "sample_weights" not in artifact.columns:
-            return None
-        return artifact["sample_weights"]
-
-    @staticmethod
-    def get_event_sample_weights(artifact: Artifact) -> Optional[pd.Series]:
         if "event_sample_weights" not in artifact.columns:
             return None
         return artifact["event_sample_weights"]
@@ -442,22 +435,16 @@ class Artifact(pd.DataFrame):
         )
 
     @staticmethod
-    def from_events_sample_weights(
+    def from_events(
         index: pd.Index,
         events: Optional[EventDataFrame],
-        sample_weights: Optional[pd.Series],
     ) -> Artifact:
-        if sample_weights is not None:
-            sample_weights = sample_weights.rename("sample_weights")
         if events is not None and not events.columns[0].startswith("event_"):
             events = events.add_prefix("event_")
-        result = concat_on_columns_with_duplicates(
-            filter_none([events, sample_weights]), strategy=ResolutionStrategy.first
-        )
-        if result.empty:
+        if events is None or events.empty:
             return Artifact.empty(index)  # type: ignore
         else:
-            return result.reindex(index)  # type: ignore
+            return events.reindex(index)  # type: ignore
 
 
 class PredefinedFunction(ParsableEnum):

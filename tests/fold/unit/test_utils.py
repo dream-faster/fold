@@ -44,7 +44,7 @@ def test_trim_initial_nans():
     trimmed_X, trimmed_y, _ = trim_initial_nans(
         X,
         y,
-        Artifact.from_events_sample_weights(y.index, events=None, sample_weights=y),
+        Artifact.from_events(y.index, events=None),
     )
     assert trimmed_X.equals(X.iloc[3:])
     assert trimmed_y.equals(y.iloc[3:])
@@ -60,9 +60,7 @@ def test_trim_initial_nans():
     trimmed_X, trimmed_y, _ = trim_initial_nans(
         X,
         y,
-        Artifact.from_events_sample_weights(
-            index=y.index, events=None, sample_weights=y
-        ),
+        Artifact.from_events(index=y.index, events=None),
     )
     assert trimmed_X.equals(X.iloc[2:])
     assert trimmed_X.equals(X.iloc[2:])
@@ -79,9 +77,7 @@ def test_trim_initial_nans():
     trimmed_X, trimmed_y, _ = trim_initial_nans(
         X,
         y,
-        Artifact.from_events_sample_weights(
-            index=y.index, events=None, sample_weights=y
-        ),
+        Artifact.from_events(index=y.index, events=None),
     )
     assert len(trimmed_X) == 0
     assert len(trimmed_y) == 0

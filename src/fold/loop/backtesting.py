@@ -71,7 +71,7 @@ def backtest(
     if events is not None and events.shape[0] != X.shape[0]:
         logger.warning("The number of events does not match the number of samples.")
         events = events.reindex(X.index)
-    artifact = Artifact.from_events_sample_weights(X.index, events, sample_weights)
+    artifact = Artifact.from_events(X.index, events)
 
     if trained_pipelinecard.preprocessing is not None:
         preprocessed_X, preprocessed_artifacts = _backtest_on_window(

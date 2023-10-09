@@ -14,7 +14,6 @@ def update(
     pipelinecard: TrainedPipelineCard,
     X: Optional[pd.DataFrame],
     y: pd.Series,
-    sample_weights: Optional[pd.Series] = None,
     events: Optional[EventDataFrame] = None,
 ) -> TrainedPipelineCard:
     """
@@ -22,7 +21,7 @@ def update(
     Returns a new set of Transformations, does not mutate the original.
     """
     X, y = check_types(X, y)
-    artifact = Artifact.from_events_sample_weights(X.index, events, sample_weights)
+    artifact = Artifact.from_events(X.index, events)
     X, y, artifact = trim_initial_nans(X, y, artifact)
     backend = get_backend(BackendType.no)
 
