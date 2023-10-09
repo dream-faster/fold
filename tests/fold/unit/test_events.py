@@ -10,7 +10,7 @@ from fold.events.labeling.strategies import NoLabel
 from fold.events.weights import NoWeighting
 from fold.loop.encase import train_backtest
 from fold.splitters import ExpandingWindowSplitter
-from fold.transformations.dev import Identity
+from fold.transformations.dev import Identity, Test
 from fold.transformations.lags import AddLagsY
 from fold.utils.tests import generate_sine_wave_data
 
@@ -60,9 +60,17 @@ def test_create_event() -> None:
     assert len(pred) == 1000
     assert len(pred.dropna()) == 198
 
+    def assert_sample_weights_exist(X, y, sample_weight):
+        assert sample_weight is not None
+        assert sample_weight[0] == 1.0
+
+    test_sample_weights_exist = Test(
+        fit_func=assert_sample_weights_exist, transform_func=lambda X: X
+    )
+
     pipeline = PipelineCard(
         preprocessing=None,
-        pipeline=Identity(),
+        pipeline=[test_sample_weights_exist],
         event_labeler=FixedForwardHorizon(
             10,
             labeling_strategy=BinarizeSign(),
@@ -71,6 +79,7 @@ def test_create_event() -> None:
         ),
         event_filter=EveryNth(5),
     )
+
     pred_flipped, _, flipped_artifacts = train_backtest(
         pipeline, X, y, splitter, return_artifacts=True
     )

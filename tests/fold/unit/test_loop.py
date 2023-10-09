@@ -84,25 +84,6 @@ def test_trim_na() -> None:
     _ = backtest(transformations_over_time, None, y, splitter)
 
 
-def test_sample_weights() -> None:
-    def assert_sample_weights_exist(X, y, sample_weight):
-        assert sample_weight is not None
-        assert sample_weight[0] == 0
-
-    test_sample_weights_exist = Test(
-        fit_func=assert_sample_weights_exist, transform_func=lambda X: X
-    )
-
-    X, y = generate_zeros_and_ones(1000)
-    sample_weights = pd.Series(0, index=y.index)
-
-    splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    transformations = [
-        test_sample_weights_exist,
-    ]
-    _ = train(transformations, X, y, splitter, sample_weights=sample_weights)
-
-
 def test_score_results():
     X, y = generate_zeros_and_ones(length=1000)
 

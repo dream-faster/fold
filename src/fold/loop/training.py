@@ -33,7 +33,6 @@ def train(
     X: Optional[pd.DataFrame],
     y: pd.Series,
     splitter: Splitter,
-    sample_weights: Optional[pd.Series] = None,
     events: Optional[EventDataFrame] = None,
     train_method: Union[TrainMethod, str] = TrainMethod.parallel,
     backend: Union[BackendType, Backend, str] = BackendType.no,
@@ -63,8 +62,6 @@ def train(
         The training methodology, by default `parallel`.
     backend: str, BackendType = BackendType.no
         The library/service to use for parallelization / distributed computing, by default `no`.
-    sample_weights: Optional[pd.Series] = None
-        Weights assigned to each sample/timestamp, that are passed into models that support it, by default None.
     events: EventDataFrame, optional = None
         Events that should be passed into the pipeline, by default None.
     silent: bool = False
@@ -92,7 +89,7 @@ def train(
     if events is not None and events.shape[0] != X.shape[0]:
         logger.warning("The number of events does not match the number of samples.")
         events = events.reindex(X.index)
-    artifact = Artifact.from_events_sample_weights(X.index, events, sample_weights)
+    artifact = Artifact.from_events(X.index, events)
     train_method = TrainMethod.from_str(train_method)
     backend = get_backend(backend)
 

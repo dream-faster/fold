@@ -1,6 +1,3 @@
-import numpy as np
-import pandas as pd
-
 from fold.loop import backtest, train, train_backtest
 from fold.loop.encase import train_evaluate
 from fold.models.baseline import Naive
@@ -23,30 +20,13 @@ def test_random_classifier() -> None:
 
 def test_random_binary_classifier() -> None:
     X, y = generate_zeros_and_ones(10000)
-    sample_weights = pd.Series(np.random.uniform(0, 1, len(y)), index=y.index)
 
     splitter = SingleWindowSplitter(0.2)
     transformations = [RandomBinaryClassifier()]
-    _, preds, _ = train_evaluate(
-        transformations, X, y, splitter, sample_weights=sample_weights
-    )
+    _, preds, _ = train_evaluate(transformations, X, y, splitter)
     assert 0.4 <= preds.iloc[:, 0].mean() <= 0.6
     assert 0.4 <= preds.iloc[:, 1].mean() <= 0.6
     assert 0.4 <= preds.iloc[:, 2].mean() <= 0.6
-
-    pos_noise = np.random.normal(0.65, 0.05, len(y)).clip(0, 1)
-    neg_noise = np.random.normal(0.35, 0.05, len(y)).clip(0, 1)
-    skewed_sample_weights = pd.Series(
-        np.where(y == 1.0, pos_noise, neg_noise), index=y.index
-    )
-
-    splitter = SingleWindowSplitter(0.2)
-    transformations = [RandomBinaryClassifier()]
-    _, preds, _ = train_evaluate(
-        transformations, X, y, splitter, sample_weights=skewed_sample_weights
-    )
-    assert 0.5 <= preds.iloc[:, 2].mean() <= 0.8
-    assert 0.2 <= preds.iloc[:, 1].mean() < 0.5
 
 
 def check_if_not_nan(x):

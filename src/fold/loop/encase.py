@@ -31,7 +31,6 @@ def backtest_score(
     y: pd.Series,
     splitter: Splitter,
     backend: Union[BackendType, Backend, str] = BackendType.no,
-    sample_weights: Optional[pd.Series] = None,
     events: Optional[EventDataFrame] = None,
     silent: bool = False,
     return_artifacts: bool = False,
@@ -56,8 +55,6 @@ def backtest_score(
         Defines how the folds should be constructed.
     backend: str, Backend = Backend.no
         The library/service to use for parallelization / distributed computing, by default `no`.
-    sample_weights: Optional[pd.Series] = None
-        Weights assigned to each sample/timestamp, that are passed into models that support it, by default None.
     events: EventDataFrame, optional = None
         Events that should be passed into the pipeline, by default None.
     silent: bool = False
@@ -81,7 +78,6 @@ def backtest_score(
         y,
         splitter,
         backend=backend,
-        sample_weights=sample_weights,
         events=events,
         silent=silent,
         return_artifacts=True,
@@ -105,7 +101,6 @@ def train_backtest(
     y: pd.Series,
     splitter: Splitter,
     backend: Union[BackendType, Backend, str] = BackendType.no,
-    sample_weights: Optional[pd.Series] = None,
     events: Optional[EventDataFrame] = None,
     train_method: Union[TrainMethod, str] = TrainMethod.parallel,
     silent: bool = False,
@@ -131,8 +126,6 @@ def train_backtest(
         Defines how the folds should be constructed.
     backend: str, Backend = Backend.no
         The library/service to use for parallelization / distributed computing, by default `no`.
-    sample_weights: Optional[pd.Series] = None
-        Weights assigned to each sample/timestamp, that are passed into models that support it, by default None.
     events: EventDataFrame, optional = None
         Events that should be passed into the pipeline, by default None.
     train_method: TrainMethod, str = TrainMethod.parallel
@@ -155,7 +148,6 @@ def train_backtest(
         X,
         y,
         splitter,
-        sample_weights,
         events=events,
         train_method=train_method,
         backend=backend,
@@ -170,7 +162,6 @@ def train_backtest(
         y,
         splitter,
         backend=backend,
-        sample_weights=sample_weights,
         events=events,
         silent=silent,
         return_artifacts=True,
@@ -198,7 +189,6 @@ def train_evaluate(
     y: pd.Series,
     splitter: Splitter,
     backend: Union[BackendType, Backend, str] = BackendType.no,
-    sample_weights: Optional[pd.Series] = None,
     events: Optional[EventDataFrame] = None,
     train_method: Union[TrainMethod, str] = TrainMethod.parallel,
     silent: bool = False,
@@ -247,8 +237,6 @@ def train_evaluate(
         Defines how the folds should be constructed.
     backend: str, Backend = Backend.no
         The library/service to use for parallelization / distributed computing, by default `no`.
-    sample_weights: pd.Series, optional = None
-        Weights assigned to each sample/timestamp, that are passed into models that support it, by default None.
     events: EventDataFrame, optional = None
         Events that should be passed into the pipeline, by default None.
     train_method: TrainMethod, str = TrainMethod.parallel
@@ -272,7 +260,6 @@ def train_evaluate(
         X,
         y,
         splitter,
-        sample_weights,
         events=events,
         train_method=train_method,
         backend=backend,
@@ -287,7 +274,6 @@ def train_evaluate(
         y,
         splitter,
         backend=backend,
-        sample_weights=sample_weights,
         events=events,
         silent=silent,
         return_artifacts=True,
