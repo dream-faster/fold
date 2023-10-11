@@ -2,7 +2,6 @@
 
 
 from ..base import *
-from .cache import *
 from .columns import *
 from .concat import *
 from .ensemble import *
