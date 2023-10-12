@@ -109,7 +109,9 @@ def train(
             split=Fold(0, 0, 0, len(X), 0, 0, 0, len(X)),
             never_update=True,
             backend=backend,
-            project_name=f"{pipelinecard.name}-Preprocessing" or "Preprocessing",
+            project_name=f"{pipelinecard.name}-Preprocessing"
+            if pipelinecard.name is not None
+            else "Preprocessing",
             show_progress=True,
         )
         assert preprocessed_X.shape[0] == X.shape[0]

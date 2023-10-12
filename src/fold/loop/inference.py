@@ -51,7 +51,9 @@ def infer(
         preprocessing = _set_metadata(
             preprocessing,
             Composite.Metadata(
-                project_name=pipelinecard.name,
+                project_name=f"{pipelinecard.name}-Preprocessing"
+                if pipelinecard.name is not None
+                else "Preprocessing",
                 fold_index=0,
                 target="target",
                 inference=True,
