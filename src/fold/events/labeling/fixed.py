@@ -63,6 +63,7 @@ class FixedForwardHorizon(Labeler):
             series=y,
             period=self.time_horizon,
             shift_by=self.shift_by,
+            truncate_end=self.truncate_if_timeframe_is_smaller,
         )
         if self.truncate_if_timeframe_is_smaller:
             cutoff_point = y.index[-self.time_horizon]
