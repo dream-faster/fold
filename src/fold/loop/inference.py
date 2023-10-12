@@ -47,11 +47,21 @@ def infer(
     )
 
     if pipelinecard.preprocessing is not None:
+        preprocessing = get_last_trained_pipeline(pipelinecard.preprocessing)
+        preprocessing = _set_metadata(
+            preprocessing,
+            Composite.Metadata(
+                project_name=pipelinecard.name,
+                fold_index=0,
+                target="target",
+                inference=True,
+            ),
+        )
         _, X, _ = recursively_transform(
             X,
             None,
             Artifact.dummy_events(X.index),
-            get_last_trained_pipeline(pipelinecard.preprocessing),
+            preprocessing,
             stage=Stage.infer,
             backend=get_backend(BackendType.no),
         )
