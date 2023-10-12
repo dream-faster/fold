@@ -1,4 +1,4 @@
-from typing import Callable, Optional
+from typing import Callable, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -33,11 +33,11 @@ class FixedForwardWindowIndexerNoTruncation(BaseIndexer):
     def get_window_bounds(
         self,
         num_values: int = 0,
-        min_periods: int | None = None,
-        center: bool | None = None,
-        closed: str | None = None,
-        step: int | None = None,
-    ) -> tuple[np.ndarray, np.ndarray]:
+        min_periods: Optional[int] = None,
+        center: Optional[bool] = None,
+        closed: Optional[str] = None,
+        step: Optional[int] = None,
+    ) -> Tuple[np.ndarray, np.ndarray]:
         if center:
             raise ValueError("Forward-looking windows can't have center=True")
         if closed is not None:
