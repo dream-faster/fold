@@ -31,6 +31,7 @@ class FixedForwardHorizon(Labeler):
         aggregate_function: Union[
             str, PredefinedFunction, Callable
         ] = PredefinedFunction.sum,
+        truncate_if_timeframe_is_smaller: bool = True,
         flip_sign: bool = False,
         shift_by: Optional[int] = None,
     ):
@@ -51,6 +52,7 @@ class FixedForwardHorizon(Labeler):
         )
         self.flip_sign = flip_sign
         self.shift_by = shift_by
+        self.truncate_if_timeframe_is_smaller = truncate_if_timeframe_is_smaller
 
     def label_events(
         self, event_start_times: pd.DatetimeIndex, y: pd.Series
@@ -62,8 +64,10 @@ class FixedForwardHorizon(Labeler):
             period=self.time_horizon,
             shift_by=self.shift_by,
         )
-        cutoff_point = y.index[-self.time_horizon]
-        event_start_times = event_start_times[event_start_times < cutoff_point]
+        if self.truncate_if_timeframe_is_smaller:
+            cutoff_point = y.index[-self.time_horizon]
+            event_start_times = event_start_times[event_start_times < cutoff_point]
+
         forward_rolling_aggregated = forward_rolling_aggregated[
             event_start_times
         ]  # filter based on events
