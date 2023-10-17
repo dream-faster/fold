@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from math import sqrt
 from typing import Any, Callable, Optional, Type, Union
 
@@ -12,7 +12,9 @@ from fold.models.base import Model
 from .types import ClassWeightingStrategy
 
 
-class WrapGBM(Model, Tunable):
+class WrapGBM(Model, Tunable, ABC):
+    model_type: GBDModelType
+
     def __init__(
         self,
         model_class: Type,
@@ -82,6 +84,25 @@ class WrapGBM(Model, Tunable):
         else:
             self.model.fit(X=X, y=y, sample_weight=sample_weights)
 
+        importances = pd.Series(
+            self.model.feature_importances_,
+            index=self.model.feature_name_
+            if self.model_type == GBDModelType.LGBM
+            else self.model.feature_names_in_,
+        ).sort_values(ascending=False)
+
+        return pd.DataFrame(
+            {
+                f"{self.name}_feature_importances": [
+                    [
+                        importances.index.to_list(),
+                        importances.to_list(),
+                    ]
+                ]
+            },
+            index=X.index[-1:],
+        ).reindex(X.index)
+
     def update(
         self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
     ) -> None:
@@ -125,7 +146,14 @@ class WrapGBM(Model, Tunable):
         )
 
 
+class GBDModelType:
+    LGBM = "LGBM"
+    XGB = "XGB"
+
+
 class WrapLGBM(WrapGBM):
+    model_type = GBDModelType.LGBM
+
     def get_model_type(self, model) -> Model.Properties.ModelType:
         from lightgbm import LGBMClassifier, LGBMRegressor
 
@@ -148,6 +176,8 @@ class WrapLGBM(WrapGBM):
 
 
 class WrapXGB(WrapGBM):
+    model_type = GBDModelType.XGB
+
     def get_model_type(self, model) -> Model.Properties.ModelType:
         from xgboost import XGBClassifier, XGBRegressor, XGBRFClassifier, XGBRFRegressor
 
