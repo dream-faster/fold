@@ -303,7 +303,8 @@ class PipelineCard:
 
 @dataclass
 class TrainedPipelineCard:
-    name: str
+    project_name: str
+    project_hyperparameters: Optional[dict] = None
     preprocessing: TrainedPipelines
     pipeline: TrainedPipelines
     event_labeler: Optional[Labeler]
