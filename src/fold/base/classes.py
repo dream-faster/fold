@@ -304,11 +304,11 @@ class PipelineCard:
 @dataclass
 class TrainedPipelineCard:
     project_name: str
-    project_hyperparameters: Optional[dict] = None
     preprocessing: TrainedPipelines
     pipeline: TrainedPipelines
     event_labeler: Optional[Labeler]
     event_filter: Optional[EventFilter]
+    project_hyperparameters: Optional[dict] = None
 
 
 def fit_noop(
