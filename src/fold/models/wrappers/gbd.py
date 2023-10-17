@@ -82,6 +82,22 @@ class WrapGBM(Model, Tunable):
         else:
             self.model.fit(X=X, y=y, sample_weight=sample_weights)
 
+        importances = pd.Series(
+            self.model.feature_importances_, index=self.model.feature_name_
+        ).sort_values(ascending=False)
+
+        return pd.DataFrame(
+            {
+                f"{self.name}_feature_importances": [
+                    [
+                        importances.index.to_list(),
+                        importances.to_list(),
+                    ]
+                ]
+            },
+            index=X.index[-1:],
+        ).reindex(X.index)
+
     def update(
         self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
     ) -> None:
