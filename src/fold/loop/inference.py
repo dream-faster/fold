@@ -30,8 +30,8 @@ def infer(
     last_pipeline = _set_metadata(
         last_pipeline,
         Composite.Metadata(
-            project_name=pipelinecard.name,
-            project_hyperparameters=None,
+            project_name=pipelinecard.project_name,
+            project_hyperparameters=pipelinecard.project_hyperparameters,
             fold_index=0,
             target="target",
             inference=True,
@@ -52,10 +52,10 @@ def infer(
         preprocessing = _set_metadata(
             preprocessing,
             Composite.Metadata(
-                project_name=f"{pipelinecard.name}-Preprocessing"
-                if pipelinecard.name is not None
+                project_name=f"{pipelinecard.project_name}-Preprocessing"
+                if pipelinecard.project_name is not None
                 else "Preprocessing",
-                project_hyperparameters=None,
+                project_hyperparameters=pipelinecard.project_hyperparameters,
                 fold_index=0,
                 target="target",
                 inference=True,
