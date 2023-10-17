@@ -445,6 +445,7 @@ def __process_candidates(
         artifacts,
         backend=backend,
         project_name=f"HPO-{optimizer.name}",
+        project_hyperparameters=None,
     )
     trained_pipelines = _extract_trained_pipelines(processed_idx, processed_pipelines)
 
@@ -579,6 +580,7 @@ def _train_on_window(
     never_update: bool,
     backend: Backend,
     project_name: str,
+    project_hyperparameters: Optional[dict] = None,
     show_progress: bool = False,
 ) -> Tuple[int, TrainedPipeline, X, Artifact]:
     pd.options.mode.copy_on_write = True
@@ -603,6 +605,7 @@ def _train_on_window(
         pipeline,
         Composite.Metadata(
             project_name=project_name,
+            project_hyperparameters=project_hyperparameters,
             fold_index=split.order,
             target=y.name,
             inference=False,
@@ -632,6 +635,7 @@ def _sequential_train_on_window(
     artifact: Artifact,
     backend: Backend,
     project_name: str,
+    project_hyperparameters: Optional[dict],
 ) -> Tuple[List[int], List[Pipeline], List[X], List[Artifact]]:
     processed_idx = []
     processed_pipelines: List[Pipeline] = []
@@ -653,6 +657,7 @@ def _sequential_train_on_window(
             never_update=False,
             backend=backend,
             project_name=project_name,
+            project_hyperparameters=project_hyperparameters,
         )
         processed_idx.append(processed_id)
         processed_pipelines.append(processed_pipeline)

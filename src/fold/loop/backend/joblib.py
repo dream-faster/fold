@@ -24,6 +24,7 @@ def train_pipeline(
     never_update: bool,
     backend: Backend,
     project_name: str,
+    project_hyperparameters: Optional[dict],
     silent: bool,
 ):
     return Parallel(
@@ -31,7 +32,15 @@ def train_pipeline(
     )(
         [
             delayed(func)(
-                X, y, artifact, pipeline, split, never_update, backend, project_name
+                X,
+                y,
+                artifact,
+                pipeline,
+                split,
+                never_update,
+                backend,
+                project_name,
+                project_hyperparameters,
             )
             for split in splits
         ]
