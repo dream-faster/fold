@@ -44,7 +44,7 @@ def update(
         backend=backend,
     )
     return TrainedPipelineCard(
-        project_name=pipelinecard.name,
+        project_name=pipelinecard.project_name,
         project_hyperparameters=pipelinecard.project_hyperparameters,
         preprocessing=preprocessing_pipelines,
         pipeline=pipeline,
