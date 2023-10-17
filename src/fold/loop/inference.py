@@ -31,6 +31,7 @@ def infer(
         last_pipeline,
         Composite.Metadata(
             project_name=pipelinecard.name,
+            project_hyperparameters=None,
             fold_index=0,
             target="target",
             inference=True,
@@ -54,6 +55,7 @@ def infer(
                 project_name=f"{pipelinecard.name}-Preprocessing"
                 if pipelinecard.name is not None
                 else "Preprocessing",
+                project_hyperparameters=None,
                 fold_index=0,
                 target="target",
                 inference=True,

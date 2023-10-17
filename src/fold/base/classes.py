@@ -60,6 +60,7 @@ class Composite(Block, Clonable, ABC):
     @dataclass
     class Metadata:
         project_name: str
+        project_hyperparameters: Optional[dict]
         fold_index: int
         target: str
         inference: bool
@@ -296,7 +297,8 @@ class PipelineCard:
     pipeline: Pipeline
     event_labeler: Optional[Labeler] = None
     event_filter: Optional[EventFilter] = None
-    name: Optional[str] = None
+    project_name: Optional[str] = None
+    project_hyperparameters: Optional[dict] = None
 
 
 @dataclass

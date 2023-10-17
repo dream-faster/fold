@@ -25,6 +25,7 @@ def train_pipeline(
     never_update: bool,
     backend: Backend,
     project_name: str,
+    project_hyperparameters: Optional[dict],
     silent: bool,
 ):
     if DEBUG_MULTI_PROCESSING:
@@ -32,7 +33,17 @@ def train_pipeline(
 
         pipeline = loads(dumps(pipeline))
     return [
-        func(X, y, artifact, pipeline, split, never_update, backend, project_name)
+        func(
+            X,
+            y,
+            artifact,
+            pipeline,
+            split,
+            never_update,
+            backend,
+            project_name,
+            project_hyperparameters,
+        )
         for split in tqdm_auto(splits, desc="Training", disable=silent)
     ]
 

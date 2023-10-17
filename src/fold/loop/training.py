@@ -109,10 +109,11 @@ def train(
             split=Fold(0, 0, 0, len(X), 0, 0, 0, len(X)),
             never_update=True,
             backend=backend,
-            project_name=f"{pipelinecard.name}-Preprocessing"
-            if pipelinecard.name is not None
+            project_name=f"{pipelinecard.project_name}-Preprocessing"
+            if pipelinecard.project_name is not None
             else "Preprocessing",
             show_progress=True,
+            project_hyperparameters=pipelinecard.project_hyperparameters,
         )
         assert preprocessed_X.shape[0] == X.shape[0]
         assert preprocessed_artifact.shape[0] == artifact.shape[0]
@@ -148,7 +149,8 @@ def train(
                 splits[-1:],
                 True,
                 backend,
-                f"{pipelinecard.name}-Pipeline" or "Pipeline",
+                f"{pipelinecard.project_name}-Pipeline" or "Pipeline",
+                pipelinecard.project_hyperparameters,
                 silent,
             )
         )
@@ -167,7 +169,7 @@ def train(
             split=splits[0],
             never_update=True,
             backend=backend,
-            project_name=f"{pipelinecard.name}-Pipeline" or "Pipeline",
+            project_name=f"{pipelinecard.project_name}-Pipeline" or "Pipeline",
         )
 
         (
@@ -185,7 +187,8 @@ def train(
                 splits[1:],
                 False,
                 backend,
-                f"{pipelinecard.name}-Pipeline" or "Pipeline",
+                f"{pipelinecard.project_name}-Pipeline" or "Pipeline",
+                pipelinecard.project_hyperparameters,
                 silent,
             )
         )
@@ -210,7 +213,8 @@ def train(
                 splits,
                 True,
                 backend,
-                f"{pipelinecard.name}-Pipeline" or "Pipeline",
+                f"{pipelinecard.project_name}-Pipeline" or "Pipeline",
+                pipelinecard.project_hyperparameters,
                 silent,
             )
         )
@@ -228,11 +232,12 @@ def train(
             splits,
             artifact,
             backend,
-            project_name=f"{pipelinecard.name}-Pipeline" or "Pipeline",
+            project_name=f"{pipelinecard.project_name}-Pipeline" or "Pipeline",
+            project_hyperparameters=pipelinecard.project_hyperparameters,
         )
 
     trained_pipelines = TrainedPipelineCard(
-        name=pipelinecard.name or "",
+        name=pipelinecard.project_name or "",
         preprocessing=[pd.Series(p, index=[0]) for p in trained_preprocessing_pipeline]
         if pipelinecard.preprocessing
         else None,
