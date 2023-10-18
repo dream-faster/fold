@@ -309,8 +309,8 @@ class TrainedPipelineCard:
     pipeline: TrainedPipelines
     event_labeler: Optional[Labeler]
     event_filter: Optional[EventFilter]
-    project_hyperparameters: Optional[dict] = None
-    trim_initial_period_after_preprocessing: bool = False
+    project_hyperparameters: Optional[dict]
+    trim_initial_period_after_preprocessing: bool
 
 
 def fit_noop(
