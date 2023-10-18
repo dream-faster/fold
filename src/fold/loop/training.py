@@ -127,6 +127,7 @@ def train(
             X = X.iloc[memory_size:]
             y = y.iloc[memory_size:]
             artifact = artifact.iloc[memory_size:]
+            events = events[X.index[0] :]
 
     if isinstance(splitter, SlidingWindowSplitter):
         assert train_method != TrainMethod.sequential, (
@@ -210,6 +211,7 @@ def train(
         pipeline=_extract_trained_pipelines(processed_idx, processed_pipelines),
         event_labeler=pipelinecard.event_labeler,
         event_filter=pipelinecard.event_filter,
+        trim_initial_period_after_preprocessing=pipelinecard.trim_initial_period_after_preprocessing,
     )
     if return_artifacts is True:
         processed_artifacts = concat_on_index_override_duplicate_rows(
