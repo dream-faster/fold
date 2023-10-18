@@ -196,7 +196,7 @@ class Transformation(Block, ABC):
         memory_size: Optional[
             Union[int, float]
         ] = None  # During the in_sample period, memory will contain all data. During inference, if not `None`, it will inject past window with size of `memory` to update() & transformation().
-        disable_memory: bool = False  # If `True`, memory will not be used at all, even if `memory_size` is not `None`.
+        disable_memory: bool = True  # If `True`, memory will not be used at all, even if `memory_size` is not `None`.
         model_type: Optional[ModelType] = None
         _internal_supports_minibatch_backtesting: bool = False  # internal, during backtesting, calls predict_in_sample() instead of predict()
 
@@ -299,6 +299,7 @@ class PipelineCard:
     event_filter: Optional[EventFilter] = None
     project_name: Optional[str] = None
     project_hyperparameters: Optional[dict] = None
+    trim_initial_period_after_preprocessing: bool = False  # If `True`, the initial period (determined by the memory_size of transformations in the preprocessing pipeline) will be trimmed after preprocessing, but before the pipeline is executed.
 
 
 @dataclass
@@ -308,7 +309,8 @@ class TrainedPipelineCard:
     pipeline: TrainedPipelines
     event_labeler: Optional[Labeler]
     event_filter: Optional[EventFilter]
-    project_hyperparameters: Optional[dict] = None
+    project_hyperparameters: Optional[dict]
+    trim_initial_period_after_preprocessing: bool
 
 
 def fit_noop(

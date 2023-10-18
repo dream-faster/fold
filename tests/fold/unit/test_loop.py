@@ -124,6 +124,15 @@ def test_disable_memory():
         if not in_sample:
             assert (len(x) - memory_size * 2) % 100 == 0
 
+    def modify_pipeline(x, clone_children):
+        if isinstance(x, Test):
+            x.properties.disable_memory = False
+            x.transform_func = assert_len_can_be_divided_by_memory_size_2x
+        if isinstance(x, Clonable):
+            return x.clone(clone_children)
+        else:
+            return x
+
     pipeline = Concat(
         [
             Concat(
@@ -149,7 +158,7 @@ def test_disable_memory():
     )
 
     pred, _ = train_backtest(
-        pipeline,
+        traverse_apply(pipeline, modify_pipeline),
         X,
         y,
         splitter,

@@ -55,6 +55,7 @@ class AddLagsY(Transformation, Tunable):
             requires_X=False,
             mode=Transformation.Properties.Mode.online,
             memory_size=max(self.lags),
+            disable_memory=False,
             _internal_supports_minibatch_backtesting=True,
         )
         self.params_to_try = params_to_try

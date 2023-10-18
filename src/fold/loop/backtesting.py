@@ -7,6 +7,7 @@ from typing import Optional, Tuple, Union
 import pandas as pd
 
 from ..base import Artifact, EventDataFrame, OutOfSamplePredictions, TrainedPipelineCard
+from ..base.utils import get_maximum_memory_size
 from ..events import _create_events
 from ..splitters import Fold, Splitter
 from ..utils.dataframe import concat_on_index
@@ -88,6 +89,13 @@ def backtest(
         assert preprocessed_artifacts.shape[0] == artifact.shape[0]
         X = preprocessed_X
         artifact = preprocessed_artifacts
+
+        if trained_pipelinecard.trim_initial_period_after_preprocessing:
+            memory_size = get_maximum_memory_size(trained_pipelinecard.preprocessing)
+            X = X.iloc[memory_size:]
+            y = y.iloc[memory_size:]
+            artifact = artifact.iloc[memory_size:]
+            events = events[X.index[0] :]
 
     results, artifacts = unpack_list_of_tuples(
         backend.backtest_pipeline(

@@ -27,15 +27,6 @@ class WeightByMaxWithLookahead(WeightingStrategy):
         return "WeightByMaxWithLookahead"
 
 
-class WeightBySumWithLookahead(WeightingStrategy):
-    def calculate(self, series: pd.Series) -> pd.Series:
-        sample_weights = series.abs() / series.sum()
-        return sample_weights.fillna(0.0)
-
-    def __str__(self) -> str:
-        return "WeightBySumWithLookahead"
-
-
 def calculate_rolling_expanding_abs_max(
     series: pd.Series, window_size: Optional[Union[int, float]]
 ) -> pd.Series:

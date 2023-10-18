@@ -17,6 +17,7 @@ class AR(TimeSeriesModel, Tunable):
             mode=TimeSeriesModel.Properties.Mode.online,
             model_type=TimeSeriesModel.Properties.ModelType.regressor,
             memory_size=p,
+            disable_memory=False,
             _internal_supports_minibatch_backtesting=True,
         )
         self.models = [LinearRegression() for _ in range(p)]

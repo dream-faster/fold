@@ -175,6 +175,7 @@ class Lookahead(Transformation):
         requires_X=False,
         mode=Transformation.Properties.Mode.online,
         memory_size=1,
+        disable_memory=False,
         _internal_supports_minibatch_backtesting=True,
     )
 

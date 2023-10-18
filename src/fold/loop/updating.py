@@ -50,4 +50,5 @@ def update(
         pipeline=pipeline,
         event_filter=pipelinecard.event_filter,
         event_labeler=pipelinecard.event_labeler,
+        trim_initial_period_after_preprocessing=pipelinecard.trim_initial_period_after_preprocessing,
     )
