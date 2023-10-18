@@ -299,7 +299,7 @@ class PipelineCard:
     event_filter: Optional[EventFilter] = None
     project_name: Optional[str] = None
     project_hyperparameters: Optional[dict] = None
-    trim_initial_period_after_preprocessing = False  # If `True`, the initial period (determined by the memory_size of transformations in the preprocessing pipeline) will be trimmed after preprocessing, but before the pipeline is executed.
+    trim_initial_period_after_preprocessing: bool = False  # If `True`, the initial period (determined by the memory_size of transformations in the preprocessing pipeline) will be trimmed after preprocessing, but before the pipeline is executed.
 
 
 @dataclass
