@@ -6,6 +6,8 @@ from typing import Optional, Tuple, Union
 
 import pandas as pd
 
+from fold.base.utils import get_maximum_memory_size
+
 from ..base import (
     Artifact,
     EventDataFrame,
@@ -120,6 +122,12 @@ def train(
         X = preprocessed_X
         artifact = preprocessed_artifact
 
+        if pipelinecard.trim_initial_period_after_preprocessing:
+            memory_size = get_maximum_memory_size(preprocessing_pipeline)
+            X = X.iloc[memory_size:]
+            y = y.iloc[memory_size:]
+            artifact = artifact.iloc[memory_size:]
+
     if isinstance(splitter, SlidingWindowSplitter):
         assert train_method != TrainMethod.sequential, (
             "SlidingWindowSplitter is conceptually incompatible with"
@@ -154,49 +162,6 @@ def train(
                 silent,
             )
         )
-
-    elif train_method == TrainMethod.parallel_with_search and len(splits) > 1:
-        (
-            first_batch_index,
-            first_batch_transformations,
-            first_batch_predictions,
-            first_batch_artifacts,
-        ) = _train_on_window(
-            X=X,
-            y=y,
-            artifact=artifact,
-            pipeline=pipeline,
-            split=splits[0],
-            never_update=True,
-            backend=backend,
-            project_name=f"{pipelinecard.project_name}-Pipeline" or "Pipeline",
-        )
-
-        (
-            rest_idx,
-            rest_transformations,
-            rest_predictions,
-            rest_artifacts,
-        ) = unpack_list_of_tuples(
-            backend.train_pipeline(
-                _train_on_window,
-                first_batch_transformations,
-                X,
-                y,
-                artifact,
-                splits[1:],
-                False,
-                backend,
-                f"{pipelinecard.project_name}-Pipeline" or "Pipeline",
-                pipelinecard.project_hyperparameters,
-                silent,
-            )
-        )
-        processed_idx = [first_batch_index] + list(rest_idx)
-        processed_pipelines = [first_batch_transformations] + list(rest_transformations)
-        processed_predictions = [first_batch_predictions] + list(rest_predictions)
-        processed_artifacts = [first_batch_artifacts] + list(rest_artifacts)
-
     elif train_method == TrainMethod.parallel:
         (
             processed_idx,

@@ -13,7 +13,7 @@ from ...base import (
     WeightingStrategy,
 )
 from ...utils.forward import create_forward_rolling
-from ..weights import NoWeighting, WeightBySumWithLookahead
+from ..weights import NoWeighting, WeightByMaxWithLookahead
 
 logger = getLogger("fold:labeling")
 
@@ -26,7 +26,7 @@ class FixedForwardHorizon(Labeler):
         time_horizon: int,
         labeling_strategy: LabelingStrategy,
         weighting_strategy: Optional[WeightingStrategy],
-        weighting_strategy_test: WeightingStrategy = WeightBySumWithLookahead(),
+        weighting_strategy_test: WeightingStrategy = WeightByMaxWithLookahead(),
         transformation_function: Optional[Callable] = None,
         aggregate_function: Union[
             str, PredefinedFunction, Callable

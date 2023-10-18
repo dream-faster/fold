@@ -42,6 +42,7 @@ class Naive(TimeSeriesModel):
         requires_X=False,
         mode=TimeSeriesModel.Properties.Mode.online,
         memory_size=1,
+        disable_memory=False,
         _internal_supports_minibatch_backtesting=True,
     )
 
@@ -76,6 +77,7 @@ class NaiveSeasonal(TimeSeriesModel, Tunable):
             requires_X=False,
             mode=TimeSeriesModel.Properties.Mode.online,
             memory_size=seasonal_length,
+            disable_memory=False,
             _internal_supports_minibatch_backtesting=True,
         )
         self.params_to_try = params_to_try
@@ -114,6 +116,7 @@ class MovingAverage(TimeSeriesModel, Tunable):
             requires_X=False,
             mode=TimeSeriesModel.Properties.Mode.online,
             memory_size=window_size,
+            disable_memory=False,
             _internal_supports_minibatch_backtesting=True,
         )
         self.params_to_try = params_to_try
@@ -152,6 +155,7 @@ class ExponentiallyWeightedMovingAverage(TimeSeriesModel, Tunable):
             requires_X=False,
             mode=TimeSeriesModel.Properties.Mode.online,
             memory_size=self.window_size * 4,
+            disable_memory=False,
             _internal_supports_minibatch_backtesting=True,
         )
         self.params_to_try = params_to_try
