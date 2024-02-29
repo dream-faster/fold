@@ -1,11 +1,9 @@
 import pytest
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
-from sklearn.linear_model import LogisticRegression
 
 from fold.base.classes import PipelineCard
 from fold.composites import Concat
 from fold.composites.concat import Sequence
-from fold.composites.selectbest import SelectBest
 from fold.events.filters.everynth import EveryNth
 from fold.events.labeling import BinarizeSign, FixedForwardHorizon
 from fold.events.weights import NoWeighting
@@ -13,10 +11,8 @@ from fold.loop import train_evaluate
 from fold.loop.backend.joblib import JoblibBackend
 from fold.loop.encase import train_backtest
 from fold.loop.inference import infer
-from fold.models import WrapSKLearnClassifier
 from fold.splitters import (
     ExpandingWindowSplitter,
-    ForwardSingleWindowSplitter,
     SlidingWindowSplitter,
 )
 from fold.transformations import AddWindowFeatures, RemoveLowVarianceFeatures
@@ -192,4 +188,3 @@ def test_train_evaluate_probabilities() -> None:
     scorecard, pred, trained_trained_pipelines, _, _ = train_evaluate(
         pipeline, X, y, splitter
     )
-
