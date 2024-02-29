@@ -1,6 +1,6 @@
 from fold.loop import train_backtest
 from fold.models.wrappers.gbd import WrapLGBM
-from fold.splitters import ExpandingWindowSplitter, SingleWindowSplitter
+from fold.splitters import ExpandingWindowSplitter, ForwardSingleWindowSplitter
 from fold.utils.tests import (
     generate_monotonous_data,
     generate_sine_wave_data,
@@ -63,7 +63,7 @@ def test_automatic_wrapping_lgbm() -> None:
         LGBMRegressor(),
         X,
         y,
-        splitter=SingleWindowSplitter(0.5),
+        splitter=ForwardSingleWindowSplitter(0.5),
     )
 
 
