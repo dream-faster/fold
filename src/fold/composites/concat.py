@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from typing import Callable, List, Optional, Union
+from collections.abc import Callable
 
 import pandas as pd
 
@@ -25,9 +25,9 @@ class Concat(Composite):
 
     pipelines : Pipelines
         A list of pipelines to be applied to the data, independently of each other.
-    if_duplicate_keep : Union[ResolutionStrategy, str], optional
+    if_duplicate_keep : ResolutionStrategy | str | None, optional
         How to handle duplicate columns, by default ResolutionStrategy.first
-    custom_merge_logic: Optional[Callable[[List[pd.DataFrame]], pd.DataFrame]], default None
+    custom_merge_logic: Optional[Callable[[list[pd.DataFrame]], pd.DataFrame]], default None
         A custom function that takes a list of dataframes and returns a single dataframe. If present, it's used instead of ResolutionStrategy.
 
     Examples
@@ -42,7 +42,7 @@ class Concat(Composite):
         ...     lambda X: X.assign(sine_plus_1=X["sine"] + 1),
         ...     lambda X: X.assign(sine_plus_2=X["sine"] + 2),
         ... ])
-        >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+        >>> preds, trained_pipeline, _, _ = train_backtest(pipeline, X, y, splitter)
         >>> preds.head()
                              sine_plus_1  sine_plus_2    sine
         2021-12-31 15:40:00       1.0000       2.0000 -0.0000
@@ -57,11 +57,11 @@ class Concat(Composite):
     def __init__(
         self,
         pipelines: Pipelines,
-        if_duplicate_keep: Union[ResolutionStrategy, str] = ResolutionStrategy.first,
-        custom_merge_logic: Optional[
-            Callable[[List[pd.DataFrame]], pd.DataFrame]
-        ] = None,
-        name: Optional[str] = None,
+        if_duplicate_keep: ResolutionStrategy | str = ResolutionStrategy.first,
+        custom_merge_logic: Callable[[list[pd.DataFrame]], None]
+        | pd.DataFrame
+        | None = None,
+        name: str | None = None,
     ) -> None:
         self.pipelines = pipelines
         self.if_duplicate_keep = ResolutionStrategy.from_str(if_duplicate_keep)
@@ -72,20 +72,19 @@ class Concat(Composite):
 
     def postprocess_result_primary(
         self,
-        results: List[pd.DataFrame],
-        y: Optional[pd.Series],
+        results: list[pd.DataFrame],
+        y: pd.Series | None,
         original_artifact: Artifact,
         fit: bool,
     ) -> pd.DataFrame:
         if self.custom_merge_logic is not None:
             return self.custom_merge_logic(results)
-        else:
-            return concat_on_columns_with_duplicates(results, self.if_duplicate_keep)
+        return concat_on_columns_with_duplicates(results, self.if_duplicate_keep)
 
     def postprocess_artifacts_primary(
         self,
-        primary_artifacts: List[Artifact],
-        results: List[pd.DataFrame],
+        primary_artifacts: list[Artifact],
+        results: list[pd.DataFrame],
         original_artifact: Artifact,
         fit: bool,
     ) -> pd.DataFrame:
@@ -93,7 +92,7 @@ class Concat(Composite):
             primary_artifacts, self.if_duplicate_keep
         )
 
-    def get_children_primary(self) -> Pipelines:
+    def get_children_primary(self, only_traversal: bool) -> Pipelines:
         return self.pipelines
 
     def clone(self, clone_children: Callable) -> Concat:
@@ -125,7 +124,7 @@ class Sequence(Composite):
     def __init__(
         self,
         pipeline: Pipeline,
-        name: Optional[str] = None,
+        name: str | None = None,
     ) -> None:
         self.pipeline = wrap_in_double_list_if_needed(pipeline)
         self.name = name or "Sequence-" + get_concatenated_names(pipeline)
@@ -134,14 +133,14 @@ class Sequence(Composite):
 
     def postprocess_result_primary(
         self,
-        results: List[pd.DataFrame],
-        y: Optional[pd.Series],
+        results: list[pd.DataFrame],
+        y: pd.Series | None,
         original_artifact: Artifact,
         fit: bool,
     ) -> pd.DataFrame:
         return results[0]
 
-    def get_children_primary(self) -> Pipelines:
+    def get_children_primary(self, only_traversal: bool) -> Pipelines:
         return self.pipeline
 
     def clone(self, clone_children: Callable) -> Sequence:
@@ -154,16 +153,16 @@ class Sequence(Composite):
 
 
 def TransformColumn(
-    columns: Union[List[str], str],
+    columns: list[str] | str,
     pipeline: Pipeline,
-    name: Optional[str] = None,
+    name: str | None = None,
 ) -> Composite:
     """
     Transforms a single or multiple columns using the given pipeline.
     """
     return Concat(
         [
-            [SelectColumns(columns)] + wrap_in_list(pipeline),
+            [SelectColumns(columns), *wrap_in_list(pipeline)],
             Identity(),
         ],
         if_duplicate_keep=ResolutionStrategy.first,

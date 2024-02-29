@@ -1,7 +1,7 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
 
-from typing import Callable, Optional
+from collections.abc import Callable
 
 import pandas as pd
 
@@ -17,12 +17,12 @@ class ApplyFunction(Transformation, Tunable):
     def __init__(
         self,
         func: Callable,
-        past_window_size: Optional[int],
+        past_window_size: int | None,
         fillna: bool = False,
-        batch_columns: Optional[int] = None,
-        output_dtype: Optional[type] = None,
-        name: Optional[str] = None,
-        params_to_try: Optional[dict] = None,
+        batch_columns: int | None = None,
+        output_dtype: type | None = None,
+        name: str | None = None,
+        params_to_try: dict | None = None,
     ) -> None:
         self.func = func
         self.name = name or func.__name__

@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from logging import getLogger
-from typing import Callable, List, Optional, Union
 
 import pandas as pd
 
 from ...base import (
+    Artifact,
     EventDataFrame,
     Labeler,
     LabelingStrategy,
@@ -19,21 +20,20 @@ logger = getLogger("fold:labeling")
 
 
 class FixedForwardHorizon(Labeler):
-    time_horizon: int
-
     def __init__(
         self,
         time_horizon: int,
         labeling_strategy: LabelingStrategy,
-        weighting_strategy: Optional[WeightingStrategy],
-        weighting_strategy_test: WeightingStrategy = WeightByMaxWithLookahead(),
-        transformation_function: Optional[Callable] = None,
-        aggregate_function: Union[
-            str, PredefinedFunction, Callable
-        ] = PredefinedFunction.sum,
+        weighting_strategy: WeightingStrategy | None,
+        weighting_strategy_test: WeightingStrategy = WeightByMaxWithLookahead(),  # noqa
+        transformation_function: Callable | None = None,
+        post_aggregation_transformation_function: Callable | None = None,
+        aggregate_function: str
+        | PredefinedFunction
+        | Callable = PredefinedFunction.sum,
         truncate_if_timeframe_is_smaller: bool = True,
         flip_sign: bool = False,
-        shift_by: Optional[int] = None,
+        shift_by: int | None = None,
     ):
         self.time_horizon = time_horizon
         self.labeling_strategy = labeling_strategy
@@ -42,6 +42,9 @@ class FixedForwardHorizon(Labeler):
         )
         self.weighting_strategy_test = weighting_strategy_test
         self.transformation_function = transformation_function
+        self.post_aggregation_transformation_function = (
+            post_aggregation_transformation_function
+        )
         self.aggregate_function = (
             aggregate_function
             if isinstance(aggregate_function, Callable)
@@ -62,8 +65,7 @@ class FixedForwardHorizon(Labeler):
             agg_func=self.aggregate_function,
             series=y,
             period=self.time_horizon,
-            shift_by=self.shift_by,
-            truncate_end=self.truncate_if_timeframe_is_smaller,
+            extra_shift_by=self.shift_by,
         )
         if self.truncate_if_timeframe_is_smaller:
             cutoff_point = y.index[-self.time_horizon]
@@ -72,6 +74,10 @@ class FixedForwardHorizon(Labeler):
         forward_rolling_aggregated = forward_rolling_aggregated[
             event_start_times
         ]  # filter based on events
+        if self.post_aggregation_transformation_function:
+            forward_rolling_aggregated = self.post_aggregation_transformation_function(
+                forward_rolling_aggregated
+            )
 
         labels = self.labeling_strategy.label(forward_rolling_aggregated)
         sample_weights = self.weighting_strategy.calculate(forward_rolling_aggregated)
@@ -85,19 +91,61 @@ class FixedForwardHorizon(Labeler):
             elif len(labels.dropna().unique()) == 2:
                 labels = 1 - labels
             else:
-                logger.warn(
+                logger.warning(
                     f"{len(labels.dropna().unique())} classes detected, can't flip sign"
                 )
 
-        offset = pd.Timedelta(value=self.time_horizon, unit=y.index.freqstr)
-        return EventDataFrame.from_data(
+        end_times = y.index[
+            (y.index.get_indexer(event_start_times) + self.time_horizon).clip(
+                max=len(y) - 1
+            )
+        ]
+        return Artifact.events_from_data(
             start=event_start_times,
-            end=(event_start_times + offset).astype("datetime64[s]"),
+            end=end_times,
             label=labels,
-            raw=forward_rolling_aggregated,
+            raw=y.loc[labels.index],
             sample_weights=sample_weights,
             test_sample_weights=test_sample_weights,
         )
 
-    def get_labels(self) -> List[int]:
+    def get_all_possible_labels(self) -> list[int]:
+        return self.labeling_strategy.get_all_labels()
+
+
+class IdentityLabeler(Labeler):
+    def __init__(
+        self,
+        labeling_strategy: LabelingStrategy,
+        weighting_strategy: WeightingStrategy | None,
+    ):
+        self.labeling_strategy = labeling_strategy
+        self.weighting_strategy = (
+            weighting_strategy if weighting_strategy else NoWeighting()
+        )
+
+    def label_events(
+        self, event_start_times: pd.DatetimeIndex, y: pd.Series
+    ) -> EventDataFrame:
+        forward_rolling_aggregated = y
+        forward_rolling_aggregated = forward_rolling_aggregated[
+            event_start_times
+        ]  # filter based on events
+
+        labels = self.labeling_strategy.label(forward_rolling_aggregated)
+        sample_weights = self.weighting_strategy.calculate(forward_rolling_aggregated)
+
+        end_times = y.index[
+            (y.index.get_indexer(event_start_times) + 1).clip(max=len(y) - 1)
+        ]
+        return Artifact.events_from_data(
+            start=event_start_times,
+            end=end_times,
+            label=labels,
+            raw=forward_rolling_aggregated,
+            sample_weights=sample_weights,
+            test_sample_weights=sample_weights,
+        )
+
+    def get_all_possible_labels(self) -> list[int]:
         return self.labeling_strategy.get_all_labels()

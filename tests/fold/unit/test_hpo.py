@@ -1,19 +1,21 @@
 from sklearn.dummy import DummyRegressor as SklearnDummyRegressor
 
-from fold.composites import OptimizeGridSearch, SelectBest, TransformTarget
+from fold.composites import SelectBest, TransformTarget
 from fold.loop import train_backtest
 from fold.models import DummyClassifier, DummyRegressor, WrapSKLearnRegressor
-from fold.splitters import ExpandingWindowSplitter
+from fold.splitters import ExpandingWindowSplitter, ForwardSingleWindowSplitter
 from fold.transformations import Difference
 from fold.transformations.dev import Identity
+from fold.transformations.difference import StationaryMethod
 from fold.utils.tests import generate_monotonous_data
+from fold_extensions.optimize_optuna import OptimizeOptuna
 
 
 def test_grid_hpo() -> None:
     X, y = generate_monotonous_data(1000)
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    pipeline = OptimizeGridSearch(
+    pipeline = OptimizeOptuna(
         pipeline=[
             DummyClassifier(
                 predicted_value=1.0,
@@ -28,14 +30,15 @@ def test_grid_hpo() -> None:
                 predicted_value=3.0,
                 params_to_try=dict(predicted_value=[22.0, 32.0]),
             ),
-            Difference(),
+            Difference(method=StationaryMethod.difference),
         ],
         krisi_metric_key="mse",
         is_scorer_loss=True,
+        trials=10,
+        splitter=ForwardSingleWindowSplitter(0.6),
     )
 
-    pred, trained_pipelines = train_backtest(pipeline, X, y, splitter)
-    assert len(trained_pipelines.pipeline[0].iloc[0].param_permutations) > 4
+    pred, trained_pipelines, _, _ = train_backtest(pipeline, X, y, splitter)
 
 
 def test_gridsearch_sklearn() -> None:
@@ -43,7 +46,7 @@ def test_gridsearch_sklearn() -> None:
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     pipeline = [
-        OptimizeGridSearch(
+        OptimizeOptuna(
             pipeline=[
                 Identity(),
                 WrapSKLearnRegressor.from_model(
@@ -59,10 +62,12 @@ def test_gridsearch_sklearn() -> None:
             ],
             krisi_metric_key="mse",
             is_scorer_loss=True,
+            trials=30,
+            splitter=ForwardSingleWindowSplitter(0.6),
         )
     ]
 
-    pred, _ = train_backtest(pipeline, X, y, splitter)
+    pred, _, _, _ = train_backtest(pipeline, X, y, splitter)
     assert (pred.squeeze() == 1).all()
 
 
@@ -70,7 +75,7 @@ def test_grid_passthrough():
     X, y = generate_monotonous_data(1000)
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    pipeline = OptimizeGridSearch(
+    pipeline = OptimizeOptuna(
         pipeline=[
             Identity(),
             DummyRegressor(
@@ -82,17 +87,18 @@ def test_grid_passthrough():
         ],
         krisi_metric_key="mse",
         is_scorer_loss=True,
+        trials=10,
+        splitter=ForwardSingleWindowSplitter(0.6),
     )
 
-    pred, trained = train_backtest(pipeline, X, y, splitter)
-    assert len(trained.pipeline[0].iloc[0].param_permutations) >= 4
+    pred, trained, _, _ = train_backtest(pipeline, X, y, splitter)
     assert (X.loc[pred.index].squeeze() == pred.squeeze()).all()
 
 
 def test_selectbest() -> None:
     X, y = generate_monotonous_data(1000)
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    pipeline = OptimizeGridSearch(
+    pipeline = OptimizeOptuna(
         [
             Identity(),
             SelectBest(
@@ -111,15 +117,17 @@ def test_selectbest() -> None:
         ],
         krisi_metric_key="mse",
         is_scorer_loss=True,
+        trials=10,
+        splitter=ForwardSingleWindowSplitter(0.6),
     )
-    pred, trained_pipelines = train_backtest(pipeline, X, y, splitter)
+    pred, trained_pipelines, _, _ = train_backtest(pipeline, X, y, splitter)
     assert pred.squeeze()[0] == 0.5
 
 
 def test_selectbest_nested():
     X, y = generate_monotonous_data(1000)
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    pipeline = OptimizeGridSearch(
+    pipeline = OptimizeOptuna(
         [
             Identity(),
             SelectBest(
@@ -142,8 +150,10 @@ def test_selectbest_nested():
             ),
             Identity(),
         ],
+        splitter=ForwardSingleWindowSplitter(0.6),
+        trials=10,
         krisi_metric_key="mse",
         is_scorer_loss=True,
     )
-    pred, _ = train_backtest(pipeline, X, y, splitter)
+    pred, _, _, _ = train_backtest(pipeline, X, y, splitter)
     assert pred.squeeze()[0] == 0.5

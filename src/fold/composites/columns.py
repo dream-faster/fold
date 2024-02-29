@@ -3,10 +3,11 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from copy import deepcopy
-from typing import Callable, List, Optional, Tuple
 
 import pandas as pd
+from finml_utils.dataframes import concat_on_columns
 
 from fold.base.classes import Artifact
 
@@ -34,13 +35,13 @@ class EnsembleEachColumn(Composite):
         >>> X, y  = generate_sine_wave_data()
         >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
         >>> pipeline = EnsembleEachColumn(RandomForestRegressor())
-        >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+        >>> preds, trained_pipeline, _, _ = train_backtest(pipeline, X, y, splitter)
 
     """
 
     pipelines_already_cloned = False
 
-    def __init__(self, pipeline: Pipeline, name: Optional[str] = None) -> None:
+    def __init__(self, pipeline: Pipeline, name: str | None = None) -> None:
         self.pipelines: Pipelines = wrap_in_double_list_if_needed(pipeline)  # type: ignore
         self.name = name or "PerColumnEnsemble-" + get_concatenated_names(
             self.pipelines
@@ -50,7 +51,7 @@ class EnsembleEachColumn(Composite):
 
     @classmethod
     def from_cloned_instance(
-        cls, pipeline: Pipeline, pipelines_already_cloned: bool, name: Optional[str]
+        cls, pipeline: Pipeline, pipelines_already_cloned: bool, name: str | None
     ) -> EnsembleEachColumn:
         instance = cls(pipeline=pipeline)
         instance.pipelines_already_cloned = pipelines_already_cloned
@@ -64,20 +65,20 @@ class EnsembleEachColumn(Composite):
 
     def preprocess_primary(
         self, X: pd.DataFrame, index: int, y: T, artifact: Artifact, fit: bool
-    ) -> Tuple[pd.DataFrame, T, Artifact]:
+    ) -> tuple[pd.DataFrame, T, Artifact]:
         X = X.iloc[:, index].to_frame()
         return X, y, artifact
 
     def postprocess_result_primary(
         self,
-        results: List[pd.DataFrame],
-        y: Optional[pd.Series],
+        results: list[pd.DataFrame],
+        y: pd.Series | None,
         original_artifact: Artifact,
         fit: bool,
     ) -> pd.DataFrame:
         return average_results(results, self.name)
 
-    def get_children_primary(self) -> Pipelines:
+    def get_children_primary(self, only_traversal: bool) -> Pipelines:
         return self.pipelines
 
     def clone(self, clone_children: Callable) -> EnsembleEachColumn:
@@ -120,7 +121,7 @@ class TransformEachColumn(Composite):
         2021-12-31 07:24:00  0.0502       1.0502
         >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
         >>> pipeline = TransformEachColumn(lambda x: x + 1.0)
-        >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+        >>> preds, trained_pipeline, _, _ = train_backtest(pipeline, X, y, splitter)
         >>> preds.head()
                                sine  sine_plus_1
         2021-12-31 15:40:00  1.0000       2.0000
@@ -132,7 +133,7 @@ class TransformEachColumn(Composite):
 
     pipeline_already_cloned = False
 
-    def __init__(self, pipeline: Pipeline, name: Optional[str] = None) -> None:
+    def __init__(self, pipeline: Pipeline, name: str | None = None) -> None:
         self.pipeline = wrap_in_double_list_if_needed(pipeline)
         self.name = name or "PerColumnTransform-" + get_concatenated_names(
             self.pipeline
@@ -155,19 +156,19 @@ class TransformEachColumn(Composite):
 
     def preprocess_primary(
         self, X: pd.DataFrame, index: int, y: T, artifact: Artifact, fit: bool
-    ) -> Tuple[pd.DataFrame, T, Artifact]:
+    ) -> tuple[pd.DataFrame, T, Artifact]:
         return (X.iloc[:, index].to_frame(), y, artifact)
 
     def postprocess_result_primary(
         self,
-        results: List[pd.DataFrame],
-        y: Optional[pd.Series],
+        results: list[pd.DataFrame],
+        y: pd.Series | None,
         original_artifact: Artifact,
         fit: bool,
     ) -> pd.DataFrame:
-        return pd.concat(results, copy=False, axis="columns")
+        return concat_on_columns(results)
 
-    def get_children_primary(self) -> Pipelines:
+    def get_children_primary(self, only_traversal: bool) -> Pipelines:
         return self.pipeline
 
     def clone(self, clone_children: Callable) -> TransformEachColumn:
@@ -211,13 +212,13 @@ class SkipNA(Composite):
         >>> pipeline = SkipNA(
         ...     pipeline=RandomForestClassifier(),
         ... )
-        >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+        >>> preds, trained_pipeline, _, _ = train_backtest(pipeline, X, y, splitter)
 
     """
 
-    original_index: Optional[pd.Index] = None
+    original_index: pd.Index | None = None
 
-    def __init__(self, pipeline: Pipeline, name: Optional[str] = None) -> None:
+    def __init__(self, pipeline: Pipeline, name: str | None = None) -> None:
         self.pipeline = wrap_in_double_list_if_needed(pipeline)
         self.name = name or "SkipNA-" + get_concatenated_names(self.pipeline)
         self.properties = Composite.Properties(primary_only_single_pipeline=True)
@@ -226,7 +227,7 @@ class SkipNA(Composite):
 
     def preprocess_primary(
         self, X: pd.DataFrame, index: int, y: T, artifact: Artifact, fit: bool
-    ) -> Tuple[pd.DataFrame, T, Artifact]:
+    ) -> tuple[pd.DataFrame, T, Artifact]:
         self.original_index = X.index.copy()
         self.isna = X.isna().any(axis=1)
         return (
@@ -237,8 +238,8 @@ class SkipNA(Composite):
 
     def postprocess_result_primary(
         self,
-        results: List[pd.DataFrame],
-        y: Optional[pd.Series],
+        results: list[pd.DataFrame],
+        y: pd.Series | None,
         original_artifact: Artifact,
         fit: bool,
     ) -> pd.DataFrame:
@@ -246,14 +247,14 @@ class SkipNA(Composite):
 
     def postprocess_artifacts_primary(
         self,
-        primary_artifacts: List[Artifact],
-        results: List[pd.DataFrame],
+        primary_artifacts: list[Artifact],
+        results: list[pd.DataFrame],
         original_artifact: Artifact,
         fit: bool,
     ) -> pd.DataFrame:
         return primary_artifacts[0].reindex(self.original_index)
 
-    def get_children_primary(self) -> Pipelines:
+    def get_children_primary(self, only_traversal: bool) -> Pipelines:
         return self.pipeline
 
     def clone(self, clone_children: Callable) -> SkipNA:
@@ -270,7 +271,7 @@ class SkipNA(Composite):
 
 
 def average_results(
-    results: List[pd.DataFrame],
+    results: list[pd.DataFrame],
     name: str,
     reconstruct_predictions_from_probabilities: bool = False,
 ) -> pd.DataFrame:
@@ -278,24 +279,21 @@ def average_results(
         return _average_results_classification(
             results, name, reconstruct_predictions_from_probabilities
         )
-    else:
-        return _average_results_regression(results, name)
+    return _average_results_regression(results, name)
 
 
 def _average_results_regression(
-    results: List[pd.DataFrame],
+    results: list[pd.DataFrame],
     name: str,
 ) -> pd.DataFrame:
     return (
-        pd.concat(
+        concat_on_columns(
             [
                 df[
                     [col for col in df.columns if col.startswith("predictions_")]
                 ].squeeze()
                 for df in results
             ],
-            axis="columns",
-            copy=False,
         )
         .mean(axis="columns")
         .rename(f"predictions_{name}")
@@ -304,7 +302,7 @@ def _average_results_regression(
 
 
 def _average_results_classification(
-    results: List[pd.DataFrame],
+    results: list[pd.DataFrame],
     name: str,
     reconstruct_predictions_from_probabilities: bool = False,
 ) -> pd.DataFrame:
@@ -314,7 +312,7 @@ def _average_results_classification(
 
     probabilities = [
         (
-            pd.concat(
+            concat_on_columns(
                 [
                     df[
                         [
@@ -326,7 +324,6 @@ def _average_results_classification(
                     ].squeeze()
                     for df in results
                 ],
-                axis="columns",
             )
             .mean(axis="columns")
             .rename(f"probabilities_{name}_{selected_class}")
@@ -339,18 +336,16 @@ def _average_results_classification(
 
     else:
         predictions = (
-            pd.concat(
+            concat_on_columns(
                 [
                     df[
                         [col for col in df.columns if col.startswith("predictions_")]
                     ].squeeze()
                     for df in results
                 ],
-                axis="columns",
-                copy=False,
             )
             .mean(axis="columns")
             .rename(f"predictions_{name}")
         )
 
-    return pd.concat([predictions] + probabilities, copy=True, axis="columns")
+    return concat_on_columns([predictions, *probabilities])

@@ -15,7 +15,7 @@ def test_deployment() -> None:
     y_test = y[900:]
 
     transformations = LinearRegression()
-    trained_pipelinecard = train(
+    trained_pipelinecard, _, _ = train(
         transformations,
         X_train,
         y_train,

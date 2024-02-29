@@ -1,14 +1,14 @@
 from sklearn.feature_selection import SelectKBest, f_regression
 
 from fold.base.classes import PipelineCard
-from fold.composites.optimize import OptimizeGridSearch
 from fold.events.filters.everynth import EveryNth
 from fold.events.labeling import FixedForwardHorizon, NoLabel
 from fold.events.weights import NoWeighting
 from fold.loop import train, train_evaluate
 from fold.models import DummyRegressor
-from fold.splitters import ExpandingWindowSplitter
+from fold.splitters import ExpandingWindowSplitter, ForwardSingleWindowSplitter
 from fold.utils.tests import generate_monotonous_data, generate_sine_wave_data
+from fold_extensions.optimize_optuna import OptimizeOptuna
 
 
 def test_artifacts_transformation_fit() -> None:
@@ -30,9 +30,7 @@ def test_artifacts_transformation_fit() -> None:
         event_filter=EveryNth(2),
     )
 
-    _, pred, _, artifacts = train_evaluate(
-        pipeline, X, y, splitter, return_artifacts=True
-    )
+    _, pred, _, artifacts, _ = train_evaluate(pipeline, X, y, splitter)
     assert artifacts is not None
     assert artifacts["selected_features_SelectKBest"].dropna().iloc[-1] == ["sine"]
 
@@ -42,18 +40,20 @@ def test_artifacts_optimizer() -> None:
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     pipeline = [
-        OptimizeGridSearch(
+        OptimizeOptuna(
             pipeline=DummyRegressor(
                 predicted_value=1, params_to_try=dict(predicted_value=[100, 25, 50])
             ),
             krisi_metric_key="mse",
             is_scorer_loss=True,
+            trials=10,
+            splitter=ForwardSingleWindowSplitter(0.6),
         )
     ]
-    _, artifacts = train(pipeline, X, y, splitter, return_artifacts=True)
+    _, artifacts, _ = train(pipeline, X, y, splitter)
     assert artifacts is not None
-    assert list(artifacts["selected_params"].dropna().iloc[0].values())[0] == {
-        "predicted_value": 25
+    assert artifacts["selected_params"].dropna().iloc[0][0] == {
+        "DummyRegressor-1¦predicted_value": 25
     }
 
 
@@ -73,6 +73,6 @@ def test_artifacts_events() -> None:
         ),
         event_filter=EveryNth(2),
     )
-    _, artifacts = train(pipeline, X, y, splitter, return_artifacts=True)
+    _, artifacts, _ = train(pipeline, X, y, splitter)
     assert artifacts is not None
     assert artifacts.index.duplicated().sum() == 0

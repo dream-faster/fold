@@ -1,20 +1,20 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
 
+from collections.abc import Callable
 from random import choices
-from typing import Callable, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
 
 from fold.base import Transformation, Tunable
 from fold.loop import train_backtest
-from fold.splitters import SingleWindowSplitter
+from fold.splitters import ForwardSingleWindowSplitter
 
 
 def generate_sine_wave_data(
     cycles: int = 2, length: int = 1000, freq: str = "min"
-) -> Tuple[pd.DataFrame, pd.Series]:
+) -> tuple[pd.DataFrame, pd.Series]:
     end_value = np.pi * 2 * cycles
     my_wave = np.sin(np.linspace(0, end_value, length + 1))
     series = pd.Series(
@@ -28,7 +28,7 @@ def generate_sine_wave_data(
     return X, y
 
 
-def generate_all_zeros(length: int = 1000) -> Tuple[pd.DataFrame, pd.Series]:
+def generate_all_zeros(length: int = 1000) -> tuple[pd.DataFrame, pd.Series]:
     length += 1
     series = pd.Series(
         [0] * length,
@@ -41,14 +41,20 @@ def generate_all_zeros(length: int = 1000) -> Tuple[pd.DataFrame, pd.Series]:
 
 
 def generate_zeros_and_ones(
-    length: int = 1000, labels=[1, 0]
-) -> Tuple[pd.DataFrame, pd.Series]:
+    length: int = 1000, labels=None
+) -> tuple[pd.DataFrame, pd.Series]:
+    if labels is None:
+        labels = [1, 0]
     return generate_zeros_and_ones_skewed(length, labels, weights=[0.5, 0.5])
 
 
 def generate_zeros_and_ones_skewed(
-    length: int = 1000, labels=[1, 0], weights: List[float] = [0.2, 0.8]
-) -> Tuple[pd.DataFrame, pd.Series]:
+    length: int = 1000, labels=None, weights: list[float] | None = None
+) -> tuple[pd.DataFrame, pd.Series]:
+    if weights is None:
+        weights = [0.2, 0.8]
+    if labels is None:
+        labels = [1, 0]
     length += 1
     series = pd.Series(
         choices(population=labels, weights=weights, k=length),
@@ -62,7 +68,7 @@ def generate_zeros_and_ones_skewed(
 
 def generate_monotonous_data(
     length: int = 1000, freq: str = "m"
-) -> Tuple[pd.DataFrame, pd.Series]:
+) -> tuple[pd.DataFrame, pd.Series]:
     values = np.linspace(0, 1, num=length + 1)
     series = pd.Series(
         values,
@@ -107,10 +113,10 @@ def check_if_transformation_mutates(
 def tuneability_test(
     instance: Transformation,
     different_params: dict,
-    init_function: Optional[Callable] = None,
+    init_function: Callable | None = None,
     classification: bool = False,
-    tolerance: Optional[float] = None,
-    modify_X_func: Optional[Callable] = None,
+    tolerance: float | None = None,
+    modify_X_func: Callable | None = None,
 ):
     """
     Used to test the general structure and implementation of get_params() and clone_with_params() methods.
@@ -133,16 +139,18 @@ def tuneability_test(
     )
     if modify_X_func is not None:
         X = modify_X_func(X)
-    splitter = SingleWindowSplitter(train_window=0.5)
-    preds_orig, _ = train_backtest(instance, X, y, splitter)
-    preds_different, _ = train_backtest(different_instance, X, y, splitter)
+    splitter = ForwardSingleWindowSplitter(train_window=0.5)
+    preds_orig, _, _, _ = train_backtest(instance, X, y, splitter)
+    preds_different, _, _, _ = train_backtest(different_instance, X, y, splitter)
     assert not preds_orig.equals(
         preds_different
     ), "The output of the two instances with different parameters should be different"
 
     reconstructed_instance = different_instance.clone_with_params(params)
 
-    preds_reconstructed, _ = train_backtest(reconstructed_instance, X, y, splitter)
+    preds_reconstructed, _, _, _ = train_backtest(
+        reconstructed_instance, X, y, splitter
+    )
     if tolerance is None:
         assert preds_orig.equals(preds_reconstructed), (
             "The output of the two instances with different parameters should be the"

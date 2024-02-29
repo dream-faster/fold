@@ -5,7 +5,7 @@ import numpy as np
 from fold.composites.columns import EnsembleEachColumn
 from fold.composites.concat import Sequence
 from fold.composites.ensemble import Ensemble
-from fold.loop import backtest, train
+from fold.loop.encase import train_backtest
 from fold.models.dummy import DummyClassifier
 from fold.splitters import ExpandingWindowSplitter
 from fold.utils.tests import generate_sine_wave_data, generate_zeros_and_ones
@@ -25,8 +25,7 @@ def test_ensemble_regression() -> None:
         ),
     ]
 
-    trained_pipelines = train(pipeline, X, y, splitter)
-    pred = backtest(trained_pipelines, X, y, splitter)
+    pred, _, _, _ = train_backtest(pipeline, X, y, splitter)
     assert np.allclose((X.squeeze()[pred.index]), (pred.squeeze() + 2.0))
 
 
@@ -55,8 +54,7 @@ def test_ensemble_classification() -> None:
         verbose=True,
     )
 
-    trained_pipelines = train(pipeline, X, y, splitter)
-    pred = backtest(trained_pipelines, X, y, splitter)
+    pred, _, _, _ = train_backtest(pipeline, X, y, splitter)
     assert (
         pred[
             "probabilities_Ensemble-DummyClassifier-1-DummyClassifier-1-DummyClassifier-0_0"
@@ -87,8 +85,7 @@ def test_per_column_transform_predictions() -> None:
         ),
     ]
 
-    trained_pipelines = train(pipeline, X, y, splitter)
-    pred = backtest(trained_pipelines, X, y, splitter)
+    pred, _, _, _ = train_backtest(pipeline, X, y, splitter)
     expected = X.mean(axis=1) + 1.0
     assert np.allclose(expected[pred.index].squeeze(), pred.squeeze())
 
@@ -117,8 +114,7 @@ def test_dummy_pipeline_classification() -> None:
         ]
     )
 
-    trained_pipelines = train(pipeline, X, y, splitter)
-    pred = backtest(trained_pipelines, X, y, splitter)
+    pred, _, _, _ = train_backtest(pipeline, X, y, splitter)
 
     pipeline_baseline = [
         DummyClassifier(
@@ -138,7 +134,6 @@ def test_dummy_pipeline_classification() -> None:
         ),
     ]
 
-    trained_pipelines_baseline = train(pipeline_baseline, X, y, splitter)
-    pred_baseline = backtest(trained_pipelines_baseline, X, y, splitter)
+    pred_baseline, _, _, _ = train_backtest(pipeline_baseline, X, y, splitter)
 
     assert (pred == pred_baseline).all(axis=0).all()

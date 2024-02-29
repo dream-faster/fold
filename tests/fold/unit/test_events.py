@@ -11,7 +11,7 @@ from fold.events.weights import NoWeighting
 from fold.loop.encase import train_backtest
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.dev import Identity, Test
-from fold.transformations.lags import AddLagsY
+from fold.transformations.lags import AddLagsX
 from fold.utils.tests import generate_sine_wave_data
 
 
@@ -26,9 +26,7 @@ def test_create_event() -> None:
         ),
         event_filter=EveryNth(5),
     )
-    pred, trained_pipeline, artifacts = train_backtest(
-        pipeline, X, y, splitter, return_artifacts=True
-    )
+    pred, trained_pipeline, artifacts, _ = train_backtest(pipeline, X, y, splitter)
     assert len(pred) == 1000
     assert len(pred.dropna()) == 200
 
@@ -40,9 +38,7 @@ def test_create_event() -> None:
         ),
         event_filter=NoFilter(),
     )
-    pred, trained_pipeline, artifacts = train_backtest(
-        pipeline, X, y, splitter, return_artifacts=True
-    )
+    pred, trained_pipeline, artifacts, _ = train_backtest(pipeline, X, y, splitter)
     assert len(pred) == 1000
     assert len(pred.dropna()) == 990
 
@@ -54,15 +50,13 @@ def test_create_event() -> None:
         ),
         event_filter=EveryNth(5),
     )
-    pred, trained_pipeline, artifacts = train_backtest(
-        pipeline, X, y, splitter, return_artifacts=True
-    )
+    pred, trained_pipeline, artifacts, _ = train_backtest(pipeline, X, y, splitter)
     assert len(pred) == 1000
     assert len(pred.dropna()) == 198
 
     def assert_sample_weights_exist(X, y, sample_weight):
         assert sample_weight is not None
-        assert sample_weight[0] == 1.0
+        assert sample_weight.iloc[0] == 1.0
 
     test_sample_weights_exist = Test(
         fit_func=assert_sample_weights_exist, transform_func=lambda X: X
@@ -80,9 +74,7 @@ def test_create_event() -> None:
         event_filter=EveryNth(5),
     )
 
-    pred_flipped, _, flipped_artifacts = train_backtest(
-        pipeline, X, y, splitter, return_artifacts=True
-    )
+    pred_flipped, _, flipped_artifacts, _ = train_backtest(pipeline, X, y, splitter)
     assert flipped_artifacts.event_label.equals(1 - artifacts.event_label)
 
 
@@ -101,10 +93,14 @@ def test_predefined_events(agg_func: str) -> None:
     original_start_times = y.index
     events = labeler.label_events(original_start_times, y).reindex(y.index)
 
-    model = [AddLagsY([1]), RandomForestRegressor(random_state=0)]
+    model = [
+        AddLagsX(("all", 1)),
+        lambda x: x.fillna(0.0),
+        RandomForestRegressor(random_state=0),
+    ]
     usepredefined_pipeline = PipelineCard(preprocessing=None, pipeline=model)
-    usepredefined_pred, _, usepredefined_artifact = train_backtest(
-        usepredefined_pipeline, X, y, splitter, events=events, return_artifacts=True
+    usepredefined_pred, _, usepredefined_artifact, _ = train_backtest(
+        usepredefined_pipeline, X, y, splitter, events=events
     )
     assert len(usepredefined_pred) == 1000
     assert len(usepredefined_pred.dropna()) == 998
@@ -116,9 +112,7 @@ def test_predefined_events(agg_func: str) -> None:
         event_labeler=labeler,
         event_filter=NoFilter(),
     )
-    pred, _, artifact = train_backtest(
-        pipeline_card, X, y, splitter, return_artifacts=True
-    )
+    pred, _, artifact, _ = train_backtest(pipeline_card, X, y, splitter)
 
     assert len(pred) == 1000
     assert len(pred.dropna()) == 998

@@ -1,5 +1,3 @@
-from typing import Optional, Union
-
 import pandas as pd
 
 from ...base import WeightingStrategy
@@ -7,7 +5,7 @@ from ..utils import calculate_rolling_window_size
 
 
 class WeightByMax(WeightingStrategy):
-    def __init__(self, window_size: Optional[Union[int, float]]):
+    def __init__(self, window_size: int | float | None):
         self.window_size = window_size
 
     def calculate(self, series: pd.Series) -> pd.Series:
@@ -28,7 +26,7 @@ class WeightByMaxWithLookahead(WeightingStrategy):
 
 
 def calculate_rolling_expanding_abs_max(
-    series: pd.Series, window_size: Optional[Union[int, float]]
+    series: pd.Series, window_size: int | float | None
 ) -> pd.Series:
     abs_returns = series.abs()
     rolling_or_expanding = (

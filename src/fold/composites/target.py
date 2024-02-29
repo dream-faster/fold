@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from typing import Callable, List, Optional, Tuple, Union
+from collections.abc import Callable
 
 import pandas as pd
 
@@ -36,7 +36,7 @@ class TransformTarget(Composite):
     ----------
     wrapped_pipeline: Pipeline
         Pipeline, which will be applied to the input data, where the target (`y`) is already transformed.
-    y_pipeline: Union[List[InvertibleTransformation], InvertibleTransformation]
+    y_pipeline: list[InvertibleTransformation] | InvertibleTransformation
         InvertibleTransformations, which will be applied to the target (`y`)
     invert_wrapped_output: bool, default=True
         Apply the inverse transformation of `y_pipeline` to the output of `wrapped_pipeline`. default is `True`.
@@ -57,7 +57,7 @@ class TransformTarget(Composite):
     ...     wrapped_pipeline=LinearRegression(),
     ...     y_pipeline=Difference(),
     ... )
-    >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+    >>> preds, trained_pipeline, _, _ = train_backtest(pipeline, X, y, splitter)
 
     ```
     """
@@ -70,9 +70,9 @@ class TransformTarget(Composite):
     def __init__(
         self,
         wrapped_pipeline: Pipeline,
-        y_pipeline: Union[List[InvertibleTransformation], InvertibleTransformation],
+        y_pipeline: list[InvertibleTransformation] | InvertibleTransformation,
         invert_wrapped_output: bool = True,
-        name: Optional[str] = None,
+        name: str | None = None,
     ) -> None:
         self.wrapped_pipeline = wrap_in_double_list_if_needed(wrapped_pipeline)
         self.y_pipeline = wrap_in_double_list_if_needed(y_pipeline)
@@ -84,7 +84,7 @@ class TransformTarget(Composite):
 
     def preprocess_primary(
         self, X: pd.DataFrame, index: int, y: T, artifact: Artifact, fit: bool
-    ) -> Tuple[pd.DataFrame, T, Artifact]:
+    ) -> tuple[pd.DataFrame, T, Artifact]:
         # TransformTarget's primary transformation transforms `y`, not `X`.
         if y is None:
             return (
@@ -92,8 +92,7 @@ class TransformTarget(Composite):
                 None,
                 artifact,
             )  # at inference time, `y` will be None, and we don't need to use primary transformations at all, so we return a dummy DataFrame.
-        else:
-            return y.to_frame(), None, artifact
+        return y.to_frame(), None, artifact
 
     def preprocess_secondary(
         self,
@@ -103,13 +102,13 @@ class TransformTarget(Composite):
         results_primary: pd.DataFrame,
         index: int,
         fit: bool,
-    ) -> Tuple[pd.DataFrame, T, Artifact]:
+    ) -> tuple[pd.DataFrame, T, Artifact]:
         return X, to_series(results_primary), artifact
 
     def postprocess_result_primary(
         self,
-        results: List[pd.DataFrame],
-        y: Optional[pd.Series],
+        results: list[pd.DataFrame],
+        y: pd.Series | None,
         original_artifact: Artifact,
         fit: bool,
     ) -> pd.DataFrame:
@@ -118,8 +117,8 @@ class TransformTarget(Composite):
     def postprocess_result_secondary(
         self,
         primary_results: pd.DataFrame,
-        secondary_results: List[pd.DataFrame],
-        y: Optional[pd.Series],
+        secondary_results: list[pd.DataFrame],
+        y: pd.Series | None,
         in_sample: bool,
     ) -> pd.DataFrame:
         if self.invert_wrapped_output is False:
@@ -131,12 +130,12 @@ class TransformTarget(Composite):
         results[get_prediction_column_name(results)] = to_series(predictions)
         return results
 
-    def get_children_primary(self) -> Pipelines:
+    def get_children_primary(self, only_traversal: bool) -> Pipelines:
         return self.y_pipeline
 
     def get_children_secondary(
         self,
-    ) -> Optional[Pipelines]:
+    ) -> Pipelines | None:
         return self.wrapped_pipeline
 
     def clone(self, clone_children: Callable) -> TransformTarget:

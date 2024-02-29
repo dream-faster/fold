@@ -1,8 +1,8 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
 
+from collections.abc import Callable
 from inspect import getfullargspec
-from typing import Callable, Optional
 
 import pandas as pd
 
@@ -31,30 +31,32 @@ class Breakpoint(Transformation):
         self,
         X: pd.DataFrame,
         y: pd.Series,
-        sample_weights: Optional[pd.Series] = None,
-    ) -> Optional[Artifact]:
+        sample_weights: pd.Series | None = None,
+        raw_y: pd.Series | None = None,
+    ) -> Artifact | None:
         if self.stop_at_fit:
-            breakpoint()
+            breakpoint()  # noqa: T100
 
     def update(
         self,
         X: pd.DataFrame,
         y: pd.Series,
-        sample_weights: Optional[pd.Series] = None,
-    ) -> Optional[Artifact]:
+        sample_weights: pd.Series | None = None,
+        raw_y: pd.Series | None = None,
+    ) -> Artifact | None:
         if self.stop_at_update:
-            breakpoint()
+            breakpoint()  # noqa: T100
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
         if self.stop_at_transform:
-            breakpoint()
+            breakpoint()  # noqa: T100
         return X
 
 
 class Identity(InvertibleTransformation):
     def __init__(
         self,
-        name: Optional[str] = None,
+        name: str | None = None,
     ) -> None:
         self.name = name or "Identity"
         self.properties = Transformation.Properties(requires_X=False)
@@ -82,9 +84,9 @@ class Test(InvertibleTransformation):
         self,
         fit_func: Callable,
         transform_func: Callable,
-        update_func: Optional[Callable] = None,
-        inverse_transform_func: Optional[Callable] = None,
-        memory_size: Optional[int] = None,
+        update_func: Callable | None = None,
+        inverse_transform_func: Callable | None = None,
+        memory_size: int | None = None,
     ) -> None:
         self.fit_func = fit_func
         self.transform_func = transform_func
@@ -98,8 +100,9 @@ class Test(InvertibleTransformation):
         self,
         X: pd.DataFrame,
         y: pd.Series,
-        sample_weights: Optional[pd.Series] = None,
-    ) -> Optional[Artifact]:
+        sample_weights: pd.Series | None = None,
+        raw_y: pd.Series | None = None,
+    ) -> Artifact | None:
         self.no_of_calls_fit += 1
         self.input_columns_fit = X.columns.to_list()
 
@@ -120,8 +123,9 @@ class Test(InvertibleTransformation):
         self,
         X: pd.DataFrame,
         y: pd.Series,
-        sample_weights: Optional[pd.Series] = None,
-    ) -> Optional[Artifact]:
+        sample_weights: pd.Series | None = None,
+        raw_y: pd.Series | None = None,
+    ) -> Artifact | None:
         self.no_of_calls_update += 1
         self.input_columns_update = X.columns.to_list()
 
@@ -163,24 +167,3 @@ class Test(InvertibleTransformation):
         if self.inverse_transform_func is not None:
             return self.inverse_transform_func(X)
         return X
-
-
-class Lookahead(Transformation):
-    """
-    A transformation that stops execution at the specified point.
-    """
-
-    name = "Lookahead"
-    properties = Transformation.Properties(
-        requires_X=False,
-        mode=Transformation.Properties.Mode.online,
-        memory_size=1,
-        disable_memory=False,
-        _internal_supports_minibatch_backtesting=True,
-    )
-
-    def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
-        return self._state.memory_y.to_frame()
-
-    fit = fit_noop
-    update = fit

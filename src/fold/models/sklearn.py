@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from inspect import getfullargspec
-from typing import Callable, Optional, Type, Union
 
 import pandas as pd
+from finml_utils.dataframes import concat_on_columns
 from sklearn.base import BaseEstimator
 
 from ..base import Artifact, Tunable
@@ -20,10 +21,10 @@ class WrapSKLearnClassifier(Model, Tunable):
 
     def __init__(
         self,
-        model_class: Type,
+        model_class: type,
         init_args: dict,
-        name: Optional[str] = None,
-        params_to_try: Optional[dict] = None,
+        name: str | None = None,
+        params_to_try: dict | None = None,
     ) -> None:
         self.model = model_class(**init_args)
         self.params_to_try = params_to_try
@@ -36,8 +37,8 @@ class WrapSKLearnClassifier(Model, Tunable):
     def from_model(
         cls,
         model,
-        name: Optional[str] = None,
-        params_to_try: Optional[dict] = None,
+        name: str | None = None,
+        params_to_try: dict | None = None,
     ) -> WrapSKLearnClassifier:
         return cls(
             model_class=model.__class__,
@@ -47,8 +48,12 @@ class WrapSKLearnClassifier(Model, Tunable):
         )
 
     def fit(
-        self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
-    ) -> Optional[Artifact]:
+        self,
+        X: pd.DataFrame,
+        y: pd.Series,
+        sample_weights: pd.Series | None = None,
+        raw_y: pd.Series | None = None,
+    ) -> Artifact | None:
         if hasattr(self.model, "partial_fit"):
             self.model.partial_fit(X, y, sample_weights)
         else:
@@ -58,12 +63,13 @@ class WrapSKLearnClassifier(Model, Tunable):
         self,
         X: pd.DataFrame,
         y: pd.Series,
-        sample_weights: Optional[pd.Series] = None,
-    ) -> Optional[Artifact]:
+        sample_weights: pd.Series | None = None,
+        raw_y: pd.Series | None = None,
+    ) -> Artifact | None:
         if hasattr(self.model, "partial_fit"):
             self.model.partial_fit(X, y, sample_weights)
 
-    def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
+    def predict(self, X: pd.DataFrame) -> pd.Series | pd.DataFrame:
         probabilities = pd.DataFrame(
             data=self.model.predict_proba(X),
             index=X.index,
@@ -76,7 +82,7 @@ class WrapSKLearnClassifier(Model, Tunable):
             index=X.index,
             name=f"predictions_{self.name}",
         )
-        return pd.concat([predictions, probabilities], copy=False, axis="columns")
+        return concat_on_columns([predictions, probabilities])
 
     predict_in_sample = predict
 
@@ -84,7 +90,7 @@ class WrapSKLearnClassifier(Model, Tunable):
         return self.model.get_params()
 
     def clone_with_params(
-        self, parameters: dict, clone_children: Optional[Callable] = None
+        self, parameters: dict, clone_children: Callable | None = None
     ) -> Tunable:
         return WrapSKLearnClassifier(
             model_class=self.model.__class__,
@@ -101,10 +107,10 @@ class WrapSKLearnRegressor(Model, Tunable):
 
     def __init__(
         self,
-        model_class: Type,
+        model_class: type,
         init_args: dict,
-        name: Optional[str] = None,
-        params_to_try: Optional[dict] = None,
+        name: str | None = None,
+        params_to_try: dict | None = None,
     ) -> None:
         self.model = model_class(**init_args)
         self.params_to_try = params_to_try
@@ -117,8 +123,8 @@ class WrapSKLearnRegressor(Model, Tunable):
     def from_model(
         cls,
         model,
-        name: Optional[str] = None,
-        params_to_try: Optional[dict] = None,
+        name: str | None = None,
+        params_to_try: dict | None = None,
     ) -> WrapSKLearnRegressor:
         return cls(
             model_class=model.__class__,
@@ -128,8 +134,12 @@ class WrapSKLearnRegressor(Model, Tunable):
         )
 
     def fit(
-        self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
-    ) -> Optional[Artifact]:
+        self,
+        X: pd.DataFrame,
+        y: pd.Series,
+        sample_weights: pd.Series | None = None,
+        raw_y: pd.Series | None = None,
+    ) -> Artifact | None:
         if hasattr(self.model, "partial_fit"):
             self.model.partial_fit(X, y, sample_weights)
         else:
@@ -139,12 +149,13 @@ class WrapSKLearnRegressor(Model, Tunable):
         self,
         X: pd.DataFrame,
         y: pd.Series,
-        sample_weights: Optional[pd.Series] = None,
-    ) -> Optional[Artifact]:
+        sample_weights: pd.Series | None = None,
+        raw_y: pd.Series | None = None,
+    ) -> Artifact | None:
         if hasattr(self.model, "partial_fit"):
             self.model.partial_fit(X, y, sample_weights)
 
-    def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
+    def predict(self, X: pd.DataFrame) -> pd.Series | pd.DataFrame:
         return pd.Series(
             data=self.model.predict(X).squeeze(),
             index=X.index,
@@ -157,7 +168,7 @@ class WrapSKLearnRegressor(Model, Tunable):
         return self.model.get_params()
 
     def clone_with_params(
-        self, parameters: dict, clone_children: Optional[Callable] = None
+        self, parameters: dict, clone_children: Callable | None = None
     ) -> Tunable:
         return WrapSKLearnRegressor(
             model_class=self.model.__class__,
@@ -170,7 +181,7 @@ def fit_with_parameters(
     instance: BaseEstimator,
     X: pd.DataFrame,
     y: pd.Series,
-    sample_weights: Optional[pd.Series],
+    sample_weights: pd.Series | None,
 ) -> None:
     argspec = getfullargspec(instance.fit)  # type: ignore
     if len(argspec.args) == 1:

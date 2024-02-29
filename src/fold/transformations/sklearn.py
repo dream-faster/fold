@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from inspect import getfullargspec
-from typing import Callable, Optional, Type
 
 import numpy as np
 import pandas as pd
@@ -26,11 +26,11 @@ class WrapSKLearnTransformation(Transformation, Tunable):
 
     def __init__(
         self,
-        transformation_class: Type,
+        transformation_class: type,
         init_args: dict,
-        output_dtype: Optional[type] = None,
-        name: Optional[str] = None,
-        params_to_try: Optional[dict] = None,
+        output_dtype: type | None = None,
+        name: str | None = None,
+        params_to_try: dict | None = None,
     ) -> None:
         self.transformation_class = transformation_class
         self.init_args = init_args
@@ -46,9 +46,9 @@ class WrapSKLearnTransformation(Transformation, Tunable):
     def from_model(
         cls,
         model,
-        output_dtype: Optional[type] = None,
-        name: Optional[str] = None,
-        params_to_try: Optional[dict] = None,
+        output_dtype: type | None = None,
+        name: str | None = None,
+        params_to_try: dict | None = None,
     ) -> WrapSKLearnTransformation:
         return cls(
             transformation_class=model.__class__,
@@ -59,8 +59,12 @@ class WrapSKLearnTransformation(Transformation, Tunable):
         )
 
     def fit(
-        self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
-    ) -> Optional[Artifact]:
+        self,
+        X: pd.DataFrame,
+        y: pd.Series,
+        sample_weights: pd.Series | None = None,
+        raw_y: pd.Series | None = None,
+    ) -> Artifact | None:
         fit_func = (
             self.transformation.partial_fit
             if hasattr(self.transformation, "partial_fit")
@@ -80,8 +84,12 @@ class WrapSKLearnTransformation(Transformation, Tunable):
             )
 
     def update(
-        self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
-    ) -> Optional[Artifact]:
+        self,
+        X: pd.DataFrame,
+        y: pd.Series,
+        sample_weights: pd.Series | None = None,
+        raw_y: pd.Series | None = None,
+    ) -> Artifact | None:
         if not hasattr(self.transformation, "partial_fit"):
             return
         argspec = getfullargspec(self.transformation.partial_fit)
@@ -104,18 +112,17 @@ class WrapSKLearnTransformation(Transformation, Tunable):
         result = convert_dtype_if_needed(self.transformation.transform(X))
         if hasattr(self.transformation, "set_output"):
             return result
+        if result.shape[1] != len(X.columns):
+            columns = [f"{self.name}_{i}" for i in range(result.shape[1])]
         else:
-            if result.shape[1] != len(X.columns):
-                columns = [f"{self.name}_{i}" for i in range(result.shape[1])]
-            else:
-                columns = X.columns
-            return pd.DataFrame(result, index=X.index, columns=columns)
+            columns = X.columns
+        return pd.DataFrame(result, index=X.index, columns=columns)
 
     def get_params(self) -> dict:
         return self.transformation.get_params(deep=False)
 
     def clone_with_params(
-        self, parameters: dict, clone_children: Optional[Callable] = None
+        self, parameters: dict, clone_children: Callable | None = None
     ) -> Tunable:
         return WrapSKLearnTransformation(
             transformation_class=self.transformation.__class__,
@@ -138,14 +145,14 @@ class WrapSKLearnFeatureSelector(FeatureSelector, Tunable):
     There's no need to use it directly, `fold` automatically wraps all sklearn feature selectors into this class.
     """
 
-    selected_features: Optional[str] = None
+    selected_features: str | None = None
 
     def __init__(
         self,
-        transformation_class: Type,
+        transformation_class: type,
         init_args: dict,
-        name: Optional[str] = None,
-        params_to_try: Optional[dict] = None,
+        name: str | None = None,
+        params_to_try: dict | None = None,
     ) -> None:
         self.transformation = transformation_class(**init_args)
         self.transformation_class = transformation_class
@@ -158,7 +165,7 @@ class WrapSKLearnFeatureSelector(FeatureSelector, Tunable):
 
     @classmethod
     def from_model(
-        cls, model, name: Optional[str] = None, params_to_try: Optional[dict] = None
+        cls, model, name: str | None = None, params_to_try: dict | None = None
     ) -> WrapSKLearnFeatureSelector:
         return cls(
             transformation_class=model.__class__,
@@ -168,8 +175,12 @@ class WrapSKLearnFeatureSelector(FeatureSelector, Tunable):
         )
 
     def fit(
-        self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
-    ) -> Optional[Artifact]:
+        self,
+        X: pd.DataFrame,
+        y: pd.Series,
+        sample_weights: pd.Series | None = None,
+        raw_y: pd.Series | None = None,
+    ) -> Artifact | None:
         self.transformation.fit(X, y)
         if hasattr(self.transformation, "get_feature_names_out"):
             self.selected_features = self.transformation.get_feature_names_out()
@@ -189,7 +200,7 @@ class WrapSKLearnFeatureSelector(FeatureSelector, Tunable):
         return self.transformation.get_params(deep=False)
 
     def clone_with_params(
-        self, parameters: dict, clone_children: Optional[Callable] = None
+        self, parameters: dict, clone_children: Callable | None = None
     ) -> Tunable:
         return WrapSKLearnFeatureSelector(
             transformation_class=self.transformation.__class__,
@@ -201,14 +212,18 @@ class WrapSKLearnFeatureSelector(FeatureSelector, Tunable):
 
 
 class RemoveLowVarianceFeatures(FeatureSelector):
-    def __init__(self, threshold: float = 1e-5, name: Optional[str] = None) -> None:
+    def __init__(self, threshold: float = 1e-5, name: str | None = None) -> None:
         self.threshold = threshold
         self.properties = Transformation.Properties(requires_X=True)
         self.name = name or "RemoveLowVarianceFeatures"
 
     def fit(
-        self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
-    ) -> Optional[Artifact]:
+        self,
+        X: pd.DataFrame,
+        y: pd.Series,
+        sample_weights: pd.Series | None = None,
+        raw_y: pd.Series | None = None,
+    ) -> Artifact | None:
         self.variances_ = np.nanvar(X, axis=0)
         if self.threshold == 0:
             peak_to_peaks = np.ptp(X, axis=0)

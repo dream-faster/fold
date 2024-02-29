@@ -1,10 +1,10 @@
 import pandas as pd
 
-from fold.base.classes import Composite
 from fold.loop.utils import _set_metadata
 
 from ..base import (
     Artifact,
+    BlockMetadata,
     OutOfSamplePredictions,
     TrainedPipelineCard,
     get_last_trained_pipeline,
@@ -29,12 +29,13 @@ def infer(
     last_pipeline = get_last_trained_pipeline(pipelinecard.pipeline)
     last_pipeline = _set_metadata(
         last_pipeline,
-        Composite.Metadata(
+        BlockMetadata(
             project_name=pipelinecard.project_name,
             project_hyperparameters=pipelinecard.project_hyperparameters,
             fold_index=0,
             target="target",
             inference=True,
+            preprocessing_max_memory_size=0,
         ),
     )
 
@@ -51,7 +52,7 @@ def infer(
         preprocessing = get_last_trained_pipeline(pipelinecard.preprocessing)
         preprocessing = _set_metadata(
             preprocessing,
-            Composite.Metadata(
+            BlockMetadata(
                 project_name=f"{pipelinecard.project_name}-Preprocessing"
                 if pipelinecard.project_name is not None
                 else "Preprocessing",
@@ -59,6 +60,7 @@ def infer(
                 fold_index=0,
                 target="target",
                 inference=True,
+                preprocessing_max_memory_size=0,
             ),
         )
         _, X, _ = recursively_transform(

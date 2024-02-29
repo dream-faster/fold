@@ -3,14 +3,16 @@
 
 from __future__ import annotations
 
-from typing import Callable, List, Optional, Tuple, Union
+from collections.abc import Callable
 
 import pandas as pd
+from finml_utils.dataframes import concat_on_columns
 
-from fold.base.classes import Artifact
-
-from ..base import Composite, Pipeline, Pipelines, T, get_concatenated_names
-from ..utils.checks import get_prediction_column
+from ..base import Artifact, Composite, Pipeline, Pipelines, T, get_concatenated_names
+from ..utils.checks import (
+    get_prediction_column,
+    get_probabilities_columns,
+)
 from ..utils.list import wrap_in_double_list_if_needed
 
 
@@ -30,8 +32,6 @@ class MetaLabeling(Composite):
         A pipeline to be applied to the data. Target (`y`) is unchanged.
     meta : Pipeline
         A pipeline to be applied to predict whether the primary pipeline's predictions are correct. Target (`y`) is `preds == y`.
-    positive_class : int, float
-        The positive class of the primary pipeline.
     primary_output_included :  bool, optional
         Whether the primary pipeline's output is included in the meta pipeline's input, by default False.
 
@@ -49,9 +49,8 @@ class MetaLabeling(Composite):
         >>> pipeline = MetaLabeling(
         ...     primary=LogisticRegression(),
         ...     meta=RandomForestClassifier(),
-        ...     positive_class=1.0,
         ... )
-        >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+        >>> preds, trained_pipeline, _, _ = train_backtest(pipeline, X, y, splitter)
 
 
     Outputs
@@ -71,15 +70,11 @@ class MetaLabeling(Composite):
         self,
         primary: Pipeline,
         meta: Pipeline,
-        positive_class: Union[int, float],
         primary_output_included: bool = False,
-        name: Optional[str] = None,
+        name: str | None = None,
     ) -> None:
         self.primary = wrap_in_double_list_if_needed(primary)
         self.meta = wrap_in_double_list_if_needed(meta)
-        self.positive_class = (
-            int(positive_class) if isinstance(positive_class, float) else positive_class
-        )
         self.primary_output_included = primary_output_included
         self.name = name or "MetaLabeling-" + get_concatenated_names(
             self.primary + self.meta
@@ -94,8 +89,8 @@ class MetaLabeling(Composite):
 
     def postprocess_result_primary(
         self,
-        results: List[pd.DataFrame],
-        y: Optional[pd.Series],
+        results: list[pd.DataFrame],
+        y: pd.Series | None,
         original_artifact: Artifact,
         fit: bool,
     ) -> pd.DataFrame:
@@ -109,74 +104,58 @@ class MetaLabeling(Composite):
         results_primary: pd.DataFrame,
         index: int,
         fit: bool,
-    ) -> Tuple[pd.DataFrame, T, Artifact]:
+    ) -> tuple[pd.DataFrame, T, Artifact]:
         X = (
-            pd.concat([X, results_primary], axis="columns")
+            concat_on_columns([X, results_primary])
             if self.primary_output_included
             else X
         )
+        if y is None:
+            return X, y, artifact
+
         predictions = get_prediction_column(results_primary)
-        y = y.astype(int) == predictions.astype(int)
-        return X, y, Artifact.empty(X.index)
+        y = (y.astype(int) == predictions.astype(int)).astype(float)
+        events = Artifact.get_events(artifact)
+        if events is None:
+            return X, y, events
+        events = events.copy()
+        events["event_label"] = y
+        return X, y, events
 
     def postprocess_result_secondary(
         self,
         primary_results: pd.DataFrame,
-        secondary_results: List[pd.DataFrame],
-        y: Optional[pd.Series],
+        secondary_results: list[pd.DataFrame],
+        y: pd.Series | None,
         in_sample: bool,
     ) -> pd.DataFrame:
-        primary_predictions = get_prediction_column(primary_results)
-        meta_probabilities = secondary_results[0][
-            [
-                col
-                for col in secondary_results[0].columns
-                if col.startswith("probabilities_")
-            ]
-        ]
-        meta_probabilities_positive_class = meta_probabilities[
-            [
-                col
-                for col in meta_probabilities.columns
-                if get_int_class(col.split("_")[-1]) == self.positive_class
-            ]
-        ]
-        if len(meta_probabilities_positive_class.columns) != 1:
-            raise ValueError(
-                "Meta pipeline needs to be concluded with probabilities of the"
-                f" positive class: {str(self.positive_class)}"
-            )
-        result = (
-            primary_predictions * meta_probabilities_positive_class.squeeze()
-        ).rename(f"predictions_{self.name}")
-        dc = {
-            col: f"probabilities_{self.name}_" + col.split("_")[-1]
-            for col in meta_probabilities.columns
-        }
-        meta_probabilities = meta_probabilities.rename(columns=dc)
-        return pd.concat([result, meta_probabilities], axis="columns")
+        primary_predictions = get_prediction_column(primary_results).mul(
+            get_prediction_column(secondary_results[0])
+        )
+        return concat_on_columns(
+            [primary_predictions, get_probabilities_columns(secondary_results[0])],
+        )
 
     def postprocess_artifacts_secondary(
         self,
         primary_artifacts: pd.DataFrame,
-        secondary_artifacts: List[Artifact],
+        secondary_artifacts: list[Artifact],
         original_artifact: Artifact,
     ) -> pd.DataFrame:
-        return original_artifact
+        return primary_artifacts
 
-    def get_children_primary(self) -> Pipelines:
+    def get_children_primary(self, only_traversal: bool) -> Pipelines:
         return self.primary
 
     def get_children_secondary(
         self,
-    ) -> Optional[Pipelines]:
+    ) -> Pipelines | None:
         return self.meta
 
     def clone(self, clone_children: Callable) -> MetaLabeling:
         clone = MetaLabeling(
             primary=clone_children(self.primary),
             meta=clone_children(self.meta),
-            positive_class=self.positive_class,
             primary_output_included=self.primary_output_included,
         )
         clone.properties = self.properties
@@ -189,9 +168,9 @@ class MetaLabeling(Composite):
 def get_int_class(input: str) -> int:
     if input.endswith(".0"):
         return int(float(input[:-2]))
-    elif input == "True":
+    if input == "True":
         return 1
-    elif input == "False":
+    if input == "False":
         return 0
-    else:
-        return int(input)
+
+    return int(input)

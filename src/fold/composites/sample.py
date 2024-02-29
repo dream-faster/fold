@@ -3,7 +3,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Callable, Optional, Tuple
+from collections.abc import Callable
+from typing import Any
 
 import pandas as pd
 
@@ -43,7 +44,7 @@ class Sample(Sampler):
         ...     sampler=RandomUnderSampler(),
         ...     pipeline=RandomForestClassifier(),
         ... )
-        >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+        >>> preds, trained_pipeline, _, _ = train_backtest(pipeline, X, y, splitter)
 
 
     References
@@ -52,7 +53,7 @@ class Sample(Sampler):
     """
 
     def __init__(
-        self, sampler: Any, pipeline: Pipeline, name: Optional[str] = None
+        self, sampler: Any, pipeline: Pipeline, name: str | None = None
     ) -> None:
         self.sampler = sampler
 
@@ -64,7 +65,7 @@ class Sample(Sampler):
 
     def preprocess_primary(
         self, X: pd.DataFrame, index: int, y: T, artifact: Artifact, fit: bool
-    ) -> Tuple[pd.DataFrame, T, Artifact]:
+    ) -> tuple[pd.DataFrame, T, Artifact]:
         if fit:
             X_resampled, y_resampled = self.sampler.fit_resample(X, y)
             X_resampled.columns = X.columns
@@ -73,10 +74,9 @@ class Sample(Sampler):
             artifact_resampled = artifact.iloc[self.sampler.sample_indices_]
             artifact_resampled.index = X_resampled.index
             return X_resampled, y_resampled, artifact_resampled
-        else:
-            return X, y, artifact
+        return X, y, artifact
 
-    def get_children_primary(self) -> Pipelines:
+    def get_children_primary(self, only_traversal: bool) -> Pipelines:
         return self.pipeline
 
     def clone(self, clone_children: Callable) -> Sample:

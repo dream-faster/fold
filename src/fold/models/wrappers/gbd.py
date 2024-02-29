@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from math import sqrt
-from typing import Any, Callable, Optional, Type, Union
+from typing import Any
 
 import pandas as pd
+from finml_utils.dataframes import concat_on_columns
 
 from fold.base import Tunable
 from fold.models.base import Model
@@ -17,15 +19,15 @@ class WrapGBM(Model, Tunable, ABC):
 
     def __init__(
         self,
-        model_class: Type,
-        init_args: Optional[dict] = {},
-        instance: Optional[Any] = None,
-        set_class_weights: Union[
-            ClassWeightingStrategy, str
-        ] = ClassWeightingStrategy.none,
-        params_to_try: Optional[dict] = None,
-        name: Optional[str] = None,
+        model_class: type,
+        init_args: dict | None = None,
+        instance: Any | None = None,
+        set_class_weights: ClassWeightingStrategy | str = ClassWeightingStrategy.none,
+        params_to_try: dict | None = None,
+        name: str | None = None,
     ) -> None:
+        if init_args is None:
+            init_args = {}
         self.init_args = init_args
         self.model_class = model_class
 
@@ -47,11 +49,9 @@ class WrapGBM(Model, Tunable, ABC):
     def from_model(
         cls,
         model,
-        set_class_weights: Union[
-            ClassWeightingStrategy, str
-        ] = ClassWeightingStrategy.none,
-        name: Optional[str] = None,
-        params_to_try: Optional[dict] = None,
+        set_class_weights: ClassWeightingStrategy | str = ClassWeightingStrategy.none,
+        name: str | None = None,
+        params_to_try: dict | None = None,
     ):
         return cls(
             model.__class__,
@@ -63,9 +63,15 @@ class WrapGBM(Model, Tunable, ABC):
         )
 
     def fit(
-        self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
+        self,
+        X: pd.DataFrame,
+        y: pd.Series,
+        sample_weights: pd.Series | None = None,
+        raw_y: pd.Series | None = None,
     ) -> None:
-        if self.set_class_weights in [
+        if self.get_model_type(
+            self.model
+        ) is Model.Properties.ModelType.classifier and self.set_class_weights in [
             ClassWeightingStrategy.balanced,
             ClassWeightingStrategy.balanced_sqrt,
         ]:
@@ -104,11 +110,15 @@ class WrapGBM(Model, Tunable, ABC):
         ).reindex(X.index)
 
     def update(
-        self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
+        self,
+        X: pd.DataFrame,
+        y: pd.Series,
+        sample_weights: pd.Series | None = None,
+        raw_y: pd.Series | None = None,
     ) -> None:
         raise NotImplementedError
 
-    def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
+    def predict(self, X: pd.DataFrame) -> pd.Series | pd.DataFrame:
         predictions = pd.Series(self.model.predict(X), index=X.index).rename(
             f"predictions_{self.name}"
         )
@@ -121,9 +131,8 @@ class WrapGBM(Model, Tunable, ABC):
                     for item in self.model.classes_
                 ],
             )
-            return pd.concat([predictions, probabilities], axis="columns")
-        else:
-            return predictions
+            return concat_on_columns([predictions, probabilities])
+        return predictions
 
     predict_in_sample = predict
 
@@ -134,7 +143,7 @@ class WrapGBM(Model, Tunable, ABC):
         }
 
     def clone_with_params(
-        self, parameters: dict, clone_children: Optional[Callable] = None
+        self, parameters: dict, clone_children: Callable | None = None
     ) -> Tunable:
         if "set_class_weights" in parameters:
             set_class_weights = parameters.pop("set_class_weights")
@@ -159,13 +168,17 @@ class WrapLGBM(WrapGBM):
 
         if isinstance(model, LGBMRegressor):
             return Model.Properties.ModelType.regressor
-        elif isinstance(model, LGBMClassifier):
+        if isinstance(model, LGBMClassifier):
             return Model.Properties.ModelType.classifier
-        else:
-            raise ValueError(f"Unknown model type: {type(model)}")
+
+        raise ValueError(f"Unknown model type: {type(model)}")
 
     def update(
-        self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
+        self,
+        X: pd.DataFrame,
+        y: pd.Series,
+        sample_weights: pd.Series | None = None,
+        raw_y: pd.Series | None = None,
     ) -> None:
         self.model.fit(
             X,
@@ -181,19 +194,19 @@ class WrapXGB(WrapGBM):
     def get_model_type(self, model) -> Model.Properties.ModelType:
         from xgboost import XGBClassifier, XGBRegressor, XGBRFClassifier, XGBRFRegressor
 
-        if isinstance(self.model, XGBRegressor) or isinstance(
-            self.model, XGBRFRegressor
-        ):
+        if isinstance(self.model, XGBRFRegressor | XGBRegressor):
             return Model.Properties.ModelType.regressor
-        elif isinstance(self.model, XGBClassifier) or isinstance(
-            self.model, XGBRFClassifier
-        ):
+        if isinstance(self.model, XGBClassifier | XGBRFClassifier):
             return Model.Properties.ModelType.classifier
-        else:
-            raise ValueError(f"Unknown model type: {type(self.model)}")
+
+        raise ValueError(f"Unknown model type: {type(self.model)}")
 
     def update(
-        self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
+        self,
+        X: pd.DataFrame,
+        y: pd.Series,
+        sample_weights: pd.Series | None = None,
+        raw_y: pd.Series | None = None,
     ) -> None:
         self.model.fit(
             X=X,

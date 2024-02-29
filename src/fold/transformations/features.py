@@ -3,9 +3,10 @@
 
 from __future__ import annotations
 
-from typing import Callable, List, Optional, Tuple, Union
+from collections.abc import Callable
 
 import pandas as pd
+from finml_utils.dataframes import concat_on_columns
 
 from ..base import (
     PredefinedFunction,
@@ -18,9 +19,9 @@ from ..utils.checks import get_list_column_names
 from ..utils.dataframe import apply_function_batched, fill_na_inf
 from ..utils.list import wrap_in_list
 
-ColumnOrColumns = Union[str, List[str]]
-FunctionOrPredefined = Union[Callable, PredefinedFunction, str]
-ColumnWindowFunction = Tuple[ColumnOrColumns, Optional[int], FunctionOrPredefined]
+ColumnOrColumns = str | list[str]
+FunctionOrPredefined = Callable | PredefinedFunction | str
+ColumnWindowFunction = tuple[ColumnOrColumns, int | None, FunctionOrPredefined]
 
 
 class AddWindowFeatures(Transformation, Tunable):
@@ -31,7 +32,7 @@ class AddWindowFeatures(Transformation, Tunable):
 
     Parameters
     ----------
-    column_window_func : ColumnWindowFunction, List[ColumnWindowFunction]
+    column_window_func : ColumnWindowFunction, list[ColumnWindowFunction]
         A list of tuples, where each tuple contains the column name, the window size and the function to apply.
         The function can be a predefined function (see PredefinedFunction) or a Callable (with a single parameter).
     fillna: bool = False
@@ -49,7 +50,7 @@ class AddWindowFeatures(Transformation, Tunable):
     >>> X, y  = generate_sine_wave_data()
     >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> pipeline = AddWindowFeatures(("sine", 10, "mean"))
-    >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+    >>> preds, trained_pipeline, _, _ = train_backtest(pipeline, X, y, splitter)
     >>> preds.head()
                            sine  sine~mean_10
     2021-12-31 15:40:00 -0.0000      -0.05649
@@ -63,15 +64,15 @@ class AddWindowFeatures(Transformation, Tunable):
 
     def __init__(
         self,
-        column_window_func: Union[ColumnWindowFunction, List[ColumnWindowFunction]],
+        column_window_func: ColumnWindowFunction | list[ColumnWindowFunction],
         fillna: bool = False,
         keep_original: bool = True,
-        batch_columns: Optional[int] = None,
-        output_dtype: Optional[type] = None,
-        name: Optional[str] = None,
-        params_to_try: Optional[dict] = None,
+        batch_columns: int | None = None,
+        output_dtype: type | None = None,
+        name: str | None = None,
+        params_to_try: dict | None = None,
     ) -> None:
-        def replace_nan(value: Optional[int], replacement: int = 0) -> int:
+        def replace_nan(value: int | None, replacement: int = 0) -> int:
             return value if value is not None else replacement
 
         self.column_window_func = [
@@ -102,7 +103,7 @@ class AddWindowFeatures(Transformation, Tunable):
             return df.astype(self.output_dtype) if self.output_dtype is not None else df
 
         def apply_function(
-            columns: List[str],
+            columns: list[str],
             window: int,
             function: Callable,
         ):
@@ -136,9 +137,9 @@ class AddWindowFeatures(Transformation, Tunable):
             for columns, window, function in self.column_window_func
         ]
         to_concat = (
-            [X] + X_function_applied if self.keep_original else X_function_applied
+            [X, *X_function_applied] if self.keep_original else X_function_applied
         )
-        concatenated = pd.concat(to_concat, copy=False, axis="columns")
+        concatenated = concat_on_columns(to_concat)
 
         return fill_na_inf(concatenated) if self.fillna else concatenated
 
@@ -146,7 +147,7 @@ class AddWindowFeatures(Transformation, Tunable):
     update = fit
 
 
-ColumnFunction = Tuple[ColumnOrColumns, Callable]
+ColumnFunction = tuple[ColumnOrColumns, Callable]
 
 
 class AddFeatures(Transformation, Tunable):
@@ -155,7 +156,7 @@ class AddFeatures(Transformation, Tunable):
 
     Parameters
     ----------
-    column_func: Tuple[Union[str, List[str]], Callable]
+    column_func: tuple[str | list[str], Callable]
         A tuple of a column or list of columns and a function to apply to them.
     fillna: bool = False
         Fill NaNs in the resulting DataFrame
@@ -166,7 +167,7 @@ class AddFeatures(Transformation, Tunable):
 
     Returns
     ----------
-    Tuple[pd.DataFrame, Optional[Artifact]]: returns the transformed DataFrame with the original dataframe concatinated.
+    tuple[pd.DataFrame, Artifact| None]: returns the transformed DataFrame with the original dataframe concatinated.
 
     Examples
     --------
@@ -180,7 +181,7 @@ class AddFeatures(Transformation, Tunable):
     >>> X, y  = generate_sine_wave_data()
     >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> pipeline = AddFeatures([("sine", np.square)])
-    >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+    >>> preds, trained_pipeline, _, _ = train_backtest(pipeline, X, y, splitter)
     >>> preds.head()
                            sine  sine~square
     2021-12-31 15:40:00 -0.0000     0.000000
@@ -196,14 +197,14 @@ class AddFeatures(Transformation, Tunable):
 
     def __init__(
         self,
-        column_func: Union[ColumnFunction, List[ColumnFunction]],
-        past_window_size: Optional[int] = None,
+        column_func: ColumnFunction | list[ColumnFunction],
+        past_window_size: int | None = None,
         fillna: bool = False,
         keep_original: bool = True,
-        batch_columns: Optional[int] = None,
-        output_dtype: Optional[type] = None,
-        name: Optional[str] = None,
-        params_to_try: Optional[dict] = None,
+        batch_columns: int | None = None,
+        output_dtype: type | None = None,
+        name: str | None = None,
+        params_to_try: dict | None = None,
     ) -> None:
         self.column_func = [
             (wrap_in_list(column), function)
@@ -226,28 +227,27 @@ class AddFeatures(Transformation, Tunable):
         def convert_dtype_if_needed(df: pd.DataFrame) -> pd.DataFrame:
             return df.astype(self.output_dtype) if self.output_dtype is not None else df
 
-        def apply_function(columns: List[str], function: Callable) -> pd.DataFrame:
+        def apply_function(columns: list[str], function: Callable) -> pd.DataFrame:
             function_name = (
                 function.__name__ if function.__name__ != "<lambda>" else "transformed"
             )
 
-            return convert_dtype_if_needed(
-                apply_function_batched(
-                    X[get_list_column_names(columns, X)].add_suffix(
-                        f"{feature_name_separator}{function_name}"
-                    ),
-                    function,
-                    self.batch_columns,
-                )
+            return apply_function_batched(
+                X[get_list_column_names(columns, X)].add_suffix(
+                    f"{feature_name_separator}{function_name}"
+                ),
+                lambda x: convert_dtype_if_needed(function(x)),
+                self.batch_columns,
+                display_progress=True,
             )
 
         X_function_applied = [
             apply_function(columns, function) for columns, function in self.column_func
         ]
         to_concat = (
-            [X] + X_function_applied if self.keep_original else X_function_applied
+            [X, *X_function_applied] if self.keep_original else X_function_applied
         )
-        concatenated = pd.concat(to_concat, copy=False, axis="columns")
+        concatenated = concat_on_columns(to_concat)
         return fill_na_inf(concatenated) if self.fillna else concatenated
 
     fit = fit_noop
@@ -257,13 +257,13 @@ class AddFeatures(Transformation, Tunable):
 class AddRollingCorrelation(Transformation, Tunable):
     def __init__(
         self,
-        column_pairs: Union[Tuple[str], List[Tuple[str]]],
+        column_pairs: tuple[str] | list[tuple[str]],
         window: int,
         fillna: bool = False,
         keep_original: bool = True,
-        output_dtype: Optional[type] = None,
-        name: Optional[str] = None,
-        params_to_try: Optional[dict] = None,
+        output_dtype: type | None = None,
+        name: str | None = None,
+        params_to_try: dict | None = None,
     ) -> None:
         self.column_pairs = wrap_in_list(column_pairs)
         self.fillna = fillna
@@ -284,7 +284,7 @@ class AddRollingCorrelation(Transformation, Tunable):
             return df.astype(self.output_dtype) if self.output_dtype is not None else df
 
         def apply_function(
-            column_pair: Tuple[str],
+            column_pair: tuple[str],
             window: int,
         ):
             lhs = column_pair[0]
@@ -301,9 +301,9 @@ class AddRollingCorrelation(Transformation, Tunable):
             for column_pair in self.column_pairs
         ]
         to_concat = (
-            [X] + X_function_applied if self.keep_original else X_function_applied
+            [X, *X_function_applied] if self.keep_original else X_function_applied
         )
-        concatenated = pd.concat(to_concat, copy=False, axis="columns")
+        concatenated = concat_on_columns(to_concat)
         return fill_na_inf(concatenated) if self.fillna else concatenated
 
     fit = fit_noop

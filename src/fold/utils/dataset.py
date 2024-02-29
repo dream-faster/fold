@@ -3,11 +3,8 @@
 
 from __future__ import annotations
 
-from typing import Optional, Tuple, Union
-
 import pandas as pd
-
-from .enums import ParsableEnum
+from finml_utils.enums import ParsableEnum
 
 
 def load_dataset(
@@ -25,10 +22,10 @@ class DeduplicationStrategy(ParsableEnum):
 def __process_dataset(
     df: pd.DataFrame,
     target_col: str,
-    resample: Optional[str] = None,
-    deduplication_strategy: Optional[Union[DeduplicationStrategy, str]] = None,
-    shorten: Optional[int] = None,
-) -> Tuple[pd.DataFrame, pd.Series]:
+    resample: str | None = None,
+    deduplication_strategy: DeduplicationStrategy | str | None = None,
+    shorten: int | None = None,
+) -> tuple[pd.DataFrame, pd.Series]:
     if deduplication_strategy is not None:
         df = df[
             ~df.index.duplicated(
@@ -49,10 +46,10 @@ def get_preprocessed_dataset(
     dataset_name: str,
     target_col: str,
     base_path: str = "https://raw.githubusercontent.com/dream-faster/datasets/main/datasets",
-    resample: Optional[str] = None,
-    deduplication_strategy: Optional[Union[DeduplicationStrategy, str]] = None,
-    shorten: Optional[int] = None,
-) -> Tuple[pd.DataFrame, pd.Series]:
+    resample: str | None = None,
+    deduplication_strategy: DeduplicationStrategy | str | None = None,
+    shorten: int | None = None,
+) -> tuple[pd.DataFrame, pd.Series]:
     return __process_dataset(
         load_dataset(dataset_name, base_path),
         target_col=target_col,

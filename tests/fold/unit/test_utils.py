@@ -5,23 +5,19 @@ import pandas as pd
 import pytest
 from sklearn.feature_selection import SelectKBest, VarianceThreshold, f_regression
 
-from fold.base import Artifact, Composite, traverse, traverse_apply
+from fold.base import Composite, traverse, traverse_apply
 from fold.composites.concat import Concat
 from fold.composites.target import TransformTarget
 from fold.composites.utils import _clean_params
 from fold.models.base import postpostprocess_output
-from fold.transformations.dev import Lookahead, Test
-from fold.transformations.difference import Difference
+from fold.transformations.dev import Identity, Test
+from fold.transformations.difference import Difference, StationaryMethod
 from fold.transformations.math import TakeLog
 from fold.transformations.sklearn import WrapSKLearnFeatureSelector
 from fold.utils.checks import get_column_names
 from fold.utils.dataframe import apply_function_batched, to_series
 from fold.utils.tests import generate_zeros_and_ones
-from fold.utils.trim import (
-    get_first_valid_index,
-    trim_initial_nans,
-    trim_initial_nans_single,
-)
+from fold.utils.trim import get_first_valid_index
 
 
 def test_get_first_valid_index():
@@ -31,56 +27,6 @@ def test_get_first_valid_index():
     assert get_first_valid_index(pd.Series([np.nan, np.nan, np.nan])) is None
     assert get_first_valid_index(pd.Series([np.nan, np.nan, np.nan, 4])) == 3
     assert get_first_valid_index(pd.Series([np.nan, np.nan, np.nan, 4, 5])) == 3
-
-
-def test_trim_initial_nans():
-    X = pd.DataFrame(
-        {
-            "a": [np.nan, np.nan, 3, 4, 5],
-            "b": [np.nan, np.nan, np.nan, 4, 5],
-        }
-    )
-    y = pd.Series([1, 2, 3, 4, 5])
-    trimmed_X, trimmed_y, _ = trim_initial_nans(
-        X,
-        y,
-        Artifact.from_events(y.index, events=None),
-    )
-    assert trimmed_X.equals(X.iloc[3:])
-    assert trimmed_y.equals(y.iloc[3:])
-    assert trim_initial_nans_single(X).equals(X.iloc[3:])
-
-    X = pd.DataFrame(
-        {
-            "a": [0.0, 0.0, 3, 4, 5],
-            "b": [np.nan, np.nan, 0.1, 4, 5],
-        }
-    )
-    y = pd.Series([1, 2, 3, 4])
-    trimmed_X, trimmed_y, _ = trim_initial_nans(
-        X,
-        y,
-        Artifact.from_events(index=y.index, events=None),
-    )
-    assert trimmed_X.equals(X.iloc[2:])
-    assert trimmed_X.equals(X.iloc[2:])
-    assert trimmed_y.equals(y.iloc[2:])
-    assert trim_initial_nans_single(X).equals(X.iloc[2:])
-
-    X = pd.DataFrame(
-        {
-            "a": [0.0, 0.0, 3, 4, 5],
-            "b": [np.nan, np.nan, np.nan, np.nan, np.nan],
-        }
-    )
-    y = pd.Series([1, 2, 3, 4])
-    trimmed_X, trimmed_y, _ = trim_initial_nans(
-        X,
-        y,
-        Artifact.from_events(index=y.index, events=None),
-    )
-    assert len(trimmed_X) == 0
-    assert len(trimmed_y) == 0
 
 
 def test_to_series_df_more_columns():
@@ -107,20 +53,19 @@ def test_traverse_apply():
     pipeline = TransformTarget(
         [
             Test(fit_func=lambda x: x, transform_func=lambda x: x),
-            Lookahead(),
+            Identity(),
         ],
-        y_pipeline=[TakeLog(), Difference()],
+        y_pipeline=[TakeLog(), Difference(method=StationaryMethod.difference)],
     )
 
     def set_value_on_lookahead(x, clone_children):
-        if isinstance(x, Lookahead):
-            x = Lookahead()
+        if isinstance(x, Identity):
+            x = Identity()
             x.value = 1
             return x
-        elif isinstance(x, Composite):
+        if isinstance(x, Composite):
             return x.clone(clone_children)
-        else:
-            return x
+        return x
 
     modified_pipeline = traverse_apply(pipeline, set_value_on_lookahead)
     assert modified_pipeline.wrapped_pipeline[0][1].value == 1
@@ -131,9 +76,9 @@ def test_traverse():
     pipeline = TransformTarget(
         [
             Test(fit_func=lambda x: x, transform_func=lambda x: x),
-            Lookahead(),
+            Identity(),
         ],
-        y_pipeline=[TakeLog(), Difference()],
+        y_pipeline=[TakeLog(), Difference(method=StationaryMethod.difference)],
     )
 
     transformations = list(traverse(pipeline))
@@ -142,8 +87,8 @@ def test_traverse():
 
 def test_unique_id_per_instance() -> None:
     transformations = [
-        Difference(),
-        Difference(),
+        Difference(method=StationaryMethod.difference),
+        Difference(method=StationaryMethod.difference),
     ]
     assert transformations[0].id != transformations[1].id
 
@@ -158,8 +103,8 @@ def test_unique_id_per_instance() -> None:
 
 def test_cloning() -> None:
     transformations = [
-        Difference(),
-        Difference(),
+        Difference(method=StationaryMethod.difference),
+        Difference(method=StationaryMethod.difference),
     ]
     assert deepcopy(transformations[0]).id == transformations[0].id
     assert deepcopy(transformations[1]).id == transformations[1].id
@@ -178,8 +123,18 @@ def test_cloning() -> None:
     assert deepcopy(transformations)[1].id == transformations[1].id
 
     composites = [
-        Concat([Difference(), Difference()]),
-        Concat([Difference(), Difference()]),
+        Concat(
+            [
+                Difference(method=StationaryMethod.difference),
+                Difference(method=StationaryMethod.difference),
+            ]
+        ),
+        Concat(
+            [
+                Difference(method=StationaryMethod.difference),
+                Difference(method=StationaryMethod.difference),
+            ]
+        ),
     ]
     assert deepcopy(composites[0]).id == composites[0].id
     assert deepcopy(composites[1]).id == composites[1].id
@@ -246,7 +201,7 @@ def test_apply_function_batched():
     assert apply_function_batched(df, np.log, 4).equals(np.log(df))
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_dataframe():
     return pd.DataFrame(
         {"col1": [1, 2, 3], "nocol2": ["a", "b", "c"], "nocol3": [True, False, True]}

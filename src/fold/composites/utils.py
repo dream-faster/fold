@@ -1,6 +1,6 @@
 from collections import Counter
+from collections.abc import Callable
 from copy import deepcopy
-from typing import Callable, List, Union
 
 from deepmerge import always_merger
 
@@ -14,7 +14,7 @@ def _process_params(params_to_try: dict) -> dict:
     return params_to_try
 
 
-def _get_tunables_with_params_to_try(pipeline: Pipeline) -> List[Tunable]:
+def _get_tunables_with_params_to_try(pipeline: Pipeline) -> list[Tunable]:
     return [
         i
         for i in traverse(pipeline)
@@ -24,13 +24,12 @@ def _get_tunables_with_params_to_try(pipeline: Pipeline) -> List[Tunable]:
 
 def _apply_params(params: dict) -> Callable:
     def __apply_params_to_transformation(
-        item: Union[Composite, Transformation], clone_children: Callable
-    ) -> Union[Composite, Transformation]:
+        item: Composite | Transformation, clone_children: Callable
+    ) -> Composite | Transformation:
         if not isinstance(item, Tunable):
             if isinstance(item, Clonable):
                 return item.clone(clone_children)
-            else:
-                return item
+            return item
         selected_params = params.get(item.name, {})
         if "passthrough" in selected_params and selected_params["passthrough"] is True:
             return Identity()  # type: ignore
@@ -44,9 +43,9 @@ def _apply_params(params: dict) -> Callable:
     return __apply_params_to_transformation
 
 
-def _clean_params(
-    params_to_try: dict, keys: List[str] = ["passthrough", "_conditional"]
-) -> dict:
+def _clean_params(params_to_try: dict, keys: list[str] | None = None) -> dict:
+    if keys is None:
+        keys = ["passthrough", "_conditional"]
     return {
         k: _clean_params(v) if isinstance(v, dict) else deepcopy(v)
         for k, v in params_to_try.items()
@@ -66,9 +65,8 @@ def _check_for_duplicate_names(pipeline: Pipeline):
 def _extract_param_grid(pipeline: Pipeline, divider: str = "¦"):
     tunables = _get_tunables_with_params_to_try(pipeline)
 
-    param_grid = {
+    return {
         f"{transformation.name}{divider}{key}": value
         for transformation in tunables
         for key, value in _process_params(transformation.get_params_to_try()).items()
     }
-    return param_grid

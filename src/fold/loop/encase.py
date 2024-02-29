@@ -1,12 +1,14 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
+from __future__ import annotations
 
-
-from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple, Union
+from typing import TYPE_CHECKING
 
 import pandas as pd
+from finml_utils.dataframes import concat_on_index_without_duplicates
 
 from ..base import (
     Artifact,
+    Backend,
     EventDataFrame,
     InSamplePredictions,
     OutOfSamplePredictions,
@@ -16,10 +18,9 @@ from ..base import (
 )
 from ..base.scoring import score_results
 from ..splitters import Splitter
-from ..utils.dataframe import concat_on_index_override_duplicate_rows
 from .backtesting import backtest
 from .training import train
-from .types import Backend, BackendType, TrainMethod
+from .types import BackendType
 
 if TYPE_CHECKING:
     from krisi import ScoreCard
@@ -27,18 +28,18 @@ if TYPE_CHECKING:
 
 def backtest_score(
     trained_pipelines: TrainedPipelineCard,
-    X: Optional[pd.DataFrame],
+    X: pd.DataFrame | None,
     y: pd.Series,
     splitter: Splitter,
-    backend: Union[BackendType, Backend, str] = BackendType.no,
-    events: Optional[EventDataFrame] = None,
+    backend: BackendType | Backend | str = BackendType.no,
+    events: EventDataFrame | None = None,
     silent: bool = False,
     return_artifacts: bool = False,
-    krisi_args: Optional[dict] = None,
-) -> Union[
-    Tuple["ScoreCard", OutOfSamplePredictions],
-    Tuple["ScoreCard", OutOfSamplePredictions, Artifact],
-]:
+    krisi_args: dict | None = None,
+) -> (
+    tuple[ScoreCard, OutOfSamplePredictions]
+    | tuple[ScoreCard, OutOfSamplePredictions, Artifact]
+):
     """
     Run backtest then scoring.
     [`krisi`](https://github.com/dream-faster/krisi) is required to be installed.
@@ -47,7 +48,7 @@ def backtest_score(
     ----------
     trained_pipelines: TrainedPipelineCard
         The fitted pipelines, for all folds.
-    X: Optional[pd.DataFrame]
+    X: pd.DataFrame | None
         Exogenous Data.
     y: pd.Series
         Endogenous Data (Target).
@@ -61,7 +62,7 @@ def backtest_score(
         Wether the pipeline should print to the console, by default False.
     return_artifacts: bool = False
         Whether to return the artifacts of the training process, by default False.
-    krisi_args: Optional[Dict[str, Any]] = None
+    krisi_args: dict | None = None
         Arguments that will be passed into `krisi` score function, by default None.
 
     Returns
@@ -91,26 +92,18 @@ def backtest_score(
     )
     if return_artifacts:
         return scorecard, pred, artifacts
-    else:
-        return scorecard, pred
+    return scorecard, pred
 
 
 def train_backtest(
-    pipeline: Union[Pipeline, PipelineCard],
-    X: Optional[pd.DataFrame],
+    pipeline: Pipeline | PipelineCard,
+    X: pd.DataFrame | None,
     y: pd.Series,
     splitter: Splitter,
-    backend: Union[BackendType, Backend, str] = BackendType.no,
-    events: Optional[EventDataFrame] = None,
-    train_method: Union[TrainMethod, str] = TrainMethod.parallel,
+    backend: BackendType | Backend | str = BackendType.no,
+    events: EventDataFrame | None = None,
     silent: bool = False,
-    return_artifacts: bool = False,
-    return_insample: bool = False,
-) -> Union[
-    Tuple[OutOfSamplePredictions, TrainedPipelineCard],
-    Tuple[OutOfSamplePredictions, TrainedPipelineCard, Artifact],
-    Tuple[OutOfSamplePredictions, TrainedPipelineCard, Artifact, InSamplePredictions],
-]:
+) -> tuple[OutOfSamplePredictions, TrainedPipelineCard, Artifact, InSamplePredictions]:
     """
     Run train and backtest.
 
@@ -118,7 +111,7 @@ def train_backtest(
     ----------
     pipeline: Union[Pipeline, PipelineCard]
         The pipeline to be fitted.
-    X: Optional[pd.DataFrame]
+    X: pd.DataFrame | None
         Exogenous Data.
     y: pd.Series
         Endogenous Data (Target).
@@ -128,8 +121,6 @@ def train_backtest(
         The library/service to use for parallelization / distributed computing, by default `no`.
     events: EventDataFrame, optional = None
         Events that should be passed into the pipeline, by default None.
-    train_method: TrainMethod, str = TrainMethod.parallel
-        The training methodology, by default `parallel`.
     silent: bool = False
         Wether the pipeline should print to the console, by default False.
     return_artifacts: bool = False
@@ -149,11 +140,8 @@ def train_backtest(
         y,
         splitter,
         events=events,
-        train_method=train_method,
         backend=backend,
         silent=silent,
-        return_artifacts=True,
-        return_insample=True,
     )
 
     pred, backtest_artifacts = backtest(
@@ -167,59 +155,28 @@ def train_backtest(
         return_artifacts=True,
     )
 
-    if return_artifacts:
-        artifacts = concat_on_index_override_duplicate_rows(
-            [train_artifacts, backtest_artifacts],
-        )
-        assert artifacts.index.is_monotonic_increasing
-        if return_insample:
-            return pred, trained_pipelines, artifacts, insample_predictions
-        else:
-            return pred, trained_pipelines, artifacts
-    else:
-        if return_insample:
-            return pred, trained_pipelines, insample_predictions
-        else:
-            return pred, trained_pipelines
+    artifacts = concat_on_index_without_duplicates(
+        [train_artifacts, backtest_artifacts],
+    )
+    assert artifacts.index.is_monotonic_increasing
+    return pred, trained_pipelines, artifacts, insample_predictions
 
 
 def train_evaluate(
-    pipeline: Union[Pipeline, PipelineCard],
-    X: Optional[pd.DataFrame],
+    pipeline: Pipeline | PipelineCard,
+    X: pd.DataFrame | None,
     y: pd.Series,
     splitter: Splitter,
-    backend: Union[BackendType, Backend, str] = BackendType.no,
-    events: Optional[EventDataFrame] = None,
-    train_method: Union[TrainMethod, str] = TrainMethod.parallel,
+    backend: BackendType | Backend | str = BackendType.no,
+    events: EventDataFrame | None = None,
     silent: bool = False,
-    return_artifacts: bool = False,
-    return_insample_scorecard: bool = False,
-    krisi_args: Optional[Dict[str, Any]] = None,
-) -> Union[
-    Tuple[
-        "ScoreCard",
-        OutOfSamplePredictions,
-        TrainedPipelineCard,
-    ],
-    Tuple[
-        "ScoreCard",
-        OutOfSamplePredictions,
-        TrainedPipelineCard,
-        Artifact,
-        "ScoreCard",
-    ],
-    Tuple[
-        "ScoreCard",
-        OutOfSamplePredictions,
-        TrainedPipelineCard,
-        Artifact,
-    ],
-    Tuple[
-        "ScoreCard",
-        OutOfSamplePredictions,
-        TrainedPipelineCard,
-        "ScoreCard",
-    ],
+    krisi_args: dict | None = None,
+) -> tuple[
+    ScoreCard,
+    OutOfSamplePredictions,
+    TrainedPipelineCard,
+    Artifact,
+    ScoreCard,
 ]:
     """
     Run train, backtest then run scoring.
@@ -239,11 +196,9 @@ def train_evaluate(
         The library/service to use for parallelization / distributed computing, by default `no`.
     events: EventDataFrame, optional = None
         Events that should be passed into the pipeline, by default None.
-    train_method: TrainMethod, str = TrainMethod.parallel
-        The training methodology, by default `parallel`.
     silent: bool = False
         Wether the pipeline should print to the console, by default False.
-    krisi_args: Dict[str, Any], optional = None
+    krisi_args: dict, optional = None
         Arguments that will be passed into `krisi` score function, by default None.
 
     Returns
@@ -261,11 +216,8 @@ def train_evaluate(
         y,
         splitter,
         events=events,
-        train_method=train_method,
         backend=backend,
         silent=silent,
-        return_artifacts=True,
-        return_insample=True,
     )
 
     scorecard, pred, backtest_artifacts = backtest_score(
@@ -279,22 +231,17 @@ def train_evaluate(
         return_artifacts=True,
         krisi_args=dict(sample_type="validation", **(krisi_args or {})),
     )
+    scorecard_insample, _ = score_results(
+        insample_predictions,
+        y,
+        artifacts=train_artifacts,
+        krisi_args=dict(sample_type="insample", **(krisi_args or {})),
+    )
 
-    return_object = [scorecard, pred, trained_pipelines]
-
-    if return_artifacts:
-        concatinated_artifacts = concat_on_index_override_duplicate_rows(
-            [train_artifacts, backtest_artifacts]
-        )
-        return_object.append(concatinated_artifacts)
-
-    if return_insample_scorecard:
-        scorecard_insample, _ = score_results(
-            insample_predictions,
-            y,
-            artifacts=train_artifacts,
-            krisi_args=dict(sample_type="insample", **(krisi_args or {})),
-        )
-        return_object.append(scorecard_insample)
-
-    return tuple(return_object)
+    return (
+        scorecard,
+        pred,
+        trained_pipelines,
+        concat_on_index_without_duplicates([train_artifacts, backtest_artifacts]),
+        scorecard_insample,
+    )

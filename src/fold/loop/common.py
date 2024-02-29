@@ -4,13 +4,18 @@
 from __future__ import annotations
 
 import logging
-from typing import List, Optional, Tuple, TypeVar, Union
+from typing import TypeVar
 
 import pandas as pd
+from finml_utils.dataframes import concat_on_columns, concat_on_index, trim_initial_nans
 from tqdm import tqdm
+from fold.base.classes import BlockMetadata
+
+from fold.loop.backend.sequential import NoBackend
 
 from ..base import (
     Artifact,
+    Backend,
     Composite,
     Optimizer,
     Pipeline,
@@ -21,17 +26,11 @@ from ..base import (
     X,
 )
 from ..models.base import Model
-from ..splitters import Fold
+from ..splitters import Fold, get_splits
 from ..utils.checks import is_prediction
-from ..utils.dataframe import concat_on_columns
 from ..utils.list import unpack_list_of_tuples
-from ..utils.trim import trim_initial_nans_single
-from .process.process_inner_loop import _process_with_inner_loop
-from .process.process_minibatch import (
-    _process_internal_online_model_minibatch_inference_and_update,
-    _process_minibatch_transformation,
-)
-from .types import Backend, Stage
+from .process.process_minibatch import _process_minibatch_transformation
+from .types import Stage
 from .utils import (
     _cut_to_backtesting_window,
     _cut_to_train_window,
@@ -46,19 +45,17 @@ DEBUG_MULTI_PROCESSING = False
 
 T = TypeVar(
     "T",
-    bound=Union[
-        Transformation,
-        Composite,
-        Optimizer,
-        Sampler,
-        List[Union[Transformation, Optimizer, Sampler, Composite]],
-    ],
+    bound=Transformation
+    | Composite
+    | Optimizer
+    | Sampler
+    | list[Transformation | Optimizer | Sampler | Composite],
 )
 
 
 def __post_checks(
     pipeline: T, X: pd.DataFrame, artifacts: Artifact
-) -> Tuple[T, X, Artifact]:
+) -> tuple[T, X, Artifact]:
     assert X.shape[0] == artifacts.shape[0]
     assert X.index.equals(artifacts.index)
     return pipeline, X, artifacts
@@ -66,23 +63,22 @@ def __post_checks(
 
 def recursively_transform(
     X: X,
-    y: Optional[pd.Series],
+    y: pd.Series | None,
     artifacts: Artifact,
     transformations: T,
     stage: Stage,
     backend: Backend,
-    tqdm: Optional[tqdm] = None,
-) -> Tuple[T, X, Artifact]:
+    tqdm: tqdm | None = None,
+) -> tuple[T, X, Artifact]:
     """
     The main function to transform (and fit or update) a pipline of transformations.
-    `stage` is used to determine whether to run the inner loop for online models.
     """
     logger.debug(f"Processing {transformations.__class__.__name__} with stage {stage}")
 
     if tqdm is not None and hasattr(transformations, "name"):
         tqdm.set_description(f"Processing: {transformations.name}")
 
-    if isinstance(transformations, List) or isinstance(transformations, Tuple):
+    if isinstance(transformations, list | tuple):
         processed_transformations = []
         for transformation in transformations:
             processed_transformation, X, artifacts = recursively_transform(
@@ -97,7 +93,7 @@ def recursively_transform(
             processed_transformations.append(processed_transformation)
         return __post_checks(processed_transformations, X, artifacts)
 
-    elif isinstance(transformations, Composite):
+    if isinstance(transformations, Composite):
         return __post_checks(
             *_process_composite(
                 transformations,
@@ -109,7 +105,7 @@ def recursively_transform(
                 tqdm,
             )
         )
-    elif isinstance(transformations, Optimizer):
+    if isinstance(transformations, Optimizer):
         return __post_checks(
             *_process_optimizer(
                 transformations,
@@ -122,7 +118,7 @@ def recursively_transform(
             )
         )
 
-    elif isinstance(transformations, Sampler):
+    if isinstance(transformations, Sampler):
         return __post_checks(
             *_process_sampler(
                 transformations,
@@ -135,60 +131,34 @@ def recursively_transform(
             )
         )
 
-    elif isinstance(transformations, Transformation) or isinstance(
-        transformations, Model
-    ):
-        # If the transformation needs to be "online", and we're in the update stage, we need to run the inner loop.
-        if (
-            transformations.properties.mode == Transformation.Properties.Mode.online
-            and stage in [Stage.update, Stage.update_online_only]
-            and not transformations.properties._internal_supports_minibatch_backtesting
-        ):
-            return __post_checks(
-                *_process_with_inner_loop(transformations, X, y, artifacts)
+    if isinstance(transformations, Model | Transformation):
+        return __post_checks(
+            *_process_minibatch_transformation(
+                transformations,
+                X,
+                y,
+                artifacts,
+                stage,
             )
-        # If the transformation is "online" but also supports our internal "mini-batch"-style updating
-        elif (
-            transformations.properties.mode == Transformation.Properties.Mode.online
-            and stage in [Stage.update, Stage.update_online_only]
-            and transformations.properties._internal_supports_minibatch_backtesting
-        ):
-            return __post_checks(
-                *_process_internal_online_model_minibatch_inference_and_update(
-                    transformations, X, y, artifacts
-                )
-            )
-
-        # or perform "mini-batch" updating OR the initial fit.
-        else:
-            return __post_checks(
-                *_process_minibatch_transformation(
-                    transformations,
-                    X,
-                    y,
-                    artifacts,
-                    stage,
-                )
-            )
-
-    else:
-        raise ValueError(
-            f"{transformations} is not a Fold Transformation, but of type"
-            f" {type(transformations)}"
         )
+
+    raise ValueError(
+        f"{transformations} is not a Fold Transformation, but of type"
+        f" {type(transformations)}"
+    )
 
 
 def _process_composite(
     composite: Composite,
     X: pd.DataFrame,
-    y: Optional[pd.Series],
+    y: pd.Series | None,
     artifacts: Artifact,
     stage: Stage,
     backend: Backend,
-    tqdm: Optional[tqdm] = None,
-) -> Tuple[Composite, X, Artifact]:
+    tqdm: tqdm | None = None,
+) -> tuple[Composite, X, Artifact]:
     composite.before_fit(X)
-    primary_transformations = composite.get_children_primary()
+    primary_transformations = composite.get_children_primary(only_traversal=False)
 
     (
         primary_transformations,
@@ -211,10 +181,8 @@ def _process_composite(
     )
     if composite.properties.artifacts_length_should_match:
         assert all(
-            [
-                r.shape[0] == a.shape[0]
-                for r, a in zip(results_primary, artifacts_primary)
-            ]
+            r.shape[0] == a.shape[0]
+            for r, a in zip(results_primary, artifacts_primary, strict=True)
         ), ValueError("Artifacts shape doesn't match result's length.")
     composite = composite.clone(replace_with(primary_transformations))
 
@@ -235,12 +203,12 @@ def _process_composite(
         results=results_primary,
         y=y_primary[0],
         original_artifact=artifacts,
-        fit=stage.is_fit_or_update(),
+        fit=stage.is_fit(),
     )
     artifacts_primary = composite.postprocess_artifacts_primary(
         primary_artifacts=artifacts_primary,
         results=original_results_primary,
-        fit=stage.is_fit_or_update(),
+        fit=stage.is_fit(),
         original_artifact=artifacts,
     )
     if composite.properties.artifacts_length_should_match:
@@ -302,13 +270,13 @@ def _process_composite(
 def _process_sampler(
     sampler: Sampler,
     X: pd.DataFrame,
-    y: Optional[pd.Series],
+    y: pd.Series | None,
     artifacts: Artifact,
     stage: Stage,
     backend: Backend,
-    tqdm: Optional[tqdm] = None,
-) -> Tuple[Composite, X, Artifact]:
-    primary_transformations = sampler.get_children_primary()
+    tqdm: tqdm | None = None,
+) -> tuple[Composite, X, Artifact]:
+    primary_transformations = sampler.get_children_primary(only_traversal=False)
 
     (
         primary_transformations,
@@ -337,7 +305,7 @@ def _process_sampler(
     )
 
     if stage is Stage.inital_fit:
-        secondary_transformations = sampler.get_children_primary()
+        secondary_transformations = sampler.get_children_primary(only_traversal=False)
         (
             secondary_transformations,
             primary_results,
@@ -369,19 +337,19 @@ def _process_sampler(
 def _process_optimizer(
     optimizer: Optimizer,
     X: pd.DataFrame,
-    y: Optional[pd.Series],
+    y: pd.Series | None,
     artifacts: Artifact,
     stage: Stage,
     backend: Backend,
-    tqdm: Optional[tqdm] = None,
-) -> Tuple[Pipeline, X, Artifact]:
+    tqdm: tqdm | None = None,
+) -> tuple[Pipeline, X, Artifact]:
     if tqdm is not None:
         tqdm.set_description(f"Processing: {optimizer.name}")
     optimized_pipeline = optimizer.get_optimized_pipeline()
     artifact = None
     if optimized_pipeline is None:
         while True:
-            candidates = optimizer.get_candidates()
+            candidates = optimizer.get_candidates(only_traversal=False)
             if len(candidates) == 0:
                 break
 
@@ -394,12 +362,12 @@ def _process_optimizer(
                     y,
                     artifacts,
                     stage,
-                    backend,
+                    optimizer.backend if optimizer.backend is not None else backend,
                     None,
                     None,
                 )
             )
-            results = [trim_initial_nans_single(result) for result in results]
+            results = [trim_initial_nans(result) for result in results]
             artifact = optimizer.process_candidate_results(
                 results,
                 y=y.loc[results[0].index],
@@ -410,7 +378,7 @@ def _process_optimizer(
     processed_optimized_pipeline, X, artifact = recursively_transform(
         X,
         y,
-        concat_on_columns([artifact, artifacts], copy=False),
+        concat_on_columns([artifact, artifacts]),
         optimized_pipeline,
         stage,
         backend,
@@ -423,63 +391,72 @@ def __process_candidates(
     index: int,
     child_transform: Pipeline,
     X: pd.DataFrame,
-    y: Optional[pd.Series],
+    y: pd.Series | None,
     artifacts: Artifact,
     stage: Stage,
     backend: Backend,
-    results_primary: Optional[List[pd.DataFrame]],
-    tqdm: Optional[tqdm] = None,
-) -> Tuple[Pipeline, X, Artifact]:
-    splits = optimizer.splitter.splits(y.index)
-
-    (
-        processed_idx,
-        processed_pipelines,
-        processed_predictions,
-        processed_artifacts,
-    ) = _sequential_train_on_window(
-        child_transform,
-        X,
-        y,
-        splits,
-        artifacts,
-        backend=backend,
-        project_name=f"HPO-{optimizer.name}",
-        project_hyperparameters=None,
+    results_primary: list[pd.DataFrame] | None,
+    tqdm: tqdm | None = None,
+) -> tuple[Pipeline, X, Artifact]:
+    splits = get_splits(
+        index=y.index,
+        splitter=optimizer.splitter,
+        gap_before=optimizer.metadata.project_hyperparameters["forward_horizon"]
+        if optimizer.metadata.project_hyperparameters
+        else 0,
+        gap_after=0,
+    )
+    (processed_idx, processed_pipelines, _, _) = unpack_list_of_tuples(
+        backend.train_pipeline(
+            _train_on_window,
+            pipeline=child_transform,
+            X=X,
+            y=y,
+            artifact=artifacts,
+            splits=splits,
+            backend=NoBackend(),
+            project_name=f"HPO-{optimizer.name}",
+            project_hyperparameters=None,
+            preprocessing_max_memory_size=optimizer.metadata.preprocessing_max_memory_size,
+            silent=True,
+        )
     )
     trained_pipelines = _extract_trained_pipelines(processed_idx, processed_pipelines)
 
-    result, artifact = _backtest_on_window(
-        trained_pipelines,
-        splits[0],
-        X,
-        y,
-        artifacts,
-        backend,
-        mutate=False,
+    results, artifacts = unpack_list_of_tuples(
+        backend.backtest_pipeline(
+            _backtest_on_window,
+            trained_pipelines,
+            splits,
+            X,
+            y,
+            artifacts,
+            backend=NoBackend(),
+            mutate=False,
+            silent=True,
+        )
     )
-    assert result.index.equals(artifact.index)
     return (
         trained_pipelines,
-        trim_initial_nans_single(result),
-        artifact,
+        trim_initial_nans(concat_on_index(results)),
+        concat_on_index(artifacts),
     )
 
 
 def __process_primary_child_transform(
-    composite: Union[Composite, Sampler],
+    composite: Composite | Sampler,
     index: int,
     child_transform: Pipeline,
     X: pd.DataFrame,
-    y: Optional[pd.Series],
+    y: pd.Series | None,
     artifacts: Artifact,
     stage: Stage,
     backend: Backend,
-    results_primary: Optional[List[pd.DataFrame]],
-    tqdm: Optional[tqdm] = None,
-) -> Tuple[Pipeline, X, Optional[pd.Series], Artifact]:
+    results_primary: list[pd.DataFrame] | None,
+    tqdm: tqdm | None = None,
+) -> tuple[Pipeline, X, pd.Series | None, Artifact]:
     X, y, artifacts = composite.preprocess_primary(
-        X=X, index=index, y=y, artifact=artifacts, fit=stage.is_fit_or_update()
+        X=X, index=index, y=y, artifact=artifacts, fit=stage.is_fit()
     )
     transformations, X, artifacts = recursively_transform(
         X,
@@ -498,20 +475,20 @@ def __process_secondary_child_transform(
     index: int,
     child_transform: Pipeline,
     X: pd.DataFrame,
-    y: Optional[pd.Series],
+    y: pd.Series | None,
     artifacts: Artifact,
     stage: Stage,
     backend: Backend,
-    results_primary: Optional[List[pd.DataFrame]],
-    tqdm: Optional[tqdm] = None,
-) -> Tuple[Pipeline, X, Artifact]:
+    results_primary: list[pd.DataFrame] | None,
+    tqdm: tqdm | None = None,
+) -> tuple[Pipeline, X, Artifact]:
     X, y, artifacts = composite.preprocess_secondary(
         X=X,
         y=y,
         artifact=artifacts,
         results_primary=results_primary,
         index=index,
-        fit=stage.is_fit_or_update(),
+        fit=stage.is_fit(),
     )
     return recursively_transform(
         X,
@@ -532,11 +509,10 @@ def _backtest_on_window(
     artifact: Artifact,
     backend: Backend,
     mutate: bool,
-) -> Tuple[X, Artifact]:
+) -> tuple[X, Artifact]:
     pd.options.mode.copy_on_write = True
     current_pipeline = [
-        pipeline_over_time.loc[split.model_index]
-        for pipeline_over_time in trained_pipelines
+        pipeline_over_time.loc[split.index] for pipeline_over_time in trained_pipelines
     ]
     if not mutate:
         current_pipeline = deepcopy_pipelines(current_pipeline)
@@ -559,15 +535,15 @@ def _backtest_on_window(
         y=y_test,
         artifacts=artifact_test,
         transformations=current_pipeline,
-        stage=Stage.update_online_only,
+        stage=Stage.infer,
         backend=backend,
     )[1:]
     if len(results.index) != len(original_idx):
         results = results.reindex(original_idx)
         artifacts = artifacts.reindex(original_idx)
     return (
-        results.loc[X.index[split.test_window_start] :],
-        artifacts.loc[X.index[split.test_window_start] :],
+        results.loc[X.index[split.test_indices()]],
+        artifacts.loc[X.index[split.test_indices()]],
     )
 
 
@@ -577,23 +553,18 @@ def _train_on_window(
     artifact: Artifact,
     pipeline: Pipeline,
     split: Fold,
-    never_update: bool,
     backend: Backend,
     project_name: str,
-    project_hyperparameters: Optional[dict] = None,
+    project_hyperparameters: dict | None = None,
+    preprocessing_max_memory_size: int | None = None,
     show_progress: bool = False,
-) -> Tuple[int, TrainedPipeline, X, Artifact]:
+) -> tuple[int, TrainedPipeline, X, Artifact]:
     pd.options.mode.copy_on_write = True
-    stage = Stage.inital_fit if (split.order == 0 or never_update) else Stage.update
 
-    X_train: pd.DataFrame = _cut_to_train_window(X, split, stage)
-    y_train = _cut_to_train_window(y, split, stage)
-    if y_train.nunique() == 1:
-        raise ValueError(
-            "Only a single unique value in `y_train`. This means models can't learn anything."
-        )
+    X_train: pd.DataFrame = _cut_to_train_window(X, split, Stage.inital_fit)
+    y_train = _cut_to_train_window(y, split, Stage.inital_fit)
 
-    artifact_train = _cut_to_train_window(artifact, split, stage)
+    artifact_train = _cut_to_train_window(artifact, split, Stage.inital_fit)
 
     original_idx = X_train.index
     X_train, y_train, artifact_train = _get_X_y_based_on_events(
@@ -603,12 +574,13 @@ def _train_on_window(
     pipeline = deepcopy_pipelines(pipeline)
     pipeline = _set_metadata(
         pipeline,
-        Composite.Metadata(
+        BlockMetadata(
             project_name=project_name,
             project_hyperparameters=project_hyperparameters,
-            fold_index=split.order,
+            fold_index=split.index,
             target=y.name,
             inference=False,
+            preprocessing_max_memory_size=preprocessing_max_memory_size or 0,
         ),
     )
     trained_pipeline, X_train, artifact_train = recursively_transform(
@@ -616,7 +588,7 @@ def _train_on_window(
         y=y_train,
         artifacts=artifact_train,
         transformations=pipeline,
-        stage=stage,
+        stage=Stage.inital_fit,
         backend=backend,
         tqdm=tqdm() if show_progress else None,
     )
@@ -624,62 +596,25 @@ def _train_on_window(
         X_train = X_train.reindex(original_idx)
         artifact_train = artifact_train.reindex(original_idx)
 
-    return split.model_index, trained_pipeline, X_train, artifact_train
-
-
-def _sequential_train_on_window(
-    pipeline: Pipeline,
-    X: Optional[pd.DataFrame],
-    y: pd.Series,
-    splits: List[Fold],
-    artifact: Artifact,
-    backend: Backend,
-    project_name: str,
-    project_hyperparameters: Optional[dict],
-) -> Tuple[List[int], List[Pipeline], List[X], List[Artifact]]:
-    processed_idx = []
-    processed_pipelines: List[Pipeline] = []
-    processed_pipeline = pipeline
-    processed_predictions = []
-    processed_artifacts = []
-    for split in splits:
-        (
-            processed_id,
-            processed_pipeline,
-            processed_prediction,
-            processed_artifact,
-        ) = _train_on_window(
-            X,
-            y,
-            artifact,
-            processed_pipeline,
-            split,
-            never_update=False,
-            backend=backend,
-            project_name=project_name,
-            project_hyperparameters=project_hyperparameters,
-        )
-        processed_idx.append(processed_id)
-        processed_pipelines.append(processed_pipeline)
-        processed_predictions.append(processed_prediction)
-        processed_artifacts.append(processed_artifact)
-
-    return (
-        processed_idx,
-        processed_pipelines,
-        processed_predictions,
-        processed_artifacts,
-    )
+    return split.index, trained_pipeline, X_train, artifact_train
 
 
 def _get_X_y_based_on_events(
     X: pd.DataFrame,
     y: pd.Series,
     artifact: Artifact,
-) -> Tuple[pd.DataFrame, pd.Series, Artifact]:
+) -> tuple[pd.DataFrame, pd.Series, Artifact]:
     events = Artifact.get_events(artifact)
     if events is None:
         return X, y, artifact
     events = events.dropna()
+    # if events.index.equals(X.index):
+    #     return (
+    #         X,
+    #         events.event_label,
+    #         artifact
+    #         if artifact.index.equals(events.index)
+    #         else artifact.loc[events.index],
+    #     )
     assert len(events) > 0, "No events found in fold"
     return X.loc[events.index], events.event_label, artifact.loc[events.index]

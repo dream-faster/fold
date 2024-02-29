@@ -1,24 +1,9 @@
 import numpy as np
 import pandas as pd
 
-from fold.loop import backtest, train
 from fold.loop.encase import train_backtest
-from fold.splitters import ExpandingWindowSplitter, SingleWindowSplitter
-from fold.transformations.date import (
-    AddDateTimeFeatures,
-    AddDayOfMonth,
-    AddDayOfWeek,
-    AddDayOfYear,
-    AddHour,
-    AddMinute,
-    AddMonth,
-    AddQuarter,
-    AddSecond,
-    AddWeek,
-    AddWeekOfYear,
-    AddYear,
-    DateTimeFeature,
-)
+from fold.splitters import ExpandingWindowSplitter
+from fold.transformations.date import AddDateTimeFeatures, DateTimeFeature
 from fold.transformations.holidays import (  # AddExchangeHolidayFeatures,
     AddHolidayFeatures,
     LabelingMethod,
@@ -44,107 +29,24 @@ def test_datetime_features():
             DateTimeFeature.year,
         ]
     )
-    pred, _ = train_backtest(pipeline, X, y, splitter)
-    assert (pred["second"] == X.loc[pred.index].index.second).all()
-    assert (pred["minute"] == X.loc[pred.index].index.minute).all()
-    assert (pred["hour"] == X.loc[pred.index].index.hour).all()
-    assert (pred["day_of_week"] == X.loc[pred.index].index.dayofweek).all()
-    assert (pred["day_of_month"] == X.loc[pred.index].index.day).all()
-    assert (pred["day_of_year"] == X.loc[pred.index].index.dayofyear).all()
-    assert (pred["week"] == X.loc[pred.index].index.isocalendar().week).all()
+    pred, _, _, _ = train_backtest(pipeline, X, y, splitter)
+    assert (pred["datetime~second"] == X.loc[pred.index].index.second).all()
+    assert (pred["datetime~minute"] == X.loc[pred.index].index.minute).all()
+    assert (pred["datetime~hour"] == X.loc[pred.index].index.hour).all()
+    assert (pred["datetime~day_of_week"] == X.loc[pred.index].index.dayofweek).all()
+    assert (pred["datetime~day_of_month"] == X.loc[pred.index].index.day).all()
+    assert (pred["datetime~day_of_year"] == X.loc[pred.index].index.dayofyear).all()
+    assert (pred["datetime~week"] == X.loc[pred.index].index.isocalendar().week).all()
     assert (
-        pred["week_of_year"]
+        pred["datetime~week_of_year"]
         == pd.Index(X.loc[pred.index].index.isocalendar().week, dtype="int")
     ).all()
-    assert (pred["month"] == X.loc[pred.index].index.month).all()
-    assert (pred["quarter"] == X.loc[pred.index].index.quarter).all()
-    assert (pred["year"] == X.loc[pred.index].index.year).all()
+    assert (pred["datetime~month"] == X.loc[pred.index].index.month).all()
+    assert (pred["datetime~quarter"] == X.loc[pred.index].index.quarter).all()
+    assert (pred["datetime~year"] == X.loc[pred.index].index.year).all()
 
     trans = AddDateTimeFeatures([DateTimeFeature.second, DateTimeFeature.minute])
     tuneability_test(trans, dict(features=[DateTimeFeature.day_of_week]))
-
-
-def test_add_second():
-    X, y = generate_sine_wave_data(length=100, freq="s")
-    splitter = SingleWindowSplitter(train_window=0.5)
-    pred, _ = train_backtest(AddSecond(), X, y, splitter)
-    assert (pred["second"] == X.loc[pred.index].index.second).all()
-    assert len(pred.columns) == 2
-
-
-def test_add_minute():
-    X, y = generate_sine_wave_data(length=100, freq="min")
-    splitter = SingleWindowSplitter(train_window=0.5)
-    pred, _ = train_backtest(AddMinute(), X, y, splitter)
-    assert (pred["minute"] == X.loc[pred.index].index.minute).all()
-    assert len(pred.columns) == 2
-
-
-def test_add_hour():
-    X, y = generate_sine_wave_data(length=100, freq="H")
-    splitter = SingleWindowSplitter(train_window=0.5)
-    pred, _ = train_backtest(AddHour(), X, y, splitter)
-    assert (pred["hour"] == X.loc[pred.index].index.hour).all()
-    assert len(pred.columns) == 2
-
-
-def test_add_day_of_week():
-    X, y = generate_sine_wave_data(length=100, freq="D")
-    splitter = SingleWindowSplitter(train_window=0.5)
-    pred, _ = train_backtest(AddDayOfWeek(), X, y, splitter)
-    assert (pred["day_of_week"] == X.loc[pred.index].index.dayofweek).all()
-    assert len(pred.columns) == 2
-
-
-def test_add_day_of_month():
-    X, y = generate_sine_wave_data(length=100, freq="D")
-    splitter = SingleWindowSplitter(train_window=0.5)
-    pred, _ = train_backtest(AddDayOfMonth(), X, y, splitter)
-    assert (pred["day_of_month"] == X.loc[pred.index].index.day).all()
-    assert len(pred.columns) == 2
-
-
-def test_add_day_of_year():
-    X, y = generate_sine_wave_data(length=100, freq="D")
-    splitter = SingleWindowSplitter(train_window=0.5)
-    pred, _ = train_backtest(AddDayOfYear(), X, y, splitter)
-    assert (pred["day_of_year"] == X.loc[pred.index].index.dayofyear).all()
-    assert len(pred.columns) == 2
-
-
-def test_add_week():
-    X, y = generate_sine_wave_data(length=100, freq="D")
-    splitter = SingleWindowSplitter(train_window=0.5)
-    pred, _ = train_backtest(AddWeek(), X, y, splitter)
-    assert (pred["week"] == X.loc[pred.index].index.isocalendar().week).all()
-    assert len(pred.columns) == 2
-    pred, _ = train_backtest(AddWeekOfYear(), X, y, splitter)
-    assert (pred["week_of_year"] == X.loc[pred.index].index.isocalendar().week).all()
-    assert len(pred.columns) == 2
-
-
-def test_add_month():
-    X, y = generate_sine_wave_data(length=50, freq="M")
-    splitter = SingleWindowSplitter(train_window=0.5)
-    pred, _ = train_backtest(AddMonth(), X, y, splitter)
-    assert (pred["month"] == X.loc[pred.index].index.month).all()
-    assert len(pred.columns) == 2
-
-
-def test_add_quarter():
-    X, y = generate_sine_wave_data(length=50, freq="M")
-    splitter = SingleWindowSplitter(train_window=0.5)
-    pred, _ = train_backtest(AddQuarter(), X, y, splitter)
-    assert (pred["quarter"] == X.loc[pred.index].index.quarter).all()
-    assert len(pred.columns) == 2
-
-
-def test_add_year():
-    X, y = generate_sine_wave_data(length=50, freq="Y")
-    splitter = SingleWindowSplitter(train_window=0.5)
-    pred, _ = train_backtest(AddYear(), X, y, splitter)
-    assert (pred["year"] == X.loc[pred.index].index.year).all()
-    assert len(pred.columns) == 2
 
 
 def test_holiday_features_daily() -> None:
@@ -154,10 +56,9 @@ def test_holiday_features_daily() -> None:
     y.index = new_index
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    trained = train(
+    pred, _, _, _ = train_backtest(
         AddHolidayFeatures(["US", "DE"], labeling="holiday_binary"), X, y, splitter
     )
-    pred = backtest(trained, X, y, splitter)
 
     assert np.allclose((X.squeeze()[pred.index]), (pred["sine"]))
     assert (
@@ -176,7 +77,7 @@ def test_holiday_features_minute() -> None:
     y.index = new_index
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    pred, _ = train_backtest(
+    pred, _, _, _ = train_backtest(
         AddHolidayFeatures(["US", "DE"], labeling="holiday_binary"), X, y, splitter
     )
 
@@ -190,7 +91,7 @@ def test_holiday_features_minute() -> None:
     assert pd.api.types.is_integer_dtype(pred["holiday_US"].dtype)
     assert pd.api.types.is_integer_dtype(pred["holiday_DE"].dtype)
 
-    pred, _ = train_backtest(
+    pred, _, _, _ = train_backtest(
         AddHolidayFeatures(["DE"], labeling="weekday_weekend_holiday"), X, y, splitter
     )
     assert (
@@ -198,7 +99,7 @@ def test_holiday_features_minute() -> None:
     ), "2021-12-25 should be both a holiday and a weekend (holiday taking precedence)."
     assert pd.api.types.is_integer_dtype(pred["holiday_DE"].dtype)
 
-    pred, _ = train_backtest(
+    pred, _, _, _ = train_backtest(
         AddHolidayFeatures(
             ["US"],
             labeling=LabelingMethod.weekday_weekend_uniqueholiday_string,
@@ -212,7 +113,7 @@ def test_holiday_features_minute() -> None:
     ), "2021-12-25 should be a holiday string."
     assert pred["holiday_US"].dtype == "object"
 
-    pred, _ = train_backtest(
+    pred, _, _, _ = train_backtest(
         AddHolidayFeatures(["US", "DE"], labeling="weekday_weekend_uniqueholiday"),
         X,
         y,
