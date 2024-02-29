@@ -8,7 +8,6 @@ from fold.loop import train, train_evaluate
 from fold.models import DummyRegressor
 from fold.splitters import ExpandingWindowSplitter, ForwardSingleWindowSplitter
 from fold.utils.tests import generate_monotonous_data, generate_sine_wave_data
-from fold_extensions.optimize_optuna import OptimizeOptuna
 
 
 def test_artifacts_transformation_fit() -> None:
@@ -35,26 +34,6 @@ def test_artifacts_transformation_fit() -> None:
     assert artifacts["selected_features_SelectKBest"].dropna().iloc[-1] == ["sine"]
 
 
-def test_artifacts_optimizer() -> None:
-    X, y = generate_monotonous_data(1000)
-
-    splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
-    pipeline = [
-        OptimizeOptuna(
-            pipeline=DummyRegressor(
-                predicted_value=1, params_to_try=dict(predicted_value=[100, 25, 50])
-            ),
-            krisi_metric_key="mse",
-            is_scorer_loss=True,
-            trials=10,
-            splitter=ForwardSingleWindowSplitter(0.6),
-        )
-    ]
-    _, artifacts, _ = train(pipeline, X, y, splitter)
-    assert artifacts is not None
-    assert artifacts["selected_params"].dropna().iloc[0][0] == {
-        "DummyRegressor-1¦predicted_value": 25
-    }
 
 
 def test_artifacts_events() -> None:

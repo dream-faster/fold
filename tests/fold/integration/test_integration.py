@@ -25,7 +25,6 @@ from fold.transformations.function import ApplyFunction
 from fold.transformations.lags import AddLagsX
 from fold.transformations.scaling import MinMaxScaler
 from fold.utils.dataset import get_preprocessed_dataset
-from fold_extensions.optimize_optuna import OptimizeOptuna
 
 
 @pytest.mark.parametrize(
@@ -194,45 +193,3 @@ def test_train_evaluate_probabilities() -> None:
         pipeline, X, y, splitter
     )
 
-
-def test_integration_events() -> None:
-    X, y = get_preprocessed_dataset(
-        "weather/historical_hourly_la",
-        target_col="temperature",
-        shorten=500,
-    )
-    y = y.pct_change()
-
-    splitter = ExpandingWindowSplitter(initial_train_window=0.2, step=0.1)
-    pipeline = PipelineCard(
-        preprocessing=[
-            AddLagsX(columns_and_lags=[("pressure", list(range(1, 10)))]),
-            lambda x: x.fillna(0.0),
-        ],
-        pipeline=[
-            OptimizeOptuna(
-                pipeline=SelectBest(
-                    [
-                        WrapSKLearnClassifier.from_model(LogisticRegression()),
-                        WrapSKLearnClassifier.from_model(RandomForestClassifier()),
-                    ]
-                ),
-                krisi_metric_key="f_one_score_binary",
-                trials=10,
-                is_scorer_loss=False,
-                splitter=ForwardSingleWindowSplitter(0.6),
-            )
-        ],
-        event_labeler=FixedForwardHorizon(
-            time_horizon=5,
-            labeling_strategy=BinarizeSign(),
-            weighting_strategy=None,
-        ),
-        event_filter=EveryNth(2),
-    )
-
-    pred, _, artifacts, _ = train_backtest(pipeline, X, y, splitter)
-
-    # assert len(artifacts["label"]) == 184
-    # assert len(pred) == 400
-    # assert len(pred.dropna()) == 200

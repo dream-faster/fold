@@ -10,7 +10,6 @@ from fold.splitters import (
     get_splits,
 )
 from fold.utils.tests import generate_sine_wave_data
-from fold_extensions.cpcv import CPCV
 
 
 def test_bounds_exists_after():
@@ -184,60 +183,3 @@ def test_single_window_splitter():
     )
     assert len(splits) == 1
     assert splits[0].test_bounds[0].end == 1000
-
-
-def test_cpcv():
-    X, _ = generate_sine_wave_data(length=10)
-    splitter = CPCV(n_splits=4, n_test_splits=2, initial_train_window=0.0)
-
-    splits = get_splits(
-        splitter=splitter,
-        index=X.index,
-        gap_after=0,
-        gap_before=0,
-        merge_threshold=0.0,
-    )
-    assert len(splits) == 6
-    for split in splits:
-        assert np.intersect1d(split.train_indices(), split.test_indices()).size == 0
-        assert np.union1d(split.train_indices(), split.test_indices()).size == len(X)
-
-    splitter = CPCV(n_splits=5, n_test_splits=2, initial_train_window=0.0)
-    splits = get_splits(
-        splitter=splitter,
-        index=X.index,
-        gap_after=0,
-        gap_before=0,
-        merge_threshold=0.0,
-    )
-    assert len(splits) == 10
-    for split in splits:
-        assert np.intersect1d(split.train_indices(), split.test_indices()).size == 0
-        assert np.union1d(split.train_indices(), split.test_indices()).size == len(X)
-
-    splitter = CPCV(n_splits=10, n_test_splits=2, initial_train_window=0.0)
-    splits = get_splits(
-        splitter=splitter,
-        index=X.index,
-        gap_after=0,
-        gap_before=0,
-        merge_threshold=0.0,
-    )
-    assert len(splits) == 45
-    for split in splits:
-        assert np.intersect1d(split.train_indices(), split.test_indices()).size == 0
-        assert np.union1d(split.train_indices(), split.test_indices()).size == len(X)
-
-    splitter = CPCV(n_splits=10, n_test_splits=2, initial_train_window=0.3)
-    splits = get_splits(
-        splitter=splitter,
-        index=X.index,
-        gap_after=0,
-        gap_before=0,
-        merge_threshold=0.0,
-    )
-    assert len(splits) == 29
-    for split in splits:
-        assert np.intersect1d(split.train_indices(), split.test_indices()).size == 0
-        assert np.union1d(split.train_indices(), split.test_indices()).size == len(X)
-        assert split.train_bounds[0].end >= 3
