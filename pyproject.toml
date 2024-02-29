@@ -182,3 +182,91 @@ push = false
     'current_version = "{version}"',
     'version = "{version}"'
 ]
+
+
+[tool.ruff]
+target-version = "py311"
+
+ignore = ["RUF200", "DTZ011","PD901", "PGH003", "COM812", "ISC001", "PD101", "C408", "DTZ005", "E501", "PLR2004", "PLR0913", "B904", "N803", "ARG001", "ARG002", "PD010", "N806", "I001", "TID252", "N802", "A002", "PD011", "PGH004", "N818", "PLR0911", "PT011", "PD003", "DTZ001", "INP001", "N815", "A003"]
+select = [
+  # pyflakes
+  "F",
+  # pycodestyle
+  "E",
+  "W",
+  # isort
+  "I",
+  # pep8-naming
+  "N",
+  # pyupgrade
+  "UP",
+  # flake8-annotations
+  # "ANN",
+  # flake8-bandit
+  # "S",
+  # flake8-blind-except
+  "BLE",
+  # flake8-boolean-trap
+  # "FBT",
+  # flake8-bugbear
+  "B",
+  # flake8-builtins
+  "A",
+  # flake8-commas
+  "COM",
+  # flake8-comprehensions
+  "C4",
+  # flake8-datetimez
+  "DTZ",
+  # flake8-debugger
+  "T10",
+  # flake8-errmsg
+  # "EM",
+  # flake8-executable
+  # "EXE",
+  # flake8-implicit-str-concat
+  "ISC",
+  # flake8-import-conventions
+  "ICN",
+  # flake8-logging-format
+  # "G",
+  # flake8-no-pep420
+  "INP",
+  # flake8-pie
+  "PIE",
+  # flake8-print
+  # "T20",
+  # flake8-pytest-style
+  "PT",
+  # flake8-quotes
+  "Q",
+  # flake8-return
+  "RET",
+  # flake8-simplify
+  "SIM",
+  # flake8-tidy-imports
+  # "TID",
+  # flake8-type-checking
+  # "TCH",
+  # flake8-unused-arguments
+  "ARG",
+  # flake8-use-pathlib
+  "PTH",
+  # pandas-vet
+  "PD",
+  # pygrep-hooks
+  "PGH",
+  # pylint
+  "PLE", "PLR", "PLW",
+  # flake8-raise
+  "RSE",
+  # ruff-specific rules
+  "RUF"
+]
+fixable = ["ALL"]
+unsafe-fixes = true
+
+
+[per-file-ignores]
+"__init__.py" = ["E", "F", "I", "N", "F403"]
+
