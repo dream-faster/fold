@@ -38,6 +38,7 @@ tqdm = ">=4.0"
 iteration_utilities = ">=0.11"
 typing_extensions = ">=4.4.0"
 deepmerge = ">=1.0.0"
+finml_utils = ">=2.1.2"
 
 pre-commit = {version = "~=2.20.0", optional = true}
 pytest = {version = "~=7.1.2", optional = true}
