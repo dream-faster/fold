@@ -1,0 +1,2219 @@
+
+<!DOCTYPE html>
+
+<html class="no-js" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="Dream Faster" name="author"/>
+<link href="../composites/" rel="prev"/>
+<link href="../../product/pricing/" rel="next"/>
+<link href="../../images/logo.svg" rel="icon"/>
+<meta content="mkdocs-1.5.3, mkdocs-material-9.5.12" name="generator"/>
+<title>Transformations - Fold</title>
+<link href="../../assets/stylesheets/main.7e359304.min.css" rel="stylesheet"/>
+<link href="../../assets/stylesheets/palette.06af60db.min.css" rel="stylesheet"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
+<style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+<link href="../../assets/_mkdocstrings.css" rel="stylesheet"/>
+<link href="../../sg_gallery-rendered-html.css" rel="stylesheet"/>
+<link href="../../sg_gallery-binder.css" rel="stylesheet"/>
+<link href="../../sg_gallery.css" rel="stylesheet"/>
+<link href="../../sg_gallery-dataframe.css" rel="stylesheet"/>
+<script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-FBLB9N9026"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-FBLB9N9026",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-FBLB9N9026",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+<script>var consent;"undefined"==typeof __md_analytics||(consent=__md_get("__consent"))&&consent.analytics&&__md_analytics()</script>
+<link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            
+                .gscrollbar-fixer { padding-right: 15px; }
+                .gdesc-inner { font-size: 0.75rem; }
+                body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+                body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+                body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}
+                </style><script src="../../assets/javascripts/glightbox.min.js"></script></head>
+<body data-md-color-accent="deep-orange" data-md-color-primary="amber" data-md-color-scheme="default" dir="ltr">
+<input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
+<input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+<a class="md-skip" href="#fold.transformations.columns">
+          Skip to content
+        </a>
+</div>
+<div data-md-component="announce">
+</div>
+<header class="md-header md-header--shadow" data-md-component="header">
+<nav aria-label="Header" class="md-header__inner md-grid">
+<a aria-label="Fold" class="md-header__button md-logo" data-md-component="logo" href="../.." title="Fold">
+<img alt="logo" src="../../images/logo_white.svg"/>
+</a>
+<label class="md-header__button md-icon" for="__drawer">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"></path></svg>
+</label>
+<div class="md-header__title" data-md-component="header-title">
+<div class="md-header__ellipsis">
+<div class="md-header__topic">
+<span class="md-ellipsis">
+            Fold
+          </span>
+</div>
+<div class="md-header__topic" data-md-component="header-topic">
+<span class="md-ellipsis">
+            
+              Transformations
+            
+          </span>
+</div>
+</div>
+</div>
+<form class="md-header__option" data-md-component="palette">
+<input aria-label="Switch to dark mode" class="md-option" data-md-color-accent="deep-orange" data-md-color-media="(prefers-color-scheme: light)" data-md-color-primary="amber" data-md-color-scheme="default" id="__palette_0" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_1" hidden="" title="Switch to dark mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"></path></svg>
+</label>
+<input aria-label="Switch to light mode" class="md-option" data-md-color-accent="deep-orange" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-primary="amber" data-md-color-scheme="slate" id="__palette_1" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_0" hidden="" title="Switch to light mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path></svg>
+</label>
+</form>
+<script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+<label class="md-header__button md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"></path></svg>
+</label>
+<div class="md-search" data-md-component="search" role="dialog">
+<label class="md-search__overlay" for="__search"></label>
+<div class="md-search__inner" role="search">
+<form class="md-search__form" name="search">
+<input aria-label="Search" autocapitalize="off" autocomplete="off" autocorrect="off" class="md-search__input" data-md-component="search-query" name="query" placeholder="Search" required="" spellcheck="false" type="text"/>
+<label class="md-search__icon md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"></path></svg>
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"></path></svg>
+</label>
+<nav aria-label="Search" class="md-search__options">
+<button aria-label="Clear" class="md-search__icon md-icon" tabindex="-1" title="Clear" type="reset">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"></path></svg>
+</button>
+</nav>
+<div class="md-search__suggest" data-md-component="search-suggest"></div>
+</form>
+<div class="md-search__output">
+<div class="md-search__scrollwrap" data-md-scrollfix="">
+<div class="md-search-result" data-md-component="search-result">
+<div class="md-search-result__meta">
+            Initializing search
+          </div>
+<ol class="md-search-result__list" role="presentation"></ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="md-header__source">
+<a class="md-source" data-md-component="source" href="https://github.com/dream-faster/fold" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"></path></svg>
+</div>
+<div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+</div>
+</nav>
+</header>
+<div class="md-container" data-md-component="container">
+<main class="md-main" data-md-component="main">
+<div class="md-main__inner md-grid">
+<div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Navigation" class="md-nav md-nav--primary" data-md-level="0">
+<label class="md-nav__title" for="__drawer">
+<a aria-label="Fold" class="md-nav__button md-logo" data-md-component="logo" href="../.." title="Fold">
+<img alt="logo" src="../../images/logo_white.svg"/>
+</a>
+    Fold
+  </label>
+<div class="md-nav__source">
+<a class="md-source" data-md-component="source" href="https://github.com/dream-faster/fold" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"></path></svg>
+</div>
+<div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+</div>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../..">
+<span class="md-ellipsis">
+    Home
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+<span class="md-ellipsis">
+    Must know Concepts
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_2_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_2">
+<span class="md-nav__icon md-icon"></span>
+            Must know Concepts
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../concepts/adaptive-ml/">
+<span class="md-ellipsis">
+    Adaptive ML
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../concepts/speed/">
+<span class="md-ellipsis">
+    Speed
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../concepts/design/">
+<span class="md-ellipsis">
+    Design
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../concepts/models/">
+<span class="md-ellipsis">
+    Models
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../concepts/forecasting-horizon/">
+<span class="md-ellipsis">
+    Forecasting horizon
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../concepts/splitters/">
+<span class="md-ellipsis">
+    Splitters
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_3" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+<span class="md-ellipsis">
+    Walkthroughs
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_3">
+<span class="md-nav__icon md-icon"></span>
+            Walkthroughs
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../walkthroughs/core_walkthrough/">
+<span class="md-ellipsis">
+    Start Here (Core Walkthrough)
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../walkthroughs/benchmarking_sktime_fold/">
+<span class="md-ellipsis">
+    Benchmarking Sktime-Fold
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_4" type="checkbox"/>
+<div class="md-nav__link md-nav__container">
+<a class="md-nav__link" href="../../generated/gallery/">
+<span class="md-ellipsis">
+    Examples
+  </span>
+</a>
+<label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-expanded="false" aria-labelledby="__nav_4_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_4">
+<span class="md-nav__icon md-icon"></span>
+            Examples
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../generated/gallery/date/">
+<span class="md-ellipsis">
+    Adding Date/Time Features
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../generated/gallery/preprocess/">
+<span class="md-ellipsis">
+    Preprocessing
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../generated/gallery/tabular/">
+<span class="md-ellipsis">
+    Using Tabular Models
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../generated/gallery/scale/">
+<span class="md-ellipsis">
+    Scaling the data
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../generated/gallery/transform-target/">
+<span class="md-ellipsis">
+    Transformations applied to the Target (y)
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../generated/gallery/ensembling/">
+<span class="md-ellipsis">
+    Ensembling (Composite Models)
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--active md-nav__item--nested">
+<input checked="" class="md-nav__toggle md-toggle" id="__nav_5" type="checkbox"/>
+<div class="md-nav__link md-nav__container">
+<a class="md-nav__link" href="../">
+<span class="md-ellipsis">
+    API
+  </span>
+</a>
+<label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-expanded="true" aria-labelledby="__nav_5_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_5">
+<span class="md-nav__icon md-icon"></span>
+            API
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../loop/">
+<span class="md-ellipsis">
+    Main Loops
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../models/">
+<span class="md-ellipsis">
+    Models
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../composites/">
+<span class="md-ellipsis">
+    Composites
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
+<label class="md-nav__link md-nav__link--active" for="__toc">
+<span class="md-ellipsis">
+    Transformations
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<a class="md-nav__link md-nav__link--active" href="./">
+<span class="md-ellipsis">
+    Transformations
+  </span>
+</a>
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.columns">
+<span class="md-ellipsis">
+      columns
+    </span>
+</a>
+<nav aria-label="columns" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.columns.AddColumnSuffix">
+<span class="md-ellipsis">
+      AddColumnSuffix
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.columns.DropColumns">
+<span class="md-ellipsis">
+      DropColumns
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.columns.OnlyPredictions">
+<span class="md-ellipsis">
+      OnlyPredictions
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.columns.OnlyProbabilities">
+<span class="md-ellipsis">
+      OnlyProbabilities
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.columns.RenameColumns">
+<span class="md-ellipsis">
+      RenameColumns
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.columns.SelectColumns">
+<span class="md-ellipsis">
+      SelectColumns
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.dev">
+<span class="md-ellipsis">
+      dev
+    </span>
+</a>
+<nav aria-label="dev" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.dev.Breakpoint">
+<span class="md-ellipsis">
+      Breakpoint
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.difference">
+<span class="md-ellipsis">
+      difference
+    </span>
+</a>
+<nav aria-label="difference" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.difference.Difference">
+<span class="md-ellipsis">
+      Difference
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.features">
+<span class="md-ellipsis">
+      features
+    </span>
+</a>
+<nav aria-label="features" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.features.AddFeatures">
+<span class="md-ellipsis">
+      AddFeatures
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.features.AddWindowFeatures">
+<span class="md-ellipsis">
+      AddWindowFeatures
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.function">
+<span class="md-ellipsis">
+      function
+    </span>
+</a>
+<nav aria-label="function" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.function.ApplyFunction">
+<span class="md-ellipsis">
+      ApplyFunction
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.holidays">
+<span class="md-ellipsis">
+      holidays
+    </span>
+</a>
+<nav aria-label="holidays" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.holidays.AddExchangeHolidayFeatures">
+<span class="md-ellipsis">
+      AddExchangeHolidayFeatures
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.holidays.AddHolidayFeatures">
+<span class="md-ellipsis">
+      AddHolidayFeatures
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.holidays.LabelingMethod">
+<span class="md-ellipsis">
+      LabelingMethod
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.lags">
+<span class="md-ellipsis">
+      lags
+    </span>
+</a>
+<nav aria-label="lags" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.lags.AddLagsX">
+<span class="md-ellipsis">
+      AddLagsX
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.math">
+<span class="md-ellipsis">
+      math
+    </span>
+</a>
+<nav aria-label="math" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.math.MultiplyBy">
+<span class="md-ellipsis">
+      MultiplyBy
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.math.TakeLog">
+<span class="md-ellipsis">
+      TakeLog
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.math.TurnPositive">
+<span class="md-ellipsis">
+      TurnPositive
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.scaling">
+<span class="md-ellipsis">
+      scaling
+    </span>
+</a>
+<nav aria-label="scaling" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.scaling.MinMaxScaler">
+<span class="md-ellipsis">
+      MinMaxScaler
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.scaling.StandardScaler">
+<span class="md-ellipsis">
+      StandardScaler
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.sklearn">
+<span class="md-ellipsis">
+      sklearn
+    </span>
+</a>
+<nav aria-label="sklearn" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.sklearn.WrapSKLearnFeatureSelector">
+<span class="md-ellipsis">
+      WrapSKLearnFeatureSelector
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.sklearn.WrapSKLearnTransformation">
+<span class="md-ellipsis">
+      WrapSKLearnTransformation
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_6" type="checkbox"/>
+<label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+<span class="md-ellipsis">
+    Product, Licencing &amp; Roadmap
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_6_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_6">
+<span class="md-nav__icon md-icon"></span>
+            Product, Licencing &amp; Roadmap
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../product/pricing/">
+<span class="md-ellipsis">
+    Pricing
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../product/license/">
+<span class="md-ellipsis">
+    License
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../product/roadmap/">
+<span class="md-ellipsis">
+    Roadmap
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.columns">
+<span class="md-ellipsis">
+      columns
+    </span>
+</a>
+<nav aria-label="columns" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.columns.AddColumnSuffix">
+<span class="md-ellipsis">
+      AddColumnSuffix
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.columns.DropColumns">
+<span class="md-ellipsis">
+      DropColumns
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.columns.OnlyPredictions">
+<span class="md-ellipsis">
+      OnlyPredictions
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.columns.OnlyProbabilities">
+<span class="md-ellipsis">
+      OnlyProbabilities
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.columns.RenameColumns">
+<span class="md-ellipsis">
+      RenameColumns
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.columns.SelectColumns">
+<span class="md-ellipsis">
+      SelectColumns
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.dev">
+<span class="md-ellipsis">
+      dev
+    </span>
+</a>
+<nav aria-label="dev" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.dev.Breakpoint">
+<span class="md-ellipsis">
+      Breakpoint
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.difference">
+<span class="md-ellipsis">
+      difference
+    </span>
+</a>
+<nav aria-label="difference" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.difference.Difference">
+<span class="md-ellipsis">
+      Difference
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.features">
+<span class="md-ellipsis">
+      features
+    </span>
+</a>
+<nav aria-label="features" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.features.AddFeatures">
+<span class="md-ellipsis">
+      AddFeatures
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.features.AddWindowFeatures">
+<span class="md-ellipsis">
+      AddWindowFeatures
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.function">
+<span class="md-ellipsis">
+      function
+    </span>
+</a>
+<nav aria-label="function" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.function.ApplyFunction">
+<span class="md-ellipsis">
+      ApplyFunction
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.holidays">
+<span class="md-ellipsis">
+      holidays
+    </span>
+</a>
+<nav aria-label="holidays" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.holidays.AddExchangeHolidayFeatures">
+<span class="md-ellipsis">
+      AddExchangeHolidayFeatures
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.holidays.AddHolidayFeatures">
+<span class="md-ellipsis">
+      AddHolidayFeatures
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.holidays.LabelingMethod">
+<span class="md-ellipsis">
+      LabelingMethod
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.lags">
+<span class="md-ellipsis">
+      lags
+    </span>
+</a>
+<nav aria-label="lags" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.lags.AddLagsX">
+<span class="md-ellipsis">
+      AddLagsX
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.math">
+<span class="md-ellipsis">
+      math
+    </span>
+</a>
+<nav aria-label="math" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.math.MultiplyBy">
+<span class="md-ellipsis">
+      MultiplyBy
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.math.TakeLog">
+<span class="md-ellipsis">
+      TakeLog
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.math.TurnPositive">
+<span class="md-ellipsis">
+      TurnPositive
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.scaling">
+<span class="md-ellipsis">
+      scaling
+    </span>
+</a>
+<nav aria-label="scaling" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.scaling.MinMaxScaler">
+<span class="md-ellipsis">
+      MinMaxScaler
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.scaling.StandardScaler">
+<span class="md-ellipsis">
+      StandardScaler
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.sklearn">
+<span class="md-ellipsis">
+      sklearn
+    </span>
+</a>
+<nav aria-label="sklearn" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.sklearn.WrapSKLearnFeatureSelector">
+<span class="md-ellipsis">
+      WrapSKLearnFeatureSelector
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.transformations.sklearn.WrapSKLearnTransformation">
+<span class="md-ellipsis">
+      WrapSKLearnTransformation
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-content" data-md-component="content">
+<article class="md-content__inner md-typeset">
+<h1>Transformations</h1>
+<div class="doc doc-object doc-module">
+<div class="doc doc-contents first">
+<div class="doc doc-children">
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="fold.transformations.columns">
+<span class="doc doc-object-name doc-module-name">columns</span>
+</h2>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.transformations.columns.AddColumnSuffix">
+<span class="doc doc-object-name doc-class-name">AddColumnSuffix</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="fold.base.Transformation" href="../loop/#fold.base.classes.Transformation">Transformation</a></code></p>
+<p>Add suffix to column names.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>suffix</code></td>
+<td>
+<code>str</code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>Suffix to add to all column names.</p>
+</div>
+</td>
+<td>
+<em>required</em>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong></p>
+<div class="language-pycon highlight"><pre><span></span><code><span id="__span-0-1"><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.loop</span> <span class="kn">import</span> <span class="n">train_backtest</span>
+</span><span id="__span-0-2"><a href="#__codelineno-0-2" id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.splitters</span> <span class="kn">import</span> <span class="n">SlidingWindowSplitter</span>
+</span><span id="__span-0-3"><a href="#__codelineno-0-3" id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.transformations</span> <span class="kn">import</span> <span class="n">RenameColumns</span>
+</span><span id="__span-0-4"><a href="#__codelineno-0-4" id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.utils.tests</span> <span class="kn">import</span> <span class="n">generate_sine_wave_data</span>
+</span><span id="__span-0-5"><a href="#__codelineno-0-5" id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span><span class="p">,</span> <span class="n">y</span>  <span class="o">=</span> <span class="n">generate_sine_wave_data</span><span class="p">()</span>
+</span><span id="__span-0-6"><a href="#__codelineno-0-6" id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">splitter</span> <span class="o">=</span> <span class="n">SlidingWindowSplitter</span><span class="p">(</span><span class="n">train_window</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+</span><span id="__span-0-7"><a href="#__codelineno-0-7" id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">pipeline</span> <span class="o">=</span> <span class="n">AddColumnSuffix</span><span class="p">(</span><span class="s2">"_2"</span><span class="p">)</span>
+</span><span id="__span-0-8"><a href="#__codelineno-0-8" id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">preds</span><span class="p">,</span> <span class="n">trained_pipeline</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">train_backtest</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">splitter</span><span class="p">)</span>
+</span><span id="__span-0-9"><a href="#__codelineno-0-9" id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">preds</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</span><span id="__span-0-10"><a href="#__codelineno-0-10" id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="go">                     sine_2</span>
+</span><span id="__span-0-11"><a href="#__codelineno-0-11" id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="go">2021-12-31 15:40:00 -0.0000</span>
+</span><span id="__span-0-12"><a href="#__codelineno-0-12" id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="go">2021-12-31 15:41:00  0.0126</span>
+</span><span id="__span-0-13"><a href="#__codelineno-0-13" id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="go">2021-12-31 15:42:00  0.0251</span>
+</span><span id="__span-0-14"><a href="#__codelineno-0-14" id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="go">2021-12-31 15:43:00  0.0377</span>
+</span><span id="__span-0-15"><a href="#__codelineno-0-15" id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="go">2021-12-31 15:44:00  0.0502</span>
+</span></code></pre></div>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.transformations.columns.DropColumns">
+<span class="doc doc-object-name doc-class-name">DropColumns</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="fold.base.Transformation" href="../loop/#fold.base.classes.Transformation">Transformation</a></code>, <code><a class="autorefs autorefs-internal" title="fold.base.Tunable" href="../loop/#fold.base.classes.Tunable">Tunable</a></code></p>
+<p>Drops a single or multiple columns.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>columns</code></td>
+<td>
+<code>(list[str], str)</code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>The column or columns to drop.</p>
+</div>
+</td>
+<td>
+<em>required</em>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.transformations.columns.OnlyPredictions">
+<span class="doc doc-object-name doc-class-name">OnlyPredictions</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="fold.base.Transformation" href="../loop/#fold.base.classes.Transformation">Transformation</a></code></p>
+<p>Drops all columns except the output model(s)' predictions.</p>
+<p><strong>Examples:</strong></p>
+<div class="language-pycon highlight"><pre><span></span><code><span id="__span-0-1"><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.loop</span> <span class="kn">import</span> <span class="n">train_backtest</span>
+</span><span id="__span-0-2"><a href="#__codelineno-0-2" id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.splitters</span> <span class="kn">import</span> <span class="n">SlidingWindowSplitter</span>
+</span><span id="__span-0-3"><a href="#__codelineno-0-3" id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.transformations</span> <span class="kn">import</span> <span class="n">OnlyProbabilities</span>
+</span><span id="__span-0-4"><a href="#__codelineno-0-4" id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.models.dummy</span> <span class="kn">import</span> <span class="n">DummyClassifier</span>
+</span><span id="__span-0-5"><a href="#__codelineno-0-5" id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.utils.tests</span> <span class="kn">import</span> <span class="n">generate_sine_wave_data</span>
+</span><span id="__span-0-6"><a href="#__codelineno-0-6" id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span><span class="p">,</span> <span class="n">y</span>  <span class="o">=</span> <span class="n">generate_sine_wave_data</span><span class="p">()</span>
+</span><span id="__span-0-7"><a href="#__codelineno-0-7" id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">splitter</span> <span class="o">=</span> <span class="n">SlidingWindowSplitter</span><span class="p">(</span><span class="n">train_window</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+</span><span id="__span-0-8"><a href="#__codelineno-0-8" id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">pipeline</span> <span class="o">=</span> <span class="p">[</span><span class="n">DummyClassifier</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]),</span> <span class="n">OnlyPredictions</span><span class="p">()]</span>
+</span><span id="__span-0-9"><a href="#__codelineno-0-9" id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">preds</span><span class="p">,</span> <span class="n">trained_pipeline</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">train_backtest</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">splitter</span><span class="p">)</span>
+</span><span id="__span-0-10"><a href="#__codelineno-0-10" id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">preds</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</span><span id="__span-0-11"><a href="#__codelineno-0-11" id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="go">                     predictions_DummyClassifier</span>
+</span><span id="__span-0-12"><a href="#__codelineno-0-12" id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="go">2021-12-31 15:40:00                            1</span>
+</span><span id="__span-0-13"><a href="#__codelineno-0-13" id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="go">2021-12-31 15:41:00                            1</span>
+</span><span id="__span-0-14"><a href="#__codelineno-0-14" id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="go">2021-12-31 15:42:00                            1</span>
+</span><span id="__span-0-15"><a href="#__codelineno-0-15" id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="go">2021-12-31 15:43:00                            1</span>
+</span><span id="__span-0-16"><a href="#__codelineno-0-16" id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="go">2021-12-31 15:44:00                            1</span>
+</span></code></pre></div>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.transformations.columns.OnlyProbabilities">
+<span class="doc doc-object-name doc-class-name">OnlyProbabilities</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="fold.base.Transformation" href="../loop/#fold.base.classes.Transformation">Transformation</a></code></p>
+<p>Drops all columns except the output model(s)' probabilities.</p>
+<p><strong>Examples:</strong></p>
+<div class="language-pycon highlight"><pre><span></span><code><span id="__span-0-1"><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.loop</span> <span class="kn">import</span> <span class="n">train_backtest</span>
+</span><span id="__span-0-2"><a href="#__codelineno-0-2" id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.splitters</span> <span class="kn">import</span> <span class="n">SlidingWindowSplitter</span>
+</span><span id="__span-0-3"><a href="#__codelineno-0-3" id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.transformations</span> <span class="kn">import</span> <span class="n">OnlyProbabilities</span>
+</span><span id="__span-0-4"><a href="#__codelineno-0-4" id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.models.dummy</span> <span class="kn">import</span> <span class="n">DummyClassifier</span>
+</span><span id="__span-0-5"><a href="#__codelineno-0-5" id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.utils.tests</span> <span class="kn">import</span> <span class="n">generate_sine_wave_data</span>
+</span><span id="__span-0-6"><a href="#__codelineno-0-6" id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span><span class="p">,</span> <span class="n">y</span>  <span class="o">=</span> <span class="n">generate_sine_wave_data</span><span class="p">()</span>
+</span><span id="__span-0-7"><a href="#__codelineno-0-7" id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">splitter</span> <span class="o">=</span> <span class="n">SlidingWindowSplitter</span><span class="p">(</span><span class="n">train_window</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+</span><span id="__span-0-8"><a href="#__codelineno-0-8" id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">pipeline</span> <span class="o">=</span> <span class="p">[</span><span class="n">DummyClassifier</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]),</span> <span class="n">OnlyProbabilities</span><span class="p">()]</span>
+</span><span id="__span-0-9"><a href="#__codelineno-0-9" id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">preds</span><span class="p">,</span> <span class="n">trained_pipeline</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">train_backtest</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">splitter</span><span class="p">)</span>
+</span><span id="__span-0-10"><a href="#__codelineno-0-10" id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">preds</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</span><span id="__span-0-11"><a href="#__codelineno-0-11" id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="go">                     probabilities_DummyClassifier_0  probabilities_DummyClassifier_1</span>
+</span><span id="__span-0-12"><a href="#__codelineno-0-12" id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="go">2021-12-31 15:40:00                              0.5                              0.5</span>
+</span><span id="__span-0-13"><a href="#__codelineno-0-13" id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="go">2021-12-31 15:41:00                              0.5                              0.5</span>
+</span><span id="__span-0-14"><a href="#__codelineno-0-14" id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="go">2021-12-31 15:42:00                              0.5                              0.5</span>
+</span><span id="__span-0-15"><a href="#__codelineno-0-15" id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="go">2021-12-31 15:43:00                              0.5                              0.5</span>
+</span><span id="__span-0-16"><a href="#__codelineno-0-16" id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="go">2021-12-31 15:44:00                              0.5                              0.5</span>
+</span></code></pre></div>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.transformations.columns.RenameColumns">
+<span class="doc doc-object-name doc-class-name">RenameColumns</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="fold.base.Transformation" href="../loop/#fold.base.classes.Transformation">Transformation</a></code></p>
+<p>Renames columns.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>columns_mapper</code></td>
+<td>
+<code>dict</code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>A dictionary containing the old column names as keys and the new column names as values.</p>
+</div>
+</td>
+<td>
+<em>required</em>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong></p>
+<div class="language-pycon highlight"><pre><span></span><code><span id="__span-0-1"><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.loop</span> <span class="kn">import</span> <span class="n">train_backtest</span>
+</span><span id="__span-0-2"><a href="#__codelineno-0-2" id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.splitters</span> <span class="kn">import</span> <span class="n">SlidingWindowSplitter</span>
+</span><span id="__span-0-3"><a href="#__codelineno-0-3" id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.transformations</span> <span class="kn">import</span> <span class="n">RenameColumns</span>
+</span><span id="__span-0-4"><a href="#__codelineno-0-4" id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.utils.tests</span> <span class="kn">import</span> <span class="n">generate_sine_wave_data</span>
+</span><span id="__span-0-5"><a href="#__codelineno-0-5" id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span><span class="p">,</span> <span class="n">y</span>  <span class="o">=</span> <span class="n">generate_sine_wave_data</span><span class="p">()</span>
+</span><span id="__span-0-6"><a href="#__codelineno-0-6" id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">splitter</span> <span class="o">=</span> <span class="n">SlidingWindowSplitter</span><span class="p">(</span><span class="n">train_window</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+</span><span id="__span-0-7"><a href="#__codelineno-0-7" id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">pipeline</span> <span class="o">=</span> <span class="n">RenameColumns</span><span class="p">({</span><span class="s2">"sine"</span><span class="p">:</span> <span class="s2">"sine_renamed"</span><span class="p">})</span>
+</span><span id="__span-0-8"><a href="#__codelineno-0-8" id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">preds</span><span class="p">,</span> <span class="n">trained_pipeline</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">train_backtest</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">splitter</span><span class="p">)</span>
+</span><span id="__span-0-9"><a href="#__codelineno-0-9" id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">preds</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</span><span id="__span-0-10"><a href="#__codelineno-0-10" id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="go">                     sine_renamed</span>
+</span><span id="__span-0-11"><a href="#__codelineno-0-11" id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="go">2021-12-31 15:40:00       -0.0000</span>
+</span><span id="__span-0-12"><a href="#__codelineno-0-12" id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="go">2021-12-31 15:41:00        0.0126</span>
+</span><span id="__span-0-13"><a href="#__codelineno-0-13" id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="go">2021-12-31 15:42:00        0.0251</span>
+</span><span id="__span-0-14"><a href="#__codelineno-0-14" id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="go">2021-12-31 15:43:00        0.0377</span>
+</span><span id="__span-0-15"><a href="#__codelineno-0-15" id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="go">2021-12-31 15:44:00        0.0502</span>
+</span></code></pre></div>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.transformations.columns.SelectColumns">
+<span class="doc doc-object-name doc-class-name">SelectColumns</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="fold.base.Transformation" href="../loop/#fold.base.classes.Transformation">Transformation</a></code>, <code><a class="autorefs autorefs-internal" title="fold.base.Tunable" href="../loop/#fold.base.classes.Tunable">Tunable</a></code></p>
+<p>Selects a single or multiple columns, drops the rest.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>columns</code></td>
+<td>
+<code>Union[list[str], str]</code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>The column or columns to select (dropping the rest).</p>
+</div>
+</td>
+<td>
+<em>required</em>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="fold.transformations.dev">
+<span class="doc doc-object-name doc-module-name">dev</span>
+</h2>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.transformations.dev.Breakpoint">
+<span class="doc doc-object-name doc-class-name">Breakpoint</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="fold.base.Transformation" href="../loop/#fold.base.classes.Transformation">Transformation</a></code></p>
+<p>A transformation that stops execution at the specified point.</p>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="fold.transformations.difference">
+<span class="doc doc-object-name doc-module-name">difference</span>
+</h2>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.transformations.difference.Difference">
+<span class="doc doc-object-name doc-class-name">Difference</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="fold.base.Transformation" href="../loop/#fold.base.classes.Transformation">Transformation</a></code>, <code><a class="autorefs autorefs-internal" title="fold.base.Tunable" href="../loop/#fold.base.classes.Tunable">Tunable</a></code></p>
+<p>Takes the returns (percentage change between the current and a prior element).</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>log_returns</code></td>
+<td>
+<code>bool</code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>If True, computes the log returns instead of the simple returns, default False.</p>
+</div>
+</td>
+<td>
+<code>False.</code>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong></p>
+<div class="language-pycon highlight"><pre><span></span><code><span id="__span-0-1"><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.loop</span> <span class="kn">import</span> <span class="n">train_backtest</span>
+</span><span id="__span-0-2"><a href="#__codelineno-0-2" id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.splitters</span> <span class="kn">import</span> <span class="n">SlidingWindowSplitter</span>
+</span><span id="__span-0-3"><a href="#__codelineno-0-3" id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.transformations</span> <span class="kn">import</span> <span class="n">Difference</span>
+</span><span id="__span-0-4"><a href="#__codelineno-0-4" id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.utils.tests</span> <span class="kn">import</span> <span class="n">generate_sine_wave_data</span>
+</span><span id="__span-0-5"><a href="#__codelineno-0-5" id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span><span class="p">,</span> <span class="n">y</span>  <span class="o">=</span> <span class="n">generate_sine_wave_data</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="s2">"min"</span><span class="p">)</span>
+</span><span id="__span-0-6"><a href="#__codelineno-0-6" id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">splitter</span> <span class="o">=</span> <span class="n">SlidingWindowSplitter</span><span class="p">(</span><span class="n">train_window</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+</span><span id="__span-0-7"><a href="#__codelineno-0-7" id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">pipeline</span> <span class="o">=</span> <span class="n">Difference</span><span class="p">()</span>
+</span><span id="__span-0-8"><a href="#__codelineno-0-8" id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">preds</span><span class="p">,</span> <span class="n">trained_pipeline</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">train_backtest</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">splitter</span><span class="p">)</span>
+</span><span id="__span-0-9"><a href="#__codelineno-0-9" id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span><span class="p">[</span><span class="s2">"sine"</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">preds</span><span class="o">.</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</span><span id="__span-0-10"><a href="#__codelineno-0-10" id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="go">2021-12-31 15:40:00   -0.0000</span>
+</span><span id="__span-0-11"><a href="#__codelineno-0-11" id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="go">2021-12-31 15:41:00    0.0126</span>
+</span><span id="__span-0-12"><a href="#__codelineno-0-12" id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="go">2021-12-31 15:42:00    0.0251</span>
+</span><span id="__span-0-13"><a href="#__codelineno-0-13" id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="go">2021-12-31 15:43:00    0.0377</span>
+</span><span id="__span-0-14"><a href="#__codelineno-0-14" id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="go">2021-12-31 15:44:00    0.0502</span>
+</span><span id="__span-0-15"><a href="#__codelineno-0-15" id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="go">Freq: T, Name: sine, dtype: float64</span>
+</span><span id="__span-0-16"><a href="#__codelineno-0-16" id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">preds</span><span class="p">[</span><span class="s2">"sine"</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</span><span id="__span-0-17"><a href="#__codelineno-0-17" id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="go">2021-12-31 15:40:00   -1.000000</span>
+</span><span id="__span-0-18"><a href="#__codelineno-0-18" id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="go">2021-12-31 15:41:00        -inf</span>
+</span><span id="__span-0-19"><a href="#__codelineno-0-19" id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="go">2021-12-31 15:42:00    0.992063</span>
+</span><span id="__span-0-20"><a href="#__codelineno-0-20" id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="go">2021-12-31 15:43:00    0.501992</span>
+</span><span id="__span-0-21"><a href="#__codelineno-0-21" id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="go">2021-12-31 15:44:00    0.331565</span>
+</span><span id="__span-0-22"><a href="#__codelineno-0-22" id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="go">Freq: T, Name: sine, dtype: float64</span>
+</span></code></pre></div>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="fold.transformations.features">
+<span class="doc doc-object-name doc-module-name">features</span>
+</h2>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.transformations.features.AddFeatures">
+<span class="doc doc-object-name doc-class-name">AddFeatures</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="fold.base.Transformation" href="../loop/#fold.base.classes.Transformation">Transformation</a></code>, <code><a class="autorefs autorefs-internal" title="fold.base.Tunable" href="../loop/#fold.base.classes.Tunable">Tunable</a></code></p>
+<p>Applies a function to one or more columns.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>column_func</code></td>
+<td>
+<code><span title="fold.transformations.features.ColumnFunction">ColumnFunction</span> | list[<span title="fold.transformations.features.ColumnFunction">ColumnFunction</span>]</code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>A tuple of a column or list of columns and a function to apply to them.</p>
+</div>
+</td>
+<td>
+<em>required</em>
+</td>
+</tr>
+<tr>
+<td><code>fillna</code></td>
+<td>
+<code>bool</code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>Fill NaNs in the resulting DataFrame</p>
+</div>
+</td>
+<td>
+<code>False</code>
+</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>
+<code>str | None</code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>Name of the transformation.</p>
+</div>
+</td>
+<td>
+<code>None</code>
+</td>
+</tr>
+<tr>
+<td><code>params_to_try</code></td>
+<td>
+<code>dict | None</code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>Dictionary of parameters to try when tuning.</p>
+</div>
+</td>
+<td>
+<code>None</code>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>tuple[pd.DataFrame, Artifact| None]: returns the transformed DataFrame with the original dataframe concatinated.</code>
+</td>
+<td>
+<div class="doc-md-description">
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong></p>
+<div class="language-pycon highlight"><pre><span></span><code><span id="__span-0-1"><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.loop</span> <span class="kn">import</span> <span class="n">train_backtest</span>
+</span><span id="__span-0-2"><a href="#__codelineno-0-2" id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.splitters</span> <span class="kn">import</span> <span class="n">SlidingWindowSplitter</span>
+</span><span id="__span-0-3"><a href="#__codelineno-0-3" id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.transformations</span> <span class="kn">import</span> <span class="n">AddFeatures</span>
+</span><span id="__span-0-4"><a href="#__codelineno-0-4" id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.models.dummy</span> <span class="kn">import</span> <span class="n">DummyClassifier</span>
+</span><span id="__span-0-5"><a href="#__codelineno-0-5" id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.utils.tests</span> <span class="kn">import</span> <span class="n">generate_sine_wave_data</span>
+</span><span id="__span-0-6"><a href="#__codelineno-0-6" id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</span><span id="__span-0-7"><a href="#__codelineno-0-7" id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span><span class="p">,</span> <span class="n">y</span>  <span class="o">=</span> <span class="n">generate_sine_wave_data</span><span class="p">()</span>
+</span><span id="__span-0-8"><a href="#__codelineno-0-8" id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">splitter</span> <span class="o">=</span> <span class="n">SlidingWindowSplitter</span><span class="p">(</span><span class="n">train_window</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+</span><span id="__span-0-9"><a href="#__codelineno-0-9" id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">pipeline</span> <span class="o">=</span> <span class="n">AddFeatures</span><span class="p">([(</span><span class="s2">"sine"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">)])</span>
+</span><span id="__span-0-10"><a href="#__codelineno-0-10" id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">preds</span><span class="p">,</span> <span class="n">trained_pipeline</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">train_backtest</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">splitter</span><span class="p">)</span>
+</span><span id="__span-0-11"><a href="#__codelineno-0-11" id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">preds</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</span><span id="__span-0-12"><a href="#__codelineno-0-12" id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="go">                       sine  sine~square</span>
+</span><span id="__span-0-13"><a href="#__codelineno-0-13" id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="go">2021-12-31 15:40:00 -0.0000     0.000000</span>
+</span><span id="__span-0-14"><a href="#__codelineno-0-14" id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="go">2021-12-31 15:41:00  0.0126     0.000159</span>
+</span><span id="__span-0-15"><a href="#__codelineno-0-15" id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="go">2021-12-31 15:42:00  0.0251     0.000630</span>
+</span><span id="__span-0-16"><a href="#__codelineno-0-16" id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="go">2021-12-31 15:43:00  0.0377     0.001421</span>
+</span><span id="__span-0-17"><a href="#__codelineno-0-17" id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="go">2021-12-31 15:44:00  0.0502     0.002520</span>
+</span></code></pre></div>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.transformations.features.AddWindowFeatures">
+<span class="doc doc-object-name doc-class-name">AddWindowFeatures</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="fold.base.Transformation" href="../loop/#fold.base.classes.Transformation">Transformation</a></code>, <code><a class="autorefs autorefs-internal" title="fold.base.Tunable" href="../loop/#fold.base.classes.Tunable">Tunable</a></code></p>
+<p>Creates rolling window features on the specified columns.
+Equivalent to adding a new column by running: <code>df[column].rolling(window).function()</code>.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>column_window_func</code></td>
+<td>
+<code>(<span title="fold.transformations.features.ColumnWindowFunction">ColumnWindowFunction</span>, list[<span title="fold.transformations.features.ColumnWindowFunction">ColumnWindowFunction</span>])</code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>A list of tuples, where each tuple contains the column name, the window size and the function to apply.
+The function can be a predefined function (see PredefinedFunction) or a Callable (with a single parameter).</p>
+</div>
+</td>
+<td>
+<em>required</em>
+</td>
+</tr>
+<tr>
+<td><code>fillna</code></td>
+<td>
+<code>bool</code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>Fill NaNs in the resulting DataFrame</p>
+</div>
+</td>
+<td>
+<code>False</code>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong></p>
+<div class="language-pycon highlight"><pre><span></span><code><span id="__span-0-1"><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.loop</span> <span class="kn">import</span> <span class="n">train_backtest</span>
+</span><span id="__span-0-2"><a href="#__codelineno-0-2" id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.splitters</span> <span class="kn">import</span> <span class="n">SlidingWindowSplitter</span>
+</span><span id="__span-0-3"><a href="#__codelineno-0-3" id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.transformations</span> <span class="kn">import</span> <span class="n">AddWindowFeatures</span>
+</span><span id="__span-0-4"><a href="#__codelineno-0-4" id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.utils.tests</span> <span class="kn">import</span> <span class="n">generate_sine_wave_data</span>
+</span><span id="__span-0-5"><a href="#__codelineno-0-5" id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span><span class="p">,</span> <span class="n">y</span>  <span class="o">=</span> <span class="n">generate_sine_wave_data</span><span class="p">()</span>
+</span><span id="__span-0-6"><a href="#__codelineno-0-6" id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">splitter</span> <span class="o">=</span> <span class="n">SlidingWindowSplitter</span><span class="p">(</span><span class="n">train_window</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+</span><span id="__span-0-7"><a href="#__codelineno-0-7" id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">pipeline</span> <span class="o">=</span> <span class="n">AddWindowFeatures</span><span class="p">((</span><span class="s2">"sine"</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">"mean"</span><span class="p">))</span>
+</span><span id="__span-0-8"><a href="#__codelineno-0-8" id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">preds</span><span class="p">,</span> <span class="n">trained_pipeline</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">train_backtest</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">splitter</span><span class="p">)</span>
+</span><span id="__span-0-9"><a href="#__codelineno-0-9" id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">preds</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</span><span id="__span-0-10"><a href="#__codelineno-0-10" id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="go">                       sine  sine~mean_10</span>
+</span><span id="__span-0-11"><a href="#__codelineno-0-11" id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="go">2021-12-31 15:40:00 -0.0000      -0.05649</span>
+</span><span id="__span-0-12"><a href="#__codelineno-0-12" id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="go">2021-12-31 15:41:00  0.0126      -0.04394</span>
+</span><span id="__span-0-13"><a href="#__codelineno-0-13" id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="go">2021-12-31 15:42:00  0.0251      -0.03139</span>
+</span><span id="__span-0-14"><a href="#__codelineno-0-14" id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="go">2021-12-31 15:43:00  0.0377      -0.01883</span>
+</span><span id="__span-0-15"><a href="#__codelineno-0-15" id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="go">2021-12-31 15:44:00  0.0502      -0.00628</span>
+</span></code></pre></div>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="fold.transformations.function">
+<span class="doc doc-object-name doc-module-name">function</span>
+</h2>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.transformations.function.ApplyFunction">
+<span class="doc doc-object-name doc-class-name">ApplyFunction</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="fold.base.Transformation" href="../loop/#fold.base.classes.Transformation">Transformation</a></code>, <code><a class="autorefs autorefs-internal" title="fold.base.Tunable" href="../loop/#fold.base.classes.Tunable">Tunable</a></code></p>
+<p>Wraps and arbitrary function that will run at inference.</p>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="fold.transformations.holidays">
+<span class="doc doc-object-name doc-module-name">holidays</span>
+</h2>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.transformations.holidays.AddExchangeHolidayFeatures">
+<span class="doc doc-object-name doc-class-name">AddExchangeHolidayFeatures</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="fold.base.Transformation" href="../loop/#fold.base.classes.Transformation">Transformation</a></code>, <code><a class="autorefs autorefs-internal" title="fold.base.Tunable" href="../loop/#fold.base.classes.Tunable">Tunable</a></code></p>
+<p>Adds holiday features for given exchange(s) as new column(s).
+It uses the pattern "holiday_{exchange}" for naming the columns.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>exchange_codes</code></td>
+<td>
+<code>list[str] | str</code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>List of exchange codes  (eg.: <code>NYSE</code>) for which to add holiday features.</p>
+</div>
+</td>
+<td>
+<em>required</em>
+</td>
+</tr>
+<tr>
+<td><code>labeling</code></td>
+<td>
+<code>str | <a class="autorefs autorefs-internal" title="fold.transformations.holidays.LabelingMethod" href="#fold.transformations.holidays.LabelingMethod">LabelingMethod</a></code>
+</td>
+<td>
+<div class="doc-md-description">
+<ul>
+<li>holiday_binary: Workdays = 0 | National Holidays = 1</li>
+<li>weekday_weekend_holiday: Workdays = 0 | Weekends = 1 | National Holidays == 2</li>
+</ul>
+</div>
+</td>
+<td>
+<code><span title="fold.transformations.holidays.LabelingMethod.weekday_weekend_holiday">weekday_weekend_holiday</span></code>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.transformations.holidays.AddHolidayFeatures">
+<span class="doc doc-object-name doc-class-name">AddHolidayFeatures</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="fold.base.Transformation" href="../loop/#fold.base.classes.Transformation">Transformation</a></code>, <code><a class="autorefs autorefs-internal" title="fold.base.Tunable" href="../loop/#fold.base.classes.Tunable">Tunable</a></code></p>
+<p>Adds holiday features for given region(s) as new column(s).
+It uses the pattern "holiday_{country_code}" for naming the columns.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>country_codes</code></td>
+<td>
+<code>list[str] | str</code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>List of country codes  (eg.: <code>US</code>, <code>DE</code>) for which to add holiday features.</p>
+</div>
+</td>
+<td>
+<em>required</em>
+</td>
+</tr>
+<tr>
+<td><code>labeling</code></td>
+<td>
+<code>str | <a class="autorefs autorefs-internal" title="fold.transformations.holidays.LabelingMethod" href="#fold.transformations.holidays.LabelingMethod">LabelingMethod</a></code>
+</td>
+<td>
+<div class="doc-md-description">
+<ul>
+<li>holiday_binary: Workdays = 0 | National Holidays = 1</li>
+<li>weekday_weekend_holiday: Workdays = 0 | Weekends = 1 | National Holidays == 2</li>
+<li>weekday_weekend_uniqueholiday: Workdays = 0 | Weekends = 1 | National Holidays == Unique int (&gt;1)</li>
+<li>weekday_weekend_uniqueholiday_string: Workdays = 0 | Weekends = 1 | National Holidays == string</li>
+</ul>
+</div>
+</td>
+<td>
+<code><span title="fold.transformations.holidays.LabelingMethod.weekday_weekend_holiday">weekday_weekend_holiday</span></code>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.transformations.holidays.LabelingMethod">
+<span class="doc doc-object-name doc-class-name">LabelingMethod</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><span title="finml_utils.enums.ParsableEnum">ParsableEnum</span></code></p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>holiday_binary</code></td>
+<td>
+</td>
+<td>
+<div class="doc-md-description">
+<ul>
+<li>Workdays = 0</li>
+<li>National Holidays = 1</li>
+</ul>
+</div>
+</td>
+<td>
+<em>required</em>
+</td>
+</tr>
+<tr>
+<td><code>weekday_weekend_holiday</code></td>
+<td>
+</td>
+<td>
+<div class="doc-md-description">
+<ul>
+<li>Workdays = 0</li>
+<li>Weekends = 1</li>
+<li>National Holidays == 2</li>
+</ul>
+</div>
+</td>
+<td>
+<em>required</em>
+</td>
+</tr>
+<tr>
+<td><code>weekday_weekend_uniqueholiday</code></td>
+<td>
+</td>
+<td>
+<div class="doc-md-description">
+<ul>
+<li>Workdays = 0</li>
+<li>Weekends = 1</li>
+<li>National Holidays == Unique int (&gt;1)</li>
+</ul>
+</div>
+</td>
+<td>
+<em>required</em>
+</td>
+</tr>
+<tr>
+<td><code>weekday_weekend_uniqueholiday_string</code></td>
+<td>
+</td>
+<td>
+<div class="doc-md-description">
+<ul>
+<li>Workdays = 0</li>
+<li>Weekends = 1</li>
+<li>National Holidays == string</li>
+</ul>
+</div>
+</td>
+<td>
+<em>required</em>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="fold.transformations.lags">
+<span class="doc doc-object-name doc-module-name">lags</span>
+</h2>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.transformations.lags.AddLagsX">
+<span class="doc doc-object-name doc-class-name">AddLagsX</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="fold.base.Transformation" href="../loop/#fold.base.classes.Transformation">Transformation</a></code>, <code><a class="autorefs autorefs-internal" title="fold.base.Tunable" href="../loop/#fold.base.classes.Tunable">Tunable</a></code></p>
+<p>Adds past values of <code>X</code> for the desired column(s).</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>columns_and_lags</code></td>
+<td>
+<code>(list[<span title="fold.transformations.lags.AddLagsX.ColumnAndLag">ColumnAndLag</span>], <span title="fold.transformations.lags.AddLagsX.ColumnAndLag">ColumnAndLag</span>)</code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>A tuple (or a list of tuples) of the column name and a single or a list of lags to add as features.</p>
+</div>
+</td>
+<td>
+<em>required</em>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong></p>
+<div class="language-pycon highlight"><pre><span></span><code><span id="__span-0-1"><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.loop</span> <span class="kn">import</span> <span class="n">train_backtest</span>
+</span><span id="__span-0-2"><a href="#__codelineno-0-2" id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.splitters</span> <span class="kn">import</span> <span class="n">SlidingWindowSplitter</span>
+</span><span id="__span-0-3"><a href="#__codelineno-0-3" id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.transformations</span> <span class="kn">import</span> <span class="n">AddLagsX</span>
+</span><span id="__span-0-4"><a href="#__codelineno-0-4" id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.utils.tests</span> <span class="kn">import</span> <span class="n">generate_sine_wave_data</span>
+</span><span id="__span-0-5"><a href="#__codelineno-0-5" id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span><span class="p">,</span> <span class="n">y</span>  <span class="o">=</span> <span class="n">generate_sine_wave_data</span><span class="p">()</span>
+</span><span id="__span-0-6"><a href="#__codelineno-0-6" id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">splitter</span> <span class="o">=</span> <span class="n">SlidingWindowSplitter</span><span class="p">(</span><span class="n">train_window</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+</span><span id="__span-0-7"><a href="#__codelineno-0-7" id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">pipeline</span> <span class="o">=</span> <span class="n">AddLagsX</span><span class="p">([(</span><span class="s2">"sine"</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="s2">"sine"</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])])</span>
+</span><span id="__span-0-8"><a href="#__codelineno-0-8" id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">preds</span><span class="p">,</span> <span class="n">trained_pipeline</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">train_backtest</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">splitter</span><span class="p">)</span>
+</span><span id="__span-0-9"><a href="#__codelineno-0-9" id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">preds</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</span><span id="__span-0-10"><a href="#__codelineno-0-10" id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="go">                       sine  sine~lag_1  sine~lag_2  sine~lag_3</span>
+</span><span id="__span-0-11"><a href="#__codelineno-0-11" id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="go">2021-12-31 15:40:00 -0.0000     -0.0126     -0.0251     -0.0377</span>
+</span><span id="__span-0-12"><a href="#__codelineno-0-12" id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="go">2021-12-31 15:41:00  0.0126     -0.0000     -0.0126     -0.0251</span>
+</span><span id="__span-0-13"><a href="#__codelineno-0-13" id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="go">2021-12-31 15:42:00  0.0251      0.0126     -0.0000     -0.0126</span>
+</span><span id="__span-0-14"><a href="#__codelineno-0-14" id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="go">2021-12-31 15:43:00  0.0377      0.0251      0.0126     -0.0000</span>
+</span><span id="__span-0-15"><a href="#__codelineno-0-15" id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="go">2021-12-31 15:44:00  0.0502      0.0377      0.0251      0.0126</span>
+</span></code></pre></div>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="fold.transformations.math">
+<span class="doc doc-object-name doc-module-name">math</span>
+</h2>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.transformations.math.MultiplyBy">
+<span class="doc doc-object-name doc-class-name">MultiplyBy</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><span title="fold.base.InvertibleTransformation">InvertibleTransformation</span></code>, <code><a class="autorefs autorefs-internal" title="fold.base.Tunable" href="../loop/#fold.base.classes.Tunable">Tunable</a></code></p>
+<p>Multiplies the data by a constant.</p>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.transformations.math.TakeLog">
+<span class="doc doc-object-name doc-class-name">TakeLog</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><span title="fold.base.InvertibleTransformation">InvertibleTransformation</span></code>, <code><a class="autorefs autorefs-internal" title="fold.base.Tunable" href="../loop/#fold.base.classes.Tunable">Tunable</a></code></p>
+<p>Takes the logarithm of the data.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>base</code></td>
+<td>
+<code>(int, str)</code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>The base of the logarithm, by default "e".
+Valid values are "e", np.e, "10", 10, "2", 2.</p>
+</div>
+</td>
+<td>
+<code>'e'</code>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong></p>
+<div class="language-pycon highlight"><pre><span></span><code><span id="__span-0-1"><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.loop</span> <span class="kn">import</span> <span class="n">train_backtest</span>
+</span><span id="__span-0-2"><a href="#__codelineno-0-2" id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.splitters</span> <span class="kn">import</span> <span class="n">SlidingWindowSplitter</span>
+</span><span id="__span-0-3"><a href="#__codelineno-0-3" id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.transformations</span> <span class="kn">import</span> <span class="n">TakeLog</span>
+</span><span id="__span-0-4"><a href="#__codelineno-0-4" id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.utils.tests</span> <span class="kn">import</span> <span class="n">generate_sine_wave_data</span>
+</span><span id="__span-0-5"><a href="#__codelineno-0-5" id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span><span class="p">,</span> <span class="n">y</span>  <span class="o">=</span> <span class="n">generate_sine_wave_data</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="s2">"min"</span><span class="p">)</span>
+</span><span id="__span-0-6"><a href="#__codelineno-0-6" id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">splitter</span> <span class="o">=</span> <span class="n">SlidingWindowSplitter</span><span class="p">(</span><span class="n">train_window</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+</span><span id="__span-0-7"><a href="#__codelineno-0-7" id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">pipeline</span> <span class="o">=</span> <span class="n">TakeLog</span><span class="p">()</span>
+</span><span id="__span-0-8"><a href="#__codelineno-0-8" id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span><span class="p">[</span><span class="s2">"sine"</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</span><span id="__span-0-9"><a href="#__codelineno-0-9" id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="go">2021-12-31 07:20:00    0.0000</span>
+</span><span id="__span-0-10"><a href="#__codelineno-0-10" id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="go">2021-12-31 07:21:00    0.0126</span>
+</span><span id="__span-0-11"><a href="#__codelineno-0-11" id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="go">2021-12-31 07:22:00    0.0251</span>
+</span><span id="__span-0-12"><a href="#__codelineno-0-12" id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="go">2021-12-31 07:23:00    0.0377</span>
+</span><span id="__span-0-13"><a href="#__codelineno-0-13" id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="go">2021-12-31 07:24:00    0.0502</span>
+</span><span id="__span-0-14"><a href="#__codelineno-0-14" id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="go">Freq: T, Name: sine, dtype: float64</span>
+</span><span id="__span-0-15"><a href="#__codelineno-0-15" id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">preds</span><span class="p">,</span> <span class="n">trained_pipeline</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">train_backtest</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">splitter</span><span class="p">)</span>
+</span><span id="__span-0-16"><a href="#__codelineno-0-16" id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">preds</span><span class="p">[</span><span class="s2">"sine"</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</span><span id="__span-0-17"><a href="#__codelineno-0-17" id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="go">2021-12-31 15:40:00        -inf</span>
+</span><span id="__span-0-18"><a href="#__codelineno-0-18" id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="go">2021-12-31 15:41:00   -4.374058</span>
+</span><span id="__span-0-19"><a href="#__codelineno-0-19" id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="go">2021-12-31 15:42:00   -3.684887</span>
+</span><span id="__span-0-20"><a href="#__codelineno-0-20" id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="go">2021-12-31 15:43:00   -3.278095</span>
+</span><span id="__span-0-21"><a href="#__codelineno-0-21" id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="go">2021-12-31 15:44:00   -2.991740</span>
+</span><span id="__span-0-22"><a href="#__codelineno-0-22" id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="go">Freq: T, Name: sine, dtype: float64</span>
+</span></code></pre></div>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.transformations.math.TurnPositive">
+<span class="doc doc-object-name doc-class-name">TurnPositive</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><span title="fold.base.InvertibleTransformation">InvertibleTransformation</span></code></p>
+<p>Adds a constant to the data, varying by column, so that all values are positive.
+It identifies the constant during training, and applies it during inference (and backtesting).
+Therefore there's no guarantee that the data will be positive during inference (and backtesting).</p>
+<p>It can not be updated after the initial training, as that'd change the underlying distribution of the data.</p>
+<p><strong>Examples:</strong></p>
+<div class="language-pycon highlight"><pre><span></span><code><span id="__span-0-1"><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.loop</span> <span class="kn">import</span> <span class="n">train_backtest</span>
+</span><span id="__span-0-2"><a href="#__codelineno-0-2" id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.splitters</span> <span class="kn">import</span> <span class="n">SlidingWindowSplitter</span>
+</span><span id="__span-0-3"><a href="#__codelineno-0-3" id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.transformations</span> <span class="kn">import</span> <span class="n">TurnPositive</span>
+</span><span id="__span-0-4"><a href="#__codelineno-0-4" id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.utils.tests</span> <span class="kn">import</span> <span class="n">generate_sine_wave_data</span>
+</span><span id="__span-0-5"><a href="#__codelineno-0-5" id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span><span class="p">,</span> <span class="n">y</span>  <span class="o">=</span> <span class="n">generate_sine_wave_data</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="s2">"min"</span><span class="p">)</span>
+</span><span id="__span-0-6"><a href="#__codelineno-0-6" id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span><span class="p">,</span> <span class="n">y</span>  <span class="o">=</span> <span class="n">X</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">y</span> <span class="o">-</span> <span class="mi">1</span>
+</span><span id="__span-0-7"><a href="#__codelineno-0-7" id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">splitter</span> <span class="o">=</span> <span class="n">SlidingWindowSplitter</span><span class="p">(</span><span class="n">train_window</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+</span><span id="__span-0-8"><a href="#__codelineno-0-8" id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">pipeline</span> <span class="o">=</span> <span class="n">TurnPositive</span><span class="p">()</span>
+</span><span id="__span-0-9"><a href="#__codelineno-0-9" id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span><span class="p">[</span><span class="s2">"sine"</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</span><span id="__span-0-10"><a href="#__codelineno-0-10" id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="go">2021-12-31 07:20:00   -1.0000</span>
+</span><span id="__span-0-11"><a href="#__codelineno-0-11" id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="go">2021-12-31 07:21:00   -0.9874</span>
+</span><span id="__span-0-12"><a href="#__codelineno-0-12" id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="go">2021-12-31 07:22:00   -0.9749</span>
+</span><span id="__span-0-13"><a href="#__codelineno-0-13" id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="go">2021-12-31 07:23:00   -0.9623</span>
+</span><span id="__span-0-14"><a href="#__codelineno-0-14" id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="go">2021-12-31 07:24:00   -0.9498</span>
+</span><span id="__span-0-15"><a href="#__codelineno-0-15" id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="go">Freq: T, Name: sine, dtype: float64</span>
+</span><span id="__span-0-16"><a href="#__codelineno-0-16" id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">preds</span><span class="p">,</span> <span class="n">trained_pipeline</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">train_backtest</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">splitter</span><span class="p">)</span>
+</span><span id="__span-0-17"><a href="#__codelineno-0-17" id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">preds</span><span class="p">[</span><span class="s2">"sine"</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</span><span id="__span-0-18"><a href="#__codelineno-0-18" id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="go">2021-12-31 15:40:00    2.0000</span>
+</span><span id="__span-0-19"><a href="#__codelineno-0-19" id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="go">2021-12-31 15:41:00    2.0126</span>
+</span><span id="__span-0-20"><a href="#__codelineno-0-20" id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="go">2021-12-31 15:42:00    2.0251</span>
+</span><span id="__span-0-21"><a href="#__codelineno-0-21" id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="go">2021-12-31 15:43:00    2.0377</span>
+</span><span id="__span-0-22"><a href="#__codelineno-0-22" id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="go">2021-12-31 15:44:00    2.0502</span>
+</span><span id="__span-0-23"><a href="#__codelineno-0-23" id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="go">Freq: T, Name: sine, dtype: float64</span>
+</span></code></pre></div>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="fold.transformations.scaling">
+<span class="doc doc-object-name doc-module-name">scaling</span>
+</h2>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.transformations.scaling.MinMaxScaler">
+<span class="doc doc-object-name doc-class-name">MinMaxScaler</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><span title="fold.transformations.sklearn.WrapInvertibleSKLearnTransformation">WrapInvertibleSKLearnTransformation</span></code></p>
+<p>Transform features by scaling each feature to a given range.</p>
+<p>A wrapper around SKLearn's StandardScaler.
+Capable of further updates after the initial fit.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>feature_range</code></td>
+<td>
+<code>tuple(min, max)</code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>Desired range of transformed data.</p>
+</div>
+</td>
+<td>
+<code>(0, 1)</code>
+</td>
+</tr>
+<tr>
+<td><code>clip</code></td>
+<td>
+<code>bool</code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>Set to True to clip transformed values of held-out data to
+provided <code>feature range</code>.</p>
+</div>
+</td>
+<td>
+<code>False</code>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong></p>
+<div class="language-pycon highlight"><pre><span></span><code><span id="__span-0-1"><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.loop</span> <span class="kn">import</span> <span class="n">train_backtest</span>
+</span><span id="__span-0-2"><a href="#__codelineno-0-2" id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.splitters</span> <span class="kn">import</span> <span class="n">SlidingWindowSplitter</span>
+</span><span id="__span-0-3"><a href="#__codelineno-0-3" id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.transformations</span> <span class="kn">import</span> <span class="n">MinMaxScaler</span>
+</span><span id="__span-0-4"><a href="#__codelineno-0-4" id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.utils.tests</span> <span class="kn">import</span> <span class="n">generate_sine_wave_data</span>
+</span><span id="__span-0-5"><a href="#__codelineno-0-5" id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span><span class="p">,</span> <span class="n">y</span>  <span class="o">=</span> <span class="n">generate_sine_wave_data</span><span class="p">()</span>
+</span><span id="__span-0-6"><a href="#__codelineno-0-6" id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">splitter</span> <span class="o">=</span> <span class="n">SlidingWindowSplitter</span><span class="p">(</span><span class="n">train_window</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+</span><span id="__span-0-7"><a href="#__codelineno-0-7" id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">pipeline</span> <span class="o">=</span> <span class="n">MinMaxScaler</span><span class="p">()</span>
+</span><span id="__span-0-8"><a href="#__codelineno-0-8" id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">preds</span><span class="p">,</span> <span class="n">trained_pipeline</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">train_backtest</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">splitter</span><span class="p">)</span>
+</span><span id="__span-0-9"><a href="#__codelineno-0-9" id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span><span class="p">[</span><span class="s2">"sine"</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">preds</span><span class="o">.</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</span><span id="__span-0-10"><a href="#__codelineno-0-10" id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="go">2021-12-31 15:40:00   -0.0000</span>
+</span><span id="__span-0-11"><a href="#__codelineno-0-11" id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="go">2021-12-31 15:41:00    0.0126</span>
+</span><span id="__span-0-12"><a href="#__codelineno-0-12" id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="go">2021-12-31 15:42:00    0.0251</span>
+</span><span id="__span-0-13"><a href="#__codelineno-0-13" id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="go">2021-12-31 15:43:00    0.0377</span>
+</span><span id="__span-0-14"><a href="#__codelineno-0-14" id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="go">2021-12-31 15:44:00    0.0502</span>
+</span><span id="__span-0-15"><a href="#__codelineno-0-15" id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="go">Freq: T, Name: sine, dtype: float64</span>
+</span><span id="__span-0-16"><a href="#__codelineno-0-16" id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">preds</span><span class="p">[</span><span class="s2">"sine"</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</span><span id="__span-0-17"><a href="#__codelineno-0-17" id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="go">2021-12-31 15:40:00    0.50000</span>
+</span><span id="__span-0-18"><a href="#__codelineno-0-18" id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="go">2021-12-31 15:41:00    0.50630</span>
+</span><span id="__span-0-19"><a href="#__codelineno-0-19" id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="go">2021-12-31 15:42:00    0.51255</span>
+</span><span id="__span-0-20"><a href="#__codelineno-0-20" id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="go">2021-12-31 15:43:00    0.51885</span>
+</span><span id="__span-0-21"><a href="#__codelineno-0-21" id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="go">2021-12-31 15:44:00    0.52510</span>
+</span><span id="__span-0-22"><a href="#__codelineno-0-22" id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="go">Freq: T, Name: sine, dtype: float64</span>
+</span></code></pre></div>
+<details class="references" open="">
+<summary>References</summary>
+<p><a href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MinMaxScaler.html">SKLearn's MinMaxScaler documentation</a></p>
+</details>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.transformations.scaling.StandardScaler">
+<span class="doc doc-object-name doc-class-name">StandardScaler</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><span title="fold.transformations.sklearn.WrapInvertibleSKLearnTransformation">WrapInvertibleSKLearnTransformation</span></code></p>
+<p>Standardize features by removing the mean and scaling to unit variance.</p>
+<p>A wrapper around SKLearn's StandardScaler.
+Capable of further updates after the initial fit.</p>
+<p><strong>Examples:</strong></p>
+<div class="language-pycon highlight"><pre><span></span><code><span id="__span-0-1"><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.loop</span> <span class="kn">import</span> <span class="n">train_backtest</span>
+</span><span id="__span-0-2"><a href="#__codelineno-0-2" id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.splitters</span> <span class="kn">import</span> <span class="n">SlidingWindowSplitter</span>
+</span><span id="__span-0-3"><a href="#__codelineno-0-3" id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.transformations</span> <span class="kn">import</span> <span class="n">StandardScaler</span>
+</span><span id="__span-0-4"><a href="#__codelineno-0-4" id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.utils.tests</span> <span class="kn">import</span> <span class="n">generate_sine_wave_data</span>
+</span><span id="__span-0-5"><a href="#__codelineno-0-5" id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span><span class="p">,</span> <span class="n">y</span>  <span class="o">=</span> <span class="n">generate_sine_wave_data</span><span class="p">()</span>
+</span><span id="__span-0-6"><a href="#__codelineno-0-6" id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">splitter</span> <span class="o">=</span> <span class="n">SlidingWindowSplitter</span><span class="p">(</span><span class="n">train_window</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+</span><span id="__span-0-7"><a href="#__codelineno-0-7" id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">pipeline</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span>
+</span><span id="__span-0-8"><a href="#__codelineno-0-8" id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span><span class="p">[</span><span class="s2">"sine"</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</span><span id="__span-0-9"><a href="#__codelineno-0-9" id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="go">2021-12-31 07:20:00    0.0000</span>
+</span><span id="__span-0-10"><a href="#__codelineno-0-10" id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="go">2021-12-31 07:21:00    0.0126</span>
+</span><span id="__span-0-11"><a href="#__codelineno-0-11" id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="go">2021-12-31 07:22:00    0.0251</span>
+</span><span id="__span-0-12"><a href="#__codelineno-0-12" id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="go">2021-12-31 07:23:00    0.0377</span>
+</span><span id="__span-0-13"><a href="#__codelineno-0-13" id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="go">2021-12-31 07:24:00    0.0502</span>
+</span><span id="__span-0-14"><a href="#__codelineno-0-14" id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="go">Freq: T, Name: sine, dtype: float64</span>
+</span><span id="__span-0-15"><a href="#__codelineno-0-15" id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">preds</span><span class="p">,</span> <span class="n">trained_pipeline</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">train_backtest</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">splitter</span><span class="p">)</span>
+</span><span id="__span-0-16"><a href="#__codelineno-0-16" id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">preds</span><span class="p">[</span><span class="s2">"sine"</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</span><span id="__span-0-17"><a href="#__codelineno-0-17" id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="go">2021-12-31 15:40:00   -0.000000</span>
+</span><span id="__span-0-18"><a href="#__codelineno-0-18" id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="go">2021-12-31 15:41:00    0.017819</span>
+</span><span id="__span-0-19"><a href="#__codelineno-0-19" id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="go">2021-12-31 15:42:00    0.035497</span>
+</span><span id="__span-0-20"><a href="#__codelineno-0-20" id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="go">2021-12-31 15:43:00    0.053316</span>
+</span><span id="__span-0-21"><a href="#__codelineno-0-21" id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="go">2021-12-31 15:44:00    0.070994</span>
+</span><span id="__span-0-22"><a href="#__codelineno-0-22" id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="go">Freq: T, Name: sine, dtype: float64</span>
+</span></code></pre></div>
+<details class="references" open="">
+<summary>References</summary>
+<p><a href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html">SKLearn's StandardScaler documentation</a></p>
+</details>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="fold.transformations.sklearn">
+<span class="doc doc-object-name doc-module-name">sklearn</span>
+</h2>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.transformations.sklearn.WrapSKLearnFeatureSelector">
+<span class="doc doc-object-name doc-class-name">WrapSKLearnFeatureSelector</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><span title="fold.base.FeatureSelector">FeatureSelector</span></code>, <code><a class="autorefs autorefs-internal" title="fold.base.Tunable" href="../loop/#fold.base.classes.Tunable">Tunable</a></code></p>
+<p>Wraps an SKLearn Feature Selector class, stores the selected columns in <code>selected_features</code> property.
+There's no need to use it directly, <code>fold</code> automatically wraps all sklearn feature selectors into this class.</p>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.transformations.sklearn.WrapSKLearnTransformation">
+<span class="doc doc-object-name doc-class-name">WrapSKLearnTransformation</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="fold.base.Transformation" href="../loop/#fold.base.classes.Transformation">Transformation</a></code>, <code><a class="autorefs autorefs-internal" title="fold.base.Tunable" href="../loop/#fold.base.classes.Tunable">Tunable</a></code></p>
+<p>Wraps an SKLearn Transformation.
+There's no need to use it directly, <code>fold</code> automatically wraps all sklearn transformations into this class.</p>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<form class="md-feedback" hidden="" name="feedback">
+<fieldset>
+<legend class="md-feedback__title">
+        Was this page helpful?
+      </legend>
+<div class="md-feedback__inner">
+<div class="md-feedback__list">
+<button class="md-feedback__icon md-icon" data-md-value="1" title="This page was helpful" type="submit">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 12a8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8 8 8 0 0 0 8-8m2 0a10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2a10 10 0 0 1 10 10M10 9.5c0 .8-.7 1.5-1.5 1.5S7 10.3 7 9.5 7.7 8 8.5 8s1.5.7 1.5 1.5m7 0c0 .8-.7 1.5-1.5 1.5S14 10.3 14 9.5 14.7 8 15.5 8s1.5.7 1.5 1.5m-5 7.73c-1.75 0-3.29-.73-4.19-1.81L9.23 14c.45.72 1.52 1.23 2.77 1.23s2.32-.51 2.77-1.23l1.42 1.42c-.9 1.08-2.44 1.81-4.19 1.81Z"></path></svg>
+</button>
+<button class="md-feedback__icon md-icon" data-md-value="0" title="This page could be improved" type="submit">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 12a8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8 8 8 0 0 0 8-8m2 0a10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2a10 10 0 0 1 10 10m-6.5-4c.8 0 1.5.7 1.5 1.5s-.7 1.5-1.5 1.5-1.5-.7-1.5-1.5.7-1.5 1.5-1.5M10 9.5c0 .8-.7 1.5-1.5 1.5S7 10.3 7 9.5 7.7 8 8.5 8s1.5.7 1.5 1.5m2 4.5c1.75 0 3.29.72 4.19 1.81l-1.42 1.42C14.32 16.5 13.25 16 12 16s-2.32.5-2.77 1.23l-1.42-1.42C8.71 14.72 10.25 14 12 14Z"></path></svg>
+</button>
+</div>
+<div class="md-feedback__note">
+<div data-md-value="1" hidden="">
+              
+              
+                
+              
+              Thanks for your feedback!
+            </div>
+<div data-md-value="0" hidden="">
+              
+              
+                
+              
+              Thanks for your feedback! Help us improve this page by using our <a href="..." rel="noopener" target="_blank">feedback form</a>.
+            </div>
+</div>
+</div>
+</fieldset>
+</form>
+</article>
+</div>
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+</div>
+<button class="md-top md-icon" data-md-component="top" hidden="" type="button">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"></path></svg>
+  Back to top
+</button>
+</main>
+<footer class="md-footer">
+<div class="md-footer-meta md-typeset">
+<div class="md-footer-meta__inner md-grid">
+<div class="md-copyright">
+<div class="md-copyright__highlight">
+      Dream Faster 2023
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" rel="noopener" target="_blank">
+      Material for MkDocs
+    </a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<div class="md-dialog" data-md-component="dialog">
+<div class="md-dialog__inner md-typeset"></div>
+</div>
+<div class="md-consent" data-md-component="consent" hidden="" id="__consent">
+<div class="md-consent__overlay"></div>
+<aside class="md-consent__inner">
+<form class="md-consent__form md-grid md-typeset" name="consent">
+<h4>Cookie consent</h4>
+<p>We use cookies to recognize your repeated visits and preferences, as well as to measure the effectiveness of our documentation and whether users find what they're searching for. With your consent, you're helping us to make our documentation better.</p>
+<input class="md-toggle" id="__settings" type="checkbox"/>
+<div class="md-consent__settings">
+<ul class="task-list">
+<li class="task-list-item">
+<label class="task-list-control">
+<input checked="" name="analytics" type="checkbox"/>
+<span class="task-list-indicator"></span>
+          Google Analytics
+        </label>
+</li>
+<li class="task-list-item">
+<label class="task-list-control">
+<input checked="" name="github" type="checkbox"/>
+<span class="task-list-indicator"></span>
+          GitHub
+        </label>
+</li>
+</ul>
+</div>
+<div class="md-consent__controls">
+<button class="md-button md-button--primary">Accept</button>
+<label class="md-button" for="__settings">Manage settings</label>
+</div>
+</form>
+</aside>
+</div>
+<script>var consent=__md_get("__consent");if(consent)for(var input of document.forms.consent.elements)input.name&&(input.checked=consent[input.name]||!1);else"file:"!==location.protocol&&setTimeout(function(){document.querySelector("[data-md-component=consent]").hidden=!1},250);var action,form=document.forms.consent;for(action of["submit","reset"])form.addEventListener(action,function(e){if(e.preventDefault(),"reset"===e.type)for(var n of document.forms.consent.elements)n.name&&(n.checked=!1);__md_set("__consent",Object.fromEntries(Array.from(new FormData(form).keys()).map(function(e){return[e,!0]}))),location.hash="",location.reload()})</script>
+<script id="__config" type="application/json">{"base": "../..", "features": ["navigation.indexes", "search.suggest", "toc.follow", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+<script src="../../assets/javascripts/bundle.c8d2eff1.min.js"></script>
+<script>document$.subscribe(() => {const lightbox = GLightbox({"touchNavigation": true, "loop": true, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});})</script></body>
+</html>

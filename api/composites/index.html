@@ -1,0 +1,1709 @@
+
+<!DOCTYPE html>
+
+<html class="no-js" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="Dream Faster" name="author"/>
+<link href="../models/" rel="prev"/>
+<link href="../transformations/" rel="next"/>
+<link href="../../images/logo.svg" rel="icon"/>
+<meta content="mkdocs-1.5.3, mkdocs-material-9.5.12" name="generator"/>
+<title>Composites - Fold</title>
+<link href="../../assets/stylesheets/main.7e359304.min.css" rel="stylesheet"/>
+<link href="../../assets/stylesheets/palette.06af60db.min.css" rel="stylesheet"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
+<style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+<link href="../../assets/_mkdocstrings.css" rel="stylesheet"/>
+<link href="../../sg_gallery-rendered-html.css" rel="stylesheet"/>
+<link href="../../sg_gallery-binder.css" rel="stylesheet"/>
+<link href="../../sg_gallery.css" rel="stylesheet"/>
+<link href="../../sg_gallery-dataframe.css" rel="stylesheet"/>
+<script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-FBLB9N9026"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-FBLB9N9026",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-FBLB9N9026",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+<script>var consent;"undefined"==typeof __md_analytics||(consent=__md_get("__consent"))&&consent.analytics&&__md_analytics()</script>
+<link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            
+                .gscrollbar-fixer { padding-right: 15px; }
+                .gdesc-inner { font-size: 0.75rem; }
+                body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+                body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+                body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}
+                </style><script src="../../assets/javascripts/glightbox.min.js"></script></head>
+<body data-md-color-accent="deep-orange" data-md-color-primary="amber" data-md-color-scheme="default" dir="ltr">
+<input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
+<input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+<a class="md-skip" href="#fold.composites.columns">
+          Skip to content
+        </a>
+</div>
+<div data-md-component="announce">
+</div>
+<header class="md-header md-header--shadow" data-md-component="header">
+<nav aria-label="Header" class="md-header__inner md-grid">
+<a aria-label="Fold" class="md-header__button md-logo" data-md-component="logo" href="../.." title="Fold">
+<img alt="logo" src="../../images/logo_white.svg"/>
+</a>
+<label class="md-header__button md-icon" for="__drawer">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"></path></svg>
+</label>
+<div class="md-header__title" data-md-component="header-title">
+<div class="md-header__ellipsis">
+<div class="md-header__topic">
+<span class="md-ellipsis">
+            Fold
+          </span>
+</div>
+<div class="md-header__topic" data-md-component="header-topic">
+<span class="md-ellipsis">
+            
+              Composites
+            
+          </span>
+</div>
+</div>
+</div>
+<form class="md-header__option" data-md-component="palette">
+<input aria-label="Switch to dark mode" class="md-option" data-md-color-accent="deep-orange" data-md-color-media="(prefers-color-scheme: light)" data-md-color-primary="amber" data-md-color-scheme="default" id="__palette_0" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_1" hidden="" title="Switch to dark mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"></path></svg>
+</label>
+<input aria-label="Switch to light mode" class="md-option" data-md-color-accent="deep-orange" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-primary="amber" data-md-color-scheme="slate" id="__palette_1" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_0" hidden="" title="Switch to light mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path></svg>
+</label>
+</form>
+<script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+<label class="md-header__button md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"></path></svg>
+</label>
+<div class="md-search" data-md-component="search" role="dialog">
+<label class="md-search__overlay" for="__search"></label>
+<div class="md-search__inner" role="search">
+<form class="md-search__form" name="search">
+<input aria-label="Search" autocapitalize="off" autocomplete="off" autocorrect="off" class="md-search__input" data-md-component="search-query" name="query" placeholder="Search" required="" spellcheck="false" type="text"/>
+<label class="md-search__icon md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"></path></svg>
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"></path></svg>
+</label>
+<nav aria-label="Search" class="md-search__options">
+<button aria-label="Clear" class="md-search__icon md-icon" tabindex="-1" title="Clear" type="reset">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"></path></svg>
+</button>
+</nav>
+<div class="md-search__suggest" data-md-component="search-suggest"></div>
+</form>
+<div class="md-search__output">
+<div class="md-search__scrollwrap" data-md-scrollfix="">
+<div class="md-search-result" data-md-component="search-result">
+<div class="md-search-result__meta">
+            Initializing search
+          </div>
+<ol class="md-search-result__list" role="presentation"></ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="md-header__source">
+<a class="md-source" data-md-component="source" href="https://github.com/dream-faster/fold" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"></path></svg>
+</div>
+<div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+</div>
+</nav>
+</header>
+<div class="md-container" data-md-component="container">
+<main class="md-main" data-md-component="main">
+<div class="md-main__inner md-grid">
+<div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Navigation" class="md-nav md-nav--primary" data-md-level="0">
+<label class="md-nav__title" for="__drawer">
+<a aria-label="Fold" class="md-nav__button md-logo" data-md-component="logo" href="../.." title="Fold">
+<img alt="logo" src="../../images/logo_white.svg"/>
+</a>
+    Fold
+  </label>
+<div class="md-nav__source">
+<a class="md-source" data-md-component="source" href="https://github.com/dream-faster/fold" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"></path></svg>
+</div>
+<div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+</div>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../..">
+<span class="md-ellipsis">
+    Home
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+<span class="md-ellipsis">
+    Must know Concepts
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_2_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_2">
+<span class="md-nav__icon md-icon"></span>
+            Must know Concepts
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../concepts/adaptive-ml/">
+<span class="md-ellipsis">
+    Adaptive ML
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../concepts/speed/">
+<span class="md-ellipsis">
+    Speed
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../concepts/design/">
+<span class="md-ellipsis">
+    Design
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../concepts/models/">
+<span class="md-ellipsis">
+    Models
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../concepts/forecasting-horizon/">
+<span class="md-ellipsis">
+    Forecasting horizon
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../concepts/splitters/">
+<span class="md-ellipsis">
+    Splitters
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_3" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+<span class="md-ellipsis">
+    Walkthroughs
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_3">
+<span class="md-nav__icon md-icon"></span>
+            Walkthroughs
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../walkthroughs/core_walkthrough/">
+<span class="md-ellipsis">
+    Start Here (Core Walkthrough)
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../walkthroughs/benchmarking_sktime_fold/">
+<span class="md-ellipsis">
+    Benchmarking Sktime-Fold
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_4" type="checkbox"/>
+<div class="md-nav__link md-nav__container">
+<a class="md-nav__link" href="../../generated/gallery/">
+<span class="md-ellipsis">
+    Examples
+  </span>
+</a>
+<label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-expanded="false" aria-labelledby="__nav_4_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_4">
+<span class="md-nav__icon md-icon"></span>
+            Examples
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../generated/gallery/date/">
+<span class="md-ellipsis">
+    Adding Date/Time Features
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../generated/gallery/preprocess/">
+<span class="md-ellipsis">
+    Preprocessing
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../generated/gallery/tabular/">
+<span class="md-ellipsis">
+    Using Tabular Models
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../generated/gallery/scale/">
+<span class="md-ellipsis">
+    Scaling the data
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../generated/gallery/transform-target/">
+<span class="md-ellipsis">
+    Transformations applied to the Target (y)
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../generated/gallery/ensembling/">
+<span class="md-ellipsis">
+    Ensembling (Composite Models)
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--active md-nav__item--nested">
+<input checked="" class="md-nav__toggle md-toggle" id="__nav_5" type="checkbox"/>
+<div class="md-nav__link md-nav__container">
+<a class="md-nav__link" href="../">
+<span class="md-ellipsis">
+    API
+  </span>
+</a>
+<label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-expanded="true" aria-labelledby="__nav_5_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_5">
+<span class="md-nav__icon md-icon"></span>
+            API
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../loop/">
+<span class="md-ellipsis">
+    Main Loops
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../models/">
+<span class="md-ellipsis">
+    Models
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
+<label class="md-nav__link md-nav__link--active" for="__toc">
+<span class="md-ellipsis">
+    Composites
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<a class="md-nav__link md-nav__link--active" href="./">
+<span class="md-ellipsis">
+    Composites
+  </span>
+</a>
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.columns">
+<span class="md-ellipsis">
+      columns
+    </span>
+</a>
+<nav aria-label="columns" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.columns.EnsembleEachColumn">
+<span class="md-ellipsis">
+      EnsembleEachColumn
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.columns.SkipNA">
+<span class="md-ellipsis">
+      SkipNA
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.columns.TransformEachColumn">
+<span class="md-ellipsis">
+      TransformEachColumn
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.concat">
+<span class="md-ellipsis">
+      concat
+    </span>
+</a>
+<nav aria-label="concat" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.concat.Concat">
+<span class="md-ellipsis">
+      Concat
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.concat.Sequence">
+<span class="md-ellipsis">
+      Sequence
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.concat.TransformColumn">
+<span class="md-ellipsis">
+      TransformColumn
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.ensemble">
+<span class="md-ellipsis">
+      ensemble
+    </span>
+</a>
+<nav aria-label="ensemble" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.ensemble.Ensemble">
+<span class="md-ellipsis">
+      Ensemble
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.metalabeling">
+<span class="md-ellipsis">
+      metalabeling
+    </span>
+</a>
+<nav aria-label="metalabeling" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.metalabeling.MetaLabeling">
+<span class="md-ellipsis">
+      MetaLabeling
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.metalabeling_strategy">
+<span class="md-ellipsis">
+      metalabeling_strategy
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.residual">
+<span class="md-ellipsis">
+      residual
+    </span>
+</a>
+<nav aria-label="residual" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.residual.ModelResiduals">
+<span class="md-ellipsis">
+      ModelResiduals
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.sample">
+<span class="md-ellipsis">
+      sample
+    </span>
+</a>
+<nav aria-label="sample" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.sample.Sample">
+<span class="md-ellipsis">
+      Sample
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.selectbest">
+<span class="md-ellipsis">
+      selectbest
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.target">
+<span class="md-ellipsis">
+      target
+    </span>
+</a>
+<nav aria-label="target" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.target.TransformTarget">
+<span class="md-ellipsis">
+      TransformTarget
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.utils">
+<span class="md-ellipsis">
+      utils
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../transformations/">
+<span class="md-ellipsis">
+    Transformations
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_6" type="checkbox"/>
+<label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+<span class="md-ellipsis">
+    Product, Licencing &amp; Roadmap
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_6_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_6">
+<span class="md-nav__icon md-icon"></span>
+            Product, Licencing &amp; Roadmap
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../product/pricing/">
+<span class="md-ellipsis">
+    Pricing
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../product/license/">
+<span class="md-ellipsis">
+    License
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../product/roadmap/">
+<span class="md-ellipsis">
+    Roadmap
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.columns">
+<span class="md-ellipsis">
+      columns
+    </span>
+</a>
+<nav aria-label="columns" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.columns.EnsembleEachColumn">
+<span class="md-ellipsis">
+      EnsembleEachColumn
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.columns.SkipNA">
+<span class="md-ellipsis">
+      SkipNA
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.columns.TransformEachColumn">
+<span class="md-ellipsis">
+      TransformEachColumn
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.concat">
+<span class="md-ellipsis">
+      concat
+    </span>
+</a>
+<nav aria-label="concat" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.concat.Concat">
+<span class="md-ellipsis">
+      Concat
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.concat.Sequence">
+<span class="md-ellipsis">
+      Sequence
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.concat.TransformColumn">
+<span class="md-ellipsis">
+      TransformColumn
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.ensemble">
+<span class="md-ellipsis">
+      ensemble
+    </span>
+</a>
+<nav aria-label="ensemble" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.ensemble.Ensemble">
+<span class="md-ellipsis">
+      Ensemble
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.metalabeling">
+<span class="md-ellipsis">
+      metalabeling
+    </span>
+</a>
+<nav aria-label="metalabeling" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.metalabeling.MetaLabeling">
+<span class="md-ellipsis">
+      MetaLabeling
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.metalabeling_strategy">
+<span class="md-ellipsis">
+      metalabeling_strategy
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.residual">
+<span class="md-ellipsis">
+      residual
+    </span>
+</a>
+<nav aria-label="residual" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.residual.ModelResiduals">
+<span class="md-ellipsis">
+      ModelResiduals
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.sample">
+<span class="md-ellipsis">
+      sample
+    </span>
+</a>
+<nav aria-label="sample" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.sample.Sample">
+<span class="md-ellipsis">
+      Sample
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.selectbest">
+<span class="md-ellipsis">
+      selectbest
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.target">
+<span class="md-ellipsis">
+      target
+    </span>
+</a>
+<nav aria-label="target" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.target.TransformTarget">
+<span class="md-ellipsis">
+      TransformTarget
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fold.composites.utils">
+<span class="md-ellipsis">
+      utils
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-content" data-md-component="content">
+<article class="md-content__inner md-typeset">
+<h1>Composites</h1>
+<div class="doc doc-object doc-module">
+<div class="doc doc-contents first">
+<div class="doc doc-children">
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="fold.composites.columns">
+<span class="doc doc-object-name doc-module-name">columns</span>
+</h2>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.composites.columns.EnsembleEachColumn">
+<span class="doc doc-object-name doc-class-name">EnsembleEachColumn</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="fold.base.Composite" href="../loop/#fold.base.classes.Composite">Composite</a></code></p>
+<p>Train a pipeline for each column in the data, then ensemble their results.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pipeline</code></td>
+<td>
+<code><a class="autorefs autorefs-internal" title="fold.base.Pipeline" href="../loop/#fold.base.classes.Pipeline">Pipeline</a></code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>Pipeline that get applied to every column, independently, their results then averaged.</p>
+</div>
+</td>
+<td>
+<em>required</em>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong></p>
+<div class="language-text highlight"><pre><span></span><code>&gt;&gt;&gt; from fold.loop import train_backtest
+&gt;&gt;&gt; from fold.splitters import SlidingWindowSplitter
+&gt;&gt;&gt; from fold.composites import EnsembleEachColumn
+&gt;&gt;&gt; from sklearn.ensemble import RandomForestRegressor
+&gt;&gt;&gt; from fold.utils.tests import generate_sine_wave_data
+&gt;&gt;&gt; X, y  = generate_sine_wave_data()
+&gt;&gt;&gt; splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
+&gt;&gt;&gt; pipeline = EnsembleEachColumn(RandomForestRegressor())
+&gt;&gt;&gt; preds, trained_pipeline, _, _ = train_backtest(pipeline, X, y, splitter)
+</code></pre></div>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.composites.columns.SkipNA">
+<span class="doc doc-object-name doc-class-name">SkipNA</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="fold.base.Composite" href="../loop/#fold.base.classes.Composite">Composite</a></code></p>
+<p>Skips rows with NaN values in the input data.
+In the output, rows with NaNs are returned as is, all other rows transformed.</p>
+<p>Warning:
+This seriously challenges the continuity of the data, which is very important for traditional time series models.
+Use with caution, and only with tabular ML models.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pipeline</code></td>
+<td>
+<code><a class="autorefs autorefs-internal" title="fold.base.Pipeline" href="../loop/#fold.base.classes.Pipeline">Pipeline</a></code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>Pipeline to run without NA values.</p>
+</div>
+</td>
+<td>
+<em>required</em>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong></p>
+<div class="language-text highlight"><pre><span></span><code>&gt;&gt;&gt; from fold.loop import train_backtest
+&gt;&gt;&gt; import numpy as np
+&gt;&gt;&gt; from fold.splitters import SlidingWindowSplitter
+&gt;&gt;&gt; from fold.composites import ModelResiduals
+&gt;&gt;&gt; from sklearn.ensemble import RandomForestClassifier
+&gt;&gt;&gt; from imblearn.under_sampling import RandomUnderSampler
+&gt;&gt;&gt; from fold.utils.tests import generate_zeros_and_ones
+&gt;&gt;&gt; X, y  = generate_zeros_and_ones()
+&gt;&gt;&gt; X[1:100] = np.nan
+&gt;&gt;&gt; splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
+&gt;&gt;&gt; pipeline = SkipNA(
+...     pipeline=RandomForestClassifier(),
+... )
+&gt;&gt;&gt; preds, trained_pipeline, _, _ = train_backtest(pipeline, X, y, splitter)
+</code></pre></div>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.composites.columns.TransformEachColumn">
+<span class="doc doc-object-name doc-class-name">TransformEachColumn</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="fold.base.Composite" href="../loop/#fold.base.classes.Composite">Composite</a></code></p>
+<p>Apply a single pipeline to each column, separately.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pipeline</code></td>
+<td>
+<code><a class="autorefs autorefs-internal" title="fold.base.Pipeline" href="../loop/#fold.base.classes.Pipeline">Pipeline</a></code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>Pipeline that gets applied to each column</p>
+</div>
+</td>
+<td>
+<em>required</em>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong></p>
+<div class="language-text highlight"><pre><span></span><code>&gt;&gt;&gt; from fold.loop import train_backtest
+&gt;&gt;&gt; from fold.splitters import SlidingWindowSplitter
+&gt;&gt;&gt; from fold.composites import TransformEachColumn
+&gt;&gt;&gt; from sklearn.ensemble import RandomForestRegressor
+&gt;&gt;&gt; from fold.utils.tests import generate_sine_wave_data
+&gt;&gt;&gt; X, y  = generate_sine_wave_data()
+&gt;&gt;&gt; X["sine_plus_1"] = X["sine"] + 1.0
+&gt;&gt;&gt; X.head()
+                       sine  sine_plus_1
+2021-12-31 07:20:00  0.0000       1.0000
+2021-12-31 07:21:00  0.0126       1.0126
+2021-12-31 07:22:00  0.0251       1.0251
+2021-12-31 07:23:00  0.0377       1.0377
+2021-12-31 07:24:00  0.0502       1.0502
+&gt;&gt;&gt; splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
+&gt;&gt;&gt; pipeline = TransformEachColumn(lambda x: x + 1.0)
+&gt;&gt;&gt; preds, trained_pipeline, _, _ = train_backtest(pipeline, X, y, splitter)
+&gt;&gt;&gt; preds.head()
+                       sine  sine_plus_1
+2021-12-31 15:40:00  1.0000       2.0000
+2021-12-31 15:41:00  1.0126       2.0126
+2021-12-31 15:42:00  1.0251       2.0251
+2021-12-31 15:43:00  1.0377       2.0377
+2021-12-31 15:44:00  1.0502       2.0502
+</code></pre></div>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="fold.composites.concat">
+<span class="doc doc-object-name doc-module-name">concat</span>
+</h2>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.composites.concat.Concat">
+<span class="doc doc-object-name doc-class-name">Concat</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="fold.base.Composite" href="../loop/#fold.base.classes.Composite">Composite</a></code></p>
+<p>Concatenates the results of multiple pipelines.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pipelines</code></td>
+<td>
+<code><a class="autorefs autorefs-internal" title="fold.base.Pipelines" href="../loop/#fold.base.classes.Pipelines">Pipelines</a></code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>A list of pipelines to be applied to the data, independently of each other.</p>
+</div>
+</td>
+<td>
+<em>required</em>
+</td>
+</tr>
+<tr>
+<td><code>if_duplicate_keep</code></td>
+<td>
+<code><span title="fold.composites.concat.Concat.ResolutionStrategy">ResolutionStrategy</span> | str | None</code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>How to handle duplicate columns, by default ResolutionStrategy.first</p>
+</div>
+</td>
+<td>
+<code><span title="fold.composites.concat.Concat.ResolutionStrategy.first">first</span></code>
+</td>
+</tr>
+<tr>
+<td><code>custom_merge_logic</code></td>
+<td>
+<code><span title="collections.abc.Callable">Callable</span>[[list[<span title="pandas.DataFrame">DataFrame</span>]], None] | <span title="pandas.DataFrame">DataFrame</span> | None</code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>A custom function that takes a list of dataframes and returns a single dataframe. If present, it's used instead of ResolutionStrategy.</p>
+</div>
+</td>
+<td>
+<code>None</code>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong></p>
+<div class="language-text highlight"><pre><span></span><code>&gt;&gt;&gt; from fold.loop import train_backtest
+&gt;&gt;&gt; from fold.splitters import SlidingWindowSplitter
+&gt;&gt;&gt; from fold.composites import Concat
+&gt;&gt;&gt; from fold.utils.tests import generate_sine_wave_data
+&gt;&gt;&gt; X, y  = generate_sine_wave_data()
+&gt;&gt;&gt; splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
+&gt;&gt;&gt; pipeline = Concat([
+...     lambda X: X.assign(sine_plus_1=X["sine"] + 1),
+...     lambda X: X.assign(sine_plus_2=X["sine"] + 2),
+... ])
+&gt;&gt;&gt; preds, trained_pipeline, _, _ = train_backtest(pipeline, X, y, splitter)
+&gt;&gt;&gt; preds.head()
+                     sine_plus_1  sine_plus_2    sine
+2021-12-31 15:40:00       1.0000       2.0000 -0.0000
+2021-12-31 15:41:00       1.0126       2.0126  0.0126
+2021-12-31 15:42:00       1.0251       2.0251  0.0251
+2021-12-31 15:43:00       1.0377       2.0377  0.0377
+2021-12-31 15:44:00       1.0502       2.0502  0.0502
+</code></pre></div>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.composites.concat.Sequence">
+<span class="doc doc-object-name doc-class-name">Sequence</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="fold.base.Composite" href="../loop/#fold.base.classes.Composite">Composite</a></code></p>
+<p>An optional wrappers that is equivalent to using a single array for the transformations.
+It executes the transformations sequentially, in the order they are provided.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pipeline</code></td>
+<td>
+<code><a class="autorefs autorefs-internal" title="fold.base.Pipelines" href="../loop/#fold.base.classes.Pipelines">Pipelines</a></code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>A list of transformations or models to be applied to the data.</p>
+</div>
+</td>
+<td>
+<em>required</em>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-function">
+<h3 class="doc doc-heading" id="fold.composites.concat.TransformColumn">
+<span class="doc doc-object-name doc-function-name">TransformColumn</span>
+</h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="n">TransformColumn</span><span class="p">(</span><span class="n">columns</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">:</span> <span class="n">Pipeline</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Composite</span>
+</span></code></pre></div>
+<div class="doc doc-contents">
+<p>Transforms a single or multiple columns using the given pipeline.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="fold.composites.ensemble">
+<span class="doc doc-object-name doc-module-name">ensemble</span>
+</h2>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.composites.ensemble.Ensemble">
+<span class="doc doc-object-name doc-class-name">Ensemble</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="fold.base.Composite" href="../loop/#fold.base.classes.Composite">Composite</a></code></p>
+<p>Ensemble (average) the results of multiple pipelines.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pipelines</code></td>
+<td>
+<code><a class="autorefs autorefs-internal" title="fold.base.Pipelines" href="../loop/#fold.base.classes.Pipelines">Pipelines</a></code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>A list of pipelines to be applied to the data, independently of each other.</p>
+</div>
+</td>
+<td>
+<em>required</em>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong></p>
+<div class="language-text highlight"><pre><span></span><code>&gt;&gt;&gt; from fold.loop import train_backtest
+&gt;&gt;&gt; from fold.splitters import SlidingWindowSplitter
+&gt;&gt;&gt; from fold.composites import Ensemble
+&gt;&gt;&gt; from fold.models import DummyRegressor
+&gt;&gt;&gt; from fold.utils.tests import generate_sine_wave_data
+&gt;&gt;&gt; X, y  = generate_sine_wave_data()
+&gt;&gt;&gt; splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
+&gt;&gt;&gt; pipeline = Ensemble([
+...     DummyRegressor(0.1),
+...     DummyRegressor(0.9),
+... ])
+&gt;&gt;&gt; preds, trained_pipeline, _, _ = train_backtest(pipeline, X, y, splitter)
+&gt;&gt;&gt; preds.squeeze().head()
+2021-12-31 15:40:00    0.5
+2021-12-31 15:41:00    0.5
+2021-12-31 15:42:00    0.5
+2021-12-31 15:43:00    0.5
+2021-12-31 15:44:00    0.5
+Freq: T, Name: predictions_Ensemble-DummyRegressor-0.1-DummyRegressor-0.9, dtype: float64
+</code></pre></div>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="fold.composites.metalabeling">
+<span class="doc doc-object-name doc-module-name">metalabeling</span>
+</h2>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.composites.metalabeling.MetaLabeling">
+<span class="doc doc-object-name doc-class-name">MetaLabeling</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="fold.base.Composite" href="../loop/#fold.base.classes.Composite">Composite</a></code></p>
+<p>MetaLabeling takes a primary pipeline and a meta pipeline.
+The primary pipeline is used to predict the target variable.
+The meta pipeline is used to predict whether the primary model's prediction's are correct (a binary classification problem).
+It multiplies the probabilities from the meta pipeline with the predictions of the primary pipeline.</p>
+<p>It's only applicable for binary classification problems, where the labels are either <code>1</code>, <code>-1</code> or one of them are zero.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>primary</code></td>
+<td>
+<code><a class="autorefs autorefs-internal" title="fold.base.Pipeline" href="../loop/#fold.base.classes.Pipeline">Pipeline</a></code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>A pipeline to be applied to the data. Target (<code>y</code>) is unchanged.</p>
+</div>
+</td>
+<td>
+<em>required</em>
+</td>
+</tr>
+<tr>
+<td><code>meta</code></td>
+<td>
+<code><a class="autorefs autorefs-internal" title="fold.base.Pipeline" href="../loop/#fold.base.classes.Pipeline">Pipeline</a></code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>A pipeline to be applied to predict whether the primary pipeline's predictions are correct. Target (<code>y</code>) is <code>preds == y</code>.</p>
+</div>
+</td>
+<td>
+<em>required</em>
+</td>
+</tr>
+<tr>
+<td><code>primary_output_included</code></td>
+<td>
+<code> bool</code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>Whether the primary pipeline's output is included in the meta pipeline's input, by default False.</p>
+</div>
+</td>
+<td>
+<code>False</code>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong></p>
+<div class="language-text highlight"><pre><span></span><code>&gt;&gt;&gt; from fold.loop import train_backtest
+&gt;&gt;&gt; from fold.splitters import SingleWindowSplitter
+&gt;&gt;&gt; from fold.composites import MetaLabeling
+&gt;&gt;&gt; from sklearn.ensemble import RandomForestClassifier
+&gt;&gt;&gt; from sklearn.linear_model import LogisticRegression
+&gt;&gt;&gt; from fold.utils.tests import generate_zeros_and_ones
+&gt;&gt;&gt; X, y  = generate_zeros_and_ones()
+&gt;&gt;&gt; splitter = SingleWindowSplitter(train_window=0.5)
+&gt;&gt;&gt; pipeline = MetaLabeling(
+...     primary=LogisticRegression(),
+...     meta=RandomForestClassifier(),
+... )
+&gt;&gt;&gt; preds, trained_pipeline, _, _ = train_backtest(pipeline, X, y, splitter)
+</code></pre></div>
+<details class="outputs" open="">
+<summary>Outputs</summary>
+<div class="language-text highlight"><pre><span></span><code>A prediction is a float between -1 or 0, and 1.
+It does not output probabilities, as the prediction already includes that information.
+</code></pre></div>
+</details>
+<details class="references" open="">
+<summary>References</summary>
+<p><a href="https://hudsonthames.org/meta-labeling-a-toy-example/">Meta Labeling (A Toy Example)</a>
+<a href="https://jfds.pm-research.com/content/4/3/31">Meta-Labeling: Theory and Framework</a></p>
+</details>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="fold.composites.metalabeling_strategy">
+<span class="doc doc-object-name doc-module-name">metalabeling_strategy</span>
+</h2>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="fold.composites.residual">
+<span class="doc doc-object-name doc-module-name">residual</span>
+</h2>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.composites.residual.ModelResiduals">
+<span class="doc doc-object-name doc-class-name">ModelResiduals</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="fold.base.Composite" href="../loop/#fold.base.classes.Composite">Composite</a></code></p>
+<p>This is a composite that combines two pipelines:
+* The primary pipeline is used to predict the target variable.
+* The meta pipeline is used to predict the primary pipeline's residual (or, error).</p>
+<p>It adds together the primary pipeline's output with the predicted residual.</p>
+<p>Also known as:
+- Residual chasing
+- Residual boosting
+- Hybrid approach
+- "Moving Average" in ARIMA</p>
+<p>It's only applicable for regression tasks.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>primary</code></td>
+<td>
+<code><a class="autorefs autorefs-internal" title="fold.base.Pipeline" href="../loop/#fold.base.classes.Pipeline">Pipeline</a></code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>A pipeline to be applied to the data. The target (<code>y</code>) is unchanged.</p>
+</div>
+</td>
+<td>
+<em>required</em>
+</td>
+</tr>
+<tr>
+<td><code>meta</code></td>
+<td>
+<code><a class="autorefs autorefs-internal" title="fold.base.Pipeline" href="../loop/#fold.base.classes.Pipeline">Pipeline</a></code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>A pipeline to predict the primary pipeline's residual. The target (<code>y</code>) is the primary pipeline's residual (or, error).</p>
+</div>
+</td>
+<td>
+<em>required</em>
+</td>
+</tr>
+<tr>
+<td><code>primary_output_included</code></td>
+<td>
+<code>bool</code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>Whether the primary pipeline's output is included in the meta pipeline's input, by default False.</p>
+</div>
+</td>
+<td>
+<code>False</code>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong></p>
+<div class="language-text highlight"><pre><span></span><code>&gt;&gt;&gt; from fold.loop import train_backtest
+&gt;&gt;&gt; from fold.splitters import SlidingWindowSplitter
+&gt;&gt;&gt; from fold.composites import ModelResiduals
+&gt;&gt;&gt; from sklearn.ensemble import RandomForestRegressor
+&gt;&gt;&gt; from sklearn.linear_model import LinearRegression
+&gt;&gt;&gt; from fold.utils.tests import generate_sine_wave_data
+&gt;&gt;&gt; X, y  = generate_sine_wave_data()
+&gt;&gt;&gt; splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
+&gt;&gt;&gt; pipeline = ModelResiduals(
+...     primary=LinearRegression(),
+...     meta=RandomForestRegressor(),
+... )
+&gt;&gt;&gt; preds, trained_pipeline, _, _ = train_backtest(pipeline, X, y, splitter)
+</code></pre></div>
+<details class="references" open="">
+<summary>References</summary>
+<ul>
+<li>https://www.kaggle.com/code/ryanholbrook/hybrid-models</li>
+<li>https://www.uber.com/en-DE/blog/m4-forecasting-competition/</li>
+</ul>
+</details>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="fold.composites.sample">
+<span class="doc doc-object-name doc-module-name">sample</span>
+</h2>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.composites.sample.Sample">
+<span class="doc doc-object-name doc-class-name">Sample</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><span title="fold.base.classes.Sampler">Sampler</span></code></p>
+<p>Sample data with an imbalanced-learn sampler instance during training.
+No sampling is done during inference or backtesting.</p>
+<p>Warning:
+This seriously challenges the continuity of the data, which is very important for traditional time series models.
+Use with caution, and only with tabular ML models.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sampler</code></td>
+<td>
+<code><span title="typing.Any">Any</span></code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>An imbalanced-learn sampler instance (subclass of <code>BaseSampler</code>).</p>
+</div>
+</td>
+<td>
+<em>required</em>
+</td>
+</tr>
+<tr>
+<td><code>pipeline</code></td>
+<td>
+<code><a class="autorefs autorefs-internal" title="fold.base.Pipeline" href="../loop/#fold.base.classes.Pipeline">Pipeline</a></code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>A pipeline to be applied to the sampled data.</p>
+</div>
+</td>
+<td>
+<em>required</em>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong></p>
+<div class="language-text highlight"><pre><span></span><code>&gt;&gt;&gt; from fold.loop import train_backtest
+&gt;&gt;&gt; from fold.splitters import SlidingWindowSplitter
+&gt;&gt;&gt; from fold.composites import ModelResiduals
+&gt;&gt;&gt; from sklearn.ensemble import RandomForestClassifier
+&gt;&gt;&gt; from imblearn.under_sampling import RandomUnderSampler
+&gt;&gt;&gt; from fold.utils.tests import generate_zeros_and_ones_skewed
+&gt;&gt;&gt; X, y  = generate_zeros_and_ones_skewed()
+&gt;&gt;&gt; splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
+&gt;&gt;&gt; pipeline = Sample(
+...     sampler=RandomUnderSampler(),
+...     pipeline=RandomForestClassifier(),
+... )
+&gt;&gt;&gt; preds, trained_pipeline, _, _ = train_backtest(pipeline, X, y, splitter)
+</code></pre></div>
+<details class="references" open="">
+<summary>References</summary>
+<p><a href="https://imbalanced-learn.org/">imbalanced-learn</a></p>
+</details>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="fold.composites.selectbest">
+<span class="doc doc-object-name doc-module-name">selectbest</span>
+</h2>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="fold.composites.target">
+<span class="doc doc-object-name doc-module-name">target</span>
+</h2>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="fold.composites.target.TransformTarget">
+<span class="doc doc-object-name doc-class-name">TransformTarget</span>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="fold.base.Composite" href="../loop/#fold.base.classes.Composite">Composite</a></code></p>
+<p>Transforms the target within the context of the wrapped Pipeline.
+<code>wrapped_pipeline</code> will be applied to the input data, where the target (<code>y</code>) is already transformed.
+<code>y_pipeline</code> will be applied to the target column.</p>
+<p>The inverse of <code>y_transformation</code> will be applied to the predictions of the primary pipeline.</p>
+<p>Eg.: Log or Difference transformation.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>wrapped_pipeline</code></td>
+<td>
+<code><a class="autorefs autorefs-internal" title="fold.base.Pipeline" href="../loop/#fold.base.classes.Pipeline">Pipeline</a></code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>Pipeline, which will be applied to the input data, where the target (<code>y</code>) is already transformed.</p>
+</div>
+</td>
+<td>
+<em>required</em>
+</td>
+</tr>
+<tr>
+<td><code>y_pipeline</code></td>
+<td>
+<code>list[<span title="fold.base.InvertibleTransformation">InvertibleTransformation</span>] | <span title="fold.base.InvertibleTransformation">InvertibleTransformation</span></code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>InvertibleTransformations, which will be applied to the target (<code>y</code>)</p>
+</div>
+</td>
+<td>
+<em>required</em>
+</td>
+</tr>
+<tr>
+<td><code>invert_wrapped_output</code></td>
+<td>
+<code>bool</code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>Apply the inverse transformation of <code>y_pipeline</code> to the output of <code>wrapped_pipeline</code>. default is <code>True</code>.</p>
+</div>
+</td>
+<td>
+<code>True</code>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong></p>
+<div class="language-pycon highlight"><pre><span></span><code><span id="__span-0-1"><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.loop</span> <span class="kn">import</span> <span class="n">train_backtest</span>
+</span><span id="__span-0-2"><a href="#__codelineno-0-2" id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.splitters</span> <span class="kn">import</span> <span class="n">SlidingWindowSplitter</span>
+</span><span id="__span-0-3"><a href="#__codelineno-0-3" id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.composites</span> <span class="kn">import</span> <span class="n">ModelResiduals</span>
+</span><span id="__span-0-4"><a href="#__codelineno-0-4" id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LinearRegression</span>
+</span><span id="__span-0-5"><a href="#__codelineno-0-5" id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.transformations</span> <span class="kn">import</span> <span class="n">Difference</span>
+</span><span id="__span-0-6"><a href="#__codelineno-0-6" id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fold.utils.tests</span> <span class="kn">import</span> <span class="n">generate_sine_wave_data</span>
+</span><span id="__span-0-7"><a href="#__codelineno-0-7" id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span><span class="p">,</span> <span class="n">y</span>  <span class="o">=</span> <span class="n">generate_sine_wave_data</span><span class="p">()</span>
+</span><span id="__span-0-8"><a href="#__codelineno-0-8" id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">splitter</span> <span class="o">=</span> <span class="n">SlidingWindowSplitter</span><span class="p">(</span><span class="n">train_window</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+</span><span id="__span-0-9"><a href="#__codelineno-0-9" id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">pipeline</span> <span class="o">=</span> <span class="n">TransformTarget</span><span class="p">(</span>
+</span><span id="__span-0-10"><a href="#__codelineno-0-10" id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="gp">... </span>    <span class="n">wrapped_pipeline</span><span class="o">=</span><span class="n">LinearRegression</span><span class="p">(),</span>
+</span><span id="__span-0-11"><a href="#__codelineno-0-11" id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="gp">... </span>    <span class="n">y_pipeline</span><span class="o">=</span><span class="n">Difference</span><span class="p">(),</span>
+</span><span id="__span-0-12"><a href="#__codelineno-0-12" id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="gp">... </span><span class="p">)</span>
+</span><span id="__span-0-13"><a href="#__codelineno-0-13" id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">preds</span><span class="p">,</span> <span class="n">trained_pipeline</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">train_backtest</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">splitter</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="fold.composites.utils">
+<span class="doc doc-object-name doc-module-name">utils</span>
+</h2>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<form class="md-feedback" hidden="" name="feedback">
+<fieldset>
+<legend class="md-feedback__title">
+        Was this page helpful?
+      </legend>
+<div class="md-feedback__inner">
+<div class="md-feedback__list">
+<button class="md-feedback__icon md-icon" data-md-value="1" title="This page was helpful" type="submit">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 12a8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8 8 8 0 0 0 8-8m2 0a10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2a10 10 0 0 1 10 10M10 9.5c0 .8-.7 1.5-1.5 1.5S7 10.3 7 9.5 7.7 8 8.5 8s1.5.7 1.5 1.5m7 0c0 .8-.7 1.5-1.5 1.5S14 10.3 14 9.5 14.7 8 15.5 8s1.5.7 1.5 1.5m-5 7.73c-1.75 0-3.29-.73-4.19-1.81L9.23 14c.45.72 1.52 1.23 2.77 1.23s2.32-.51 2.77-1.23l1.42 1.42c-.9 1.08-2.44 1.81-4.19 1.81Z"></path></svg>
+</button>
+<button class="md-feedback__icon md-icon" data-md-value="0" title="This page could be improved" type="submit">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 12a8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8 8 8 0 0 0 8-8m2 0a10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2a10 10 0 0 1 10 10m-6.5-4c.8 0 1.5.7 1.5 1.5s-.7 1.5-1.5 1.5-1.5-.7-1.5-1.5.7-1.5 1.5-1.5M10 9.5c0 .8-.7 1.5-1.5 1.5S7 10.3 7 9.5 7.7 8 8.5 8s1.5.7 1.5 1.5m2 4.5c1.75 0 3.29.72 4.19 1.81l-1.42 1.42C14.32 16.5 13.25 16 12 16s-2.32.5-2.77 1.23l-1.42-1.42C8.71 14.72 10.25 14 12 14Z"></path></svg>
+</button>
+</div>
+<div class="md-feedback__note">
+<div data-md-value="1" hidden="">
+              
+              
+                
+              
+              Thanks for your feedback!
+            </div>
+<div data-md-value="0" hidden="">
+              
+              
+                
+              
+              Thanks for your feedback! Help us improve this page by using our <a href="..." rel="noopener" target="_blank">feedback form</a>.
+            </div>
+</div>
+</div>
+</fieldset>
+</form>
+</article>
+</div>
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+</div>
+<button class="md-top md-icon" data-md-component="top" hidden="" type="button">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"></path></svg>
+  Back to top
+</button>
+</main>
+<footer class="md-footer">
+<div class="md-footer-meta md-typeset">
+<div class="md-footer-meta__inner md-grid">
+<div class="md-copyright">
+<div class="md-copyright__highlight">
+      Dream Faster 2023
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" rel="noopener" target="_blank">
+      Material for MkDocs
+    </a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<div class="md-dialog" data-md-component="dialog">
+<div class="md-dialog__inner md-typeset"></div>
+</div>
+<div class="md-consent" data-md-component="consent" hidden="" id="__consent">
+<div class="md-consent__overlay"></div>
+<aside class="md-consent__inner">
+<form class="md-consent__form md-grid md-typeset" name="consent">
+<h4>Cookie consent</h4>
+<p>We use cookies to recognize your repeated visits and preferences, as well as to measure the effectiveness of our documentation and whether users find what they're searching for. With your consent, you're helping us to make our documentation better.</p>
+<input class="md-toggle" id="__settings" type="checkbox"/>
+<div class="md-consent__settings">
+<ul class="task-list">
+<li class="task-list-item">
+<label class="task-list-control">
+<input checked="" name="analytics" type="checkbox"/>
+<span class="task-list-indicator"></span>
+          Google Analytics
+        </label>
+</li>
+<li class="task-list-item">
+<label class="task-list-control">
+<input checked="" name="github" type="checkbox"/>
+<span class="task-list-indicator"></span>
+          GitHub
+        </label>
+</li>
+</ul>
+</div>
+<div class="md-consent__controls">
+<button class="md-button md-button--primary">Accept</button>
+<label class="md-button" for="__settings">Manage settings</label>
+</div>
+</form>
+</aside>
+</div>
+<script>var consent=__md_get("__consent");if(consent)for(var input of document.forms.consent.elements)input.name&&(input.checked=consent[input.name]||!1);else"file:"!==location.protocol&&setTimeout(function(){document.querySelector("[data-md-component=consent]").hidden=!1},250);var action,form=document.forms.consent;for(action of["submit","reset"])form.addEventListener(action,function(e){if(e.preventDefault(),"reset"===e.type)for(var n of document.forms.consent.elements)n.name&&(n.checked=!1);__md_set("__consent",Object.fromEntries(Array.from(new FormData(form).keys()).map(function(e){return[e,!0]}))),location.hash="",location.reload()})</script>
+<script id="__config" type="application/json">{"base": "../..", "features": ["navigation.indexes", "search.suggest", "toc.follow", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+<script src="../../assets/javascripts/bundle.c8d2eff1.min.js"></script>
+<script>document$.subscribe(() => {const lightbox = GLightbox({"touchNavigation": true, "loop": true, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});})</script></body>
+</html>

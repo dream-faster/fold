@@ -1,0 +1,1529 @@
+
+<!DOCTYPE html>
+
+<html class="no-js" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="Dream Faster" name="author"/>
+<link href="../../concepts/splitters/" rel="prev"/>
+<link href="../benchmarking_sktime_fold/" rel="next"/>
+<link href="../../images/logo.svg" rel="icon"/>
+<meta content="mkdocs-1.5.3, mkdocs-material-9.5.12" name="generator"/>
+<title>Start Here (Core Walkthrough) - Fold</title>
+<link href="../../assets/stylesheets/main.7e359304.min.css" rel="stylesheet"/>
+<link href="../../assets/stylesheets/palette.06af60db.min.css" rel="stylesheet"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
+<style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+<link href="../../assets/_mkdocstrings.css" rel="stylesheet"/>
+<link href="../../sg_gallery-rendered-html.css" rel="stylesheet"/>
+<link href="../../sg_gallery-binder.css" rel="stylesheet"/>
+<link href="../../sg_gallery.css" rel="stylesheet"/>
+<link href="../../sg_gallery-dataframe.css" rel="stylesheet"/>
+<script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-FBLB9N9026"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-FBLB9N9026",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-FBLB9N9026",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+<script>var consent;"undefined"==typeof __md_analytics||(consent=__md_get("__consent"))&&consent.analytics&&__md_analytics()</script>
+<link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            
+                .gscrollbar-fixer { padding-right: 15px; }
+                .gdesc-inner { font-size: 0.75rem; }
+                body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+                body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+                body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}
+                </style><script src="../../assets/javascripts/glightbox.min.js"></script></head>
+<body data-md-color-accent="deep-orange" data-md-color-primary="amber" data-md-color-scheme="default" dir="ltr">
+<input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
+<input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+<a class="md-skip" href="#fold-core-walkthrough">
+          Skip to content
+        </a>
+</div>
+<div data-md-component="announce">
+</div>
+<header class="md-header md-header--shadow" data-md-component="header">
+<nav aria-label="Header" class="md-header__inner md-grid">
+<a aria-label="Fold" class="md-header__button md-logo" data-md-component="logo" href="../.." title="Fold">
+<img alt="logo" src="../../images/logo_white.svg"/>
+</a>
+<label class="md-header__button md-icon" for="__drawer">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"></path></svg>
+</label>
+<div class="md-header__title" data-md-component="header-title">
+<div class="md-header__ellipsis">
+<div class="md-header__topic">
+<span class="md-ellipsis">
+            Fold
+          </span>
+</div>
+<div class="md-header__topic" data-md-component="header-topic">
+<span class="md-ellipsis">
+            
+              Start Here (Core Walkthrough)
+            
+          </span>
+</div>
+</div>
+</div>
+<form class="md-header__option" data-md-component="palette">
+<input aria-label="Switch to dark mode" class="md-option" data-md-color-accent="deep-orange" data-md-color-media="(prefers-color-scheme: light)" data-md-color-primary="amber" data-md-color-scheme="default" id="__palette_0" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_1" hidden="" title="Switch to dark mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"></path></svg>
+</label>
+<input aria-label="Switch to light mode" class="md-option" data-md-color-accent="deep-orange" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-primary="amber" data-md-color-scheme="slate" id="__palette_1" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_0" hidden="" title="Switch to light mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path></svg>
+</label>
+</form>
+<script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+<label class="md-header__button md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"></path></svg>
+</label>
+<div class="md-search" data-md-component="search" role="dialog">
+<label class="md-search__overlay" for="__search"></label>
+<div class="md-search__inner" role="search">
+<form class="md-search__form" name="search">
+<input aria-label="Search" autocapitalize="off" autocomplete="off" autocorrect="off" class="md-search__input" data-md-component="search-query" name="query" placeholder="Search" required="" spellcheck="false" type="text"/>
+<label class="md-search__icon md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"></path></svg>
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"></path></svg>
+</label>
+<nav aria-label="Search" class="md-search__options">
+<button aria-label="Clear" class="md-search__icon md-icon" tabindex="-1" title="Clear" type="reset">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"></path></svg>
+</button>
+</nav>
+<div class="md-search__suggest" data-md-component="search-suggest"></div>
+</form>
+<div class="md-search__output">
+<div class="md-search__scrollwrap" data-md-scrollfix="">
+<div class="md-search-result" data-md-component="search-result">
+<div class="md-search-result__meta">
+            Initializing search
+          </div>
+<ol class="md-search-result__list" role="presentation"></ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="md-header__source">
+<a class="md-source" data-md-component="source" href="https://github.com/dream-faster/fold" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"></path></svg>
+</div>
+<div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+</div>
+</nav>
+</header>
+<div class="md-container" data-md-component="container">
+<main class="md-main" data-md-component="main">
+<div class="md-main__inner md-grid">
+<div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Navigation" class="md-nav md-nav--primary" data-md-level="0">
+<label class="md-nav__title" for="__drawer">
+<a aria-label="Fold" class="md-nav__button md-logo" data-md-component="logo" href="../.." title="Fold">
+<img alt="logo" src="../../images/logo_white.svg"/>
+</a>
+    Fold
+  </label>
+<div class="md-nav__source">
+<a class="md-source" data-md-component="source" href="https://github.com/dream-faster/fold" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"></path></svg>
+</div>
+<div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+</div>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../..">
+<span class="md-ellipsis">
+    Home
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+<span class="md-ellipsis">
+    Must know Concepts
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_2_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_2">
+<span class="md-nav__icon md-icon"></span>
+            Must know Concepts
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../concepts/adaptive-ml/">
+<span class="md-ellipsis">
+    Adaptive ML
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../concepts/speed/">
+<span class="md-ellipsis">
+    Speed
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../concepts/design/">
+<span class="md-ellipsis">
+    Design
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../concepts/models/">
+<span class="md-ellipsis">
+    Models
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../concepts/forecasting-horizon/">
+<span class="md-ellipsis">
+    Forecasting horizon
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../concepts/splitters/">
+<span class="md-ellipsis">
+    Splitters
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--active md-nav__item--nested">
+<input checked="" class="md-nav__toggle md-toggle" id="__nav_3" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+<span class="md-ellipsis">
+    Walkthroughs
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="true" aria-labelledby="__nav_3_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_3">
+<span class="md-nav__icon md-icon"></span>
+            Walkthroughs
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
+<label class="md-nav__link md-nav__link--active" for="__toc">
+<span class="md-ellipsis">
+    Start Here (Core Walkthrough)
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<a class="md-nav__link md-nav__link--active" href="./">
+<span class="md-ellipsis">
+    Start Here (Core Walkthrough)
+  </span>
+</a>
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#installing-libraries">
+<span class="md-ellipsis">
+      Installing libraries
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#data-loading-and-exploration">
+<span class="md-ellipsis">
+      Data Loading and Exploration
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#time-series-cross-validation-with-a-univariate-forecaster">
+<span class="md-ellipsis">
+      Time Series Cross Validation with a univariate forecaster
+    </span>
+</a>
+<nav aria-label="Time Series Cross Validation with a univariate forecaster" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1-model-building">
+<span class="md-ellipsis">
+      1. Model Building
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#2-creating-a-splitter">
+<span class="md-ellipsis">
+      2. Creating a Splitter
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#3-training-a-univariate-model">
+<span class="md-ellipsis">
+      3. Training a (univariate) Model
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#4-evaluating-the-results">
+<span class="md-ellipsis">
+      4. Evaluating the results
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#using-an-ensemble-composite-model">
+<span class="md-ellipsis">
+      Using an Ensemble (Composite) model
+    </span>
+</a>
+<nav aria-label="Using an Ensemble (Composite) model" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1-model-building-with-fold-wrappers">
+<span class="md-ellipsis">
+      1. Model Building with fold-wrappers
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#2-ensembling-with-fold">
+<span class="md-ellipsis">
+      2. Ensembling with fold
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#3-training-all-pipelines-seperately-and-within-an-ensemble">
+<span class="md-ellipsis">
+      3. Training all pipelines seperately and within an ensemble
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#using-a-single-step-ahead-forecaster-a-baseline">
+<span class="md-ellipsis">
+      Using a single-step ahead forecaster (a baseline)
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#using-exogenous-variables-with-tabular-models">
+<span class="md-ellipsis">
+      Using exogenous variables with Tabular Models
+    </span>
+</a>
+<nav aria-label="Using exogenous variables with Tabular Models" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#building-models-separately">
+<span class="md-ellipsis">
+      Building Models separately
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#creating-an-ensemble-of-tabular-models">
+<span class="md-ellipsis">
+      Creating an Ensemble of Tabular models
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#comparing-vizualising-the-results">
+<span class="md-ellipsis">
+      Comparing &amp; Vizualising the results
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../benchmarking_sktime_fold/">
+<span class="md-ellipsis">
+    Benchmarking Sktime-Fold
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_4" type="checkbox"/>
+<div class="md-nav__link md-nav__container">
+<a class="md-nav__link" href="../../generated/gallery/">
+<span class="md-ellipsis">
+    Examples
+  </span>
+</a>
+<label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-expanded="false" aria-labelledby="__nav_4_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_4">
+<span class="md-nav__icon md-icon"></span>
+            Examples
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../generated/gallery/date/">
+<span class="md-ellipsis">
+    Adding Date/Time Features
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../generated/gallery/preprocess/">
+<span class="md-ellipsis">
+    Preprocessing
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../generated/gallery/tabular/">
+<span class="md-ellipsis">
+    Using Tabular Models
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../generated/gallery/scale/">
+<span class="md-ellipsis">
+    Scaling the data
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../generated/gallery/transform-target/">
+<span class="md-ellipsis">
+    Transformations applied to the Target (y)
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../generated/gallery/ensembling/">
+<span class="md-ellipsis">
+    Ensembling (Composite Models)
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5" type="checkbox"/>
+<div class="md-nav__link md-nav__container">
+<a class="md-nav__link" href="../../api/">
+<span class="md-ellipsis">
+    API
+  </span>
+</a>
+<label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-expanded="false" aria-labelledby="__nav_5_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_5">
+<span class="md-nav__icon md-icon"></span>
+            API
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../api/loop/">
+<span class="md-ellipsis">
+    Main Loops
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../api/models/">
+<span class="md-ellipsis">
+    Models
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../api/composites/">
+<span class="md-ellipsis">
+    Composites
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../api/transformations/">
+<span class="md-ellipsis">
+    Transformations
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_6" type="checkbox"/>
+<label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+<span class="md-ellipsis">
+    Product, Licencing &amp; Roadmap
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_6_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_6">
+<span class="md-nav__icon md-icon"></span>
+            Product, Licencing &amp; Roadmap
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../product/pricing/">
+<span class="md-ellipsis">
+    Pricing
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../product/license/">
+<span class="md-ellipsis">
+    License
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../product/roadmap/">
+<span class="md-ellipsis">
+    Roadmap
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#installing-libraries">
+<span class="md-ellipsis">
+      Installing libraries
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#data-loading-and-exploration">
+<span class="md-ellipsis">
+      Data Loading and Exploration
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#time-series-cross-validation-with-a-univariate-forecaster">
+<span class="md-ellipsis">
+      Time Series Cross Validation with a univariate forecaster
+    </span>
+</a>
+<nav aria-label="Time Series Cross Validation with a univariate forecaster" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1-model-building">
+<span class="md-ellipsis">
+      1. Model Building
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#2-creating-a-splitter">
+<span class="md-ellipsis">
+      2. Creating a Splitter
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#3-training-a-univariate-model">
+<span class="md-ellipsis">
+      3. Training a (univariate) Model
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#4-evaluating-the-results">
+<span class="md-ellipsis">
+      4. Evaluating the results
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#using-an-ensemble-composite-model">
+<span class="md-ellipsis">
+      Using an Ensemble (Composite) model
+    </span>
+</a>
+<nav aria-label="Using an Ensemble (Composite) model" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1-model-building-with-fold-wrappers">
+<span class="md-ellipsis">
+      1. Model Building with fold-wrappers
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#2-ensembling-with-fold">
+<span class="md-ellipsis">
+      2. Ensembling with fold
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#3-training-all-pipelines-seperately-and-within-an-ensemble">
+<span class="md-ellipsis">
+      3. Training all pipelines seperately and within an ensemble
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#using-a-single-step-ahead-forecaster-a-baseline">
+<span class="md-ellipsis">
+      Using a single-step ahead forecaster (a baseline)
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#using-exogenous-variables-with-tabular-models">
+<span class="md-ellipsis">
+      Using exogenous variables with Tabular Models
+    </span>
+</a>
+<nav aria-label="Using exogenous variables with Tabular Models" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#building-models-separately">
+<span class="md-ellipsis">
+      Building Models separately
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#creating-an-ensemble-of-tabular-models">
+<span class="md-ellipsis">
+      Creating an Ensemble of Tabular models
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#comparing-vizualising-the-results">
+<span class="md-ellipsis">
+      Comparing &amp; Vizualising the results
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-content" data-md-component="content">
+<article class="md-content__inner md-typeset">
+<h1 id="fold-core-walkthrough">Fold - Core Walkthrough</h1>
+<p><a class="md-button" href="../core_walkthrough.ipynb"><span class="twemoji"><svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 20h14v-2H5m14-9h-4V3H9v6H5l7 7 7-7Z"></path></svg></span> Download</a> <a class="md-button md-button--primary" href="https://colab.research.google.com/drive/1CVhxOmbHO9PvsdHfGvR91ilJUqEnUuy8?usp=sharing"><span class="twemoji"><svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16.941 4.976a7.033 7.033 0 0 0-4.93 2.064 7.033 7.033 0 0 0-.124 9.807l2.395-2.395a3.646 3.646 0 0 1 5.15-5.148l2.397-2.399a7.033 7.033 0 0 0-4.888-1.93zm-9.871.01a7.033 7.033 0 0 0-4.888 1.931l2.391 2.391a3.643 3.643 0 0 1 5.023.127l1.734-2.973-.1-.08a7.033 7.033 0 0 0-4.16-1.396zm15.01 2.172-2.39 2.39a3.646 3.646 0 0 1-5.15 5.15l-2.406 2.407a7.036 7.036 0 0 0 9.945-9.947zm-20.148.01a7.033 7.033 0 0 0-.002 9.681l2.397-2.397a3.643 3.643 0 0 1-.004-4.892zm7.664 7.423a3.635 3.635 0 0 1-5.017.113L2.182 17.1a7.029 7.029 0 0 0 9.007.546l.137-.112z"></path></svg></span>  Open In Colab</a></p>
+<p><a class="glightbox" data-desc-position="bottom" data-height="auto" data-title="Walkthrough Cover.png" data-type="image" data-width="100%" href="https://lh3.googleusercontent.com/drive-viewer/AAOQEOT4w3Cu4i_TPzDV4WAHd3DkRuz7-4rPsre2jX05y_oanG19aCCMmi_oglzAKdRGZ-qYYTUdSoJJxE7KSc_wNkCT3GAsCA=s1600"><img alt="Walkthrough Cover.png" src="https://lh3.googleusercontent.com/drive-viewer/AAOQEOT4w3Cu4i_TPzDV4WAHd3DkRuz7-4rPsre2jX05y_oanG19aCCMmi_oglzAKdRGZ-qYYTUdSoJJxE7KSc_wNkCT3GAsCA=s1600"/></a></p>
+<p><strong>Welcome 👋</strong></p>
+<p>In this notebook we'll demonstrate <code>fold</code>'s powerful interface for creating, training, and cross-validating (or backtesting, if you prefer) simple and <em>composite</em> models/pipelines.</p>
+<p>We will use the dataset from an <a href="https://www.kaggle.com/competitions/energy-forecasting-data-challenge">Energy residual load forcasting challenge</a> hosted on Kaggle.</p>
+<hr/>
+<p><strong>By the end you will know how to:</strong>
+- Create a simple and ensemble model (composite model)
+- Train multiple models / pipelines over time
+- Analyze the model's simulated past performance</p>
+<hr/>
+<p>Let's start by installing:
+- <a href="https://github.com/dream-faster/fold"><code>fold</code></a>
+- <a href="https://github.com/dream-faster/fold-wrappers"><code>fold-wrappers</code></a>: optional, this will be required later for third party models. Wraps eg. <code>XGBoost</code> or <code>StatsForecast</code> models to be used with <code>fold</code>.
+- <a href="https://github.com/dream-faster/krisi"><code>krisi</code></a>, optional. Dream Faster's Time-Series evaluation library to quickly get results.</p>
+<h2 id="installing-libraries">Installing libraries</h2>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="o">%%</span><span class="n">capture</span>
+</span><span id="__span-0-2"><a href="#__codelineno-0-2" id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">quiet</span> <span class="n">fold</span><span class="o">-</span><span class="n">core</span> <span class="n">fold</span><span class="o">-</span><span class="n">wrappers</span> <span class="n">fold</span><span class="o">-</span><span class="n">models</span> <span class="n">krisi</span> <span class="n">matplotlib</span> <span class="n">seaborn</span> <span class="n">xgboost</span> <span class="n">plotly</span> <span class="n">prophet</span> <span class="n">statsforecast</span> <span class="n">statsmodels</span> <span class="n">ray</span> <span class="n">kaleido</span>
+</span></code></pre></div>
+<h2 id="data-loading-and-exploration">Data Loading and Exploration</h2>
+<p>Let's load in the data and do minimal exploration of the structure of the data. </p>
+<p><code>fold</code> has a useful utility function that loads example data from our <a href="https://github.com/dream-faster/datasets"><code>datasets</code></a> GitHub repo. </p>
+<ul>
+<li>We are forecasting <code>residual_load</code>‡. </li>
+<li>We will shorten the dataset to <code>4000</code> rows so we have a speedier demonstration.</li>
+</ul>
+<hr/>
+<p>‡ <em>The difference between the <code>load</code> in the network and the <code>P</code> that the industrial complex is producing.</em></p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a href="#__codelineno-1-1" id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="kn">from</span> <span class="nn">fold.utils.dataset</span> <span class="kn">import</span> <span class="n">get_preprocessed_dataset</span>
+</span><span id="__span-1-2"><a href="#__codelineno-1-2" id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="kn">from</span> <span class="nn">statsmodels.graphics.tsaplots</span> <span class="kn">import</span> <span class="n">plot_acf</span>
+</span><span id="__span-1-3"><a href="#__codelineno-1-3" id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="kn">from</span> <span class="nn">krisi</span> <span class="kn">import</span> <span class="n">score</span><span class="p">,</span> <span class="n">compare</span>
+</span><span id="__span-1-4"><a href="#__codelineno-1-4" id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="kn">from</span> <span class="nn">krisi.report</span> <span class="kn">import</span> <span class="n">plot_y_predictions</span>
+</span><span id="__span-1-5"><a href="#__codelineno-1-5" id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="kn">import</span> <span class="nn">plotly.io</span> <span class="k">as</span> <span class="nn">pio</span>
+</span><span id="__span-1-6"><a href="#__codelineno-1-6" id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="n">pio</span><span class="o">.</span><span class="n">renderers</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="s2">"png"</span>
+</span><span id="__span-1-7"><a href="#__codelineno-1-7" id="__codelineno-1-7" name="__codelineno-1-7"></a>
+</span><span id="__span-1-8"><a href="#__codelineno-1-8" id="__codelineno-1-8" name="__codelineno-1-8"></a><span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">get_preprocessed_dataset</span><span class="p">(</span>
+</span><span id="__span-1-9"><a href="#__codelineno-1-9" id="__codelineno-1-9" name="__codelineno-1-9"></a>    <span class="s2">"energy/industrial_pv_load"</span><span class="p">,</span>
+</span><span id="__span-1-10"><a href="#__codelineno-1-10" id="__codelineno-1-10" name="__codelineno-1-10"></a>    <span class="n">target_col</span><span class="o">=</span><span class="s2">"residual_load"</span><span class="p">,</span> 
+</span><span id="__span-1-11"><a href="#__codelineno-1-11" id="__codelineno-1-11" name="__codelineno-1-11"></a>    <span class="n">resample</span><span class="o">=</span><span class="s2">"H"</span><span class="p">,</span>
+</span><span id="__span-1-12"><a href="#__codelineno-1-12" id="__codelineno-1-12" name="__codelineno-1-12"></a>    <span class="n">deduplication_strategy</span><span class="o">=</span><span class="s2">"first"</span><span class="p">,</span>
+</span><span id="__span-1-13"><a href="#__codelineno-1-13" id="__codelineno-1-13" name="__codelineno-1-13"></a>    <span class="n">shorten</span><span class="o">=</span><span class="mi">4000</span><span class="p">,</span>
+</span><span id="__span-1-14"><a href="#__codelineno-1-14" id="__codelineno-1-14" name="__codelineno-1-14"></a><span class="p">)</span>
+</span><span id="__span-1-15"><a href="#__codelineno-1-15" id="__codelineno-1-15" name="__codelineno-1-15"></a><span class="n">no_of_observation_per_day</span> <span class="o">=</span> <span class="mi">24</span>
+</span><span id="__span-1-16"><a href="#__codelineno-1-16" id="__codelineno-1-16" name="__codelineno-1-16"></a><span class="n">no_of_observation_per_week</span> <span class="o">=</span> <span class="n">no_of_observation_per_day</span> <span class="o">*</span> <span class="mi">7</span>
+</span><span id="__span-1-17"><a href="#__codelineno-1-17" id="__codelineno-1-17" name="__codelineno-1-17"></a>
+</span><span id="__span-1-18"><a href="#__codelineno-1-18" id="__codelineno-1-18" name="__codelineno-1-18"></a><span class="n">y</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span> <span class="n">grid</span><span class="o">=</span><span class="kc">True</span><span class="p">);</span>
+</span></code></pre></div>
+<p><a class="glightbox" data-desc-position="bottom" data-height="auto" data-title="png" data-type="image" data-width="100%" href="../core_walkthrough_files/core_walkthrough_8_0.png"><img alt="png" src="../core_walkthrough_files/core_walkthrough_8_0.png"/></a></p>
+<p>The data format may be very familiar - it looks like the standard scikit-learn data.</p>
+<p><code>X</code> represents exogenous variables in <code>fold</code>, where a single row corresponds to a single target value. That means we currently only support univariate time-series (with exogenous variables), but soon we're extending that.</p>
+<p>It's important that the data should be sorted and its integrity (no missing values, no duplicate indicies) should be checked before passing data to <code>fold</code>.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a href="#__codelineno-2-1" id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="n">X</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</span></code></pre></div>
+<div id="df-576c28e5-04f1-4b33-8c57-6040e0b40fb4">
+<div class="colab-df-container">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>P</th>
+<th>Gb(i)</th>
+<th>Gd(i)</th>
+<th>H_sun</th>
+<th>T2m</th>
+<th>WS10m</th>
+<th>load</th>
+<th>residual_load</th>
+</tr>
+<tr>
+<th>datetime</th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>2018-01-01 00:00:00</th>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>8.44</td>
+<td>5.54</td>
+<td>120.0</td>
+<td>120.0</td>
+</tr>
+<tr>
+<th>2018-01-01 01:00:00</th>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>7.56</td>
+<td>5.43</td>
+<td>115.5</td>
+<td>115.5</td>
+</tr>
+<tr>
+<th>2018-01-01 02:00:00</th>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>7.04</td>
+<td>5.33</td>
+<td>120.5</td>
+<td>120.5</td>
+</tr>
+<tr>
+<th>2018-01-01 03:00:00</th>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>6.48</td>
+<td>5.67</td>
+<td>123.5</td>
+<td>123.5</td>
+</tr>
+<tr>
+<th>2018-01-01 04:00:00</th>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>5.95</td>
+<td>5.79</td>
+<td>136.5</td>
+<td>136.5</td>
+</tr>
+</tbody>
+</table>
+</div>
+<button class="colab-df-convert" onclick="convertToInteractive('df-576c28e5-04f1-4b33-8c57-6040e0b40fb4')" style="display:none;" title="Convert this dataframe to an interactive table.">
+<svg height="24px" viewbox="0 0 24 24" width="24px" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 0h24v24H0V0z" fill="none"></path>
+<path d="M18.56 5.44l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94zm-11 1L8.5 8.5l.94-2.06 2.06-.94-2.06-.94L8.5 2.5l-.94 2.06-2.06.94zm10 10l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94z"></path><path d="M17.41 7.96l-1.37-1.37c-.4-.4-.92-.59-1.43-.59-.52 0-1.04.2-1.43.59L10.3 9.45l-7.72 7.72c-.78.78-.78 2.05 0 2.83L4 21.41c.39.39.9.59 1.41.59.51 0 1.02-.2 1.41-.59l7.78-7.78 2.81-2.81c.8-.78.8-2.07 0-2.86zM5.41 20L4 18.59l7.72-7.72 1.47 1.35L5.41 20z"></path>
+</svg>
+</button>
+<style>
+    .colab-df-container {
+      display:flex;
+      flex-wrap:wrap;
+      gap: 12px;
+    }
+
+    .colab-df-convert {
+      background-color: #E8F0FE;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+      fill: #1967D2;
+      height: 32px;
+      padding: 0 0 0 0;
+      width: 32px;
+    }
+
+    .colab-df-convert:hover {
+      background-color: #E2EBFA;
+      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+      fill: #174EA6;
+    }
+
+    [theme=dark] .colab-df-convert {
+      background-color: #3B4455;
+      fill: #D2E3FC;
+    }
+
+    [theme=dark] .colab-df-convert:hover {
+      background-color: #434B5C;
+      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
+      fill: #FFFFFF;
+    }
+  </style>
+<script>
+        const buttonEl =
+          document.querySelector('#df-576c28e5-04f1-4b33-8c57-6040e0b40fb4 button.colab-df-convert');
+        buttonEl.style.display =
+          google.colab.kernel.accessAllowed ? 'block' : 'none';
+
+        async function convertToInteractive(key) {
+          const element = document.querySelector('#df-576c28e5-04f1-4b33-8c57-6040e0b40fb4');
+          const dataTable =
+            await google.colab.kernel.invokeFunction('convertToInteractive',
+                                                     [key], {});
+          if (!dataTable) return;
+
+          const docLinkHtml = 'Like what you see? Visit the ' +
+            '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
+            + ' to learn more about interactive tables.';
+          element.innerHTML = '';
+          dataTable['output_type'] = 'display_data';
+          await google.colab.output.renderOutput(dataTable, element);
+          const docLink = document.createElement('div');
+          docLink.innerHTML = docLinkHtml;
+          element.appendChild(docLink);
+        }
+      </script>
+</div>
+</div>
+<p>(We'll ignore the exogenous variables until a bit later)</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a href="#__codelineno-3-1" id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="n">y</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>datetime
+2018-01-01 00:00:00    115.5
+2018-01-01 01:00:00    120.5
+2018-01-01 02:00:00    123.5
+2018-01-01 03:00:00    136.5
+2018-01-01 04:00:00    138.0
+Freq: H, Name: residual_load, dtype: float64
+</code></pre></div>
+<p>You can see that <code>y</code> (our target) contains the next value of <code>X</code>'s "residual_load" column. </p>
+<h2 id="time-series-cross-validation-with-a-univariate-forecaster">Time Series Cross Validation with a univariate forecaster</h2>
+<hr/>
+<h3 id="1-model-building">1. Model Building</h3>
+<p><code>fold</code> has three core type of building blocks which you can build arbitrary sophisticated pipelines from:
+- <strong>Transformations</strong> (classes that change, augment the data. eg: <code>AddHolidayFeatures</code> adds a column feature of holidays/weekends to your exogenous variables)
+- <strong>Models</strong> (eg.: Sklearn, Baseline Models, third-party adapters from <a href="https://github.com/dream-faster/fold-wrappers"><code>fold-wrappers</code></a>, like Statsmodels)
+- <strong>Composites</strong> (eg.: <code>Ensemble</code> - takes the mean of the output of arbitrary number of 'parallel' models or pipelines)</p>
+<p>Let's use Facebook's popular <a href="https://facebook.github.io/prophet/"><code>Prophet</code></a> library, and create in instance.</p>
+<p>If <a href="https://github.com/dream-faster/fold-wrappers"><code>fold-wrappers</code></a> is installed, <code>fold</code> can take this instance without any additional wrapper class.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a href="#__codelineno-4-1" id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="kn">from</span> <span class="nn">prophet</span> <span class="kn">import</span> <span class="n">Prophet</span>
+</span><span id="__span-4-2"><a href="#__codelineno-4-2" id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="n">prophet</span> <span class="o">=</span> <span class="n">Prophet</span><span class="p">()</span>
+</span></code></pre></div>
+<h3 id="2-creating-a-splitter">2. Creating a Splitter</h3>
+<p>A splitter allows us to do Time Series Cross-Validation with various strategies.</p>
+<p><code>fold</code> supports three types of <code>Splitters</code>:
+<a class="glightbox" data-desc-position="bottom" data-height="auto" data-title="Splitter" data-type="image" data-width="100%" href="https://lh3.googleusercontent.com/drive-viewer/AAOQEOSAR7ICe29LSRo8umKyNIC-2c32LLdo46vSB30bwiJbYGMwFtc22rEtyWy62Eu7A0yDLimaEXOjgXx-4_PS92sqMgb0ww=s1600"><img alt="Splitter" src="https://lh3.googleusercontent.com/drive-viewer/AAOQEOSAR7ICe29LSRo8umKyNIC-2c32LLdo46vSB30bwiJbYGMwFtc22rEtyWy62Eu7A0yDLimaEXOjgXx-4_PS92sqMgb0ww=s1600"/></a></p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a href="#__codelineno-5-1" id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="kn">from</span> <span class="nn">fold.splitters</span> <span class="kn">import</span> <span class="n">ExpandingWindowSplitter</span>
+</span><span id="__span-5-2"><a href="#__codelineno-5-2" id="__codelineno-5-2" name="__codelineno-5-2"></a>
+</span><span id="__span-5-3"><a href="#__codelineno-5-3" id="__codelineno-5-3" name="__codelineno-5-3"></a><span class="n">splitter</span> <span class="o">=</span> <span class="n">ExpandingWindowSplitter</span><span class="p">(</span>
+</span><span id="__span-5-4"><a href="#__codelineno-5-4" id="__codelineno-5-4" name="__codelineno-5-4"></a>    <span class="n">initial_train_window</span><span class="o">=</span><span class="n">no_of_observation_per_week</span> <span class="o">*</span> <span class="mi">6</span><span class="p">,</span>
+</span><span id="__span-5-5"><a href="#__codelineno-5-5" id="__codelineno-5-5" name="__codelineno-5-5"></a>    <span class="n">step</span><span class="o">=</span><span class="n">no_of_observation_per_week</span>
+</span><span id="__span-5-6"><a href="#__codelineno-5-6" id="__codelineno-5-6" name="__codelineno-5-6"></a><span class="p">)</span>
+</span></code></pre></div>
+<p>Here, <code>initial_train_window</code> defines the first window size, <code>step</code> is the size of the window between folds.</p>
+<p>We're gonna be using the first 6 weeks as our initial window, and re-train (or update, in another training mode) it every week after. We'll have 18 models, each predicting the next week's target variable.</p>
+<p>You can also use percentages to define both, for example, <code>0.1</code> would be equivalent to <code>10%</code> of the availabel data.</p>
+<h3 id="3-training-a-univariate-model">3. Training a (univariate) Model</h3>
+<p>We could use <a href="https://www.ray.io/">ray</a> to parallelize the training of multiple folds, halving the time it takes for every CPU core we have available (or deploying it to a cluster, if needed).</p>
+<p>We pass in <code>None</code> as <code>X</code>, to indicate that we want to train a univariate model, without any exogenous variables.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a href="#__codelineno-6-1" id="__codelineno-6-1" name="__codelineno-6-1"></a><span class="kn">from</span> <span class="nn">fold</span> <span class="kn">import</span> <span class="n">train_evaluate</span><span class="p">,</span> <span class="n">BackendType</span>
+</span><span id="__span-6-2"><a href="#__codelineno-6-2" id="__codelineno-6-2" name="__codelineno-6-2"></a><span class="kn">import</span> <span class="nn">ray</span>
+</span><span id="__span-6-3"><a href="#__codelineno-6-3" id="__codelineno-6-3" name="__codelineno-6-3"></a><span class="n">ray</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">ignore_reinit_error</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-6-4"><a href="#__codelineno-6-4" id="__codelineno-6-4" name="__codelineno-6-4"></a>
+</span><span id="__span-6-5"><a href="#__codelineno-6-5" id="__codelineno-6-5" name="__codelineno-6-5"></a><span class="n">scorecard</span><span class="p">,</span> <span class="n">predictions</span><span class="p">,</span> <span class="n">trained_pipeline</span> <span class="o">=</span> <span class="n">train_evaluate</span><span class="p">(</span><span class="n">prophet</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">splitter</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">BackendType</span><span class="o">.</span><span class="n">ray</span><span class="p">,</span> <span class="n">krisi_args</span><span class="o">=</span><span class="p">{</span><span class="s2">"model_name"</span><span class="p">:</span><span class="s2">"prophet"</span><span class="p">})</span>
+</span></code></pre></div>
+<h3 id="4-evaluating-the-results">4. Evaluating the results</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a href="#__codelineno-7-1" id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="n">scorecard</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">'minimal'</span><span class="p">)</span>
+</span></code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">                                               prophet
+                     Mean Absolute Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">9.507563e+01</span>
+          Mean Absolute Percentage Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">7.955506e+13</span>
+Symmetric Mean Absolute Percentage Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">5.092002e-01</span>
+                      Mean Squared Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.477914e+04</span>
+                 Root Mean Squared Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.215695e+02</span>
+                               R-squared  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">4.268419e-01</span>
+                   Mean of the Residuals  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">6.361641e+00</span>
+     Standard Deviation of the Residuals  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.214232e+02</span>
+</pre>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a href="#__codelineno-8-1" id="__codelineno-8-1" name="__codelineno-8-1"></a><span class="n">plot_y_predictions</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">predictions</span><span class="o">.</span><span class="n">index</span><span class="p">],</span> <span class="n">predictions</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"overlap"</span><span class="p">,</span> <span class="n">y_name</span><span class="o">=</span><span class="s2">"residual_load"</span><span class="p">)</span>
+</span></code></pre></div>
+<p><a class="glightbox" data-desc-position="bottom" data-height="auto" data-title="png" data-type="image" data-width="100%" href="../core_walkthrough_files/core_walkthrough_27_0.png"><img alt="png" src="../core_walkthrough_files/core_walkthrough_27_0.png"/></a></p>
+<p>Finally, let's save the scorecard into a list, so we can compare the results later.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a href="#__codelineno-9-1" id="__codelineno-9-1" name="__codelineno-9-1"></a><span class="n">results</span> <span class="o">=</span> <span class="p">[(</span><span class="n">scorecard</span><span class="p">,</span> <span class="n">predictions</span><span class="p">)]</span>
+</span></code></pre></div>
+<h2 id="using-an-ensemble-composite-model">Using an Ensemble (Composite) model</h2>
+<hr/>
+<p>Here we will build an <code>Ensemble</code> model that leverages the output of multiple models. </p>
+<p><a class="glightbox" data-desc-position="bottom" data-height="auto" data-title="Ensembling Models.png" data-type="image" data-width="100%" href="https://lh3.googleusercontent.com/drive-viewer/AAOQEORyLi4ZPadHho7_C_IMdxDHxoZOt7T-y-7vMmTJ4BTubYk_4xu6hntPuK3nY1HmS4GC3DDQCKWgyqKQijheEhclhz_qYw=s1600"><img alt="Ensembling Models.png" src="https://lh3.googleusercontent.com/drive-viewer/AAOQEORyLi4ZPadHho7_C_IMdxDHxoZOt7T-y-7vMmTJ4BTubYk_4xu6hntPuK3nY1HmS4GC3DDQCKWgyqKQijheEhclhz_qYw=s1600"/></a></p>
+<h3 id="1-model-building-with-fold-wrappers">1. Model Building with <code>fold-wrappers</code></h3>
+<p>We are going to define three different pipelines, each leveraging a different model and different features.</p>
+<p>We can leverage the most popular modelling libraries, like StatsForecast, Sktime, XGBoost, etc. (the list can be found <a href="https://github.com/dream-faster/fold-wrappers">here</a>).</p>
+<p>Let's train a <a href="https://arxiv.org/abs/2107.13462">MSTL</a> model that's implemented in <a href="https://nixtla.github.io/statsforecast/models.html">StatsForecast</a>, that can capture multiple seasonalities, with the <code>WrapStatsForecast</code> class from <code>fold-wrappers</code>. This is not strictly necessary, though, as the automatic wrapping also works for StatsForecast instaces as well.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a href="#__codelineno-10-1" id="__codelineno-10-1" name="__codelineno-10-1"></a><span class="kn">from</span> <span class="nn">statsforecast.models</span> <span class="kn">import</span> <span class="n">MSTL</span>
+</span><span id="__span-10-2"><a href="#__codelineno-10-2" id="__codelineno-10-2" name="__codelineno-10-2"></a><span class="kn">from</span> <span class="nn">fold.models.wrappers</span> <span class="kn">import</span> <span class="n">WrapStatsForecast</span><span class="p">,</span> <span class="n">WrapStatsModels</span>
+</span><span id="__span-10-3"><a href="#__codelineno-10-3" id="__codelineno-10-3" name="__codelineno-10-3"></a>
+</span><span id="__span-10-4"><a href="#__codelineno-10-4" id="__codelineno-10-4" name="__codelineno-10-4"></a><span class="n">mstl</span> <span class="o">=</span> <span class="n">WrapStatsForecast</span><span class="o">.</span><span class="n">from_model</span><span class="p">(</span><span class="n">MSTL</span><span class="p">([</span><span class="mi">24</span><span class="p">,</span> <span class="mi">168</span><span class="p">]))</span>
+</span></code></pre></div>
+<h3 id="2-ensembling-with-fold">2. Ensembling with <code>fold</code></h3>
+<p>Finally, let's <code>ensemble</code> the two pipelines.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a href="#__codelineno-11-1" id="__codelineno-11-1" name="__codelineno-11-1"></a><span class="kn">from</span> <span class="nn">fold.composites</span> <span class="kn">import</span> <span class="n">Ensemble</span>
+</span><span id="__span-11-2"><a href="#__codelineno-11-2" id="__codelineno-11-2" name="__codelineno-11-2"></a>
+</span><span id="__span-11-3"><a href="#__codelineno-11-3" id="__codelineno-11-3" name="__codelineno-11-3"></a><span class="n">univariate_ensemble</span> <span class="o">=</span> <span class="n">Ensemble</span><span class="p">([</span><span class="n">prophet</span><span class="p">,</span> <span class="n">mstl</span><span class="p">])</span>
+</span></code></pre></div>
+<h3 id="3-training-all-pipelines-seperately-and-within-an-ensemble">3. Training all pipelines seperately and within an <code>ensemble</code></h3>
+<p>We'll use the same <code>ExpandingWindowSplitter</code> we have defined above, to make performance comparable.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a href="#__codelineno-12-1" id="__codelineno-12-1" name="__codelineno-12-1"></a><span class="kn">from</span> <span class="nn">fold</span> <span class="kn">import</span> <span class="n">train_evaluate</span>
+</span><span id="__span-12-2"><a href="#__codelineno-12-2" id="__codelineno-12-2" name="__codelineno-12-2"></a>
+</span><span id="__span-12-3"><a href="#__codelineno-12-3" id="__codelineno-12-3" name="__codelineno-12-3"></a><span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">pipeline</span> <span class="ow">in</span> <span class="p">[</span>
+</span><span id="__span-12-4"><a href="#__codelineno-12-4" id="__codelineno-12-4" name="__codelineno-12-4"></a>    <span class="p">(</span><span class="s2">"mstl"</span><span class="p">,</span> <span class="n">mstl</span><span class="p">),</span>
+</span><span id="__span-12-5"><a href="#__codelineno-12-5" id="__codelineno-12-5" name="__codelineno-12-5"></a>    <span class="p">(</span><span class="s2">"univariate_ensemble"</span><span class="p">,</span><span class="n">univariate_ensemble</span><span class="p">)</span>
+</span><span id="__span-12-6"><a href="#__codelineno-12-6" id="__codelineno-12-6" name="__codelineno-12-6"></a><span class="p">]:</span>
+</span><span id="__span-12-7"><a href="#__codelineno-12-7" id="__codelineno-12-7" name="__codelineno-12-7"></a>    <span class="n">scorecard</span><span class="p">,</span> <span class="n">predictions</span><span class="p">,</span> <span class="n">pipeline_trained</span> <span class="o">=</span> <span class="n">train_evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">splitter</span><span class="p">,</span> <span class="n">krisi_args</span><span class="o">=</span><span class="p">{</span><span class="s2">"model_name"</span><span class="p">:</span><span class="n">name</span><span class="p">})</span>
+</span><span id="__span-12-8"><a href="#__codelineno-12-8" id="__codelineno-12-8" name="__codelineno-12-8"></a>    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">scorecard</span><span class="p">,</span> <span class="n">predictions</span><span class="p">))</span>
+</span></code></pre></div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-13-1"><a href="#__codelineno-13-1" id="__codelineno-13-1" name="__codelineno-13-1"></a><span class="n">compare</span><span class="p">([</span><span class="n">scorecard</span> <span class="k">for</span> <span class="n">scorecard</span><span class="p">,</span> <span class="n">predictions</span> <span class="ow">in</span> <span class="n">results</span><span class="p">],</span> <span class="p">[</span><span class="s1">'rmse'</span><span class="p">,</span> <span class="s1">'mse'</span><span class="p">])</span>
+</span></code></pre></div>
+<div id="df-80394008-3a99-4cf2-b914-af2afca681da">
+<div class="colab-df-container">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>rmse</th>
+<th>mse</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>prophet</th>
+<td>121.569502</td>
+<td>14779.143772</td>
+</tr>
+<tr>
+<th>mstl</th>
+<td>118.703683</td>
+<td>14090.564243</td>
+</tr>
+<tr>
+<th>univariate_ensemble</th>
+<td>105.962271</td>
+<td>11228.002822</td>
+</tr>
+</tbody>
+</table>
+</div>
+<button class="colab-df-convert" onclick="convertToInteractive('df-80394008-3a99-4cf2-b914-af2afca681da')" style="display:none;" title="Convert this dataframe to an interactive table.">
+<svg height="24px" viewbox="0 0 24 24" width="24px" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 0h24v24H0V0z" fill="none"></path>
+<path d="M18.56 5.44l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94zm-11 1L8.5 8.5l.94-2.06 2.06-.94-2.06-.94L8.5 2.5l-.94 2.06-2.06.94zm10 10l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94z"></path><path d="M17.41 7.96l-1.37-1.37c-.4-.4-.92-.59-1.43-.59-.52 0-1.04.2-1.43.59L10.3 9.45l-7.72 7.72c-.78.78-.78 2.05 0 2.83L4 21.41c.39.39.9.59 1.41.59.51 0 1.02-.2 1.41-.59l7.78-7.78 2.81-2.81c.8-.78.8-2.07 0-2.86zM5.41 20L4 18.59l7.72-7.72 1.47 1.35L5.41 20z"></path>
+</svg>
+</button>
+<style>
+    .colab-df-container {
+      display:flex;
+      flex-wrap:wrap;
+      gap: 12px;
+    }
+
+    .colab-df-convert {
+      background-color: #E8F0FE;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+      fill: #1967D2;
+      height: 32px;
+      padding: 0 0 0 0;
+      width: 32px;
+    }
+
+    .colab-df-convert:hover {
+      background-color: #E2EBFA;
+      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+      fill: #174EA6;
+    }
+
+    [theme=dark] .colab-df-convert {
+      background-color: #3B4455;
+      fill: #D2E3FC;
+    }
+
+    [theme=dark] .colab-df-convert:hover {
+      background-color: #434B5C;
+      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
+      fill: #FFFFFF;
+    }
+  </style>
+<script>
+        const buttonEl =
+          document.querySelector('#df-80394008-3a99-4cf2-b914-af2afca681da button.colab-df-convert');
+        buttonEl.style.display =
+          google.colab.kernel.accessAllowed ? 'block' : 'none';
+
+        async function convertToInteractive(key) {
+          const element = document.querySelector('#df-80394008-3a99-4cf2-b914-af2afca681da');
+          const dataTable =
+            await google.colab.kernel.invokeFunction('convertToInteractive',
+                                                     [key], {});
+          if (!dataTable) return;
+
+          const docLinkHtml = 'Like what you see? Visit the ' +
+            '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
+            + ' to learn more about interactive tables.';
+          element.innerHTML = '';
+          dataTable['output_type'] = 'display_data';
+          await google.colab.output.renderOutput(dataTable, element);
+          const docLink = document.createElement('div');
+          docLink.innerHTML = docLinkHtml;
+          element.appendChild(docLink);
+        }
+      </script>
+</div>
+</div>
+<p>We see that our Ensemble model has beaten all individual models' performance - which is very usual in the time series context.</p>
+<h2 id="using-a-single-step-ahead-forecaster-a-baseline">Using a single-step ahead forecaster (a baseline)</h2>
+<p>So far we've used models that were costly to update (or re-train) every day, therefore we were limited to training once for every week, then predicting the next week's target.</p>
+<p>What if we could use a lightweight, "online" model, that can be updated on every timestamp?</p>
+<p>And.. what if we just repeat the last value?</p>
+<p>That'd be the <code>Naive</code> model you can load from <code>fold.models</code>.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-14-1"><a href="#__codelineno-14-1" id="__codelineno-14-1" name="__codelineno-14-1"></a><span class="kn">from</span> <span class="nn">fold</span> <span class="kn">import</span> <span class="n">train_evaluate</span>
+</span><span id="__span-14-2"><a href="#__codelineno-14-2" id="__codelineno-14-2" name="__codelineno-14-2"></a><span class="kn">from</span> <span class="nn">fold.models</span> <span class="kn">import</span> <span class="n">Naive</span>
+</span><span id="__span-14-3"><a href="#__codelineno-14-3" id="__codelineno-14-3" name="__codelineno-14-3"></a>
+</span><span id="__span-14-4"><a href="#__codelineno-14-4" id="__codelineno-14-4" name="__codelineno-14-4"></a><span class="n">scorecard</span><span class="p">,</span> <span class="n">predictions</span><span class="p">,</span> <span class="n">trained_pipeline</span> <span class="o">=</span> <span class="n">train_evaluate</span><span class="p">(</span><span class="n">Naive</span><span class="p">(),</span> <span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">splitter</span><span class="p">,</span> <span class="n">krisi_args</span><span class="o">=</span><span class="p">{</span><span class="s2">"model_name"</span><span class="p">:</span><span class="s2">"naive"</span><span class="p">})</span>
+</span><span id="__span-14-5"><a href="#__codelineno-14-5" id="__codelineno-14-5" name="__codelineno-14-5"></a><span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">scorecard</span><span class="p">,</span> <span class="n">predictions</span><span class="p">))</span>
+</span><span id="__span-14-6"><a href="#__codelineno-14-6" id="__codelineno-14-6" name="__codelineno-14-6"></a><span class="n">scorecard</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">"minimal"</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>  0%|          | 0/18 [00:00&lt;?, ?it/s]
+
+
+
+  0%|          | 0/18 [00:00&lt;?, ?it/s]
+</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">                                                 naive
+                     Mean Absolute Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">3.911054e+01</span>
+          Mean Absolute Percentage Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2.122351e+14</span>
+Symmetric Mean Absolute Percentage Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2.038015e-01</span>
+                      Mean Squared Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">4.012944e+03</span>
+                 Root Mean Squared Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">6.334780e+01</span>
+                               R-squared  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">8.443718e-01</span>
+                   Mean of the Residuals <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-4.387701e-02</span>
+     Standard Deviation of the Residuals  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">6.335837e+01</span>
+</pre>
+<p><strong>We call this <a href="https://dream-faster.github.io/fold/concepts/adaptive-ml/">Adaptive Backtesting</a>.</strong></p>
+<p>It looks like having access to last value really makes a difference: the baseline model beats all long-term forecasting models by a large margin.</p>
+<p><strong>It's extremely important to define our forecasting task well</strong>:
+1. We need to think about what time horizon can and should forecast
+2. And how frequently can we update our models.</p>
+<p>Long-horizon (in this case, a week ahead) forecasts can be very unreliable, on the other hand, frequent, short-term forecasts are where Machine Learning shines (as we'll see in the next section).</p>
+<h2 id="using-exogenous-variables-with-tabular-models">Using exogenous variables with Tabular Models</h2>
+<hr/>
+<p>So far we have been training univariate models, and ignored all the additional, exogenous variables that come with our data.</p>
+<p>Let's try whether using this data boost our model's performance!</p>
+<h3 id="building-models-separately">Building Models separately</h3>
+<p>We'll be using scikit-learn's <code>HistGradientBoostingRegressor</code>, their competing implementation of Gradient Boosted Trees. You don't need to wrap <code>scikit-learn</code> models or transformations when using it in <code>fold</code>, just pass it in directly to any pipeline.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-15-1"><a href="#__codelineno-15-1" id="__codelineno-15-1" name="__codelineno-15-1"></a><span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">HistGradientBoostingRegressor</span>
+</span><span id="__span-15-2"><a href="#__codelineno-15-2" id="__codelineno-15-2" name="__codelineno-15-2"></a>
+</span><span id="__span-15-3"><a href="#__codelineno-15-3" id="__codelineno-15-3" name="__codelineno-15-3"></a><span class="n">tree_model</span> <span class="o">=</span> <span class="n">HistGradientBoostingRegressor</span><span class="p">(</span><span class="n">max_depth</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</span></code></pre></div>
+<p>Let's add both holiday and date-time features to our previous ensemble pipeline.</p>
+<p>The data was gathered in the Region of Hessen, Germany -- so we pass in <code>DE</code> (we can pass in multiple regions). This transformation adds another column for holidays to our <code>exogenous</code> (<code>X</code>) features.</p>
+<p>We're also adding the current hour, and day of week as integers to our exogenous features. This is one of the ways for our tabular model to capture seasonality.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-16-1"><a href="#__codelineno-16-1" id="__codelineno-16-1" name="__codelineno-16-1"></a><span class="kn">from</span> <span class="nn">fold.transformations</span> <span class="kn">import</span> <span class="n">AddHolidayFeatures</span><span class="p">,</span> <span class="n">AddDateTimeFeatures</span>
+</span><span id="__span-16-2"><a href="#__codelineno-16-2" id="__codelineno-16-2" name="__codelineno-16-2"></a>
+</span><span id="__span-16-3"><a href="#__codelineno-16-3" id="__codelineno-16-3" name="__codelineno-16-3"></a><span class="n">datetime</span> <span class="o">=</span> <span class="n">AddDateTimeFeatures</span><span class="p">([</span><span class="s1">'hour'</span><span class="p">,</span> <span class="s1">'day_of_week'</span><span class="p">,</span> <span class="s1">'day_of_year'</span><span class="p">])</span>
+</span><span id="__span-16-4"><a href="#__codelineno-16-4" id="__codelineno-16-4" name="__codelineno-16-4"></a><span class="n">holidays</span> <span class="o">=</span> <span class="n">AddHolidayFeatures</span><span class="p">([</span><span class="s1">'DE'</span><span class="p">])</span>
+</span></code></pre></div>
+<p>Let's add a couple of lagged, exogenous values for our model. <code>AddLagsX</code> receives a tuple of column name and integer or list of lags, for each of which it will create a column in <code>X</code>.</p>
+<p>We can easily create transformations of existing features on a rolling window basis with <code>AddWindowFeatures</code> as well, in this case, the last day's average value for all of our exogenous features.</p>
+<p>We can "tie in" two separate pipelines with <code>Concat</code>, which concatenates all columns from all sources.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-17-1"><a href="#__codelineno-17-1" id="__codelineno-17-1" name="__codelineno-17-1"></a><span class="kn">from</span> <span class="nn">fold.transformations</span> <span class="kn">import</span> <span class="n">AddWindowFeatures</span><span class="p">,</span> <span class="n">AddLagsX</span>
+</span><span id="__span-17-2"><a href="#__codelineno-17-2" id="__codelineno-17-2" name="__codelineno-17-2"></a><span class="kn">from</span> <span class="nn">fold.composites</span> <span class="kn">import</span> <span class="n">Concat</span>
+</span><span id="__span-17-3"><a href="#__codelineno-17-3" id="__codelineno-17-3" name="__codelineno-17-3"></a>
+</span><span id="__span-17-4"><a href="#__codelineno-17-4" id="__codelineno-17-4" name="__codelineno-17-4"></a><span class="n">tree</span> <span class="o">=</span> <span class="p">[</span>
+</span><span id="__span-17-5"><a href="#__codelineno-17-5" id="__codelineno-17-5" name="__codelineno-17-5"></a>    <span class="n">Concat</span><span class="p">([</span>
+</span><span id="__span-17-6"><a href="#__codelineno-17-6" id="__codelineno-17-6" name="__codelineno-17-6"></a>        <span class="n">AddLagsX</span><span class="p">((</span><span class="s2">"all"</span><span class="p">,</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">))),</span>
+</span><span id="__span-17-7"><a href="#__codelineno-17-7" id="__codelineno-17-7" name="__codelineno-17-7"></a>        <span class="n">AddWindowFeatures</span><span class="p">([(</span><span class="s2">"all"</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="s2">"mean"</span><span class="p">)]),</span>
+</span><span id="__span-17-8"><a href="#__codelineno-17-8" id="__codelineno-17-8" name="__codelineno-17-8"></a>    <span class="p">]),</span>
+</span><span id="__span-17-9"><a href="#__codelineno-17-9" id="__codelineno-17-9" name="__codelineno-17-9"></a>    <span class="n">datetime</span><span class="p">,</span>
+</span><span id="__span-17-10"><a href="#__codelineno-17-10" id="__codelineno-17-10" name="__codelineno-17-10"></a>    <span class="n">holidays</span><span class="p">,</span>
+</span><span id="__span-17-11"><a href="#__codelineno-17-11" id="__codelineno-17-11" name="__codelineno-17-11"></a>    <span class="n">tree_model</span>
+</span><span id="__span-17-12"><a href="#__codelineno-17-12" id="__codelineno-17-12" name="__codelineno-17-12"></a><span class="p">]</span>
+</span></code></pre></div>
+<p>Let's see how this performs!</p>
+<p>We can also use fold's <code>train</code>, <code>backtest</code> to decouple these functionalities.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-18-1"><a href="#__codelineno-18-1" id="__codelineno-18-1" name="__codelineno-18-1"></a><span class="kn">from</span> <span class="nn">fold</span> <span class="kn">import</span> <span class="n">train</span><span class="p">,</span> <span class="n">backtest</span>
+</span><span id="__span-18-2"><a href="#__codelineno-18-2" id="__codelineno-18-2" name="__codelineno-18-2"></a>
+</span><span id="__span-18-3"><a href="#__codelineno-18-3" id="__codelineno-18-3" name="__codelineno-18-3"></a><span class="n">trained_pipeline</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">splitter</span><span class="p">)</span>
+</span><span id="__span-18-4"><a href="#__codelineno-18-4" id="__codelineno-18-4" name="__codelineno-18-4"></a><span class="n">predictions</span> <span class="o">=</span> <span class="n">backtest</span><span class="p">(</span><span class="n">trained_pipeline</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">splitter</span><span class="p">)</span>
+</span><span id="__span-18-5"><a href="#__codelineno-18-5" id="__codelineno-18-5" name="__codelineno-18-5"></a><span class="n">scorecard</span> <span class="o">=</span> <span class="n">score</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">predictions</span><span class="o">.</span><span class="n">index</span><span class="p">],</span> <span class="n">predictions</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(),</span> <span class="n">model_name</span><span class="o">=</span><span class="s2">"tabular_tree"</span><span class="p">)</span>
+</span><span id="__span-18-6"><a href="#__codelineno-18-6" id="__codelineno-18-6" name="__codelineno-18-6"></a>
+</span><span id="__span-18-7"><a href="#__codelineno-18-7" id="__codelineno-18-7" name="__codelineno-18-7"></a><span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">scorecard</span><span class="p">,</span> <span class="n">predictions</span><span class="p">))</span>
+</span><span id="__span-18-8"><a href="#__codelineno-18-8" id="__codelineno-18-8" name="__codelineno-18-8"></a><span class="n">scorecard</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">"minimal"</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>  0%|          | 0/18 [00:00&lt;?, ?it/s]
+
+
+
+  0%|          | 0/18 [00:00&lt;?, ?it/s]
+</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">                                          tabular_tree
+                     Mean Absolute Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2.965292e+01</span>
+          Mean Absolute Percentage Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2.123209e+14</span>
+Symmetric Mean Absolute Percentage Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.591514e-01</span>
+                      Mean Squared Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2.637592e+03</span>
+                 Root Mean Squared Error  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">5.135749e+01</span>
+                               R-squared  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">8.977101e-01</span>
+                   Mean of the Residuals <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-1.747140e+00</span>
+     Standard Deviation of the Residuals  <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">5.133635e+01</span>
+</pre>
+<h3 id="creating-an-ensemble-of-tabular-models">Creating an Ensemble of Tabular models</h3>
+<p>First let's creat two more models:
+* an Sklearn LinearRegressor
+* and an XGBoostRegressor instance</p>
+<p>We are also going to use the HistGradientBoostingRegressor pipeline that we defined prior.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-19-1"><a href="#__codelineno-19-1" id="__codelineno-19-1" name="__codelineno-19-1"></a><span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LinearRegression</span>
+</span><span id="__span-19-2"><a href="#__codelineno-19-2" id="__codelineno-19-2" name="__codelineno-19-2"></a>
+</span><span id="__span-19-3"><a href="#__codelineno-19-3" id="__codelineno-19-3" name="__codelineno-19-3"></a><span class="n">lregression</span> <span class="o">=</span> <span class="p">[</span>
+</span><span id="__span-19-4"><a href="#__codelineno-19-4" id="__codelineno-19-4" name="__codelineno-19-4"></a>    <span class="n">AddLagsX</span><span class="p">((</span><span class="s1">'all'</span><span class="p">,</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">))),</span>
+</span><span id="__span-19-5"><a href="#__codelineno-19-5" id="__codelineno-19-5" name="__codelineno-19-5"></a>    <span class="n">datetime</span><span class="p">,</span>
+</span><span id="__span-19-6"><a href="#__codelineno-19-6" id="__codelineno-19-6" name="__codelineno-19-6"></a>    <span class="n">LinearRegression</span><span class="p">()</span>
+</span><span id="__span-19-7"><a href="#__codelineno-19-7" id="__codelineno-19-7" name="__codelineno-19-7"></a><span class="p">]</span>
+</span></code></pre></div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-20-1"><a href="#__codelineno-20-1" id="__codelineno-20-1" name="__codelineno-20-1"></a><span class="kn">from</span> <span class="nn">xgboost</span> <span class="kn">import</span> <span class="n">XGBRegressor</span>
+</span><span id="__span-20-2"><a href="#__codelineno-20-2" id="__codelineno-20-2" name="__codelineno-20-2"></a><span class="kn">from</span> <span class="nn">fold.models.wrappers.gbd</span> <span class="kn">import</span> <span class="n">WrapXGB</span>
+</span><span id="__span-20-3"><a href="#__codelineno-20-3" id="__codelineno-20-3" name="__codelineno-20-3"></a>
+</span><span id="__span-20-4"><a href="#__codelineno-20-4" id="__codelineno-20-4" name="__codelineno-20-4"></a><span class="n">xgboost</span> <span class="o">=</span> <span class="p">[</span>
+</span><span id="__span-20-5"><a href="#__codelineno-20-5" id="__codelineno-20-5" name="__codelineno-20-5"></a>    <span class="n">AddLagsX</span><span class="p">((</span><span class="s1">'all'</span><span class="p">,</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">))),</span>
+</span><span id="__span-20-6"><a href="#__codelineno-20-6" id="__codelineno-20-6" name="__codelineno-20-6"></a>    <span class="n">datetime</span><span class="p">,</span>
+</span><span id="__span-20-7"><a href="#__codelineno-20-7" id="__codelineno-20-7" name="__codelineno-20-7"></a>    <span class="n">WrapXGB</span><span class="o">.</span><span class="n">from_model</span><span class="p">(</span><span class="n">XGBRegressor</span><span class="p">())</span>
+</span><span id="__span-20-8"><a href="#__codelineno-20-8" id="__codelineno-20-8" name="__codelineno-20-8"></a><span class="p">]</span>
+</span></code></pre></div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-21-1"><a href="#__codelineno-21-1" id="__codelineno-21-1" name="__codelineno-21-1"></a><span class="n">tabular_ensemble</span> <span class="o">=</span> <span class="n">Ensemble</span><span class="p">([</span><span class="n">lregression</span><span class="p">,</span> <span class="n">xgboost</span><span class="p">,</span> <span class="n">tree</span><span class="p">])</span>
+</span></code></pre></div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-22-1"><a href="#__codelineno-22-1" id="__codelineno-22-1" name="__codelineno-22-1"></a><span class="n">scorecard</span><span class="p">,</span> <span class="n">predictions</span><span class="p">,</span> <span class="n">pipeline_trained</span> <span class="o">=</span> <span class="n">train_evaluate</span><span class="p">(</span><span class="n">tabular_ensemble</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">splitter</span><span class="p">,</span> <span class="n">krisi_args</span><span class="o">=</span><span class="p">{</span><span class="s2">"model_name"</span><span class="p">:</span><span class="s2">"tabular_ensemble"</span><span class="p">})</span>
+</span><span id="__span-22-2"><a href="#__codelineno-22-2" id="__codelineno-22-2" name="__codelineno-22-2"></a><span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">scorecard</span><span class="p">,</span> <span class="n">predictions</span><span class="p">))</span>
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>  0%|          | 0/18 [00:00&lt;?, ?it/s]
+
+
+
+  0%|          | 0/18 [00:00&lt;?, ?it/s]
+</code></pre></div>
+<h2 id="comparing-vizualising-the-results">Comparing &amp; Vizualising the results</h2>
+<hr/>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-23-1"><a href="#__codelineno-23-1" id="__codelineno-23-1" name="__codelineno-23-1"></a><span class="n">compare</span><span class="p">([</span><span class="n">scorecard</span> <span class="k">for</span> <span class="n">scorecard</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">results</span><span class="p">],</span> <span class="n">sort_by</span><span class="o">=</span><span class="s2">"rmse"</span><span class="p">)</span>
+</span></code></pre></div>
+<div id="df-9e4abfbe-0f25-4386-96b8-bb464f380a47">
+<div class="colab-df-container">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>rmse</th>
+<th>mae</th>
+<th>mape</th>
+<th>smape</th>
+<th>mse</th>
+<th>r_two</th>
+<th>residuals_mean</th>
+<th>residuals_std</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>prophet</th>
+<td>121.569502</td>
+<td>95.075627</td>
+<td>7.955506e+13</td>
+<td>0.509200</td>
+<td>14779.143772</td>
+<td>0.426842</td>
+<td>6.361641</td>
+<td>121.423231</td>
+</tr>
+<tr>
+<th>mstl</th>
+<td>118.703683</td>
+<td>68.464305</td>
+<td>1.846641e+14</td>
+<td>0.279174</td>
+<td>14090.564243</td>
+<td>0.453546</td>
+<td>13.258315</td>
+<td>117.980649</td>
+</tr>
+<tr>
+<th>univariate_ensemble</th>
+<td>105.962271</td>
+<td>73.283533</td>
+<td>1.321096e+14</td>
+<td>0.356740</td>
+<td>11228.002822</td>
+<td>0.564561</td>
+<td>9.809978</td>
+<td>105.524826</td>
+</tr>
+<tr>
+<th>naive</th>
+<td>63.347800</td>
+<td>39.110541</td>
+<td>2.122351e+14</td>
+<td>0.203802</td>
+<td>4012.943794</td>
+<td>0.844372</td>
+<td>-0.043877</td>
+<td>63.358374</td>
+</tr>
+<tr>
+<th>tabular_tree</th>
+<td>51.357493</td>
+<td>29.652915</td>
+<td>2.123209e+14</td>
+<td>0.159151</td>
+<td>2637.592134</td>
+<td>0.897710</td>
+<td>-1.747140</td>
+<td>51.336346</td>
+</tr>
+<tr>
+<th>tabular_ensemble</th>
+<td>48.228591</td>
+<td>28.165175</td>
+<td>2.113763e+14</td>
+<td>0.153255</td>
+<td>2325.997006</td>
+<td>0.909794</td>
+<td>-2.690336</td>
+<td>48.161544</td>
+</tr>
+</tbody>
+</table>
+</div>
+<button class="colab-df-convert" onclick="convertToInteractive('df-9e4abfbe-0f25-4386-96b8-bb464f380a47')" style="display:none;" title="Convert this dataframe to an interactive table.">
+<svg height="24px" viewbox="0 0 24 24" width="24px" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 0h24v24H0V0z" fill="none"></path>
+<path d="M18.56 5.44l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94zm-11 1L8.5 8.5l.94-2.06 2.06-.94-2.06-.94L8.5 2.5l-.94 2.06-2.06.94zm10 10l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94z"></path><path d="M17.41 7.96l-1.37-1.37c-.4-.4-.92-.59-1.43-.59-.52 0-1.04.2-1.43.59L10.3 9.45l-7.72 7.72c-.78.78-.78 2.05 0 2.83L4 21.41c.39.39.9.59 1.41.59.51 0 1.02-.2 1.41-.59l7.78-7.78 2.81-2.81c.8-.78.8-2.07 0-2.86zM5.41 20L4 18.59l7.72-7.72 1.47 1.35L5.41 20z"></path>
+</svg>
+</button>
+<style>
+    .colab-df-container {
+      display:flex;
+      flex-wrap:wrap;
+      gap: 12px;
+    }
+
+    .colab-df-convert {
+      background-color: #E8F0FE;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+      fill: #1967D2;
+      height: 32px;
+      padding: 0 0 0 0;
+      width: 32px;
+    }
+
+    .colab-df-convert:hover {
+      background-color: #E2EBFA;
+      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+      fill: #174EA6;
+    }
+
+    [theme=dark] .colab-df-convert {
+      background-color: #3B4455;
+      fill: #D2E3FC;
+    }
+
+    [theme=dark] .colab-df-convert:hover {
+      background-color: #434B5C;
+      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
+      fill: #FFFFFF;
+    }
+  </style>
+<script>
+        const buttonEl =
+          document.querySelector('#df-9e4abfbe-0f25-4386-96b8-bb464f380a47 button.colab-df-convert');
+        buttonEl.style.display =
+          google.colab.kernel.accessAllowed ? 'block' : 'none';
+
+        async function convertToInteractive(key) {
+          const element = document.querySelector('#df-9e4abfbe-0f25-4386-96b8-bb464f380a47');
+          const dataTable =
+            await google.colab.kernel.invokeFunction('convertToInteractive',
+                                                     [key], {});
+          if (!dataTable) return;
+
+          const docLinkHtml = 'Like what you see? Visit the ' +
+            '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
+            + ' to learn more about interactive tables.';
+          element.innerHTML = '';
+          dataTable['output_type'] = 'display_data';
+          await google.colab.output.renderOutput(dataTable, element);
+          const docLink = document.createElement('div');
+          docLink.innerHTML = docLinkHtml;
+          element.appendChild(docLink);
+        }
+      </script>
+</div>
+</div>
+<p>In this simplistic, unfair comparison, it looks like the tabular models (and the Naive baseline) that have access to the previous value (and the exogenous variables) outperform the univariate models that are only re-trained every week. </p>
+<p>We can't really draw general conclusions from this work, though. </p>
+<p>Unlike NLP and Computer vision, Time Series data is very heterogeneous, and a Machine Learning approach that works well for one series may be an inferior choice for your specific usecase.</p>
+<hr/>
+<p>But now we have an easy way to compare the different pipelines, with unprecedented speed, by using a unified interface, with <a href="https://github.com/dream-faster/fold">fold</a>. </p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-24-1"><a href="#__codelineno-24-1" id="__codelineno-24-1" name="__codelineno-24-1"></a><span class="n">all_predictions</span> <span class="o">=</span><span class="p">[</span><span class="n">predictions</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">scorecard</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">model_name</span><span class="p">)</span> <span class="k">for</span> <span class="n">scorecard</span><span class="p">,</span> <span class="n">predictions</span> <span class="ow">in</span> <span class="n">results</span><span class="p">]</span>
+</span><span id="__span-24-2"><a href="#__codelineno-24-2" id="__codelineno-24-2" name="__codelineno-24-2"></a>
+</span><span id="__span-24-3"><a href="#__codelineno-24-3" id="__codelineno-24-3" name="__codelineno-24-3"></a><span class="n">plot_y_predictions</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">predictions</span><span class="o">.</span><span class="n">index</span><span class="p">],</span> <span class="n">all_predictions</span><span class="p">,</span> <span class="n">y_name</span><span class="o">=</span><span class="s2">"residual_load"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">'seperate'</span><span class="p">)</span>
+</span></code></pre></div>
+<p><a class="glightbox" data-desc-position="bottom" data-height="auto" data-title="png" data-type="image" data-width="100%" href="../core_walkthrough_files/core_walkthrough_63_0.png"><img alt="png" src="../core_walkthrough_files/core_walkthrough_63_0.png"/></a></p>
+<p>Want to know more?
+Visit <a href="https://dream-faster.github.io/fold/">fold's Examples page</a>, and access all the necessary snippets you need for you to build a Time Series ML pipeline!</p>
+<form class="md-feedback" hidden="" name="feedback">
+<fieldset>
+<legend class="md-feedback__title">
+        Was this page helpful?
+      </legend>
+<div class="md-feedback__inner">
+<div class="md-feedback__list">
+<button class="md-feedback__icon md-icon" data-md-value="1" title="This page was helpful" type="submit">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 12a8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8 8 8 0 0 0 8-8m2 0a10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2a10 10 0 0 1 10 10M10 9.5c0 .8-.7 1.5-1.5 1.5S7 10.3 7 9.5 7.7 8 8.5 8s1.5.7 1.5 1.5m7 0c0 .8-.7 1.5-1.5 1.5S14 10.3 14 9.5 14.7 8 15.5 8s1.5.7 1.5 1.5m-5 7.73c-1.75 0-3.29-.73-4.19-1.81L9.23 14c.45.72 1.52 1.23 2.77 1.23s2.32-.51 2.77-1.23l1.42 1.42c-.9 1.08-2.44 1.81-4.19 1.81Z"></path></svg>
+</button>
+<button class="md-feedback__icon md-icon" data-md-value="0" title="This page could be improved" type="submit">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 12a8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8 8 8 0 0 0 8-8m2 0a10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2a10 10 0 0 1 10 10m-6.5-4c.8 0 1.5.7 1.5 1.5s-.7 1.5-1.5 1.5-1.5-.7-1.5-1.5.7-1.5 1.5-1.5M10 9.5c0 .8-.7 1.5-1.5 1.5S7 10.3 7 9.5 7.7 8 8.5 8s1.5.7 1.5 1.5m2 4.5c1.75 0 3.29.72 4.19 1.81l-1.42 1.42C14.32 16.5 13.25 16 12 16s-2.32.5-2.77 1.23l-1.42-1.42C8.71 14.72 10.25 14 12 14Z"></path></svg>
+</button>
+</div>
+<div class="md-feedback__note">
+<div data-md-value="1" hidden="">
+              
+              
+                
+              
+              Thanks for your feedback!
+            </div>
+<div data-md-value="0" hidden="">
+              
+              
+                
+              
+              Thanks for your feedback! Help us improve this page by using our <a href="..." rel="noopener" target="_blank">feedback form</a>.
+            </div>
+</div>
+</div>
+</fieldset>
+</form>
+</article>
+</div>
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+</div>
+<button class="md-top md-icon" data-md-component="top" hidden="" type="button">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"></path></svg>
+  Back to top
+</button>
+</main>
+<footer class="md-footer">
+<div class="md-footer-meta md-typeset">
+<div class="md-footer-meta__inner md-grid">
+<div class="md-copyright">
+<div class="md-copyright__highlight">
+      Dream Faster 2023
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" rel="noopener" target="_blank">
+      Material for MkDocs
+    </a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<div class="md-dialog" data-md-component="dialog">
+<div class="md-dialog__inner md-typeset"></div>
+</div>
+<div class="md-consent" data-md-component="consent" hidden="" id="__consent">
+<div class="md-consent__overlay"></div>
+<aside class="md-consent__inner">
+<form class="md-consent__form md-grid md-typeset" name="consent">
+<h4>Cookie consent</h4>
+<p>We use cookies to recognize your repeated visits and preferences, as well as to measure the effectiveness of our documentation and whether users find what they're searching for. With your consent, you're helping us to make our documentation better.</p>
+<input class="md-toggle" id="__settings" type="checkbox"/>
+<div class="md-consent__settings">
+<ul class="task-list">
+<li class="task-list-item">
+<label class="task-list-control">
+<input checked="" name="analytics" type="checkbox"/>
+<span class="task-list-indicator"></span>
+          Google Analytics
+        </label>
+</li>
+<li class="task-list-item">
+<label class="task-list-control">
+<input checked="" name="github" type="checkbox"/>
+<span class="task-list-indicator"></span>
+          GitHub
+        </label>
+</li>
+</ul>
+</div>
+<div class="md-consent__controls">
+<button class="md-button md-button--primary">Accept</button>
+<label class="md-button" for="__settings">Manage settings</label>
+</div>
+</form>
+</aside>
+</div>
+<script>var consent=__md_get("__consent");if(consent)for(var input of document.forms.consent.elements)input.name&&(input.checked=consent[input.name]||!1);else"file:"!==location.protocol&&setTimeout(function(){document.querySelector("[data-md-component=consent]").hidden=!1},250);var action,form=document.forms.consent;for(action of["submit","reset"])form.addEventListener(action,function(e){if(e.preventDefault(),"reset"===e.type)for(var n of document.forms.consent.elements)n.name&&(n.checked=!1);__md_set("__consent",Object.fromEntries(Array.from(new FormData(form).keys()).map(function(e){return[e,!0]}))),location.hash="",location.reload()})</script>
+<script id="__config" type="application/json">{"base": "../..", "features": ["navigation.indexes", "search.suggest", "toc.follow", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+<script src="../../assets/javascripts/bundle.c8d2eff1.min.js"></script>
+<script>document$.subscribe(() => {const lightbox = GLightbox({"touchNavigation": true, "loop": true, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});})</script></body>
+</html>
