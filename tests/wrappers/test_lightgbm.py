@@ -18,7 +18,7 @@ def test_lgbm_regression() -> None:
     splitter = ExpandingWindowSplitter(initial_train_window=500, step=100)
     transformations = WrapLGBM.from_model(LGBMRegressor())
 
-    pred, _ = train_backtest(transformations, X, y, splitter)
+    pred, _, _, _ = train_backtest(transformations, X, y, splitter)
     assert (y.squeeze()[pred.index] - pred.squeeze()).abs().sum() < 20
     tuneability_test(
         WrapLGBM.from_model(LGBMRegressor(n_estimators=1)),
@@ -34,7 +34,7 @@ def test_lgbm_classification() -> None:
 
     splitter = ExpandingWindowSplitter(initial_train_window=500, step=100)
     transformations = WrapLGBM.from_model(LGBMClassifier())
-    pred, _ = train_backtest(transformations, X, y, splitter)
+    pred, _, _, _ = train_backtest(transformations, X, y, splitter)
     assert "predictions_LGBMClassifier" in pred.columns
     assert "probabilities_LGBMClassifier_0.0" in pred.columns
     assert "probabilities_LGBMClassifier_1.0" in pred.columns
@@ -49,7 +49,7 @@ def test_lgbm_classification_skewed() -> None:
     transformations = WrapLGBM.from_model(
         LGBMClassifier(), set_class_weights="balanced"
     )
-    pred, _ = train_backtest(transformations, X, y, splitter)
+    pred, _, _, _ = train_backtest(transformations, X, y, splitter)
     assert "predictions_LGBMClassifier" in pred.columns
     assert "probabilities_LGBMClassifier_0.0" in pred.columns
     assert "probabilities_LGBMClassifier_1.0" in pred.columns
@@ -75,5 +75,5 @@ def test_lgbm_init_with_args() -> None:
     splitter = ExpandingWindowSplitter(initial_train_window=500, step=100)
     transformations = WrapLGBM(LGBMRegressor, {"n_estimators": 100})
 
-    pred, _ = train_backtest(transformations, X, y, splitter)
+    pred, _, _, _ = train_backtest(transformations, X, y, splitter)
     assert (y.squeeze()[pred.index] - pred.squeeze()).abs().sum() < 20
