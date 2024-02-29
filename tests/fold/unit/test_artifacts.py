@@ -6,7 +6,7 @@ from fold.events.labeling import FixedForwardHorizon, NoLabel
 from fold.events.weights import NoWeighting
 from fold.loop import train, train_evaluate
 from fold.models import DummyRegressor
-from fold.splitters import ExpandingWindowSplitter, ForwardSingleWindowSplitter
+from fold.splitters import ExpandingWindowSplitter
 from fold.utils.tests import generate_monotonous_data, generate_sine_wave_data
 
 
@@ -32,8 +32,6 @@ def test_artifacts_transformation_fit() -> None:
     _, pred, _, artifacts, _ = train_evaluate(pipeline, X, y, splitter)
     assert artifacts is not None
     assert artifacts["selected_features_SelectKBest"].dropna().iloc[-1] == ["sine"]
-
-
 
 
 def test_artifacts_events() -> None:

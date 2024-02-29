@@ -1,5 +1,3 @@
-import numpy as np
-
 from fold.splitters import (
     Bounds,
     ExpandingWindowSplitter,
