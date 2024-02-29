@@ -3,26 +3,28 @@ from __future__ import annotations
 import enum
 import uuid
 from abc import ABC, abstractmethod
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from typing import Callable, List, Optional, Tuple, TypeVar, Union
+from typing import Self, TypeVar
 
 import pandas as pd
-from typing_extensions import Self
+from finml_utils.dataframes import concat_on_columns
+from finml_utils.enums import ParsableEnum
+from finml_utils.introspection import get_initialization_parameters
 
-from ..splitters import SingleWindowSplitter
+from ..splitters import Splitter
 from ..utils.dataframe import ResolutionStrategy, concat_on_columns_with_duplicates
-from ..utils.enums import ParsableEnum
-from ..utils.introspection import get_initialization_parameters
 
-T = TypeVar("T", Optional[pd.Series], pd.Series)
+T = TypeVar("T", pd.Series | None, pd.Series)
 X = pd.DataFrame
 
 
 class Block(ABC):
     id: str
     name: str
+    metadata: BlockMetadata | None
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args, **kwargs):  # noqa
         instance = super().__new__(cls)
         instance.id = str(uuid.uuid4())
         return instance
@@ -32,6 +34,16 @@ class Clonable(ABC):
     @abstractmethod
     def clone(self, clone_children: Callable) -> Self:
         raise NotImplementedError
+
+
+@dataclass
+class BlockMetadata:
+    project_name: str
+    project_hyperparameters: dict | None
+    fold_index: int
+    target: str
+    inference: bool
+    preprocessing_max_memory_size: int | None
 
 
 class Composite(Block, Clonable, ABC):
@@ -57,30 +69,22 @@ class Composite(Block, Clonable, ABC):
             True  # returned Artifacts should be the same length as the input
         )
 
-    @dataclass
-    class Metadata:
-        project_name: str
-        project_hyperparameters: Optional[dict]
-        fold_index: int
-        target: str
-        inference: bool
-
     properties: Properties
-    metadata: Optional[Metadata]
 
     @abstractmethod
-    def get_children_primary(self) -> Pipelines:
+    def get_children_primary(self, only_traversal: bool) -> Pipelines:
         raise NotImplementedError
 
     def get_children_secondary(
         self,
-    ) -> Optional[Pipelines]:
+    ) -> Pipelines | None:
         return None
 
+    @abstractmethod
     def postprocess_result_primary(
         self,
-        results: List[pd.DataFrame],
-        y: Optional[pd.Series],
+        results: list[pd.DataFrame],
+        y: pd.Series | None,
         original_artifact: Artifact,
         fit: bool,
     ) -> pd.DataFrame:
@@ -89,8 +93,8 @@ class Composite(Block, Clonable, ABC):
     def postprocess_result_secondary(
         self,
         primary_results: pd.DataFrame,
-        secondary_results: List[pd.DataFrame],
-        y: Optional[pd.Series],
+        secondary_results: list[pd.DataFrame],
+        y: pd.Series | None,
         in_sample: bool,
     ) -> pd.DataFrame:
         raise NotImplementedError
@@ -100,7 +104,7 @@ class Composite(Block, Clonable, ABC):
 
     def preprocess_primary(
         self, X: pd.DataFrame, index: int, y: T, artifact: Artifact, fit: bool
-    ) -> Tuple[pd.DataFrame, T, Artifact]:
+    ) -> tuple[pd.DataFrame, T, Artifact]:
         return X, y, artifact
 
     def preprocess_secondary(
@@ -111,13 +115,13 @@ class Composite(Block, Clonable, ABC):
         results_primary: pd.DataFrame,
         index: int,
         fit: bool,
-    ) -> Tuple[pd.DataFrame, T, Artifact]:
+    ) -> tuple[pd.DataFrame, T, Artifact]:
         return X, y, artifact
 
     def postprocess_artifacts_primary(
         self,
-        primary_artifacts: List[Artifact],
-        results: List[pd.DataFrame],
+        primary_artifacts: list[Artifact],
+        results: list[pd.DataFrame],
         original_artifact: Artifact,
         fit: bool,
     ) -> pd.DataFrame:
@@ -128,17 +132,17 @@ class Composite(Block, Clonable, ABC):
     def postprocess_artifacts_secondary(
         self,
         primary_artifacts: pd.DataFrame,
-        secondary_artifacts: List[Artifact],
+        secondary_artifacts: list[Artifact],
         original_artifact: Artifact,
     ) -> pd.DataFrame:
         return concat_on_columns_with_duplicates(
-            [primary_artifacts] + secondary_artifacts, strategy=ResolutionStrategy.last
+            [primary_artifacts, *secondary_artifacts], strategy=ResolutionStrategy.last
         )
 
 
 class Sampler(Block, Clonable, ABC):
     @abstractmethod
-    def get_children_primary(self) -> Pipelines:
+    def get_children_primary(self, only_traversal: bool) -> Pipelines:
         raise NotImplementedError
 
     def before_fit(self, X: pd.DataFrame) -> None:
@@ -146,15 +150,17 @@ class Sampler(Block, Clonable, ABC):
 
     def preprocess_primary(
         self, X: pd.DataFrame, index: int, y: T, artifact: Artifact, fit: bool
-    ) -> Tuple[pd.DataFrame, T, Artifact]:
+    ) -> tuple[pd.DataFrame, T, Artifact]:
         return X, y, artifact
 
 
 class Optimizer(Block, Clonable, ABC):
-    splitter: SingleWindowSplitter
+    splitter: Splitter
+    metadata: Composite.Metadata | None
+    backend: Backend | None
 
     @abstractmethod
-    def get_candidates(self) -> List[Pipeline]:
+    def get_candidates(self, only_traversal: bool) -> list[Pipeline]:
         """
         Called iteratively, until an array with a length of zero is returned.
         Then the loop finishes the candidate evaluation process.
@@ -162,16 +168,16 @@ class Optimizer(Block, Clonable, ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_optimized_pipeline(self) -> Optional[Pipeline]:
+    def get_optimized_pipeline(self) -> Pipeline | None:
         raise NotImplementedError
 
     @abstractmethod
     def process_candidate_results(
         self,
-        results: List[pd.DataFrame],
+        results: list[pd.DataFrame],
         y: pd.Series,
-        artifacts: List[pd.DataFrame],
-    ) -> Optional[Artifact]:
+        artifacts: list[pd.DataFrame],
+    ) -> Artifact | None:
         raise NotImplementedError
 
 
@@ -186,37 +192,30 @@ class Transformation(Block, ABC):
             regressor = "regressor"
             classifier = "classifier"
 
-        class Mode(enum.Enum):
-            minibatch = "minibatch"
-            online = "online"
-
         requires_X: bool
-        mode: Mode = Mode.minibatch
-        updateable: bool = True
-        memory_size: Optional[
-            Union[int, float]
-        ] = None  # During the in_sample period, memory will contain all data. During inference, if not `None`, it will inject past window with size of `memory` to update() & transformation().
+        memory_size: int | float | None = None  # During the in_sample period, memory will contain all data. During inference, if not `None`, it will inject past window with size of `memory` to update() & transformation().
         disable_memory: bool = True  # If `True`, memory will not be used at all, even if `memory_size` is not `None`.
-        model_type: Optional[ModelType] = None
+        model_type: ModelType | None = None
         _internal_supports_minibatch_backtesting: bool = False  # internal, during backtesting, calls predict_in_sample() instead of predict()
 
     @dataclass
     class State:
         memory_X: pd.DataFrame
         memory_y: pd.Series
-        memory_sample_weights: Optional[pd.Series]
+        memory_sample_weights: pd.Series | None
 
     properties: Properties
     name: str
-    _state: Optional[State]
+    _state: State | None
 
     @abstractmethod
     def fit(
         self,
         X: pd.DataFrame,
         y: pd.Series,
-        sample_weights: Optional[pd.Series] = None,
-    ) -> Optional[Artifact]:
+        sample_weights: pd.Series | None = None,
+        raw_y: pd.Series | None = None,
+    ) -> Artifact | None:
         """
         Called once, with on initial training window.
         """
@@ -227,8 +226,9 @@ class Transformation(Block, ABC):
         self,
         X: pd.DataFrame,
         y: pd.Series,
-        sample_weights: Optional[pd.Series] = None,
-    ) -> Optional[Artifact]:
+        sample_weights: pd.Series | None = None,
+        raw_y: pd.Series | None = None,
+    ) -> Artifact | None:
         """
         Subsequent calls to update the model.
         """
@@ -246,7 +246,7 @@ class InvertibleTransformation(Transformation, ABC):
 
 
 class Tunable(ABC):
-    params_to_try: Optional[dict]
+    params_to_try: dict | None
 
     def get_params(self) -> dict:
         """
@@ -256,11 +256,11 @@ class Tunable(ABC):
         """
         return get_initialization_parameters(self)
 
-    def get_params_to_try(self) -> Optional[dict]:
+    def get_params_to_try(self) -> dict | None:
         return self.params_to_try
 
     def clone_with_params(
-        self, parameters: dict, clone_children: Optional[Callable] = None
+        self, parameters: dict, clone_children: Callable | None = None
     ) -> Tunable:
         """
         The default implementation only works for Transformations, when parameters and the init parameters match 100%.
@@ -269,21 +269,21 @@ class Tunable(ABC):
 
 
 class FeatureSelector(Transformation):
-    selected_features: List[str]
+    selected_features: list[str]
 
 
-Pipeline = Union[Block, List[Block]]
+Pipeline = Block | Sequence[Block]
 """A list of `fold` objects that are executed sequentially. Or a single object."""
-Pipelines = List[Pipeline]
+Pipelines = Sequence[Pipeline]
 """Multiple, independent `Pipeline`s."""
 
-TransformationPipeline = Union[
-    Union[Transformation, Composite], List[Union[Transformation, Composite]]
-]
+TransformationPipeline = (
+    Transformation | Composite | Sequence[Transformation | Composite]
+)
 
 
 TrainedPipeline = Pipeline
-TrainedPipelines = List[pd.Series]
+TrainedPipelines = list[pd.Series]
 """A list of trained `Pipeline`s, to be used for backtesting."""
 OutOfSamplePredictions = pd.DataFrame
 """The backtest's resulting out-of-sample output."""
@@ -293,12 +293,12 @@ InSamplePredictions = pd.DataFrame
 
 @dataclass
 class PipelineCard:
-    preprocessing: Optional[TransformationPipeline]
+    preprocessing: TransformationPipeline | None
     pipeline: Pipeline
-    event_labeler: Optional[Labeler] = None
-    event_filter: Optional[EventFilter] = None
-    project_name: Optional[str] = None
-    project_hyperparameters: Optional[dict] = None
+    event_labeler: Labeler | None = None
+    event_filter: EventFilter | None = None
+    project_name: str | None = None
+    project_hyperparameters: dict | None = None
     trim_initial_period_after_preprocessing: bool = False  # If `True`, the initial period (determined by the memory_size of transformations in the preprocessing pipeline) will be trimmed after preprocessing, but before the pipeline is executed.
 
 
@@ -307,9 +307,9 @@ class TrainedPipelineCard:
     project_name: str
     preprocessing: TrainedPipelines
     pipeline: TrainedPipelines
-    event_labeler: Optional[Labeler]
-    event_filter: Optional[EventFilter]
-    project_hyperparameters: Optional[dict]
+    event_labeler: Labeler | None
+    event_filter: EventFilter | None
+    project_hyperparameters: dict | None
     trim_initial_period_after_preprocessing: bool
 
 
@@ -317,7 +317,8 @@ def fit_noop(
     self,
     X: pd.DataFrame,
     y: pd.Series,
-    sample_weights: Optional[pd.Series] = None,
+    sample_weights: pd.Series | None = None,
+    raw_y: pd.Series | None = None,
 ) -> None:
     pass
 
@@ -332,58 +333,10 @@ class SingleFunctionTransformation(Transformation):
     update = fit_noop
 
     def transform(self, X: pd.DataFrame, in_sample: bool) -> pd.DataFrame:
-        return pd.concat([X, self.get_function()(X)], axis="columns")
+        return concat_on_columns([X, self.get_function()(X)])
 
 
-class EventDataFrame(pd.DataFrame):
-    @property
-    def start(self) -> pd.Series:
-        return self["event_start"]
-
-    @property
-    def end(self) -> pd.Series:
-        return self["event_end"]
-
-    @property
-    def label(self) -> pd.Series:
-        return self["event_label"]
-
-    @property
-    def raw(self) -> pd.Series:
-        return self["event_raw"]
-
-    @property
-    def sample_weights(self) -> pd.Series:
-        return self["event_sample_weights"]
-
-    @property
-    def test_sample_weights(self) -> pd.Series:
-        return self["event_test_sample_weights"]
-
-    @classmethod
-    def from_data(
-        cls,
-        start: pd.DatetimeIndex,
-        end: pd.DatetimeIndex,
-        label: pd.Series,
-        raw: pd.Series,
-        sample_weights: Optional[pd.Series] = None,
-        test_sample_weights: Optional[pd.Series] = None,
-    ) -> EventDataFrame:
-        return cls(
-            data={
-                "event_start": start,
-                "event_end": end,
-                "event_label": label,
-                "event_raw": raw,
-                "event_sample_weights": pd.Series(1.0, index=start)
-                if sample_weights is None
-                else sample_weights,
-                "event_test_sample_weights": pd.Series(1.0, index=start)
-                if test_sample_weights is None
-                else test_sample_weights,
-            }
-        )
+EventDataFrame = pd.DataFrame
 
 
 class Artifact(pd.DataFrame):
@@ -406,50 +359,91 @@ class Artifact(pd.DataFrame):
         )  # type: ignore
 
     @staticmethod
-    def get_sample_weights(artifact: Artifact) -> Optional[pd.Series]:
+    def get_sample_weights(artifact: Artifact) -> pd.Series | None:
+        if artifact is None:
+            return None
         if "event_sample_weights" not in artifact.columns:
             return None
         return artifact["event_sample_weights"]
 
     @staticmethod
-    def get_test_sample_weights(artifact: Artifact) -> Optional[pd.Series]:
+    def get_test_sample_weights(artifact: Artifact) -> pd.Series | None:
         if "event_test_sample_weights" not in artifact.columns:
             if "sample_weights" in artifact.columns:
                 return artifact["sample_weights"]
-            else:
-                return None
+            return None
         return artifact["event_test_sample_weights"]
 
     @staticmethod
-    def get_event_label(artifact: Artifact) -> Optional[pd.Series]:
+    def get_raw_y(artifact: Artifact) -> pd.Series | None:
+        if artifact is None:
+            return None
+        if "event_raw" not in artifact.columns:
+            return None
+        return artifact["event_raw"]
+
+    @staticmethod
+    def get_event_label(artifact: Artifact) -> pd.Series | None:
         if "event_label" not in artifact.columns:
             return None
         return artifact["event_label"]
 
     @staticmethod
-    def get_events(artifact: Artifact) -> Optional[EventDataFrame]:
+    def get_events(artifact: Artifact) -> EventDataFrame:
         if "event_start" not in artifact.columns:
-            return None
-        return EventDataFrame.from_data(
-            start=artifact.event_start,
-            end=artifact.event_end,
-            label=artifact.event_label,
-            raw=artifact.event_raw,
-            sample_weights=artifact.event_sample_weights,
-            test_sample_weights=artifact.event_test_sample_weights,
-        )
+            return None  # type: ignore
+        columns = [
+            "event_start",
+            "event_end",
+            "event_label",
+            "event_raw",
+            "event_sample_weights",
+            "event_test_sample_weights",
+        ]
+        if "event_strategy_label" in artifact.columns:
+            columns.append("event_strategy_label")
+        return artifact[columns]
 
     @staticmethod
     def from_events(
         index: pd.Index,
-        events: Optional[EventDataFrame],
+        events: EventDataFrame | None,
     ) -> Artifact:
         if events is not None and not events.columns[0].startswith("event_"):
             events = events.add_prefix("event_")
         if events is None or events.empty:
             return Artifact.empty(index)  # type: ignore
-        else:
-            return events.reindex(index)  # type: ignore
+        return events.reindex(index)  # type: ignore
+
+    @staticmethod
+    def events_from_data(
+        start: pd.DatetimeIndex,
+        end: pd.DatetimeIndex,
+        label: pd.Series,
+        raw: pd.Series,
+        strategy_label: pd.Series | None = None,
+        sample_weights: pd.Series | None = None,
+        test_sample_weights: pd.Series | None = None,
+    ) -> EventDataFrame:
+        return EventDataFrame(
+            data={
+                "event_start": start,
+                "event_end": end,
+                "event_label": label,
+                "event_raw": raw,
+                "event_sample_weights": pd.Series(1.0, index=start)
+                if sample_weights is None
+                else sample_weights,
+                "event_test_sample_weights": pd.Series(1.0, index=start)
+                if test_sample_weights is None
+                else test_sample_weights,
+            }
+            | (
+                {"event_strategy_label": strategy_label}
+                if strategy_label is not None
+                else {}
+            ),
+        )
 
 
 class PredefinedFunction(ParsableEnum):
@@ -480,7 +474,8 @@ class Labeler(ABC):
     ) -> EventDataFrame:
         raise NotImplementedError
 
-    def get_all_possible_labels(self) -> List[int]:
+    @abstractmethod
+    def get_all_possible_labels(self) -> list[int]:
         raise NotImplementedError
 
 
@@ -490,7 +485,7 @@ class LabelingStrategy(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_all_labels(self) -> List[int]:
+    def get_all_labels(self) -> list[int]:
         raise NotImplementedError
 
 
@@ -498,3 +493,14 @@ class WeightingStrategy(ABC):
     @abstractmethod
     def calculate(self, series: pd.Series) -> pd.Series:
         raise NotImplementedError
+
+
+@dataclass
+class Backend:
+    name: str
+    process_child_transformations: Callable
+    train_pipeline: Callable
+    backtest_pipeline: Callable
+
+    def __init__(self):  # to be able to initalize it with the default parameters
+        pass

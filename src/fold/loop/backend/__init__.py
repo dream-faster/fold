@@ -1,12 +1,11 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
 
-from typing import Union
+from ...base.classes import Backend
+from ..types import BackendType
 
-from ..types import Backend, BackendType
 
-
-def get_backend(backend_type: Union[str, BackendType, Backend]) -> Backend:
+def get_backend(backend_type: str | BackendType | Backend) -> Backend:
     if isinstance(backend_type, str):
         backend_type = BackendType.from_str(backend_type)
 
@@ -17,22 +16,21 @@ def get_backend(backend_type: Union[str, BackendType, Backend]) -> Backend:
         from .ray import RayBackend
 
         return RayBackend()
-    elif backend_type == BackendType.no:
+    if backend_type == BackendType.no:
         from .sequential import NoBackend
 
         return NoBackend()
-    elif backend_type == BackendType.pathos:
+    if backend_type == BackendType.pathos:
         from .pathos import PathosBackend
 
         return PathosBackend()
-    elif backend_type == BackendType.thread:
+    if backend_type == BackendType.thread:
         from .thread import ThreadBackend
 
         return ThreadBackend()
-    elif backend_type == BackendType.joblib:
+    if backend_type == BackendType.joblib:
         from .joblib import JoblibBackend
 
         return JoblibBackend()
 
-    else:
-        raise ValueError(f"Backend type {backend_type} not supported.")
+    raise ValueError(f"Backend type {backend_type} not supported.")

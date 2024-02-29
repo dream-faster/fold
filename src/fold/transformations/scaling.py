@@ -1,6 +1,5 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
-from typing import Tuple
 
 from sklearn.preprocessing import MinMaxScaler as SKLearnMinMaxScaler
 from sklearn.preprocessing import StandardScaler as SKLearnStandardScaler
@@ -32,7 +31,7 @@ class StandardScaler(WrapInvertibleSKLearnTransformation):
     2021-12-31 07:23:00    0.0377
     2021-12-31 07:24:00    0.0502
     Freq: T, Name: sine, dtype: float64
-    >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+    >>> preds, trained_pipeline, _, _ = train_backtest(pipeline, X, y, splitter)
     >>> preds["sine"].head()
     2021-12-31 15:40:00   -0.000000
     2021-12-31 15:41:00    0.017819
@@ -81,7 +80,7 @@ class MinMaxScaler(WrapInvertibleSKLearnTransformation):
     >>> X, y  = generate_sine_wave_data()
     >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> pipeline = MinMaxScaler()
-    >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+    >>> preds, trained_pipeline, _, _ = train_backtest(pipeline, X, y, splitter)
     >>> X["sine"].loc[preds.index].head()
     2021-12-31 15:40:00   -0.0000
     2021-12-31 15:41:00    0.0126
@@ -106,7 +105,7 @@ class MinMaxScaler(WrapInvertibleSKLearnTransformation):
 
     name = "MinMaxScaler"
 
-    def __init__(self, feature_range: Tuple[int, int] = (0, 1), clip=False):
+    def __init__(self, feature_range: tuple[int, int] = (0, 1), clip=False):
         super().__init__(
             SKLearnMinMaxScaler, init_args=dict(feature_range=feature_range, clip=clip)
         )

@@ -1,15 +1,15 @@
 # Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
 
 
-from typing import Callable, List, Optional
+from collections.abc import Callable
 
 import pandas as pd
 from tqdm import tqdm
 from tqdm.contrib.concurrent import thread_map
 
-from ...base import Artifact, Composite, Pipeline, TrainedPipeline, X
+from ...base import Artifact, Backend, Composite, Pipeline, TrainedPipeline, X
 from ...splitters import Fold
-from ..types import Backend, Stage
+from ..types import Stage
 
 
 def train_pipeline(
@@ -19,27 +19,29 @@ def train_pipeline(
     X: pd.DataFrame,
     y: pd.Series,
     artifact: Artifact,
-    splits: List[Fold],
-    never_update: bool,
+    splits: list[Fold],
     backend: Backend,
     project_name: str,
-    project_hyperparameters: Optional[dict],
+    project_hyperparameters: dict | None,
+    preprocessing_max_memory_size: int,
     silent: bool,
 ):
-    return thread_map(
-        lambda split: func(
-            X,
-            y,
-            artifact,
-            pipeline,
-            split,
-            never_update,
-            backend,
-            project_name,
-            project_hyperparameters,
-        ),
-        splits,
-        disable=silent,
+    map_func = map if len(splits) == 1 else thread_map
+    return list(
+        map_func(
+            lambda split: func(
+                X,
+                y,
+                artifact,
+                pipeline,
+                split,
+                backend,
+                project_name,
+                project_hyperparameters,
+                preprocessing_max_memory_size,
+            ),
+            splits,
+        )
     )
 
 
@@ -47,7 +49,7 @@ def backtest_pipeline(
     self,
     func: Callable,
     pipeline: TrainedPipeline,
-    splits: List[Fold],
+    splits: list[Fold],
     X: pd.DataFrame,
     y: pd.Series,
     artifact: Artifact,
@@ -55,45 +57,49 @@ def backtest_pipeline(
     mutate: bool,
     silent: bool,
 ):
-    return thread_map(
-        lambda split: func(pipeline, split, X, y, artifact, backend, mutate),
-        splits,
-        disable=silent,
+    map_func = map if len(splits) == 1 else thread_map
+    return list(
+        map_func(
+            lambda split: func(pipeline, split, X, y, artifact, backend, mutate),
+            splits,
+        )
     )
 
 
 def process_child_transformations(
     self,
     func: Callable,
-    list_of_child_transformations_with_index: List,
+    list_of_child_transformations_with_index: list,
     composite: Composite,
     X: X,
-    y: Optional[pd.Series],
+    y: pd.Series | None,
     artifacts: Artifact,
     stage: Stage,
     backend: Backend,
-    results_primary: Optional[List[pd.DataFrame]],
-    tqdm: Optional[tqdm] = None,
+    results_primary: list[pd.DataFrame] | None,
+    tqdm: tqdm | None = None,
 ):
     list_of_child_transformations_with_index = [
         {"index": index, "child_transformation": child_transformation}
         for index, child_transformation in list_of_child_transformations_with_index
     ]
-    return thread_map(
-        lambda obj: func(
-            composite,
-            obj["index"],
-            obj["child_transformation"],
-            X,
-            y,
-            artifacts,
-            stage,
-            backend,
-            results_primary,
-            tqdm,
-        ),
-        list_of_child_transformations_with_index,
-        disable=True,
+    map_func = map if len(list_of_child_transformations_with_index) == 1 else thread_map
+    return list(
+        map_func(
+            lambda obj: func(
+                composite,
+                obj["index"],
+                obj["child_transformation"],
+                X,
+                y,
+                artifacts,
+                stage,
+                backend,
+                results_primary,
+                tqdm,
+            ),
+            list_of_child_transformations_with_index,
+        )
     )
 
 

@@ -3,22 +3,9 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from enum import Enum
-from typing import Callable
 
-from ..utils.enums import ParsableEnum
-
-
-@dataclass
-class Backend:
-    name: str
-    process_child_transformations: Callable
-    train_pipeline: Callable
-    backtest_pipeline: Callable
-
-    def __init__(self):  # to be able to initalize it with the default parameters
-        pass
+from finml_utils.enums import ParsableEnum
 
 
 class BackendType(ParsableEnum):
@@ -43,26 +30,9 @@ class BackendType(ParsableEnum):
     joblib = "joblib"
 
 
-class TrainMethod(ParsableEnum):
-    """
-    Parameters
-    ----------
-    parallel: string
-        Parallel, independent training of pipelines for each fold.
-    sequential: string
-        Sequentially train/update pipelines, walking forward in time.
-
-    """
-
-    parallel = "parallel"
-    sequential = "sequential"
-
-
 class Stage(Enum):
     inital_fit = "inital_fit"
-    update = "update"
-    update_online_only = "update_online_only"
     infer = "infer"
 
-    def is_fit_or_update(self) -> bool:
-        return self in [Stage.inital_fit, Stage.update]
+    def is_fit(self) -> bool:
+        return self in [Stage.inital_fit]

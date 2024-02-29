@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import List, Optional, Union
 
 import pandas as pd
+from finml_utils.dataframes import concat_on_columns
+from finml_utils.enums import ParsableEnum
 
 from ..base import Transformation, Tunable, fit_noop
-from ..utils.enums import ParsableEnum
 from ..utils.list import swap_tuples, wrap_in_list
 
 
@@ -48,7 +48,7 @@ class AddHolidayFeatures(Transformation, Tunable):
     Parameters
     ----------
 
-    country_codes: List[str]
+    country_codes: list[str]
         List of country codes  (eg.: `US`, `DE`) for which to add holiday features.
     labeling: LabelingMethod
         * holiday_binary: Workdays = 0 | National Holidays = 1
@@ -60,11 +60,11 @@ class AddHolidayFeatures(Transformation, Tunable):
 
     def __init__(
         self,
-        country_codes: Union[List[str], str],
-        labeling: Union[str, LabelingMethod] = LabelingMethod.weekday_weekend_holiday,
+        country_codes: list[str] | str,
+        labeling: str | LabelingMethod = LabelingMethod.weekday_weekend_holiday,
         keep_original: bool = True,
-        name: Optional[str] = None,
-        params_to_try: Optional[dict] = None,
+        name: str | None = None,
+        params_to_try: dict | None = None,
     ) -> None:
         self.country_codes = [
             country_code.upper() for country_code in wrap_in_list(country_codes)
@@ -75,10 +75,8 @@ class AddHolidayFeatures(Transformation, Tunable):
         all_supported_countries = list(list_supported_countries().keys())
 
         assert all(
-            [
-                country_code in all_supported_countries
-                for country_code in self.country_codes
-            ]
+            country_code in all_supported_countries
+            for country_code in self.country_codes
         ), f"Country code not supported: {country_codes}"
 
         self.holiday_to_int_maps = [
@@ -124,9 +122,9 @@ class AddHolidayFeatures(Transformation, Tunable):
                 _get_weekends(X.index), axis="index"
             )
 
-        elif (
-            self.labeling == LabelingMethod.weekday_weekend_uniqueholiday
-            or self.labeling == LabelingMethod.weekday_weekend_uniqueholiday_string
+        elif self.labeling in (
+            LabelingMethod.weekday_weekend_uniqueholiday,
+            LabelingMethod.weekday_weekend_uniqueholiday_string,
         ):
             holidays = _get_holidays(
                 X.index,
@@ -142,10 +140,7 @@ class AddHolidayFeatures(Transformation, Tunable):
         else:
             raise ValueError(f"Unknown HolidayType: {self.labeling}")
 
-        concatenated = (
-            pd.concat([X, holidays], axis="columns") if self.keep_original else holidays
-        )
-        return concatenated
+        return concat_on_columns([X, holidays]) if self.keep_original else holidays
 
     fit = fit_noop
     update = fit_noop
@@ -160,7 +155,7 @@ class AddExchangeHolidayFeatures(Transformation, Tunable):
     Parameters
     ----------
 
-    exchange_codes: List[str]
+    exchange_codes: list[str]
         List of exchange codes  (eg.: `NYSE`) for which to add holiday features.
     labeling: LabelingMethod
         * holiday_binary: Workdays = 0 | National Holidays = 1
@@ -169,11 +164,11 @@ class AddExchangeHolidayFeatures(Transformation, Tunable):
 
     def __init__(
         self,
-        exchange_codes: Union[List[str], str],
-        labeling: Union[str, LabelingMethod] = LabelingMethod.weekday_weekend_holiday,
+        exchange_codes: list[str] | str,
+        labeling: str | LabelingMethod = LabelingMethod.weekday_weekend_holiday,
         keep_original: bool = True,
-        name: Optional[str] = None,
-        params_to_try: Optional[dict] = None,
+        name: str | None = None,
+        params_to_try: dict | None = None,
     ) -> None:
         self.exchange_codes = wrap_in_list(exchange_codes)
         self.labeling = LabelingMethod.from_str(labeling)
@@ -184,15 +179,16 @@ class AddExchangeHolidayFeatures(Transformation, Tunable):
         if "all" in self.exchange_codes:
             self.exchange_codes = all_supported_exchanges
 
-        assert self.labeling in [
-            LabelingMethod.holiday_binary,
-            LabelingMethod.weekday_weekend_holiday,
-        ], "Only holiday_binary and weekday_weekend_holiday are supported for stockexchanges"
-        assert all(
-            [
-                country_code in all_supported_exchanges
-                for country_code in self.exchange_codes
+        assert (
+            self.labeling
+            in [
+                LabelingMethod.holiday_binary,
+                LabelingMethod.weekday_weekend_holiday,
             ]
+        ), "Only holiday_binary and weekday_weekend_holiday are supported for stockexchanges"
+        assert all(
+            country_code in all_supported_exchanges
+            for country_code in self.exchange_codes
         ), f"Exchange code not supported: {exchange_codes}"
 
         self.params_to_try = params_to_try
@@ -218,10 +214,7 @@ class AddExchangeHolidayFeatures(Transformation, Tunable):
         else:
             raise ValueError(f"Unknown HolidayType: {self.labeling}")
 
-        concatenated = (
-            pd.concat([X, holidays], axis="columns") if self.keep_original else holidays
-        )
-        return concatenated
+        return concat_on_columns([X, holidays]) if self.keep_original else holidays
 
     fit = fit_noop
     update = fit_noop
@@ -233,8 +226,8 @@ def _get_weekends(dates: pd.DatetimeIndex) -> pd.Series:
 
 def _get_holidays(
     dates: pd.DatetimeIndex,
-    country_codes: List[str],
-    holiday_to_int_maps: List[dict],
+    country_codes: list[str],
+    holiday_to_int_maps: list[dict],
     encode: bool,
 ) -> pd.DataFrame:
     from holidays import country_holidays
@@ -252,12 +245,14 @@ def _get_holidays(
         for country_code in country_codes
     ]
 
-    df = pd.concat(series, axis="columns").fillna(0)
+    df = concat_on_columns(series).fillna(0)
 
     if encode:
-        for country_code, holiday_to_int_map in zip(country_codes, holiday_to_int_maps):
+        for country_code, holiday_to_int_map in zip(
+            country_codes, holiday_to_int_maps, strict=True
+        ):
             col = df[f"holiday_{country_code}"]
-            if not col.dtype == "object":
+            if col.dtype != "object":
                 continue  # we don't use strings, there's nothing to encode
             df[f"holiday_{country_code}"] = (
                 col.map(holiday_to_int_map).fillna(0).astype(int)
@@ -267,7 +262,7 @@ def _get_holidays(
 
 
 def _get_exchange_holidays(
-    dates: pd.DatetimeIndex, exchange_codes: List[str]
+    dates: pd.DatetimeIndex, exchange_codes: list[str]
 ) -> pd.DataFrame:
     import pandas_market_calendars as mcal
 

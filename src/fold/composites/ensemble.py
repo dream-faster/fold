@@ -3,13 +3,13 @@
 
 from __future__ import annotations
 
-from typing import Callable, List, Optional
+from collections.abc import Callable
 
 import pandas as pd
-
-from fold.utils.checks import get_probabilities_columns, has_probabilities
+from finml_utils.dataframes import concat_on_columns
 
 from ..base import Artifact, Composite, Pipelines, get_concatenated_names
+from ..utils.checks import get_probabilities_columns, has_probabilities
 from .columns import average_results
 
 
@@ -36,7 +36,7 @@ class Ensemble(Composite):
         ...     DummyRegressor(0.1),
         ...     DummyRegressor(0.9),
         ... ])
-        >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+        >>> preds, trained_pipeline, _, _ = train_backtest(pipeline, X, y, splitter)
         >>> preds.squeeze().head()
         2021-12-31 15:40:00    0.5
         2021-12-31 15:41:00    0.5
@@ -51,7 +51,7 @@ class Ensemble(Composite):
         pipelines: Pipelines,
         reconstruct_predictions_from_probabilities: bool = False,
         verbose: bool = False,
-        name: Optional[str] = None,
+        name: str | None = None,
     ) -> None:
         self.pipelines = pipelines
         self.name = name or "Ensemble-" + get_concatenated_names(pipelines)
@@ -64,15 +64,14 @@ class Ensemble(Composite):
 
     def postprocess_result_primary(
         self,
-        results: List[pd.DataFrame],
-        y: Optional[pd.Series],
+        results: list[pd.DataFrame],
+        y: pd.Series | None,
         original_artifact: Artifact,
         fit: bool,
     ) -> pd.DataFrame:
-        if self.verbose and all([has_probabilities(result) for result in results]):
-            probs = pd.concat(
+        if self.verbose and all(has_probabilities(result) for result in results):
+            probs = concat_on_columns(
                 [get_probabilities_columns(result).iloc[:, 0] for result in results],
-                axis="columns",
             )
             print(
                 f"Ensemble - Avg correlation of probabilities: {probs.corr().mean().mean()}"
@@ -81,7 +80,7 @@ class Ensemble(Composite):
             results, self.name, self.reconstruct_predictions_from_probabilities
         )
 
-    def get_children_primary(self) -> Pipelines:
+    def get_children_primary(self, only_traversal: bool) -> Pipelines:
         return self.pipelines
 
     def clone(self, clone_children: Callable) -> Ensemble:

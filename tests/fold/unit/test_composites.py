@@ -2,14 +2,14 @@ import pandas as pd
 
 from fold.composites import Concat, TransformEachColumn
 from fold.composites.residual import ModelResiduals
-from fold.loop import backtest, train
+from fold.loop.encase import train_backtest
 from fold.loop.utils import deepcopy_pipelines
 from fold.models.dummy import DummyRegressor
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.columns import DropColumns, OnlyPredictions, RenameColumns
 from fold.transformations.dev import Identity
 from fold.transformations.features import AddWindowFeatures
-from fold.transformations.lags import AddLagsY
+from fold.transformations.lags import AddLagsX
 from fold.utils.tests import generate_monotonous_data, generate_sine_wave_data
 
 
@@ -25,14 +25,13 @@ def test_composite_cloning():
 def test_concat_and_metadata():
     X, y = generate_sine_wave_data()
     pipeline1 = AddWindowFeatures(("sine", 10, "mean"))
-    pipeline2 = AddLagsY([1])
+    pipeline2 = AddLagsX(("all", 1))
     concat = Concat([pipeline1, pipeline2], if_duplicate_keep="first")
     splitter = ExpandingWindowSplitter(0.2, 0.1)
-    trained = train(concat, X, y, splitter)
-    preds = backtest(trained, X, y, splitter)
-    assert preds["y_lag_1"] is not None
+    preds, trained, _, _ = train_backtest(concat, X, y, splitter)
+    assert preds["sine"] is not None
     assert preds["sine~mean_10"] is not None
-    for i in range(0, 8):
+    for i in range(7):
         assert trained.pipeline[0].iloc[i].metadata.fold_index == i
 
 
@@ -49,9 +48,8 @@ def test_concat_resolution_left():
     ]
     concat = Concat([pipeline1, pipeline2], if_duplicate_keep="first")
     splitter = ExpandingWindowSplitter(0.2, 0.1)
-    trained_pipelines = train(concat, X, y, splitter)
+    preds, _, _, _ = train_backtest(concat, X, y, splitter)
 
-    preds = backtest(trained_pipelines, X, y, splitter)
     assert isinstance(preds["sine"], pd.Series)
     assert (preds["sine"] == preds["sine~mean_10"]).all()
 
@@ -65,8 +63,7 @@ def test_concat_resolution_right():
     ]
     concat = Concat([pipeline1, Identity()], if_duplicate_keep="last")
     splitter = ExpandingWindowSplitter(0.2, 0.1)
-    trained_pipelines = train(concat, X, y, splitter)
-    preds = backtest(trained_pipelines, X, y, splitter)
+    preds, _, _, _ = train_backtest(concat, X, y, splitter)
     assert isinstance(preds["sine"], pd.Series)
     assert (preds["sine"] == X.loc[preds.index]["sine"]).all()
 
@@ -80,8 +77,7 @@ def test_concat_resolution_both():
     ]
     concat = Concat([pipeline1, Identity()], if_duplicate_keep="both")
     splitter = ExpandingWindowSplitter(0.2, 0.1)
-    trained_pipelines = train(concat, X, y, splitter)
-    preds = backtest(trained_pipelines, X, y, splitter)
+    preds, trained_pipelines, _, _ = train_backtest(concat, X, y, splitter)
     assert isinstance(preds["sine"], pd.DataFrame)
 
 
@@ -107,6 +103,6 @@ def test_model_residuals() -> None:
         OnlyPredictions(),
     ]
 
-    trained_pipelines = train(transformations, X, y, splitter)
-    pred = backtest(trained_pipelines, X, y, splitter)
+    pred, _, _, _ = train_backtest(transformations, X, y, splitter)
+
     assert (pred.squeeze() == 1.0).all()

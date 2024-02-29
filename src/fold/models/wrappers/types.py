@@ -1,4 +1,4 @@
-from fold.utils.enums import ParsableEnum
+from finml_utils.enums import ParsableEnum
 
 
 class ClassWeightingStrategy(ParsableEnum):

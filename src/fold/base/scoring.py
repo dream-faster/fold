@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 import importlib
-from typing import TYPE_CHECKING, Optional, Tuple
+from typing import TYPE_CHECKING
 
 import pandas as pd
+from finml_utils.dataframes import concat_on_columns
 
 from ..utils.checks import (
     all_have_probabilities,
@@ -18,39 +21,32 @@ def score_results(
     result: pd.DataFrame,
     y: pd.Series,
     artifacts: Artifact,
-    krisi_args: Optional[dict] = None,
-) -> Tuple["ScoreCard", OutOfSamplePredictions]:
+    krisi_args: dict | None = None,
+) -> tuple[ScoreCard, OutOfSamplePredictions]:
     y, pred_point, probabilities, test_sample_weights = align_result_with_events(
         y=y,
         result=result,
         artifacts=artifacts,
     )
-    if importlib.util.find_spec("krisi") is not None:
-        from krisi import score
+    from krisi import score
 
-        return (
-            score(
-                y=y,
-                predictions=pred_point,
-                probabilities=probabilities,
-                sample_weight=test_sample_weights
-                if test_sample_weights is not None
-                else None,
-                **(krisi_args if krisi_args is not None else {}),
-            ),
-            pd.concat([pred_point, probabilities], axis="columns"),
-        )
-    else:
-        raise ImportError(
-            "krisi not installed. Please install krisi to use this function."
-        )
+    return (
+        score(
+            y=y,
+            predictions=pred_point,
+            probabilities=probabilities,
+            sample_weight=test_sample_weights,
+            **(krisi_args if krisi_args is not None else {}),
+        ),
+        concat_on_columns([pred_point, probabilities]),
+    )
 
 
 def align_result_with_events(
     y: pd.Series,
     result: pd.DataFrame,
     artifacts: Artifact,
-) -> Tuple[pd.Series, pd.Series, Optional[pd.DataFrame], Optional[pd.Series]]:
+) -> tuple[pd.Series, pd.Series, pd.DataFrame | None, pd.Series | None]:
     events = Artifact.get_events(artifacts)
     test_sample_weights = Artifact.get_test_sample_weights(artifacts)
 
@@ -65,7 +61,6 @@ def align_result_with_events(
         test_sample_weights = events.event_test_sample_weights
         pred_point = pred_point.dropna()
         probabilities = probabilities.dropna() if probabilities is not None else None
-        y = y[pred_point.index]
     else:
         test_sample_weights = (
             test_sample_weights[pred_point.index]

@@ -2,14 +2,12 @@
 
 
 from random import choices
-from typing import List, Optional, Union
 
 import numpy as np
 import pandas as pd
+from finml_utils.dataframes import concat_on_columns
 
-from fold.base.classes import Artifact
-
-from ..base import Transformation, fit_noop
+from ..base import Artifact, Transformation, fit_noop
 from .base import Model
 
 
@@ -19,7 +17,7 @@ class RandomClassifier(Model):
 
     Parameters
     ----------
-    all_classes : List[int]
+    all_classes : list[int]
         All possible classes.
     probability_mean : float
         The mean of the normal distribution used to generate the probabilities.
@@ -37,7 +35,7 @@ class RandomClassifier(Model):
     >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> np.random.seed(42)
     >>> pipeline = RandomClassifier([0,1], [0.5, 0.5])
-    >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+    >>> preds, trained_pipeline, _, _ = train_backtest(pipeline, X, y, splitter)
 
     ```
     """
@@ -45,7 +43,7 @@ class RandomClassifier(Model):
     name = "RandomClassifier"
 
     def __init__(
-        self, all_classes: List[int], probability_mean: Optional[List[float]] = None
+        self, all_classes: list[int], probability_mean: list[float] | None = None
     ) -> None:
         self.all_classes = all_classes
         if probability_mean is not None:
@@ -57,13 +55,13 @@ class RandomClassifier(Model):
         )
         self.properties = Transformation.Properties(requires_X=False)
 
-    def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
+    def predict(self, X: pd.DataFrame) -> pd.Series | pd.DataFrame:
         predictions = pd.Series(
             choices(population=self.all_classes, k=len(X)),
             index=X.index,
             name="predictions_RandomClassifier",
         )
-        probabilities = pd.concat(
+        probabilities = concat_on_columns(
             [
                 pd.Series(
                     np.random.normal(prob_mean, 0.1, len(X)).clip(0, 1),
@@ -71,14 +69,13 @@ class RandomClassifier(Model):
                     name=f"probabilities_RandomClassifier_{associated_class}",
                 )
                 for associated_class, prob_mean in zip(
-                    self.all_classes, self.probability_mean
+                    self.all_classes, self.probability_mean, strict=True
                 )
             ],
-            axis="columns",
         )
         probabilities = probabilities.div(probabilities.sum(axis=1), axis=0)
 
-        return pd.concat([predictions, probabilities], copy=False, axis="columns")
+        return concat_on_columns([predictions, probabilities])
 
     fit = fit_noop
     predict_in_sample = predict
@@ -93,14 +90,18 @@ class RandomBinaryClassifier(Model):
     properties = Transformation.Properties(requires_X=False)
     name = "RandomBinaryClassifier"
 
-    def predict(self, X: pd.DataFrame) -> Union[pd.Series, pd.DataFrame]:
+    def predict(self, X: pd.DataFrame) -> pd.Series | pd.DataFrame:
         return generate_synthetic_predictions_binary(
             self.memory_target, self.memory_sample_weights, X.index
         )
 
     def fit(
-        self, X: pd.DataFrame, y: pd.Series, sample_weights: Optional[pd.Series] = None
-    ) -> Optional[Artifact]:
+        self,
+        X: pd.DataFrame,
+        y: pd.Series,
+        sample_weights: pd.Series | None = None,
+        raw_y: pd.Series | None = None,
+    ) -> Artifact | None:
         self.memory_target = y
         self.memory_sample_weights = (
             sample_weights

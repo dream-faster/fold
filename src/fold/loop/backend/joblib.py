@@ -2,15 +2,15 @@
 
 from __future__ import annotations
 
-from typing import Callable, List, Optional
+from collections.abc import Callable
 
 import pandas as pd
 from joblib import Parallel, delayed
 from tqdm import tqdm
 
-from ...base import Artifact, Composite, Pipeline, TrainedPipeline, X
+from ...base import Artifact, Backend, Composite, Pipeline, TrainedPipeline, X
 from ...splitters import Fold
-from ..types import Backend, Stage
+from ..types import Stage
 
 
 def train_pipeline(
@@ -20,11 +20,11 @@ def train_pipeline(
     X: pd.DataFrame,
     y: pd.Series,
     artifact: Artifact,
-    splits: List[Fold],
-    never_update: bool,
+    splits: list[Fold],
     backend: Backend,
     project_name: str,
-    project_hyperparameters: Optional[dict],
+    project_hyperparameters: dict | None,
+    preprocessing_max_memory_size: int,
     silent: bool,
 ):
     return Parallel(
@@ -37,10 +37,10 @@ def train_pipeline(
                 artifact,
                 pipeline,
                 split,
-                never_update,
                 backend,
                 project_name,
                 project_hyperparameters,
+                preprocessing_max_memory_size,
             )
             for split in splits
         ]
@@ -51,7 +51,7 @@ def backtest_pipeline(
     self: JoblibBackend,
     func: Callable,
     pipeline: TrainedPipeline,
-    splits: List[Fold],
+    splits: list[Fold],
     X: pd.DataFrame,
     y: pd.Series,
     artifact: Artifact,
@@ -72,35 +72,20 @@ def backtest_pipeline(
 def process_child_transformations(
     self: JoblibBackend,
     func: Callable,
-    list_of_child_transformations_with_index: List,
+    list_of_child_transformations_with_index: list,
     composite: Composite,
     X: X,
-    y: Optional[pd.Series],
+    y: pd.Series | None,
     artifacts: Artifact,
     stage: Stage,
     backend: Backend,
-    results_primary: Optional[List[pd.DataFrame]],
-    tqdm: Optional[tqdm] = None,
+    results_primary: list[pd.DataFrame] | None,
+    tqdm: tqdm | None = None,
 ):
-    # return Parallel(
-    #     n_jobs=self.limit_threads, prefer="threads" if self.prefer_threads else None
-    # )(
-    #     [
-    #         delayed(func)(
-    #             composite,
-    #             index,
-    #             child_transformation,
-    #             X,
-    #             y,
-    #             artifacts,
-    #             stage,
-    #             backend,
-    #             results_primary,
-    #             None,
-    #         )
-    #         for index, child_transformation in list_of_child_transformations_with_index
-    #     ]
-    # )
+    list_of_child_transformations_with_index = list(
+        list_of_child_transformations_with_index
+    )
+    # if len(list_of_child_transformations_with_index) == 1:
     return [
         func(
             composite,
@@ -117,6 +102,27 @@ def process_child_transformations(
         for index, child_transformation in list_of_child_transformations_with_index
     ]
 
+    # with parallel_config(backend="threading"):
+    #     return Parallel(
+    #         n_jobs=self.limit_threads, prefer="threads" if self.prefer_threads else None
+    #     )(
+    #         [
+    #             delayed(func)(
+    #                 composite,
+    #                 index,
+    #                 child_transformation,
+    #                 X,
+    #                 y,
+    #                 artifacts,
+    #                 stage,
+    #                 backend,
+    #                 results_primary,
+    #                 None,
+    #             )
+    #             for index, child_transformation in list_of_child_transformations_with_index
+    #         ]
+    #     )
+
 
 class JoblibBackend(Backend):
     name = "joblib"
@@ -124,8 +130,6 @@ class JoblibBackend(Backend):
     train_pipeline = train_pipeline
     backtest_pipeline = backtest_pipeline
 
-    def __init__(
-        self, limit_threads: Optional[int] = None, prefer_threads: bool = True
-    ):
+    def __init__(self, limit_threads: int | None = None, prefer_threads: bool = True):
         self.limit_threads = limit_threads
         self.prefer_threads = prefer_threads

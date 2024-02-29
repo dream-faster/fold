@@ -5,7 +5,7 @@ from sklearn.dummy import DummyClassifier, DummyRegressor
 from sklearn.feature_selection import SelectKBest, VarianceThreshold, f_regression
 
 from fold.composites.concat import TransformColumn
-from fold.loop import backtest, train, train_backtest
+from fold.loop import train_backtest
 from fold.models.sklearn import WrapSKLearnClassifier, WrapSKLearnRegressor
 from fold.splitters import ExpandingWindowSplitter
 from fold.transformations.columns import OnlyPredictions, RenameColumns, SelectColumns
@@ -21,7 +21,7 @@ def test_sklearn_classifier() -> None:
 
     splitter = ExpandingWindowSplitter(initial_train_window=400, step=400)
     pipeline = [DummyClassifier(strategy="constant", constant=0), OnlyPredictions()]
-    pred, _ = train_backtest(pipeline, X, y, splitter)
+    pred, _, _, _ = train_backtest(pipeline, X, y, splitter)
     assert (pred.squeeze() == 0.0).all()
 
     tuneability_test(
@@ -42,7 +42,7 @@ def test_sklearn_regressor() -> None:
         DummyRegressor(strategy="constant", constant=0),
         OnlyPredictions(),
     ]
-    pred, _ = train_backtest(pipeline, X, y, splitter)
+    pred, _, _, _ = train_backtest(pipeline, X, y, splitter)
     assert (pred.squeeze() == 0.0).all()
 
     tuneability_test(
@@ -64,7 +64,7 @@ def test_sklearn_transformation_variable_columns() -> None:
         lambda X: X.fillna(0.0),
         PCA(n_components=2),
     ]
-    pred, _ = train_backtest(pipeline, X, y, splitter)
+    pred, _, _, _ = train_backtest(pipeline, X, y, splitter)
     assert pred.shape[1] == 2
 
 
@@ -94,8 +94,8 @@ def test_sklearn_partial_fit() -> None:
     transformations = [
         TestEstimator(),
     ]
-    trained_pipelines = train(transformations, X, y, splitter)
-    _ = backtest(trained_pipelines, X, y, splitter)
+    pred, trained_pipelines, _, _ = train_backtest(transformations, X, y, splitter)
+
     assert trained_pipelines.pipeline[0].iloc[0].transformation.fit_called is False
     assert (
         trained_pipelines.pipeline[0].iloc[0].transformation.partial_fit_called is True
@@ -117,7 +117,6 @@ def test_nested_transformations_with_feature_selection() -> None:
         SelectColumns("pred"),
     ]
 
-    trained_pipelines = train(transformations, X, y, splitter)
-    pred = backtest(trained_pipelines, X, y, splitter)
+    pred, _, _, _ = train_backtest(transformations, X, y, splitter)
     assert np.allclose((X["sine"][pred.index]), pred.squeeze())
     assert pred.squeeze().name == "pred"

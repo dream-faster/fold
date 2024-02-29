@@ -3,38 +3,35 @@
 
 import collections
 from collections.abc import Iterable
-from typing import Dict, List, Optional, Tuple, TypeVar, Union
+from typing import TypeVar
 
 from iteration_utilities import unique_everseen
 
 T = TypeVar("T")
 
 
-def wrap_in_list(input: Union[T, List[T]]) -> List[T]:
-    return input if isinstance(input, List) else [input]
+def wrap_in_list(input: T | list[T]) -> list[T]:
+    return input if isinstance(input, list) else [input]
 
 
-def transform_range_to_list(input: Union[range, List[T]]) -> List[T]:
+def transform_range_to_list(input: range | list[T]) -> list[T]:
     return list(input) if isinstance(input, range) else input
 
 
-def wrap_in_double_list_if_needed(
-    input: Union[T, List[T]]
-) -> Union[List[List[T]], List[T]]:
+def wrap_in_double_list_if_needed(input: T | list[T]) -> list[list[T]] | list[T]:
     """
     If input is a single item, wrap it in a list.
     If input is a single list, wrap it in another list.
     If input is a list of lists, return it as is.
     """
-    if not isinstance(input, List):
+    if not isinstance(input, list):
         return [input]
-    if isinstance(input[0], List):
+    if isinstance(input[0], list):
         return input
-    else:
-        return [input]
+    return [input]
 
 
-def flatten(input: Union[List[List], List]) -> Iterable:
+def flatten(input: list[list] | list) -> Iterable:
     for x in input:
         if isinstance(x, list):
             yield from flatten(x)
@@ -42,27 +39,23 @@ def flatten(input: Union[List[List], List]) -> Iterable:
             yield x
 
 
-def keep_only_duplicates(input: List) -> List:
+def keep_only_duplicates(input: list) -> list:
     return [item for item, count in collections.Counter(input).items() if count > 1]
 
 
-def has_intersection(lhs: List, rhs: List) -> bool:
+def has_intersection(lhs: list, rhs: list) -> bool:
     return len(set(lhs).intersection(rhs)) > 0
 
 
-def unique(input: List) -> List:
+def unique(input: list) -> list:
     return unique_everseen(input)
 
 
-def swap_tuples(input: List[Tuple]) -> List[Tuple]:
+def swap_tuples(input: list[tuple]) -> list[tuple]:
     return [(b, a) for a, b in input]
 
 
-def filter_none(input: List) -> List:
-    return [x for x in input if x is not None]
-
-
-def empty_if_none(input: Union[List, None]) -> List:
+def empty_if_none(input: list | None) -> list:
     return [] if input is None else input
 
 
@@ -91,11 +84,11 @@ def to_hierachical_dict_arbitrary_depth(flat_dict: dict, separator: str = "¦") 
     return hierarchy
 
 
-def ensure_dict(dictionary: Optional[Dict]) -> dict:
+def ensure_dict(dictionary: dict | None) -> dict:
     return {} if dictionary is None else dictionary
 
 
-def unpack_list_of_tuples(input: List[Tuple]):
+def unpack_list_of_tuples(input: list[tuple]):
     if len(input) == 1:
         return [[item] for item in input[0]]
-    return zip(*input)
+    return zip(*input, strict=True)

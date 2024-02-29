@@ -1,43 +1,72 @@
-# Copyright (c) 2022 - Present Myalo UG (haftungbeschränkt) (Mark Aron Szulyovszky, Daniel Szemerey) <info@dreamfaster.ai>. All rights reserved. See LICENSE in root folder.
+from __future__ import annotations
 
-
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import List, Optional, Union
 
+import numpy as np
 import pandas as pd
+from finml_utils.list import flatten_lists
+
+
+@dataclass
+class Bounds:
+    start: int
+    end: int
+
+    def union(self: Bounds, other: Bounds) -> Bounds:
+        return Bounds(start=min(self.start, other.start), end=max(self.end, other.end))
+
+    def intersection(self: Bounds, other: Bounds) -> Bounds:
+        return Bounds(max(self.start, other.start), min(self.end, other.end))
+
+    def __hash__(self) -> int:
+        return hash((self.start, self.end))
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Bounds):
+            return NotImplemented
+        return self.start == other.start and self.end == other.end
 
 
 @dataclass
 class Fold:
-    order: int
-    model_index: int
-    train_window_start: int
-    train_window_end: int
-    update_window_start: int
-    update_window_end: int
-    test_window_start: int
-    test_window_end: int
+    index: int
+    train_bounds: list[Bounds]
+    test_bounds: list[Bounds]
 
+    def train_indices(self) -> np.ndarray:
+        return np.hstack(
+            [np.arange(bound.start, bound.end) for bound in self.train_bounds]
+        )
 
-class Splitter:
-    from_cutoff: Optional[pd.Timestamp]
-
-    def splits(self, index: pd.Index) -> List[Fold]:
-        raise NotImplementedError
-
-
-def translate_float_if_needed(window_size: Union[int, float], length: int) -> int:
-    if window_size >= 1 and isinstance(window_size, int):
-        return window_size
-    elif window_size < 1 and isinstance(window_size, float):
-        return int(window_size * length)
-    else:
-        raise ValueError(
-            "Invalid window size, should be either a float less than 1 or an int"
-            " greater than 1"
+    def test_indices(self) -> np.ndarray:
+        return np.hstack(
+            [np.arange(bound.start, bound.end) for bound in self.test_bounds]
         )
 
 
+class Splitter:
+    def splits(self, index: pd.Index) -> list[Fold]:
+        raise NotImplementedError
+
+
+def get_splits(
+    splitter: Splitter,
+    index: pd.Index,
+    gap_before: int,
+    gap_after: int,
+    merge_threshold: float = 0.1,
+) -> list[Fold]:
+    return _merge_last_fold_if_too_small(
+        [
+            _apply_gap_before_test(_apply_gap_after_test(fold, gap_after), gap_before)
+            for fold in splitter.splits(index)
+        ],
+        int(len(index) * merge_threshold),
+    )
+
+
+@dataclass
 class SlidingWindowSplitter(Splitter):
     """
     Creates folds with a sliding window.
@@ -57,69 +86,57 @@ class SlidingWindowSplitter(Splitter):
         The start index of the first fold, by default 0.
     end : int, optional
         The end index of the last fold, by default None.
-    merge_threshold: float, optional, default 0.01
-        The percentage threshold for merging the last fold with the previous one if it is too small.
     """
 
-    def __init__(
-        self,
-        train_window: Union[
-            int, float
-        ],  # this is what you don't get out of sample get predictions for
-        step: Union[int, float],
-        initial_window: Optional[Union[int, float]] = None,
-        embargo: int = 0,
-        start: int = 0,
-        end: Optional[int] = None,
-        merge_threshold: float = 0.01,
-        from_cutoff: Optional[pd.Timestamp] = None,
-    ) -> None:
-        self.window_size = train_window
-        self.initial_window = initial_window
-        self.step = step
-        self.embargo = embargo
-        self.start = start
-        self.end = end
-        self.merge_threshold = merge_threshold
-        self.from_cutoff = from_cutoff
+    train_window: int | float  # this is what you don't get out of sample get predictions for
+    step: int | float
+    initial_window: int | float | None = None
+    start: int | pd.Timestamp = 0
+    subtract_initial_train_window_from_start: bool = False
+    end: int | pd.Timestamp | None = None
+    overlapping_test_sets: bool = False
 
-    def splits(self, index: pd.Index) -> List[Fold]:
+    def splits(self, index: pd.Index) -> list[Fold]:
         length = len(index)
-        merge_threshold = int(length * self.merge_threshold)
-        end = self.end if self.end is not None else length
-        window_size = translate_float_if_needed(self.window_size, length)
-        step = translate_float_if_needed(self.step, length)
+        window_size = _translate_float_if_needed(self.train_window, length)
         initial_window = (
-            translate_float_if_needed(self.initial_window, length)
+            _translate_float_if_needed(self.initial_window, length)
             if self.initial_window is not None
             else window_size
         )
+        start = _get_start(
+            self.start,
+            index,
+            self.subtract_initial_train_window_from_start,
+            initial_window,
+        )
+        end = _get_end(self.end, index)
+        step = _translate_float_if_needed(self.step, length)
+
         first_window_start = (
-            self.start + initial_window
+            start + initial_window
             if initial_window is not None
-            else self.start + window_size
+            else start + window_size
         )
 
-        folds = [
+        return [
             Fold(
-                order=order,
-                model_index=index,
-                train_window_start=max(index - window_size, self.start),
-                train_window_end=index - self.embargo,
-                update_window_start=0,  # SlidingWindowSplitter is incompatible with sequential updates
-                update_window_end=0,
-                test_window_start=index,
-                test_window_end=min(end, index + step),
+                index=order,
+                train_bounds=[Bounds(start=max(index - window_size, start), end=index)],
+                test_bounds=[
+                    Bounds(
+                        start=index,
+                        end=end
+                        if self.overlapping_test_sets
+                        else min(end, index + step),
+                    )
+                ],
             )
             for order, index in enumerate(range(first_window_start, end, step))
         ]
-        return filter_folds(
-            merge_last_fold_if_too_small(folds, merge_threshold),
-            index,
-            self.from_cutoff,
-        )
 
 
+@dataclass
 class ExpandingWindowSplitter(Splitter):
     """
     Creates folds with an expanding window.
@@ -134,65 +151,50 @@ class ExpandingWindowSplitter(Splitter):
         The initial training window size. If a float, it is interpreted as a fraction of the total length of the data.
     step : int, float
         The step size of the sliding window. If a float, it is interpreted as a fraction of the total length of the data.
-    embargo : int, optional
-        The gap between the train and the test window, by default 0.
     start : int, optional
         The start index of the first fold, by default 0.
     end : int, optional
         The end index of the last fold, by default None.
-    merge_threshold: float, optional, default 0.01
-        The percentage threshold for merging the last fold with the previous one if it is too small.
     """
 
-    def __init__(
-        self,
-        initial_train_window: Union[
-            int, float
-        ],  # this is what you don't out of sample get predictions for
-        step: Union[int, float],
-        embargo: int = 0,
-        start: int = 0,
-        end: Optional[int] = None,
-        merge_threshold: float = 0.01,
-        from_cutoff: Optional[pd.Timestamp] = None,
-    ) -> None:
-        self.window_size = initial_train_window
-        self.step = step
-        self.embargo = embargo
-        self.start = start
-        self.end = end
-        self.merge_threshold = merge_threshold
-        self.from_cutoff = from_cutoff
+    initial_train_window: int | float  # this is what you don't out of sample get predictions for
+    step: int | float
+    start: int | pd.Timestamp = 0
+    subtract_initial_train_window_from_start: bool = False
+    end: int | pd.Timestamp | None = None
+    overlapping_test_sets: bool = False
 
-    def splits(self, index: pd.Index) -> List[Fold]:
+    def splits(self, index: pd.Index) -> list[Fold]:
         length = len(index)
-        merge_threshold = int(length * self.merge_threshold)
-        end = self.end if self.end is not None else length
-        window_size = translate_float_if_needed(self.window_size, length)
-        step = translate_float_if_needed(self.step, length)
-
-        folds = [
-            Fold(
-                order=order,
-                model_index=index,
-                train_window_start=self.start,
-                train_window_end=index - self.embargo,
-                update_window_start=index
-                - step,  # the length of the update window is the step size, see documentation
-                update_window_end=index - self.embargo,
-                test_window_start=index,
-                test_window_end=min(end, index + step),
-            )
-            for order, index in enumerate(range(self.start + window_size, end, step))
-        ]
-        return filter_folds(
-            merge_last_fold_if_too_small(folds, merge_threshold),
+        end = _get_end(self.end, index)
+        window_size = _translate_float_if_needed(self.initial_train_window, length)
+        start = _get_start(
+            self.start,
             index,
-            self.from_cutoff,
+            self.subtract_initial_train_window_from_start,
+            window_size,
         )
+        step = _translate_float_if_needed(self.step, length)
+
+        return [
+            Fold(
+                index=order,
+                train_bounds=[Bounds(start=start, end=index)],
+                test_bounds=[
+                    Bounds(
+                        start=index,
+                        end=end
+                        if self.overlapping_test_sets
+                        else min(end, index + step),
+                    )
+                ],
+            )
+            for order, index in enumerate(range(start + window_size, end, step))
+        ]
 
 
-class SingleWindowSplitter(Splitter):
+@dataclass
+class ForwardSingleWindowSplitter(Splitter):
     """
     Creates a single fold with a fixed train and test window.
     See [the documentation](https://dream-faster.github.io/fold/concepts/splitters/) for more details.
@@ -201,69 +203,158 @@ class SingleWindowSplitter(Splitter):
     ----------
     train_window : int, float
         The training window size. If a float, it is interpreted as a fraction of the total length of the data.
-    embargo : int, optional
-        The gap between the train and the test window, by default 0.
     """
 
-    def __init__(
-        self,
-        train_window: Union[
-            int, float
-        ],  # this is what you don't out of sample get predictions for
-        embargo: int = 0,
-    ) -> None:
-        self.window_size = train_window
-        self.embargo = embargo
-        self.from_cutoff = None
+    train_window: int | float  # this is what you don't out of sample get predictions for
 
-    def splits(self, index: pd.Index) -> List[Fold]:
+    def splits(self, index: pd.Index) -> list[Fold]:
         length = len(index)
-        window_size = translate_float_if_needed(self.window_size, length)
+        window_size = _translate_float_if_needed(self.train_window, length)
 
         return [
             Fold(
-                order=0,
-                model_index=0,
-                train_window_start=0,
-                train_window_end=window_size - self.embargo,
-                update_window_start=0,
-                update_window_end=0,  # SingleWindowSplitter is incompatible with sequantial updating
-                test_window_start=window_size,
-                test_window_end=length,
+                index=0,
+                train_bounds=[Bounds(start=0, end=window_size)],
+                test_bounds=[Bounds(start=window_size, end=length)],
             ),
         ]
 
 
-def merge_last_fold_if_too_small(splits: List[Fold], threshold: int) -> List[Fold]:
+@dataclass
+class WholeWindowSplitter(Splitter):
+    """
+    Creates a single fold with a fixed train and test window, the train window is always the full series.
+
+    Parameters
+    ----------
+    train_window : int, float
+        The training window size. If a float, it is interpreted as a fraction of the total length of the data.
+    """
+
+    test_window: int | float
+
+    def splits(self, index: pd.Index) -> list[Fold]:
+        length = len(index)
+        window_size = _translate_float_if_needed(self.test_window, length)
+
+        return [
+            Fold(
+                index=0,
+                train_bounds=[Bounds(start=0, end=length)],
+                test_bounds=[Bounds(start=length - window_size, end=length)],
+            ),
+        ]
+
+
+@dataclass
+class CombinedSplitter(Splitter):
+    train_val_splitter: list[Splitter]
+    test_splitter: Splitter
+
+    def all_splitters(self) -> Sequence[Splitter]:
+        return [*self.train_val_splitter, self.test_splitter]
+
+    def splits(self, index: pd.Index) -> Sequence[Fold]:
+        return flatten_lists(
+            [splitter.splits(index) for splitter in self.all_splitters()]
+        )
+
+
+def _merge_last_fold_if_too_small(splits: list[Fold], threshold: int) -> list[Fold]:
+    if len(splits) == 1:
+        return splits
     last_fold = splits[-1]
-    if last_fold.test_window_end - last_fold.test_window_start > threshold:
+    if last_fold.test_bounds[0].end - last_fold.test_bounds[0].start > threshold:
         return splits
 
     previous_fold = splits[-2]
     merged_fold = Fold(
-        order=previous_fold.order,
-        model_index=previous_fold.model_index,
-        train_window_start=previous_fold.train_window_start,
-        train_window_end=previous_fold.train_window_end,
-        update_window_start=previous_fold.update_window_start,
-        update_window_end=previous_fold.update_window_end,
-        test_window_start=previous_fold.test_window_start,
-        test_window_end=last_fold.test_window_end,
+        index=previous_fold.index,
+        train_bounds=[
+            previous_fold.train_bounds[0].union(previous_fold.train_bounds[0])
+        ],
+        test_bounds=[previous_fold.test_bounds[0].union(last_fold.test_bounds[0])],
     )
     return splits[:-2] + [merged_fold]
 
 
-def filter_folds(
-    splits: List[Fold],
+def _get_end(end: int | pd.Timestamp | None, index: pd.Index) -> int:
+    if isinstance(end, pd.Timestamp):
+        return index.get_loc(end)
+    return end if end is not None else len(index)
+
+
+def _get_start(
+    start: int | pd.Timestamp,
     index: pd.Index,
-    from_cutoff: Optional[pd.Timestamp],
-) -> List[Fold]:
-    if from_cutoff is not None:
-        assert isinstance(
-            from_cutoff, pd.Timestamp
-        ), "from_cutoff must be a Timestamp, otherwise comparison doesn't work reliably"
-        return [
-            split for split in splits if index[split.test_window_end - 1] >= from_cutoff
-        ]
-    else:
-        return splits
+    subtract_initial_train_window_from_start: bool,
+    initial_train_window: int,
+) -> int:
+    if isinstance(start, pd.Timestamp):
+        start = index.get_loc(start)
+    if subtract_initial_train_window_from_start:
+        return start - initial_train_window
+    return start
+
+
+def _translate_float_if_needed(window_size: int | float, length: int) -> int:
+    if window_size >= 1 and isinstance(window_size, int):
+        return window_size
+    if window_size < 1 and isinstance(window_size, float):
+        return int(window_size * length)
+    raise ValueError(
+        "Invalid window size, should be either a float less than 1 or an int"
+        " greater than 1"
+    )
+
+
+# We always apply the gaps to the train bounds.
+# But we shall only apply gaps if there are test bounds after/before the train bounds (depending on the type of gap we're applying).
+# Otherwise, we're reducing the size of the train set without a reason.
+
+
+def _apply_gap_before_test(fold: Fold, gap_before: int) -> Fold:
+    return Fold(
+        index=fold.index,
+        train_bounds=[
+            Bounds(bound.start, bound.end - gap_before)
+            if _bounds_exists_after(bound, fold.test_bounds)
+            else bound
+            for bound in fold.train_bounds
+        ],
+        test_bounds=fold.test_bounds,
+    )
+
+
+def _apply_gap_after_test(fold: Fold, gap_after: int) -> Fold:
+    return Fold(
+        index=fold.index,
+        train_bounds=[
+            Bounds(bound.start + gap_after, bound.end)
+            if _bounds_exists_before(bound, fold.test_bounds)
+            else bound
+            for bound in fold.train_bounds
+        ],
+        test_bounds=fold.test_bounds,
+    )
+
+
+def _bounds_exists_after(bounds: Bounds, other_bounds: list[Bounds]) -> bool:
+    return any(bounds.end <= other_bound.start for other_bound in other_bounds)
+
+
+def _bounds_exists_before(bounds: Bounds, other_bounds: list[Bounds]) -> bool:
+    return any(bounds.start >= other_bound.end for other_bound in other_bounds)
+
+
+def _merge_neighbouring_bounds(bounds: list[Bounds]) -> list[Bounds]:
+    """
+    Important assumption is that the bounds are sorted beforehand
+    """
+    merged_bounds: list[Bounds] = []
+    for t in bounds:
+        if merged_bounds and merged_bounds[-1].end == t.start:
+            merged_bounds[-1] = Bounds(merged_bounds[-1].start, t.end)
+        else:
+            merged_bounds.append(t)
+    return merged_bounds

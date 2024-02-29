@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 
-from typing import List, Optional, Union
-
 import pandas as pd
 
 from ..base import Transformation, Tunable, fit_noop
@@ -19,7 +17,7 @@ class SelectColumns(Transformation, Tunable):
     Parameters
     ----------
 
-    columns : Union[List[str], str]
+    columns : Union[list[str], str]
         The column or columns to select (dropping the rest).
 
 
@@ -27,11 +25,11 @@ class SelectColumns(Transformation, Tunable):
 
     def __init__(
         self,
-        columns: Union[List[str], str],
-        name: Optional[str] = None,
-        params_to_try: Optional[dict] = None,
+        columns: list[str] | str,
+        name: str | None = None,
+        params_to_try: dict | None = None,
     ) -> None:
-        self.columns: List[str] = wrap_in_list(columns)
+        self.columns: list[str] = wrap_in_list(columns)
         self.params_to_try = params_to_try
         self.name = name or f"SelectColumns-{columns}"
         self.properties = Transformation.Properties(requires_X=True)
@@ -50,16 +48,16 @@ class DropColumns(Transformation, Tunable):
     Parameters
     ----------
 
-    columns : List[str], str
+    columns : list[str], str
         The column or columns to drop.
 
     """
 
     def __init__(
         self,
-        columns: Union[List[str], str],
-        name: Optional[str] = None,
-        params_to_try: Optional[dict] = None,
+        columns: list[str] | str,
+        name: str | None = None,
+        params_to_try: dict | None = None,
     ) -> None:
         self.columns = wrap_in_list(columns)
         self.params_to_try = params_to_try
@@ -94,7 +92,7 @@ class RenameColumns(Transformation):
     >>> X, y  = generate_sine_wave_data()
     >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> pipeline = RenameColumns({"sine": "sine_renamed"})
-    >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+    >>> preds, trained_pipeline, _, _ = train_backtest(pipeline, X, y, splitter)
     >>> preds.head()
                          sine_renamed
     2021-12-31 15:40:00       -0.0000
@@ -139,7 +137,7 @@ class AddColumnSuffix(Transformation):
     >>> X, y  = generate_sine_wave_data()
     >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> pipeline = AddColumnSuffix("_2")
-    >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+    >>> preds, trained_pipeline, _, _ = train_backtest(pipeline, X, y, splitter)
     >>> preds.head()
                          sine_2
     2021-12-31 15:40:00 -0.0000
@@ -178,7 +176,7 @@ class OnlyPredictions(Transformation):
     >>> X, y  = generate_sine_wave_data()
     >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> pipeline = [DummyClassifier(1, [0, 1], [0.5, 0.5]), OnlyPredictions()]
-    >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+    >>> preds, trained_pipeline, _, _ = train_backtest(pipeline, X, y, splitter)
     >>> preds.head()
                          predictions_DummyClassifier
     2021-12-31 15:40:00                            1
@@ -218,7 +216,7 @@ class OnlyProbabilities(Transformation):
     >>> X, y  = generate_sine_wave_data()
     >>> splitter = SlidingWindowSplitter(train_window=0.5, step=0.2)
     >>> pipeline = [DummyClassifier(1, [0, 1], [0.5, 0.5]), OnlyProbabilities()]
-    >>> preds, trained_pipeline = train_backtest(pipeline, X, y, splitter)
+    >>> preds, trained_pipeline, _, _ = train_backtest(pipeline, X, y, splitter)
     >>> preds.head()
                          probabilities_DummyClassifier_0  probabilities_DummyClassifier_1
     2021-12-31 15:40:00                              0.5                              0.5

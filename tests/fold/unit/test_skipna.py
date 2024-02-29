@@ -1,7 +1,7 @@
 import pandas as pd
 
 from fold.composites.columns import SkipNA
-from fold.loop import backtest, train
+from fold.loop.encase import train_backtest
 from fold.splitters import ExpandingWindowSplitter
 from fold.utils.tests import generate_zeros_and_ones
 
@@ -16,7 +16,6 @@ def test_skipna() -> None:
         SkipNA([lambda x: x, lambda x: x]),
     ]
 
-    trained_pipelines = train(transformations, X, y, splitter)
-    pred = backtest(trained_pipelines, X, y, splitter)
+    pred, _, _, _ = train_backtest(transformations, X, y, splitter)
     assert pred.squeeze()[20:40].isna().all()
     assert not pred.squeeze()[50:].isna().any()

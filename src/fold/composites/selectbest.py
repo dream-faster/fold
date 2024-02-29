@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from typing import Callable, List, Optional, Union
+from collections.abc import Callable
 
 import pandas as pd
 
@@ -13,12 +13,12 @@ from .utils import _check_for_duplicate_names
 
 
 class SelectBest(Composite, Tunable):
-    selected_: Optional[str] = None
+    selected_: str | None = None
 
     def __init__(
         self,
         choose_from: Pipelines,
-        name: Optional[str] = None,
+        name: str | None = None,
     ) -> None:
         self.choose_from = choose_from
         _check_for_duplicate_names(self.choose_from)
@@ -30,9 +30,9 @@ class SelectBest(Composite, Tunable):
     def from_cloned_instance(
         cls,
         choose_from: Pipelines,
-        selected_: Optional[str],
-        name: Optional[str],
-        metadata: Optional[Composite.Metadata],
+        selected_: str | None,
+        name: str | None,
+        metadata: Composite.Metadata | None,
         id: str,
     ) -> SelectBest:
         instance = cls(choose_from)
@@ -44,8 +44,8 @@ class SelectBest(Composite, Tunable):
 
     def postprocess_result_primary(
         self,
-        results: List[pd.DataFrame],
-        y: Optional[pd.Series],
+        results: list[pd.DataFrame],
+        y: pd.Series | None,
         original_artifact: Artifact,
         fit: bool,
     ) -> pd.DataFrame:
@@ -54,12 +54,11 @@ class SelectBest(Composite, Tunable):
         )
         return results[0]
 
-    def get_children_primary(self) -> Pipelines:
+    def get_children_primary(self, only_traversal: bool) -> Pipelines:
         selected = get_candidate_by_name(self.choose_from, self.selected_)
         if selected is None:
             return self.choose_from
-        else:
-            return wrap_in_list(selected)
+        return wrap_in_list(selected)
 
     def clone(self, clone_children: Callable) -> SelectBest:
         return SelectBest.from_cloned_instance(
@@ -76,11 +75,11 @@ class SelectBest(Composite, Tunable):
             name=self.name,
         )
 
-    def get_params_to_try(self) -> Optional[dict]:
+    def get_params_to_try(self) -> dict | None:
         return {"selected_": [i.name for i in self.choose_from]}
 
     def clone_with_params(
-        self, parameters: dict, clone_children: Optional[Callable] = None
+        self, parameters: dict, clone_children: Callable | None = None
     ) -> Tunable:
         assert clone_children is not None
         # This is a bit hacky, we "peak" into the new params, and check if selected_ has been set,
@@ -104,8 +103,8 @@ class SelectBest(Composite, Tunable):
 
 
 def get_candidate_by_name(
-    candidates: List[Union[Transformation, Composite]], name: str
-) -> Optional[Union[Transformation, Composite]]:
+    candidates: list[Transformation | Composite], name: str
+) -> Transformation | Composite | None:
     for candidate in candidates:
         if candidate.name == name:
             return candidate
