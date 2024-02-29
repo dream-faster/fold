@@ -8,7 +8,7 @@ name = "fold-core"
 packages = [
     { include="fold", from="./src" },
 ]
-version = "1.0.9"
+version = "2.0.0"
 authors = ["Mark Aron Szulyovszky", "Daniel Szemerey" ]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
@@ -164,7 +164,7 @@ allow-direct-references = true
 
 # bumpver command: ``bumpver update --patch``
 [tool.bumpver]
-current_version = "1.0.9"
+current_version = "2.0.0"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message = "chore(Release): Bump version from {old_version} -> {new_version}"
 commit = true
