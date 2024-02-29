@@ -1,5 +1,3 @@
-name = "fold-core"
-
 
 [build-system]
 requires = ["poetry-core>=1.5"]
@@ -30,10 +28,10 @@ license = "Proprietary"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.8,<4.0"
-pandas = ">=1.2"
+python = ">=3.11,<4.0"
+pandas = ">=2.0"
 numpy = ">=1.16"
-scikit-learn = ">=1.0"
+scikit-learn = ">=1.4"
 tqdm = ">=4.0"
 iteration_utilities = ">=0.11"
 typing_extensions = ">=4.4.0"
@@ -99,8 +97,6 @@ all = [
   "ray",
   "holidays",
   "krisi",
-  "fold-core",
-  "fold-wrappers",
   "p_tqdm",
   "statsmodels",
   "pandas_market_calendars"
